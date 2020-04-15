@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<info xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance"
+	  xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
+	<id>workflow_ocr</id>
+	<name>Workflow OCR</name>
+	<summary>OCR processing via workflow</summary>
+	<description>OCR processing via workflow</description>
+	<version>0.0.1</version>
+	<licence>agpl</licence>
+	<author mail="ro.windey@gmail.com">Robin Windey</author>
+	<namespace>WorkflowOcr</namespace>
+	<types>
+		<filesystem/>
+	</types>
+	<category>files</category>
+	<category>tools</category>
+	<category>organization</category>
+	<category>workflow</category>
+	<!--TODO-->
+	<!--<website>https://github.com/nextcloud/workflow_script</website>
+	<bugs>https://github.com/nextcloud/workflow_script/issues</bugs>
+	<repository type="git">https://github.com/nextcloud/workflow_script.git</repository>
+	<screenshot>https://raw.githubusercontent.com/nextcloud/workflow_script/master/screenshots/flow-ui.png</screenshot>-->
+	<dependencies>
+		<nextcloud min-version="19" max-version="19" />
+	</dependencies>
+</info>
