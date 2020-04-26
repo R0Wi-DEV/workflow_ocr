@@ -21,7 +21,7 @@
 (function() {
 
 	var Component = {
-		name: 'WorkflowScript',
+		name: 'WorkflowOcr',
 		render: function (createElement) {
 			var self = this
 			return createElement('div', {
@@ -29,7 +29,7 @@
 					width: '100%'
 				},
 			}, [
-				createElement('input', {
+				/*createElement('input', {
 					attrs: {
 						type: 'text'
 					},
@@ -45,7 +45,7 @@
 							self.$emit('input', event.target.value)
 						}
 					}
-				}),
+				}),*/
 				createElement('a', {
 					attrs: {
 						href: self.link
@@ -61,14 +61,14 @@
 		},
 		data: function () {
 			return {
-				description: t('workflow_script', 'Available placeholder variables are listed in the documentation') + '↗',
-				link: 'https://github.com/nextcloud/workflow_script#placeholders'
+				description: t('workflow_ocr', 'Description will be added soon') + '↗', // TODO
+				//link: 'https://github.com/nextcloud/workflow_script#placeholders'
 			}
 		}
 	};
 
 	OCA.WorkflowEngine.registerOperator({
-		id: 'OCA\\WorkflowScript\\Operation',
+		id: 'OCA\\WorkflowOcr\\Operation',
 		operation: '',
 		options: Component
 	});

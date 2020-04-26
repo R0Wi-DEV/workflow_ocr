@@ -1,6 +1,4 @@
 <?php
-declare(strict_types=1);
-
 /**
  * @copyright Copyright (c) 2020 Robin Windey <ro.windey@gmail.com>
  *
@@ -23,38 +21,13 @@ declare(strict_types=1);
  *
  */
 
-
 namespace OCA\WorkflowOcr\AppInfo;
 
-use OCA\WorkflowOcr\FileHooks;
-use OCA\WorkflowOcr\Operation;
-use OCP\WorkflowEngine\IManager;
-use OCP\Util;
-use Symfony\Component\EventDispatcher\GenericEvent;
+$composerDir = __DIR__ . '/../vendor/';
 
-class Application extends \OCP\AppFramework\App {
-
-	const APP_NAME = "workflow_ocr";
-
-	/**
-	 * Application constructor.
-	 */
-	public function __construct() {
-		parent::__construct(Application::APP_NAME);
-
-		$this->registerWorkflow();
-		$this->registerDependencies();
-	}
-
-	private function registerWorkflow() :void {
-		\OC::$server->getEventDispatcher()->addListener(IManager::EVENT_NAME_REG_OPERATION, function (GenericEvent $event) {
-			$operation = \OC::$server->query(Operation::class);
-			$event->getSubject()->registerOperation($operation);
-			\OC_Util::addScript(Application::APP_NAME, 'admin');
-		});
-	}
-
-	private function registerDependencies() : void {
-		
-	}
+if (is_dir($composerDir) && file_exists($composerDir . 'autoload.php')) {
+	require_once $composerDir . 'autoload.php';
+}
+else {
+    throw new \Exception('Cannot include autoload. Did you run install dependencies using composer?');
 }

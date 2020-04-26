@@ -1,8 +1,10 @@
 <?php
+declare(strict_types=1);
+
 /**
- * @copyright Copyright (c) 2018 Arthur Schiwon <blizzz@arthur-schiwon.de>
+ * @copyright Copyright (c) 2020 Robin Windey <ro.windey@gmail.com>
  *
- * @author Arthur Schiwon <blizzz@arthur-schiwon.de>
+ * @author Robin Windey <ro.windey@gmail.com>
  *
  * @license GNU AGPL version 3 or any later version
  *
@@ -23,49 +25,32 @@
 
 namespace OCA\WorkflowOcr;
 
-use OC\Files\View;
 use OCA\WorkflowEngine\Entity\File;
 use OCA\WorkflowOcr\AppInfo\Application;
-use OCA\WorkflowOcr\BackgroundJobs\Launcher;
 use OCP\BackgroundJob\IJobList;
 use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\GenericEvent;
-use OCP\Files\Folder;
-use OCP\Files\InvalidPathException;
 use OCP\Files\IRootFolder;
-use OCP\Files\Node;
-use OCP\Files\NotFoundException;
 use OCP\IL10N;
-use OCP\IUser;
 use OCP\IUserSession;
-use OCP\SystemTag\MapperEvent;
 use OCP\WorkflowEngine\IManager;
 use OCP\WorkflowEngine\IRuleMatcher;
 use OCP\WorkflowEngine\ISpecificOperation;
-use Symfony\Component\EventDispatcher\GenericEvent as LegacyGenericEvent;
 use OCP\ILogger;
+use OCA\WorkflowOcr\BackgroundJobs\ProcessFileJob;
 
 class Operation implements ISpecificOperation {
 
-	/** @var IManager */
-	private $workflowEngineManager;
 	/** @var IJobList */
 	private $jobList;
 	/** @var IL10N */
 	private $l;
-	/** @var IUserSession */
-	private $session;
-	/** @var IRootFolder */
-	private $rootFolder;
 	/** @var ILogger */
 	private $logger;
 
 	public function __construct(IManager $workflowEngineManager, IJobList $jobList, IL10N $l, IUserSession $session, IRootFolder $rootFolder, ILogger $logger) {
-		$this->workflowEngineManager = $workflowEngineManager;
 		$this->jobList = $jobList;
 		$this->l = $l;
-		$this->session = $session;
-		$this->rootFolder = $rootFolder;
 		$this->logger = $logger;
 	}
 
@@ -94,50 +79,23 @@ class Operation implements ISpecificOperation {
 	}
 
 	public function onEvent(string $eventName, Event $event, IRuleMatcher $ruleMatcher): void {
-		$this->logger->error('EventName: ' . $eventName);
-		/*if (!$event instanceof GenericEvent
-			&& !$event instanceof LegacyGenericEvent
-			&& !$event instanceof MapperEvent) {
-			return;
-		}
-		try {
-			$extra = [];
-			if ($eventName === '\OCP\Files::postRename') {
-				/** @var Node $oldNode */
-	/*			list($oldNode,) = $event->getSubject();
-				$extra = ['oldFilePath' => $oldNode->getPath()];
-			} else if ($event instanceof MapperEvent) {
-				if ($event->getObjectType() !== 'files') {
-					return;
-				}
-				$nodes = $this->rootFolder->getById($event->getObjectId());
-				if (!isset($nodes[0])) {
-					return;
-				}
-				$node = $nodes[0];
-				unset($nodes);
-			} else {
-				$node = $event->getSubject();
-			}
-			/** @var Node $node */
-
-	/*		// '', admin, 'files', 'path/to/file.txt'
-			list(, , $folder,) = explode('/', $node->getPath(), 4);
-			if ($folder !== 'files' || $node instanceof Folder) {
+		if ($eventName !== '\OCP\Files::postCreate' && $eventName !== '\OCP\Files::postWrite' || 
+			!$event instanceof GenericEvent){
+				$this->logger->debug('Not processing event {eventname} with argument {event}.', 
+					['eventname' => $eventName, 'event' => $event]);
 				return;
 			}
 
-			$matches = $ruleMatcher->getFlows(false);
-			foreach ($matches as $match) {
-				$command = $this->buildCommand($match['operation'], $node, $eventName, $extra);
-				$args = ['command' => $command];
-				if (strpos($command, '%f')) {
-					$args['path'] = $node->getPath();
-				}
-				$this->jobList->add(Launcher::class, $args);
-			}
-		} catch (NotFoundException $e) {
-		}*/
+		$node = $event->getSubject();
+
+		if (!$node instanceof \OC\Files\Node\File){
+			$this->logger->debug('Not processing event {eventname} because node is not a file.', 
+					['eventname' => $eventName]);
+			return;
+		}
+
+		$args = ['filePath' => $node->getPath()];
+		$this->jobList->add(ProcessFileJob::class, $args);
 	}
 
 	public function getEntityId(): string {

@@ -21,4 +21,8 @@
  *
  */
 
-$app = \OC::$server->query(\OCA\WorkflowOcr\AppInfo\Application::class);
+namespace OCA\WorkflowOcr\AppInfo;
+
+require_once __DIR__ . '/autoload.php';
+
+$app = \OC::$server->query(Application::class);
