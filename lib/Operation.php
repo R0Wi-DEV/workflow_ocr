@@ -47,11 +47,14 @@ class Operation implements ISpecificOperation {
 	private $l;
 	/** @var ILogger */
 	private $logger;
+	/** @var IUserSession */
+	private $userSession;
 
-	public function __construct(IManager $workflowEngineManager, IJobList $jobList, IL10N $l, IUserSession $session, IRootFolder $rootFolder, ILogger $logger) {
+	public function __construct(IJobList $jobList, IL10N $l, IUserSession $userSession, ILogger $logger) {
 		$this->jobList = $jobList;
 		$this->l = $l;
 		$this->logger = $logger;
+		$this->userSession = $userSession;
 	}
 
 	/**
@@ -94,7 +97,10 @@ class Operation implements ISpecificOperation {
 			return;
 		}
 
-		$args = ['filePath' => $node->getPath()];
+		$args = [
+			'filePath' => $node->getPath(),
+			'uid' => $this->userSession->getUser()->getUID() // TODO :: shared folders?
+		];
 		$this->jobList->add(ProcessFileJob::class, $args);
 	}
 

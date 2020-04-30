@@ -26,11 +26,17 @@ declare(strict_types=1);
 namespace OCA\WorkflowOcr\BackgroundJobs;
 
 use Exception;
+use OC\User\NoUserException;
 use OCP\Files\IRootFolder;
 use OCP\Files\NotFoundException;
 use OCP\ILogger;
-use \OC\Files\Node\File;
-use thiagoalessio\TesseractOCR\TesseractOCR;
+use \OCP\Files\File;
+use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
+use OCA\WorkflowOcr\Exception\OcrProcessorNotFoundException;
+use OCA\WorkflowOcr\OcrProcessors\IOcrProcessorFactory;
+use OCP\IUserManager;
+use OCP\IUser;
+use OCP\IUserSession;
 
 /**
  * Represents a QuedJob which processes 
@@ -42,16 +48,24 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
 	protected $logger;
 	/** @var IRootFolder */
     private $rootFolder;
+    /** @var IUserManager */
+    private $userManager;
+    /** @var IUserSession */
+    private $userSession;
+    /** @var IOcrProcessorFactory */
+    private $ocrProcessorFactory;
     
-    /**
-	 * ProcessFileJob constructor.
-	 *
-	 * @param ILogger $logger
-     * @param IRootFolder $rootFolder
-	 */
-	public function __construct(ILogger $logger, IRootFolder $rootFolder) {
+	public function __construct(
+        ILogger $logger, 
+        IRootFolder $rootFolder, 
+        IUserManager $userManager, 
+        IUserSession $userSession,
+        IOcrProcessorFactory $ocrProcessorFactory) {
 		$this->logger = $logger;
-		$this->rootFolder = $rootFolder;
+        $this->rootFolder = $rootFolder;
+        $this->userManager = $userManager;
+        $this->userSession = $userSession;
+        $this->ocrProcessorFactory = $ocrProcessorFactory;
     }
     
     /**
@@ -60,21 +74,54 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
 	protected function run($argument) : void {
         $this->logger->debug('Run ' . self::class . ' job. Argument: {argument}.', ['argument' => $argument]);
         
-        $filePath = $argument['filePath'];
-
-        if (!isset($filePath)){
-            $this->logger->warning('Variable \'filePath\' not set in ' . self::class . ' method \'run\'.');
+        list($success, $filePath, $uid) = $this->parseArguments($argument);
+        if (!$success) {
             return;
         }
 
-        $this->initFileSystem($filePath);
+        try {
+            $this->initUserEnvironment($uid);
+            $this->runInternal($filePath, $uid);
+        }
+        catch(Exception $ex) {
+            $this->logger->logException($ex);
+        }
+        finally {
+            $this->shutdownUserEnvironment($uid);
+        }  
+    }
 
+    /**
+	 * @param mixed $argument
+	 */
+    private function parseArguments($argument) : array {
+        $filePath = $argument['filePath'];
+        $uid = $argument['uid'];
+
+        if (!isset($filePath)){
+            $this->logger->warning('Variable \'filePath\' not set in ' . self::class . ' method \'parseArguments\'.');
+        }
+        if (!isset($uid)) {
+            $this->logger->warning('Variable \'uid\' not set in ' . self::class . ' method \'parseArguments\'.');
+        }
+
+        return [
+            isset($filePath) && isset($uid),
+            $filePath,
+            $uid
+        ];
+    }
+
+    /**
+     * @param string $filePath  The file to be processed
+     */
+    private function runInternal(string $filePath) : void {
         try {
             /** @var File */
             $node = $this->rootFolder->get($filePath);
         }
         catch(NotFoundException $ex) {
-            $this->logger->warning('Could not process file \'' . $filePath . '\'. File was not found.action-container');
+            $this->logger->warning('Could not process file \'' . $filePath . '\'. File was not found.');
             return;
         }
 
@@ -82,9 +129,18 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
             $this->logger->info('Skipping process for \'' . $filePath . '\'. It is not a file.');
             return;
         }
-        
-        $pdf = $this->ocrFile($node);
-            
+        try {
+            $pdf = $this->ocrFile($node);
+        }
+        catch(OcrNotPossibleException $ocrNpEx) {
+            $this->logger->info($ocrNpEx->getMessage());
+            return;
+        }
+        catch(OcrProcessorNotFoundException $ocrProcNfEx) {
+            $this->logger->info($ocrProcNfEx->getMessage());
+            return;
+        }
+
         $dirPath = dirname($filePath);
         $filePath = basename($filePath);
 
@@ -92,37 +148,29 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
         $view->file_put_contents($filePath, $pdf);
     }
 
-    private function initFileSystem(string $filePath) : void {
-        $pathSegments = explode('/', $filePath, 4);
-        \OC\Files\Filesystem::init($pathSegments[1], '/' . $pathSegments[1] . '/files');
+    /**
+     * @param string $uid
+     */
+    private function shutdownUserEnvironment(string $uid) : void {
+        $this->userSession->setUser(null);
+    }
+
+    /**
+     * @param string $uid
+     */
+    private function initUserEnvironment(string $uid) : void {
+        /** @var IUser */
+        $user = $this->userManager->get($uid);
+        if (!$user) {
+            throw new NoUserException("User '$user' was not found");
+        }
+        $this->userSession->setUser($user);
+
+        \OC\Files\Filesystem::init($uid, '/' . $uid . '/files');
     }
 
     private function ocrFile(File $file) : string {
-        $filePath = $file->getPath();
-        try {
-            // TODO :: check file mime type
-            return $this->ocrPdf($file);
-        }
-        catch(Exception $ex) {
-            $this->logger->logException($ex, ['message' => 'Could not OCR file \'' . $filePath . '\'']);
-            return null;
-        }
-    }
-
-    private function ocrPdf(File $file) : string {
-        $img = new \Imagick();
-		$img->setOption('density', '300');
-		$img->readImageBlob($file->getContent());
-		$img->setImageFormat("png");
-		$data = $img->getImageBlob();
-		$size = $img->getImageLength();
-
-		$pdf = (new TesseractOCR())
-			->lang('deu')
-			->imageData($data, $size)
-			->pdf()
-            ->run();   
-
-        return $pdf;
+        $ocrProcessor = $this->ocrProcessorFactory->create($file->getMimeType());
+        return $ocrProcessor->ocrFile($file);
     }
 }

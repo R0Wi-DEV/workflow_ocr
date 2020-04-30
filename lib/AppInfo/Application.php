@@ -27,6 +27,8 @@ declare(strict_types=1);
 namespace OCA\WorkflowOcr\AppInfo;
 
 use OCA\WorkflowOcr\FileHooks;
+use OCA\WorkflowOcr\OcrProcessors\IOcrProcessorFactory;
+use OCA\WorkflowOcr\OcrProcessors\OcrProcessorFactory;
 use OCA\WorkflowOcr\Operation;
 use OCP\WorkflowEngine\IManager;
 use OCP\Util;
@@ -55,6 +57,8 @@ class Application extends \OCP\AppFramework\App {
 	}
 
 	private function registerDependencies() : void {
-		
+		$container = $this->getContainer();
+
+		$container->registerAlias(IOcrProcessorFactory::class, OcrProcessorFactory::class);
 	}
 }
