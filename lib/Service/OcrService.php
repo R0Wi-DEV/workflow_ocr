@@ -4,7 +4,9 @@ declare(strict_types=1);
 /**
  * @copyright Copyright (c) 2020 Robin Windey <ro.windey@gmail.com>
  *
- *  @license GNU AGPL version 3 or any later version
+ * @author Robin Windey <ro.windey@gmail.com>
+ *
+ * @license GNU AGPL version 3 or any later version
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -18,14 +20,24 @@ declare(strict_types=1);
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
  */
 
-namespace OCA\WorkflowOcr\Exception;
+namespace OCA\WorkflowOcr\Service;
 
-use Exception;
+use OCA\WorkflowOcr\OcrProcessors\IOcrProcessorFactory;
 
-class OcrNotPossibleException extends Exception {
-    public function __construct(string $message) {
-        $this->message = $message;
+class OcrService implements IOcrService {
+    /** @var IOcrProcessorFactory */
+    private $ocrProcessorFactory;
+
+    public function __construct(IOcrProcessorFactory $ocrProcessorFactory) {
+        $this->ocrProcessorFactory = $ocrProcessorFactory;
+    }
+
+    /** @inheritdoc */
+    public function ocrFile(string $mimeType, string $fileContent) : string {
+        $ocrProcessor = $this->ocrProcessorFactory->create($mimeType);
+        return $ocrProcessor->ocrFile($fileContent);
     }
 }

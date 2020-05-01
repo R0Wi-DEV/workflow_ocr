@@ -33,7 +33,8 @@ use OCP\ILogger;
 use \OCP\Files\File;
 use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
 use OCA\WorkflowOcr\Exception\OcrProcessorNotFoundException;
-use OCA\WorkflowOcr\OcrProcessors\IOcrProcessorFactory;
+use OCA\WorkflowOcr\Service\IOcrService;
+use OCA\WorkflowOcr\Wrapper\IView;
 use OCP\IUserManager;
 use OCP\IUser;
 use OCP\IUserSession;
@@ -52,20 +53,24 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
     private $userManager;
     /** @var IUserSession */
     private $userSession;
-    /** @var IOcrProcessorFactory */
-    private $ocrProcessorFactory;
+    /** @var IOcrService */
+    private $ocrService;
+    /** @var IView */
+    private $filesView;
     
 	public function __construct(
         ILogger $logger, 
         IRootFolder $rootFolder, 
         IUserManager $userManager, 
         IUserSession $userSession,
-        IOcrProcessorFactory $ocrProcessorFactory) {
+        IOcrService $ocrService,
+        IView $filesView) {
 		$this->logger = $logger;
         $this->rootFolder = $rootFolder;
         $this->userManager = $userManager;
         $this->userSession = $userSession;
-        $this->ocrProcessorFactory = $ocrProcessorFactory;
+        $this->ocrService = $ocrService;
+        $this->filesView = $filesView;
     }
     
     /**
@@ -81,9 +86,9 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
 
         try {
             $this->initUserEnvironment($uid);
-            $this->runInternal($filePath, $uid);
+            $this->runInternal($filePath);
         }
-        catch(Exception $ex) {
+        catch(\Throwable $ex) {
             $this->logger->logException($ex);
         }
         finally {
@@ -121,31 +126,32 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
             $node = $this->rootFolder->get($filePath);
         }
         catch(NotFoundException $ex) {
-            $this->logger->warning('Could not process file \'' . $filePath . '\'. File was not found.');
+            $this->logger->warning('Could not process file \'' . $filePath . '\'. File was not found');
             return;
         }
 
         if (!$node instanceof File) {
-            $this->logger->info('Skipping process for \'' . $filePath . '\'. It is not a file.');
+            $this->logger->info('Skipping process for \'' . $filePath . '\'. It is not a file');
             return;
         }
         try {
             $pdf = $this->ocrFile($node);
         }
         catch(OcrNotPossibleException $ocrNpEx) {
-            $this->logger->info($ocrNpEx->getMessage());
+            $this->logger->info('OCR for file ' . $node->getPath() . ' not possible. Message: ' . $ocrNpEx->getMessage());
             return;
         }
         catch(OcrProcessorNotFoundException $ocrProcNfEx) {
-            $this->logger->info($ocrProcNfEx->getMessage());
+            $this->logger->info('OCR processor not found for mimetype ' . $node->getMimeType());
             return;
         }
 
         $dirPath = dirname($filePath);
         $filePath = basename($filePath);
 
-        $view = new \OC\Files\View($dirPath);
-        $view->file_put_contents($filePath, $pdf);
+        // Create new file or file-version with OCR-file
+        $this->filesView->init($dirPath);
+        $this->filesView->file_put_contents($filePath, $pdf);
     }
 
     /**
@@ -170,7 +176,6 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
     }
 
     private function ocrFile(File $file) : string {
-        $ocrProcessor = $this->ocrProcessorFactory->create($file->getMimeType());
-        return $ocrProcessor->ocrFile($file);
+        return $this->ocrService->ocrFile($file->getMimeType(), $file->getContent());
     }
 }

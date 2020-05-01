@@ -30,6 +30,16 @@ use OCA\WorkflowOcr\FileHooks;
 use OCA\WorkflowOcr\OcrProcessors\IOcrProcessorFactory;
 use OCA\WorkflowOcr\OcrProcessors\OcrProcessorFactory;
 use OCA\WorkflowOcr\Operation;
+use OCA\WorkflowOcr\Service\IOcrService;
+use OCA\WorkflowOcr\Service\OcrService;
+use OCA\WorkflowOcr\Wrapper\IImagick;
+use OCA\WorkflowOcr\Wrapper\ImagickWrapper;
+use OCA\WorkflowOcr\Wrapper\IPdfParser;
+use OCA\WorkflowOcr\Wrapper\ITesseractOcr;
+use OCA\WorkflowOcr\Wrapper\IView;
+use OCA\WorkflowOcr\Wrapper\PdfParserWrapper;
+use OCA\WorkflowOcr\Wrapper\TesseractOcrWrapper;
+use OCA\WorkflowOcr\Wrapper\ViewWrapper;
 use OCP\WorkflowEngine\IManager;
 use OCP\Util;
 use Symfony\Component\EventDispatcher\GenericEvent;
@@ -59,6 +69,11 @@ class Application extends \OCP\AppFramework\App {
 	private function registerDependencies() : void {
 		$container = $this->getContainer();
 
+		$container->registerAlias(IOcrService::class, OcrService::class);
 		$container->registerAlias(IOcrProcessorFactory::class, OcrProcessorFactory::class);
+		$container->registerAlias(IPdfParser::class, PdfParserWrapper::class);
+		$container->registerAlias(IImagick::class, ImagickWrapper::class);
+		$container->registerAlias(ITesseractOcr::class, TesseractOcrWrapper::class);
+		$container->registerAlias(IView::class, ViewWrapper::class);
 	}
 }

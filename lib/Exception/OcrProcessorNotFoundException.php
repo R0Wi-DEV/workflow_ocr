@@ -25,7 +25,4 @@ namespace OCA\WorkflowOcr\Exception;
 use Exception;
 
 class OcrProcessorNotFoundException extends Exception {
-    public function __construct(string $mimeType) {
-        $this->message = "OCR for mimetype '$mimeType' is not supported";
-    }
 }

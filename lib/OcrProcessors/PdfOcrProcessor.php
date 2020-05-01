@@ -23,28 +23,58 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\OcrProcessors;
 
-use \OCP\Files\File;
 use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
+use OCA\WorkflowOcr\Wrapper\IImagick;
+use OCA\WorkflowOcr\Wrapper\IPdfParser;
+use OCA\WorkflowOcr\Wrapper\ITesseractOcr;
 use thiagoalessio\TesseractOCR\TesseractOCR;
 
 class PdfOcrProcessor implements IOcrProcessor {
+    /** @var IPdfParser */
+    private $pdfParser;
+    /** @var IImagick */
+    private $imagick;
+    /** @var ITesseractOcr */
+    private $tesseract;
 
-    public function ocrFile(File $file): string {
-        // TODO :: check if pdf has already text -> OcrException
-        $img = new \Imagick();
-        $img->setOption('density', '300');
-        $img->readImageBlob($file->getContent());
-        $img->setImageFormat("png");
-        $data = $img->getImageBlob();
-        $size = $img->getImageLength();
+    public function __construct(IPdfParser $pdfParser, IImagick $imagick, ITesseractOcr $tesseract) {
+        $this->pdfParser = $pdfParser;    
+        $this->imagick = $imagick;
+        $this->tesseract = $tesseract;
+    }
 
-        // TODO :: Interface + Factory for TesseractOCR
-        $pdf = (new TesseractOCR())
-            ->lang('deu')
+    public function ocrFile(string $fileContent): string {
+        if ($this->checkContainsText($fileContent)) {
+            throw new OcrNotPossibleException('Pdf contains text');
+        }
+        
+        $this->imagick->setOption('density', '300');
+        $this->imagick->readImageBlob($fileContent);
+        $this->imagick->setImageFormat("png");
+        $data = $this->imagick->getImageBlob();
+        $size = $this->imagick->getImageLength();
+
+        $pdf = $this->tesseract
+            ->lang(['deu']) // TODO config
             ->imageData($data, $size)
-            ->pdf()
+            ->configFile('pdf')
             ->run();
 
         return $pdf;
+    }
+
+    private function checkContainsText(string $pdfContent) : bool {
+        $pdf = $this->pdfParser->parseContent($pdfContent);
+
+        $pages = $pdf->getPages();
+
+        foreach ($pages as $page) {
+            $txt = $page->getText();
+            if (!empty($txt) && !empty(trim($txt))) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

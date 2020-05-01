@@ -4,7 +4,9 @@ declare(strict_types=1);
 /**
  * @copyright Copyright (c) 2020 Robin Windey <ro.windey@gmail.com>
  *
- *  @license GNU AGPL version 3 or any later version
+ * @author Robin Windey <ro.windey@gmail.com>
+ *
+ * @license GNU AGPL version 3 or any later version
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -18,14 +20,19 @@ declare(strict_types=1);
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
  */
 
-namespace OCA\WorkflowOcr\Exception;
+namespace OCA\WorkflowOcr\Service;
 
-use Exception;
-
-class OcrNotPossibleException extends Exception {
-    public function __construct(string $message) {
-        $this->message = $message;
-    }
+interface IOcrService {
+    /**
+     * Processes OCR on the given file
+     * @param string $mimeType        The mimetype of the file to be processed
+     * @param string $fileContent     The file to be processed 
+     * @return string                 The processed pdf as byte string
+     * @throws \OCA\WorkflowOcr\Exception\OcrNotPossibleException
+     * @throws \OCA\WorkflowOcr\Exception\OcrProcessorNotFoundException
+     */
+    function ocrFile(string $mimeType, string $fileContent) : string;
 }

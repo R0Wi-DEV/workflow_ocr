@@ -22,15 +22,14 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\OcrProcessors; 
 
-use \OCP\Files\File;
 use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
 
 interface IOcrProcessor {
     /**
      * Processes OCR on the given file
-     * @var File $file  The file to be processed 
+     * @var string $fileContent  The file to be processed 
      * @return string   The processed file as byte string
      * @throws OcrNotPossibleException
      */
-    function ocrFile(File $file) : string;
+    function ocrFile(string $fileContent) : string;
 }
