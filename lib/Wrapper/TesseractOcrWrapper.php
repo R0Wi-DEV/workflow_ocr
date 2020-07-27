@@ -35,22 +35,34 @@ class TesseractOcrWrapper implements ITesseractOcr {
         $this->wrappedTesseract = new TesseractOCR();
     }
 
+    /**
+     * @inheritdoc
+     */
     public function configFile(string $config) : ITesseractOcr {
         $this->wrappedTesseract->configFile($config);
         return $this;
     }
 
-    function lang(array $langs) : ITesseractOcr {
+    /**
+     * @inheritdoc
+     */
+    public function lang(array $langs) : ITesseractOcr {
 		call_user_func_array([$this->wrappedTesseract, 'lang'], array_map('trim', $langs));
         return $this;
     }
 
-    function imageData(string $data, int $size) : ITesseractOcr {
+    /**
+     * @inheritdoc
+     */
+    public function imageData(string $data, int $size) : ITesseractOcr {
         $this->wrappedTesseract->imageData($data, $size);
         return $this;
     }
     
-    function run() : string {
+    /**
+     * @inheritdoc
+     */
+    public function run() : string {
         return $this->wrappedTesseract->run();
     }
 }

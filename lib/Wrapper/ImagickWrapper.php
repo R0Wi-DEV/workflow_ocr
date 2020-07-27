@@ -67,4 +67,48 @@ class ImagickWrapper implements IImagick {
     public function getImageLength(): int {
         return $this->wrappedImagick->getImageLength();
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getNumberImages(): int {
+        return (int)$this->wrappedImagick->getNumberImages();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function clear(): void {
+        $this->wrappedImagick->clear();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function current() {
+        return $this->wrappedImagick->current();
+    }
+    
+    /**
+     * @return scalar
+     */
+    public function key() {
+        return $this->wrappedImagick->key();
+    }
+
+    public function next() : void {
+        $this->wrappedImagick->next();
+    }
+
+    public function rewind() : void {
+        $this->wrappedImagick->rewind();
+    }
+
+    public function valid() : bool {
+        return $this->wrappedImagick->valid();
+    }
+
+    public function destroy() : void {
+        $this->wrappedImagick->destroy();
+    }
 }

@@ -27,54 +27,185 @@ use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
 use OCA\WorkflowOcr\Wrapper\IImagick;
 use OCA\WorkflowOcr\Wrapper\IPdfParser;
 use OCA\WorkflowOcr\Wrapper\ITesseractOcr;
-use thiagoalessio\TesseractOCR\TesseractOCR;
+use OCA\WorkflowOcr\Wrapper\IWrapperFactory;
 
 class PdfOcrProcessor implements IOcrProcessor {
     /** @var IPdfParser */
     private $pdfParser;
-    /** @var IImagick */
-    private $imagick;
     /** @var ITesseractOcr */
     private $tesseract;
+    /** @var IWrapperFactory */
+    private $wrapperFactory;
 
-    public function __construct(IPdfParser $pdfParser, IImagick $imagick, ITesseractOcr $tesseract) {
+    public function __construct(IPdfParser $pdfParser, ITesseractOcr $tesseract, IWrapperFactory $wrapperFactory) {
         $this->pdfParser = $pdfParser;    
-        $this->imagick = $imagick;
         $this->tesseract = $tesseract;
+        $this->wrapperFactory = $wrapperFactory;
     }
 
     public function ocrFile(string $fileContent): string {
-        if ($this->checkContainsText($fileContent)) {
-            throw new OcrNotPossibleException('Pdf contains text');
-        }
+        $pagesTextInfo = $this->getPagesTextInfo($fileContent);
         
-        $this->imagick->setOption('density', '300');
-        $this->imagick->readImageBlob($fileContent);
-        $this->imagick->setImageFormat("png");
-        $data = $this->imagick->getImageBlob();
-        $size = $this->imagick->getImageLength();
+        // Check if at least one page in PDF has no text
+        $this->ensureCanOcrPdf($pagesTextInfo);
 
-        $pdf = $this->tesseract
-            ->lang(['deu']) // TODO config
-            ->imageData($data, $size)
-            ->configFile('pdf')
-            ->run();
+        // Split PDF into single pages
+        $splitted = $this->splitPdf($fileContent);
 
-        return $pdf;
+        // OCR each single page PDF (if it does not contain text already)
+        $this->ocrPages($splitted, $pagesTextInfo);
+
+        // Merge results
+        return $this->mergePdf($splitted);
     }
 
-    private function checkContainsText(string $pdfContent) : bool {
+    /**
+     * Returns an associative array (index (int) => containsText (bool)) with information, if the
+     * page contains text or not. Index starts a 1.
+     */
+    private function getPagesTextInfo(string $pdfContent) : array {
         $pdf = $this->pdfParser->parseContent($pdfContent);
 
+        $tmpCnt = 1;
+        $indices = [];
         $pages = $pdf->getPages();
 
         foreach ($pages as $page) {
             $txt = $page->getText();
-            if (!empty($txt) && !empty(trim($txt))) {
-                return true;
+            $indices[$tmpCnt++] = !empty($txt) && !empty(trim($txt));
+        }
+
+        return $indices;
+    }
+
+    private function ensureCanOcrPdf(array $pagesTextInfo) : void {
+        $onePageWithoutText = false;
+
+        foreach($pagesTextInfo as $idx => $containsText) {
+            if (!$containsText){
+                $onePageWithoutText = true;
+                break;
+            }
+        }
+        
+        if (!$onePageWithoutText) {
+            throw new OcrNotPossibleException('Pdf only contains pages with text');
+        }
+    }
+
+    /**
+     * Splits PDF into associative array with 1-based index.
+     */
+    private function splitPdf(string $pdfContent) : array {
+        try {
+            $fpdiWrapper = $this->fpdiFactory->create($pdfContent);
+            $pagecount = $fpdiWrapper->getPageCount();
+            $splitted = [];
+
+            for ($i = 1; $i <= $pagecount; $i++) {
+                $onePageFpdiWrapper = $this->fpdiFactory->create($pdfContent);
+                $pageId = $onePageFpdiWrapper->ImportPage($i);
+                $s = $onePageFpdiWrapper->getTemplatesize($pageId);
+                $onePageFpdiWrapper->AddPage($s['orientation'], $s);
+                $onePageFpdiWrapper->useImportedPage($pageId);
+
+                try {
+                    $content = $onePageFpdiWrapper->Output(null, "S");
+                    $splitted[$i] = $content;
+                } finally {
+                    $onePageFpdiWrapper->Close();
+                    $onePageFpdiWrapper->closeStreams();
+                }
+            }
+        }
+        finally {
+            if (isset($fpdiWrapper)) {
+                $fpdiWrapper->Close();
+                $fpdiWrapper->closeStreams();
             }
         }
 
-        return false;
+        return $splitted;
+    }
+
+    /**
+     * Process each PDF page with ocr algorithm except the pages which already
+     * contain a text layer.
+     */
+    private function ocrPages(array $splittedPdfPages, array $pagesTextInfo) : void {
+        foreach ($splittedPdfPages as $i => $onePagePdf) {
+            // Skip pages containing text
+            if ($pagesTextInfo[$i] === true) {
+                continue;
+            }
+
+            try {
+                $img = $this->wrapperFactory->createImagick();
+                $img->setOption('density', '300');
+                $img->readImageBlob($onePagePdf);
+                $img->setImageFormat("png");
+
+                $ocrPdf = $this->processSinglePageImagick($img);
+
+                // Take original page format
+                $original = $this->wrapperFactory->createFpdi($splittedPdfPages[$i]);
+                $pageId = $original->ImportPage(1);
+                $originalSize = $original->getTemplatesize($pageId);
+
+                // Import single PDF page with ocr layer
+                $withOcr = $this->wrapperFactory->createFpdi($ocrPdf);
+                $pageIdOcr = $withOcr->ImportPage(1);
+                $withOcr->AddPage($originalSize['orientation'], $originalSize);
+                $withOcr->useImportedPage($pageIdOcr, 0, 0, $originalSize['width'], $originalSize['height'], false);
+
+                // Overwrite original page with scanned one
+                $splitted[$i] = $withOcr->Output(null, "S");
+            }
+            finally {
+                if (isset($img)) {
+                    $img->destroy();
+                }
+                if (isset($original)) {
+                    $original->Close();
+                    $original->closeStreams();
+                }
+                if (isset($withOcr)) {
+                    $withOcr->Close();
+                    $withOcr->closeStreams();
+                }
+            }
+        }
+    }
+
+    private function processSinglePageImagick(IImagick $imagick) : string {
+        $data = $imagick->getImageBlob();
+        $size = $imagick->getImageLength();
+
+        $singlePagePdf = $this->tesseract
+            ->lang(['deu']) // TODO make configurable?
+            ->imageData($data, $size)
+            ->configFile('pdf')
+            ->run();
+
+        return $singlePagePdf;
+    }
+
+    /**
+     * Merges single page PDF array into one output PDF.
+     */
+    private function mergePdf(array $splitted) : string {
+        $outputPdf = $this->wrapperFactory->createFpdi();
+        foreach ($splitted as $i => $onePageOcrPdf) {
+            $outputPdf->setContent($onePageOcrPdf);
+            $pageId = $outputPdf->ImportPage(1);
+            $s = $outputPdf->getTemplatesize($pageId);
+            $outputPdf->AddPage($s['orientation'], $s);
+            $outputPdf->useImportedPage($pageId);
+        }
+
+        $outputPdfContent = $outputPdf->Output(null, "S");
+        $outputPdf->closeStreams();
+
+        return $outputPdfContent;
     }
 }

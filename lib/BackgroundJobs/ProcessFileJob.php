@@ -135,7 +135,7 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
             return;
         }
         try {
-            $pdf = $this->ocrFile($node);
+            $ocrFile = $this->ocrFile($node);
         }
         catch(OcrNotPossibleException $ocrNpEx) {
             $this->logger->info('OCR for file ' . $node->getPath() . ' not possible. Message: ' . $ocrNpEx->getMessage());
@@ -151,7 +151,7 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
 
         // Create new file or file-version with OCR-file
         $this->filesView->init($dirPath);
-        $this->filesView->file_put_contents($filePath, $pdf);
+        $this->filesView->file_put_contents($filePath, $ocrFile);
     }
 
     /**

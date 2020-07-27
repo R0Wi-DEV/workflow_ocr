@@ -35,11 +35,14 @@ class ViewWrapper implements IView {
         $this->wrappedView = new View($rootPath);
     }
 
+    /**
+     * @inheritdoc
+     */
     function file_put_contents(string $filePath, string $content) : bool {
         $retVal = $this->wrappedView->file_put_contents($filePath, $content);
         if (is_bool($retVal)) {
             return $retVal;
         }
-        return boolval($retVal);
+        return boolval($retVal); // TODO :: method above returns numeric value (e.g. 10023)
     }
 }
