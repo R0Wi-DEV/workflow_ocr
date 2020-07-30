@@ -14,9 +14,9 @@ jobs:
         with:
           path: workflow_ocr
       - name: Run Makefile
-        run: make appstore
+        run: cd workflow_ocr && make appstore
       - name: Upload artifacts
         uses: actions/upload-artifact@v1
         with:
           name: workflow_ocr.tar.gz 
-          path: build/artifacts/appstore/workflow_ocr.tar.gz      
+          path: workflow_ocr/build/artifacts/appstore/workflow_ocr.tar.gz      
