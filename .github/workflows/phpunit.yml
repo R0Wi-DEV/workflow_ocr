@@ -202,15 +202,8 @@ jobs:
           php -S localhost:8080 &
       - name: PHPUnit
         working-directory: apps/${{ env.APP_NAME }}
-        run: ./vendor/phpunit/phpunit/phpunit -c phpunit.xml --coverage-clover=coverage_unittests.xml --whitelist=lib
+        run: ./vendor/phpunit/phpunit/phpunit -c phpunit.xml
 
       - name: PHPUnit integration
         working-directory: apps/${{ env.APP_NAME }}
-        run: ./vendor/phpunit/phpunit/phpunit -c phpunit.integration.xml --coverage-clover=coverage_integrationtests.xml --whitelist=lib
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1
-        with:
-          files: ./coverage_unittests.xml,./coverage_integrationtests.xml
-          name: codecov-umbrella
-          fail_ci_if_error: true
+        run: ./vendor/phpunit/phpunit/phpunit -c phpunit.integration.xml
