@@ -4,6 +4,7 @@
 ## Table of contents
   * [Setup](#setup)
     + [App installation](#app-installation)
+    + [Nextcloud Cron](#nextcloud-cron)
     + [Backend](#backend)
   * [Usage](#usage)
   * [How it works](#how-it-works)
@@ -19,16 +20,19 @@
 ## Setup
 ### App installation
 First download and install the Nextcloud Workflow OCR app from the official Nexcloud-appstore or by downloading the appropriate tarball from the [releases](https://github.com/R0Wi/nextcloud_workflow_ocr/releases) page. 
-```
+```bash
 cd /var/www/<NEXTCLOUD_INSTALL>/apps
 https://github.com/R0Wi/nextcloud_workflow_ocr/releases/download/<VERSION>/workflow_ocr.tar.gz
 tar -xzvf workflow_ocr.tar.gz
 rm workflow_ocr.tar.gz
 ```
+### Nextcloud Cron
+Since the actual processing of the files is done asynchronously via Nextcloud's cronjob engine, make sure you've properly setup the cron functionallity as described [here](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/background_jobs_configuration.html#cron-jobs). If possible please use the [`crontab`](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/background_jobs_configuration.html#cron) approach for more reliability.
+
 
 ### Backend
 Make sure `Imagick` is installed (the command below is for debian based Linux systems. It might be different on your system.).
-```
+```bash
 sudo apt-get install php-imagick
 ```
 
@@ -63,11 +67,14 @@ You can configure the OCR processing via Nextcloud's workflow engine. Therefore 
 A typical setup for processing incoming PDF-files and adding a text-layer to them might look like this:
 ![PDF setup](doc/img/usual_config_1.jpg "PDF setup")
 
+Note that currently only the events `File created` and `File updated` are supported. Other events will be ignored since they don't really make sense regarding the OCR-process.
+
 ## How it works
 ### General
-Documentation will be added soon.
+![General diagramm](doc/diagramms/general.svg)
 ### PDF
-Documentation will be added soon.
+![PDF diagramm](doc/diagramms/pdf.svg)
+**Note on PDF processing:** since the processing algorithm for PDF files makes heavy use of splitting an recombining the single PDF pages, it could damage certain PDF files or manipulate the content somehow. 
 
 ## Development
 ### Dev setup
@@ -87,12 +94,23 @@ make build
 Don't forget to activate the app via Nextcloud web-gui.
 
 ### Adding a new `OcrProcessor`
-Documentation will be added soon.
+To support a new mimetype for being processed with OCR you have to follow a few easy steps:
+1. Create a new class in `lib/OcrProcessors` and let the class implement the interface `IOcrProcessor`.
+2. Register your implementation in `lib/OcrProcessors/OcrProcessorFactory.php` by adding it to the mapping.
+```php
+private static $mapping = [
+        'application/pdf' => PdfOcrProcessor::class,
+        // Add your class here
+    ];
+```
+That's all. If you now create a new workflow based on your added mimetype, your implementation should be triggered by the app. The return value of `ocrFile(string $fileContent)` will be interpreted as the file content of the scanned file. This one is used to create a new file version in Nextcloud.
 
 ## Limitations
 * **Currently only pdf documents (`application/pdf`) can be used as input.** Other mimetypes are currently ignored but might be added in the future.
 * Pdf metadata (like author, comments, ...) is not available in the converted output pdf document.
 * Currently files are only processed based on workflow-events so there is no batch-mechanism for applying OCR to already existing files. This is a feature which might be added in the future.
+* If you encounter any problems with the OCR processing, you can always restore the original file via Nextcloud's version history.
+![File versions](doc/img/file_versions.jpg)
 
 ## Used libraries & components
 | Name | Version | Link |
