@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -25,53 +26,53 @@ namespace OCA\WorkflowOcr\Wrapper;
 use setasign\Fpdi\Tcpdf\Fpdi;
 
 class FpdiWrapper extends Fpdi implements IFpdi {
-    /** @var resource[] */
-    private $streams = [];
-    /** @var int */
-    private $pageCount;
+	/** @var resource[] */
+	private $streams = [];
+	/** @var int */
+	private $pageCount;
 
-    public function __construct(string $pdfContent = '') {
-        parent::__construct();
+	public function __construct(string $pdfContent = '') {
+		parent::__construct();
 
-        if ($pdfContent !== '') {
-            $this->setContent($pdfContent);
-        }
+		if ($pdfContent !== '') {
+			$this->setContent($pdfContent);
+		}
 
-        $this->setPrintFooter(false);
-        $this->setPrintHeader(false);
-    }
+		$this->setPrintFooter(false);
+		$this->setPrintHeader(false);
+	}
 
-    public function setContent(string $pdfContent) : void {
-        $stream = $this->createStream($pdfContent);
-        $this->pageCount = $this->setSourceFile($stream);
-    }
+	public function setContent(string $pdfContent) : void {
+		$stream = $this->createStream($pdfContent);
+		$this->pageCount = $this->setSourceFile($stream);
+	}
 
-    public function getPageCount(): int {
-        return $this->pageCount;
-    }
+	public function getPageCount(): int {
+		return $this->pageCount;
+	}
 
-    public function closeStreams() : void {
-        foreach ($this->streams as $stream) {
-            fclose($stream);
-        }
-    }
+	public function closeStreams() : void {
+		foreach ($this->streams as $stream) {
+			fclose($stream);
+		}
+	}
 
-    public function import(int $pageNumber) : string {
-        return $this->importPage($pageNumber);
-    }
+	public function import(int $pageNumber) : string {
+		return $this->importPage($pageNumber);
+	}
 
-    private function createStream(string $pdfContent) {
-        $stream = fopen('php://temp', 'r+');
+	private function createStream(string $pdfContent) {
+		$stream = fopen('php://temp', 'r+');
 
-        if (!$stream) {
-            throw new \Exception("Could not open PDF stream");
-        }
+		if (!$stream) {
+			throw new \Exception("Could not open PDF stream");
+		}
 
-        fwrite($stream, $pdfContent);
-        rewind($stream);
+		fwrite($stream, $pdfContent);
+		rewind($stream);
 
-        $this->streams[] = $stream;
+		$this->streams[] = $stream;
 
-        return $stream;
-    }
+		return $stream;
+	}
 }

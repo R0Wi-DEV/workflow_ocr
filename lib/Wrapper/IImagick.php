@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -31,12 +32,12 @@ use Iterator;
  * Interface for wrapping Imagick library
  */
 interface IImagick extends Iterator {
-    function setOption(string $key, string $value): void;
-    function readImageBlob(string $fileContent): void;
-    function setImageFormat(string $targetFormat): void;
-    function getImageBlob(): string;
-    function getImageLength(): int;
-    function getNumberImages(): int;
-    function clear(): void;
-    function destroy() : void;
+	public function setOption(string $key, string $value): void;
+	public function readImageBlob(string $fileContent): void;
+	public function setImageFormat(string $targetFormat): void;
+	public function getImageBlob(): string;
+	public function getImageLength(): int;
+	public function getNumberImages(): int;
+	public function clear(): void;
+	public function destroy() : void;
 }

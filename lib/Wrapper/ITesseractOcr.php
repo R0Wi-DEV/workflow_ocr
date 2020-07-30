@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -29,8 +30,8 @@ namespace OCA\WorkflowOcr\Wrapper;
  * Interface for wrapping Tesseract OCR library
  */
 interface ITesseractOcr {
-    function configFile(string $config) : ITesseractOcr;
-    function lang(array $langs) : ITesseractOcr;
-    function imageData(string $data, int $size) : ITesseractOcr;
-    function run() : string;
+	public function configFile(string $config) : ITesseractOcr;
+	public function lang(array $langs) : ITesseractOcr;
+	public function imageData(string $data, int $size) : ITesseractOcr;
+	public function run() : string;
 }

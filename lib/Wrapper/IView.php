@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -29,6 +30,6 @@ namespace OCA\WorkflowOcr\Wrapper;
  * Interface for wrapping \OC\Files\View
  */
 interface IView {
-    function init(string $rootPath) : void;
-    function file_put_contents(string $filePath, string $content) : bool;
+	public function init(string $rootPath) : void;
+	public function file_put_contents(string $filePath, string $content) : bool;
 }

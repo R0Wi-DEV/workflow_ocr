@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -44,12 +45,10 @@ use OCA\WorkflowOcr\Wrapper\TesseractOcrWrapper;
 use OCA\WorkflowOcr\Wrapper\ViewWrapper;
 use OCA\WorkflowOcr\Wrapper\WrapperFactory;
 use OCP\WorkflowEngine\IManager;
-use OCP\Util;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
 class Application extends \OCP\AppFramework\App {
-
-	const APP_NAME = "workflow_ocr";
+	public const APP_NAME = "workflow_ocr";
 
 	/**
 	 * Application constructor.

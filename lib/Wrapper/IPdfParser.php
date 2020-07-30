@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -31,10 +32,10 @@ use \Smalot\PdfParser\Document;
  * Interface for "wrapping" PdfParser
  */
 interface IPdfParser {
-     /**
-     * @param $content
-     * @return Document
-     * @throws \Exception
-     */
-    function parseContent($pdfContent) : Document;
+	/**
+	 * @param $content
+	 * @return Document
+	 * @throws \Exception
+	 */
+	public function parseContent($pdfContent) : Document;
 }

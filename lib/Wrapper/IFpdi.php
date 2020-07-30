@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -23,13 +24,13 @@ declare(strict_types=1);
 namespace OCA\WorkflowOcr\Wrapper;
 
 interface IFpdi {
-    function setContent(string $pdfContent) : void;
-    function getPageCount(): int;
-    function closeStreams() : void;
-    function import(int $pageNumber) : string;
-    function getTemplateSize(string $tpl);
-    function AddPage($orientation='', $format='', $keepmargins=false, $tocpage=false);
-    function useImportedPage(string $pageId, $x = 0, $y = 0, $width = null, $height = null, $adjustPageSize = false);
-    function Output($name='doc.pdf', $dest='I');
-    function Close();
+	public function setContent(string $pdfContent) : void;
+	public function getPageCount(): int;
+	public function closeStreams() : void;
+	public function import(int $pageNumber) : string;
+	public function getTemplateSize(string $tpl);
+	public function AddPage($orientation='', $format='', $keepmargins=false, $tocpage=false);
+	public function useImportedPage(string $pageId, $x = 0, $y = 0, $width = null, $height = null, $adjustPageSize = false);
+	public function Output($name='doc.pdf', $dest='I');
+	public function Close();
 }

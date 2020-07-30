@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -28,16 +29,16 @@ namespace OCA\WorkflowOcr\Service;
 use OCA\WorkflowOcr\OcrProcessors\IOcrProcessorFactory;
 
 class OcrService implements IOcrService {
-    /** @var IOcrProcessorFactory */
-    private $ocrProcessorFactory;
+	/** @var IOcrProcessorFactory */
+	private $ocrProcessorFactory;
 
-    public function __construct(IOcrProcessorFactory $ocrProcessorFactory) {
-        $this->ocrProcessorFactory = $ocrProcessorFactory;
-    }
+	public function __construct(IOcrProcessorFactory $ocrProcessorFactory) {
+		$this->ocrProcessorFactory = $ocrProcessorFactory;
+	}
 
-    /** @inheritdoc */
-    public function ocrFile(string $mimeType, string $fileContent) : string {
-        $ocrProcessor = $this->ocrProcessorFactory->create($mimeType);
-        return $ocrProcessor->ocrFile($fileContent);
-    }
+	/** @inheritdoc */
+	public function ocrFile(string $mimeType, string $fileContent) : string {
+		$ocrProcessor = $this->ocrProcessorFactory->create($mimeType);
+		return $ocrProcessor->ocrFile($fileContent);
+	}
 }

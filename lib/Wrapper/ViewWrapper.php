@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -28,21 +29,21 @@ namespace OCA\WorkflowOcr\Wrapper;
 use \OC\Files\View;
 
 class ViewWrapper implements IView {
-    /** @var View */
-    private $wrappedView;
+	/** @var View */
+	private $wrappedView;
 
-    function init(string $rootPath) : void {
-        $this->wrappedView = new View($rootPath);
-    }
+	public function init(string $rootPath) : void {
+		$this->wrappedView = new View($rootPath);
+	}
 
-    /**
-     * @inheritdoc
-     */
-    function file_put_contents(string $filePath, string $content) : bool {
-        $retVal = $this->wrappedView->file_put_contents($filePath, $content);
-        if (is_bool($retVal)) {
-            return $retVal;
-        }
-        return boolval($retVal); // TODO :: method above returns numeric value (e.g. 10023)
-    }
+	/**
+	 * @inheritdoc
+	 */
+	public function file_put_contents(string $filePath, string $content) : bool {
+		$retVal = $this->wrappedView->file_put_contents($filePath, $content);
+		if (is_bool($retVal)) {
+			return $retVal;
+		}
+		return boolval($retVal); // TODO :: method above returns numeric value (e.g. 10023)
+	}
 }

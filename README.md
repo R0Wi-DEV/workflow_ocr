@@ -6,6 +6,8 @@
     + [App installation](#app-installation)
     + [Nextcloud Cron](#nextcloud-cron)
     + [Backend](#backend)
+      - [Imagick](#imagick)
+      - [Tesseract](#tesseract)
   * [Usage](#usage)
   * [How it works](#how-it-works)
     + [General](#general)
@@ -15,7 +17,6 @@
     + [Adding a new `OcrProcessor`](#adding-a-new--ocrprocessor-)
   * [Limitations](#limitations)
   * [Used libraries & components](#used-libraries---components)
-
 
 ## Setup
 ### App installation
@@ -31,6 +32,7 @@ Since the actual processing of the files is done asynchronously via Nextcloud's 
 
 
 ### Backend
+#### Imagick
 Make sure `Imagick` is installed (the command below is for debian based Linux systems. It might be different on your system.).
 ```bash
 sudo apt-get install php-imagick
@@ -49,6 +51,7 @@ After editing the file you would usually need to restart your webserver so that 
 
 You can find additional information about `Imagick` [here](https://www.php.net/manual/en/imagick.setup.php).
 
+#### Tesseract
 For the OCR part the commandlinetool `tesseract` is used. Make sure you have the library and appropriate languages installed. I recommend installing the packages from [PPA](https://github.com/tesseract-ocr/tessdoc/blob/master/Home.md) because they're newer than the official package-sources (i tested with `tesseract 4.1.1`). On Ubuntu 18.04 you might type the following for languages english and german:
 ```bash
 # Install PPA
@@ -121,3 +124,4 @@ That's all. If you now create a new workflow based on your added mimetype, your 
 | fpdi | >= 2.3 | https://www.setasign.com/products/fpdi/about/ |
 | fpdf | >= 1.8 | http://www.fpdf.org/ |
 | imagick php extension | >=2 | https://www.php.net/manual/de/book.imagick.php |
+| PHPUnit | >=7.5 | https://phpunit.de/ |

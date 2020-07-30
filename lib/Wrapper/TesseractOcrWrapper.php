@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -28,41 +29,41 @@ namespace OCA\WorkflowOcr\Wrapper;
 use thiagoalessio\TesseractOCR\TesseractOCR;
 
 class TesseractOcrWrapper implements ITesseractOcr {
-    /** @var TesseractOCR */
-    private $wrappedTesseract;
+	/** @var TesseractOCR */
+	private $wrappedTesseract;
 
-    public function __construct() {
-        $this->wrappedTesseract = new TesseractOCR();
-    }
+	public function __construct() {
+		$this->wrappedTesseract = new TesseractOCR();
+	}
 
-    /**
-     * @inheritdoc
-     */
-    public function configFile(string $config) : ITesseractOcr {
-        $this->wrappedTesseract->configFile($config);
-        return $this;
-    }
+	/**
+	 * @inheritdoc
+	 */
+	public function configFile(string $config) : ITesseractOcr {
+		$this->wrappedTesseract->configFile($config);
+		return $this;
+	}
 
-    /**
-     * @inheritdoc
-     */
-    public function lang(array $langs) : ITesseractOcr {
+	/**
+	 * @inheritdoc
+	 */
+	public function lang(array $langs) : ITesseractOcr {
 		call_user_func_array([$this->wrappedTesseract, 'lang'], array_map('trim', $langs));
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * @inheritdoc
-     */
-    public function imageData(string $data, int $size) : ITesseractOcr {
-        $this->wrappedTesseract->imageData($data, $size);
-        return $this;
-    }
-    
-    /**
-     * @inheritdoc
-     */
-    public function run() : string {
-        return $this->wrappedTesseract->run();
-    }
+	/**
+	 * @inheritdoc
+	 */
+	public function imageData(string $data, int $size) : ITesseractOcr {
+		$this->wrappedTesseract->imageData($data, $size);
+		return $this;
+	}
+	
+	/**
+	 * @inheritdoc
+	 */
+	public function run() : string {
+		return $this->wrappedTesseract->run();
+	}
 }

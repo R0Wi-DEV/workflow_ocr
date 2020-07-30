@@ -12,11 +12,11 @@
  */
 
 namespace OCA\WorkflowOcr\Tests\Integration\Controller;
+
 use OCA\WorkflowOcr\AppInfo;
 
 use OCP\AppFramework\App;
 use \PHPUnit\Framework\TestCase;
-
 
 /**
  * This test shows how to make a small Integration Test. Query your class
@@ -24,18 +24,16 @@ use \PHPUnit\Framework\TestCase;
  * against the database
  */
 class AppTest extends TestCase {
+	private $container;
 
-    private $container;
+	public function setUp() {
+		parent::setUp();
+		$app = new App(AppInfo\Application::APP_NAME);
+		$this->container = $app->getContainer();
+	}
 
-    public function setUp() {
-        parent::setUp();
-        $app = new App(AppInfo\Application::APP_NAME);
-        $this->container = $app->getContainer();
-    }
-
-    public function testAppInstalled() {
-        $appManager = $this->container->query('OCP\App\IAppManager');
-        $this->assertTrue($appManager->isInstalled(AppInfo\Application::APP_NAME));
-    }
-
+	public function testAppInstalled() {
+		$appManager = $this->container->query('OCP\App\IAppManager');
+		$this->assertTrue($appManager->isInstalled(AppInfo\Application::APP_NAME));
+	}
 }

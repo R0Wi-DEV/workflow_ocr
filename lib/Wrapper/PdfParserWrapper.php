@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -29,17 +30,17 @@ use \Smalot\PdfParser\Document;
 use \Smalot\PdfParser\Parser;
 
 class PdfParserWrapper implements IPdfParser {
-    /** @var Parser */
-    private $wrappedParser; 
+	/** @var Parser */
+	private $wrappedParser;
 
-    public function __construct() {
-        $this->wrappedParser = new Parser();
-    }
+	public function __construct() {
+		$this->wrappedParser = new Parser();
+	}
 
-    /**
-     * @inheritdoc
-     */
-    public function parseContent($pdfContent) : Document {
-        return $this->wrappedParser->parseContent($pdfContent);
-    }
+	/**
+	 * @inheritdoc
+	 */
+	public function parseContent($pdfContent) : Document {
+		return $this->wrappedParser->parseContent($pdfContent);
+	}
 }

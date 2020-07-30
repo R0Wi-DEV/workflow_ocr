@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -23,11 +24,11 @@ declare(strict_types=1);
 namespace OCA\WorkflowOcr\Wrapper;
 
 class WrapperFactory implements IWrapperFactory {
-    public function createFpdi(string $pdfContent = ''): IFpdi {
-        return new FpdiWrapper($pdfContent);
-    }
+	public function createFpdi(string $pdfContent = ''): IFpdi {
+		return new FpdiWrapper($pdfContent);
+	}
 
-    public function createImagick(): IImagick {
-        return new ImagickWrapper();
-    }
+	public function createImagick(): IImagick {
+		return new ImagickWrapper();
+	}
 }

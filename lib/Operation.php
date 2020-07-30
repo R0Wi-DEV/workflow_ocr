@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -30,7 +31,6 @@ use OCA\WorkflowOcr\AppInfo\Application;
 use OCP\BackgroundJob\IJobList;
 use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\GenericEvent;
-use OCP\Files\IRootFolder;
 use OCP\IL10N;
 use OCP\IUserSession;
 use OCP\WorkflowEngine\IManager;
@@ -70,7 +70,7 @@ class Operation implements ISpecificOperation {
 	}
 
 	public function getDescription(): string {
-		return $this->l->t('OCR processing via workflow'); 
+		return $this->l->t('OCR processing via workflow');
 	}
 
 	public function getIcon(): string {
@@ -82,17 +82,17 @@ class Operation implements ISpecificOperation {
 	}
 
 	public function onEvent(string $eventName, Event $event, IRuleMatcher $ruleMatcher): void {
-		if ($eventName !== '\OCP\Files::postCreate' && $eventName !== '\OCP\Files::postWrite' || 
-			!$event instanceof GenericEvent){
-				$this->logger->debug('Not processing event {eventname} with argument {event}.', 
+		if ($eventName !== '\OCP\Files::postCreate' && $eventName !== '\OCP\Files::postWrite' ||
+			!$event instanceof GenericEvent) {
+			$this->logger->debug('Not processing event {eventname} with argument {event}.',
 					['eventname' => $eventName, 'event' => $event]);
-				return;
-			}
+			return;
+		}
 
 		$node = $event->getSubject();
 
-		if (!$node instanceof \OC\Files\Node\File){
-			$this->logger->debug('Not processing event {eventname} because node is not a file.', 
+		if (!$node instanceof \OC\Files\Node\File) {
+			$this->logger->debug('Not processing event {eventname} because node is not a file.',
 					['eventname' => $eventName]);
 			return;
 		}

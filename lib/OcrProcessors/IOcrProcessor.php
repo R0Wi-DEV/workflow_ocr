@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -20,16 +21,16 @@ declare(strict_types=1);
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OCA\WorkflowOcr\OcrProcessors; 
+namespace OCA\WorkflowOcr\OcrProcessors;
 
 use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
 
 interface IOcrProcessor {
-    /**
-     * Processes OCR on the given file
-     * @var string $fileContent  The file to be processed 
-     * @return string   The processed file as byte string
-     * @throws OcrNotPossibleException
-     */
-    function ocrFile(string $fileContent) : string;
+	/**
+	 * Processes OCR on the given file
+	 * @var string $fileContent  The file to be processed
+	 * @return string   The processed file as byte string
+	 * @throws OcrNotPossibleException
+	 */
+	public function ocrFile(string $fileContent) : string;
 }

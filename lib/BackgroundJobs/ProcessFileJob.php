@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -25,7 +26,6 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\BackgroundJobs;
 
-use Exception;
 use OC\User\NoUserException;
 use OCP\Files\IRootFolder;
 use OCP\Files\NotFoundException;
@@ -40,142 +40,137 @@ use OCP\IUser;
 use OCP\IUserSession;
 
 /**
- * Represents a QuedJob which processes 
+ * Represents a QuedJob which processes
  * a OCR on a single file.
  */
 class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
 
-    /** @var ILogger */
+	/** @var ILogger */
 	protected $logger;
 	/** @var IRootFolder */
-    private $rootFolder;
-    /** @var IUserManager */
-    private $userManager;
-    /** @var IUserSession */
-    private $userSession;
-    /** @var IOcrService */
-    private $ocrService;
-    /** @var IView */
-    private $filesView;
-    
+	private $rootFolder;
+	/** @var IUserManager */
+	private $userManager;
+	/** @var IUserSession */
+	private $userSession;
+	/** @var IOcrService */
+	private $ocrService;
+	/** @var IView */
+	private $filesView;
+	
 	public function __construct(
-        ILogger $logger, 
-        IRootFolder $rootFolder, 
-        IUserManager $userManager, 
-        IUserSession $userSession,
-        IOcrService $ocrService,
-        IView $filesView) {
+		ILogger $logger,
+		IRootFolder $rootFolder,
+		IUserManager $userManager,
+		IUserSession $userSession,
+		IOcrService $ocrService,
+		IView $filesView) {
 		$this->logger = $logger;
-        $this->rootFolder = $rootFolder;
-        $this->userManager = $userManager;
-        $this->userSession = $userSession;
-        $this->ocrService = $ocrService;
-        $this->filesView = $filesView;
-    }
-    
-    /**
+		$this->rootFolder = $rootFolder;
+		$this->userManager = $userManager;
+		$this->userSession = $userSession;
+		$this->ocrService = $ocrService;
+		$this->filesView = $filesView;
+	}
+	
+	/**
 	 * @param mixed $argument
 	 */
 	protected function run($argument) : void {
-        $this->logger->debug('Run ' . self::class . ' job. Argument: {argument}.', ['argument' => $argument]);
-        
-        list($success, $filePath, $uid) = $this->parseArguments($argument);
-        if (!$success) {
-            return;
-        }
+		$this->logger->debug('Run ' . self::class . ' job. Argument: {argument}.', ['argument' => $argument]);
+		
+		list($success, $filePath, $uid) = $this->parseArguments($argument);
+		if (!$success) {
+			return;
+		}
 
-        try {
-            $this->initUserEnvironment($uid);
-            $this->runInternal($filePath);
-        }
-        catch(\Throwable $ex) {
-            $this->logger->logException($ex);
-        }
-        finally {
-            $this->shutdownUserEnvironment($uid);
-        }  
-    }
+		try {
+			$this->initUserEnvironment($uid);
+			$this->runInternal($filePath);
+		} catch (\Throwable $ex) {
+			$this->logger->logException($ex);
+		} finally {
+			$this->shutdownUserEnvironment($uid);
+		}
+	}
 
-    /**
+	/**
 	 * @param mixed $argument
 	 */
-    private function parseArguments($argument) : array {
-        $filePath = $argument['filePath'];
-        $uid = $argument['uid'];
+	private function parseArguments($argument) : array {
+		$filePath = $argument['filePath'];
+		$uid = $argument['uid'];
 
-        if (!isset($filePath)){
-            $this->logger->warning('Variable \'filePath\' not set in ' . self::class . ' method \'parseArguments\'.');
-        }
-        if (!isset($uid)) {
-            $this->logger->warning('Variable \'uid\' not set in ' . self::class . ' method \'parseArguments\'.');
-        }
+		if (!isset($filePath)) {
+			$this->logger->warning('Variable \'filePath\' not set in ' . self::class . ' method \'parseArguments\'.');
+		}
+		if (!isset($uid)) {
+			$this->logger->warning('Variable \'uid\' not set in ' . self::class . ' method \'parseArguments\'.');
+		}
 
-        return [
-            isset($filePath) && isset($uid),
-            $filePath,
-            $uid
-        ];
-    }
+		return [
+			isset($filePath) && isset($uid),
+			$filePath,
+			$uid
+		];
+	}
 
-    /**
-     * @param string $filePath  The file to be processed
-     */
-    private function runInternal(string $filePath) : void {
-        try {
-            /** @var File */
-            $node = $this->rootFolder->get($filePath);
-        }
-        catch(NotFoundException $ex) {
-            $this->logger->warning('Could not process file \'' . $filePath . '\'. File was not found');
-            return;
-        }
+	/**
+	 * @param string $filePath  The file to be processed
+	 */
+	private function runInternal(string $filePath) : void {
+		try {
+			/** @var File */
+			$node = $this->rootFolder->get($filePath);
+		} catch (NotFoundException $ex) {
+			$this->logger->warning('Could not process file \'' . $filePath . '\'. File was not found');
+			return;
+		}
 
-        if (!$node instanceof File) {
-            $this->logger->info('Skipping process for \'' . $filePath . '\'. It is not a file');
-            return;
-        }
-        try {
-            $ocrFile = $this->ocrFile($node);
-        }
-        catch(OcrNotPossibleException $ocrNpEx) {
-            $this->logger->info('OCR for file ' . $node->getPath() . ' not possible. Message: ' . $ocrNpEx->getMessage());
-            return;
-        }
-        catch(OcrProcessorNotFoundException $ocrProcNfEx) {
-            $this->logger->info('OCR processor not found for mimetype ' . $node->getMimeType());
-            return;
-        }
+		if (!$node instanceof File) {
+			$this->logger->info('Skipping process for \'' . $filePath . '\'. It is not a file');
+			return;
+		}
+		try {
+			$ocrFile = $this->ocrFile($node);
+		} catch (OcrNotPossibleException $ocrNpEx) {
+			$this->logger->info('OCR for file ' . $node->getPath() . ' not possible. Message: ' . $ocrNpEx->getMessage());
+			return;
+		} catch (OcrProcessorNotFoundException $ocrProcNfEx) {
+			$this->logger->info('OCR processor not found for mimetype ' . $node->getMimeType());
+			return;
+		}
 
-        $dirPath = dirname($filePath);
-        $filePath = basename($filePath);
+		$dirPath = dirname($filePath);
+		$filePath = basename($filePath);
 
-        // Create new file or file-version with OCR-file
-        $this->filesView->init($dirPath);
-        $this->filesView->file_put_contents($filePath, $ocrFile);
-    }
+		// Create new file or file-version with OCR-file
+		$this->filesView->init($dirPath);
+		$this->filesView->file_put_contents($filePath, $ocrFile);
+	}
 
-    /**
-     * @param string $uid
-     */
-    private function shutdownUserEnvironment(string $uid) : void {
-        $this->userSession->setUser(null);
-    }
+	/**
+	 * @param string $uid
+	 */
+	private function shutdownUserEnvironment(string $uid) : void {
+		$this->userSession->setUser(null);
+	}
 
-    /**
-     * @param string $uid
-     */
-    private function initUserEnvironment(string $uid) : void {
-        /** @var IUser */
-        $user = $this->userManager->get($uid);
-        if (!$user) {
-            throw new NoUserException("User '$user' was not found");
-        }
-        $this->userSession->setUser($user);
+	/**
+	 * @param string $uid
+	 */
+	private function initUserEnvironment(string $uid) : void {
+		/** @var IUser */
+		$user = $this->userManager->get($uid);
+		if (!$user) {
+			throw new NoUserException("User '$user' was not found");
+		}
+		$this->userSession->setUser($user);
 
-        \OC\Files\Filesystem::init($uid, '/' . $uid . '/files');
-    }
+		\OC\Files\Filesystem::init($uid, '/' . $uid . '/files');
+	}
 
-    private function ocrFile(File $file) : string {
-        return $this->ocrService->ocrFile($file->getMimeType(), $file->getContent());
-    }
+	private function ocrFile(File $file) : string {
+		return $this->ocrService->ocrFile($file->getMimeType(), $file->getContent());
+	}
 }

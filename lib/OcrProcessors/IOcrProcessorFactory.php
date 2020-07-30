@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -20,12 +21,12 @@ declare(strict_types=1);
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OCA\WorkflowOcr\OcrProcessors; 
+namespace OCA\WorkflowOcr\OcrProcessors;
 
 interface IOcrProcessorFactory {
-    /**
-     * Creates a IOcrProcessor object for the given mimetype
-     * @return IOcrProcessor|null
-     */
-    function create(string $mimeType) : IOcrProcessor;
+	/**
+	 * Creates a IOcrProcessor object for the given mimetype
+	 * @return IOcrProcessor|null
+	 */
+	public function create(string $mimeType) : IOcrProcessor;
 }

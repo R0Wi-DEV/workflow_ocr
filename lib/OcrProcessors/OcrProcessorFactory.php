@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -26,23 +27,23 @@ use OCA\WorkflowOcr\Exception\OcrProcessorNotFoundException;
 use OCP\AppFramework\IAppContainer;
 
 class OcrProcessorFactory implements IOcrProcessorFactory {
-    private static $mapping = [
-        'application/pdf' => PdfOcrProcessor::class
-    ];
-    
-    /** @var IAppContainer */
-    private $container;
+	private static $mapping = [
+		'application/pdf' => PdfOcrProcessor::class
+	];
+	
+	/** @var IAppContainer */
+	private $container;
 
-    public function __construct(IAppContainer $container) {
-        $this->container = $container;
-    }
+	public function __construct(IAppContainer $container) {
+		$this->container = $container;
+	}
 
-    public function create(string $mimeType) : IOcrProcessor {
-        if (!array_key_exists($mimeType, self::$mapping)) {
-            throw new OcrProcessorNotFoundException($mimeType);
-        }
-        $className = self::$mapping[$mimeType];
+	public function create(string $mimeType) : IOcrProcessor {
+		if (!array_key_exists($mimeType, self::$mapping)) {
+			throw new OcrProcessorNotFoundException($mimeType);
+		}
+		$className = self::$mapping[$mimeType];
 
-        return $this->container->query($className);
-    }
+		return $this->container->query($className);
+	}
 }

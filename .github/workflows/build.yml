@@ -1,0 +1,20 @@
+name: Build artifact
+
+on:
+  push:
+    branches:
+      - master
+      - stable*
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Run Makefile
+        run: make appstore
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: workflow_ocr.tar.gz 
+          path: build/artifacts/appstore/workflow_ocr.tar.gz      

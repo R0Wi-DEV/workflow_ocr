@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -26,89 +27,89 @@ declare(strict_types=1);
 namespace OCA\WorkflowOcr\Wrapper;
 
 class ImagickWrapper implements IImagick {
-    /** @var \Imagick */
-    private $wrappedImagick; 
+	/** @var \Imagick */
+	private $wrappedImagick;
 
-    public function __construct() {
-        $this->wrappedImagick = new \Imagick();
-    }
+	public function __construct() {
+		$this->wrappedImagick = new \Imagick();
+	}
 
-    /**
-     * @inheritdoc
-     */
-    public function setOption(string $key, string $value): void {
-        $this->wrappedImagick->setOption($key, $value);
-    }
-    
-    /**
-     * @inheritdoc
-     */
-    public function readImageBlob(string $fileContent): void {
-        $this->wrappedImagick->readImageBlob($fileContent);
-    }
-    
-    /**
-     * @inheritdoc
-     */
-    public function setImageFormat(string $targetFormat): void {
-        $this->wrappedImagick->setImageFormat($targetFormat);
-    }
-    
-    /**
-     * @inheritdoc
-     */
-    public function getImageBlob(): string {
-        return $this->wrappedImagick->getImageBlob();
-    }
-    
-    /**
-     * @inheritdoc
-     */
-    public function getImageLength(): int {
-        return $this->wrappedImagick->getImageLength();
-    }
+	/**
+	 * @inheritdoc
+	 */
+	public function setOption(string $key, string $value): void {
+		$this->wrappedImagick->setOption($key, $value);
+	}
+	
+	/**
+	 * @inheritdoc
+	 */
+	public function readImageBlob(string $fileContent): void {
+		$this->wrappedImagick->readImageBlob($fileContent);
+	}
+	
+	/**
+	 * @inheritdoc
+	 */
+	public function setImageFormat(string $targetFormat): void {
+		$this->wrappedImagick->setImageFormat($targetFormat);
+	}
+	
+	/**
+	 * @inheritdoc
+	 */
+	public function getImageBlob(): string {
+		return $this->wrappedImagick->getImageBlob();
+	}
+	
+	/**
+	 * @inheritdoc
+	 */
+	public function getImageLength(): int {
+		return $this->wrappedImagick->getImageLength();
+	}
 
-    /**
-     * @inheritdoc
-     */
-    public function getNumberImages(): int {
-        return (int)$this->wrappedImagick->getNumberImages();
-    }
+	/**
+	 * @inheritdoc
+	 */
+	public function getNumberImages(): int {
+		return (int)$this->wrappedImagick->getNumberImages();
+	}
 
-    /**
-     * @inheritdoc
-     */
-    public function clear(): void {
-        $this->wrappedImagick->clear();
-    }
+	/**
+	 * @inheritdoc
+	 */
+	public function clear(): void {
+		$this->wrappedImagick->clear();
+	}
 
-    /**
-     * @return mixed
-     */
-    public function current() {
-        return $this->wrappedImagick->current();
-    }
-    
-    /**
-     * @return scalar
-     */
-    public function key() {
-        return $this->wrappedImagick->key();
-    }
+	/**
+	 * @return mixed
+	 */
+	public function current() {
+		return $this->wrappedImagick->current();
+	}
+	
+	/**
+	 * @return scalar
+	 */
+	public function key() {
+		return $this->wrappedImagick->key();
+	}
 
-    public function next() : void {
-        $this->wrappedImagick->next();
-    }
+	public function next() : void {
+		$this->wrappedImagick->next();
+	}
 
-    public function rewind() : void {
-        $this->wrappedImagick->rewind();
-    }
+	public function rewind() : void {
+		$this->wrappedImagick->rewind();
+	}
 
-    public function valid() : bool {
-        return $this->wrappedImagick->valid();
-    }
+	public function valid() : bool {
+		return $this->wrappedImagick->valid();
+	}
 
-    public function destroy() : void {
-        $this->wrappedImagick->destroy();
-    }
+	public function destroy() : void {
+		$this->wrappedImagick->destroy();
+	}
 }
