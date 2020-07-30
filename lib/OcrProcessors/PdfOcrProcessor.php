@@ -98,13 +98,13 @@ class PdfOcrProcessor implements IOcrProcessor {
      */
     private function splitPdf(string $pdfContent) : array {
         try {
-            $fpdiWrapper = $this->fpdiFactory->create($pdfContent);
+            $fpdiWrapper = $this->wrapperFactory->createFpdi($pdfContent);
             $pagecount = $fpdiWrapper->getPageCount();
             $splitted = [];
 
             for ($i = 1; $i <= $pagecount; $i++) {
-                $onePageFpdiWrapper = $this->fpdiFactory->create($pdfContent);
-                $pageId = $onePageFpdiWrapper->ImportPage($i);
+                $onePageFpdiWrapper = $this->wrapperFactory->createFpdi($pdfContent);
+                $pageId = $onePageFpdiWrapper->import($i);
                 $s = $onePageFpdiWrapper->getTemplatesize($pageId);
                 $onePageFpdiWrapper->AddPage($s['orientation'], $s);
                 $onePageFpdiWrapper->useImportedPage($pageId);
@@ -132,7 +132,7 @@ class PdfOcrProcessor implements IOcrProcessor {
      * Process each PDF page with ocr algorithm except the pages which already
      * contain a text layer.
      */
-    private function ocrPages(array $splittedPdfPages, array $pagesTextInfo) : void {
+    private function ocrPages(array &$splittedPdfPages, array $pagesTextInfo) : void {
         foreach ($splittedPdfPages as $i => $onePagePdf) {
             // Skip pages containing text
             if ($pagesTextInfo[$i] === true) {
@@ -140,6 +140,7 @@ class PdfOcrProcessor implements IOcrProcessor {
             }
 
             try {
+                // Use Imagick to convert the pdf page to png
                 $img = $this->wrapperFactory->createImagick();
                 $img->setOption('density', '300');
                 $img->readImageBlob($onePagePdf);
@@ -148,18 +149,18 @@ class PdfOcrProcessor implements IOcrProcessor {
                 $ocrPdf = $this->processSinglePageImagick($img);
 
                 // Take original page format
-                $original = $this->wrapperFactory->createFpdi($splittedPdfPages[$i]);
-                $pageId = $original->ImportPage(1);
+                $original = $this->wrapperFactory->createFpdi($onePagePdf);
+                $pageId = $original->import(1);
                 $originalSize = $original->getTemplatesize($pageId);
 
                 // Import single PDF page with ocr layer
                 $withOcr = $this->wrapperFactory->createFpdi($ocrPdf);
-                $pageIdOcr = $withOcr->ImportPage(1);
+                $pageIdOcr = $withOcr->import(1);
                 $withOcr->AddPage($originalSize['orientation'], $originalSize);
                 $withOcr->useImportedPage($pageIdOcr, 0, 0, $originalSize['width'], $originalSize['height'], false);
 
                 // Overwrite original page with scanned one
-                $splitted[$i] = $withOcr->Output(null, "S");
+                $splittedPdfPages[$i] = $withOcr->Output(null, "S");
             }
             finally {
                 if (isset($img)) {
@@ -181,6 +182,7 @@ class PdfOcrProcessor implements IOcrProcessor {
         $data = $imagick->getImageBlob();
         $size = $imagick->getImageLength();
 
+        // Use Tesseract for ocr and converting image back to pdf
         $singlePagePdf = $this->tesseract
             ->lang(['deu']) // TODO make configurable?
             ->imageData($data, $size)
@@ -193,19 +195,26 @@ class PdfOcrProcessor implements IOcrProcessor {
     /**
      * Merges single page PDF array into one output PDF.
      */
-    private function mergePdf(array $splitted) : string {
-        $outputPdf = $this->wrapperFactory->createFpdi();
-        foreach ($splitted as $i => $onePageOcrPdf) {
-            $outputPdf->setContent($onePageOcrPdf);
-            $pageId = $outputPdf->ImportPage(1);
-            $s = $outputPdf->getTemplatesize($pageId);
-            $outputPdf->AddPage($s['orientation'], $s);
-            $outputPdf->useImportedPage($pageId);
+    private function mergePdf(array &$splitted) : string {
+        try {
+            $outputPdf = $this->wrapperFactory->createFpdi();
+
+            foreach ($splitted as $i => $onePageOcrPdf) {
+                $outputPdf->setContent($onePageOcrPdf);
+                $pageId = $outputPdf->import(1);
+                $s = $outputPdf->getTemplatesize($pageId);
+                $outputPdf->AddPage($s['orientation'], $s);
+                $outputPdf->useImportedPage($pageId);
+            }
+
+            $outputPdfContent = $outputPdf->Output(null, "S");
+            return $outputPdfContent;
         }
-
-        $outputPdfContent = $outputPdf->Output(null, "S");
-        $outputPdf->closeStreams();
-
-        return $outputPdfContent;
+        finally {
+            if (isset($outputPdf)) { 
+                $outputPdf->Close();
+                $outputPdf->closeStreams();
+            }
+        }
     }
 }

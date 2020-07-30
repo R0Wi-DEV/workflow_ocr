@@ -56,6 +56,10 @@ class FpdiWrapper extends Fpdi implements IFpdi {
         }
     }
 
+    public function import(int $pageNumber) : string {
+        return $this->importPage($pageNumber);
+    }
+
     private function createStream(string $pdfContent) {
         $stream = fopen('php://temp', 'r+');
 

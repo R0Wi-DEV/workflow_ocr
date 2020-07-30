@@ -26,10 +26,10 @@ interface IFpdi {
     function setContent(string $pdfContent) : void;
     function getPageCount(): int;
     function closeStreams() : void;
-    function importPage(int $pageNumber) : string;
+    function import(int $pageNumber) : string;
     function getTemplateSize(string $tpl);
-    function AddPage(string $orientation='', $format='') : void;
-    function useImportedPage(string $pageId, $x = 0, $y = 0, $width = null, $height = null, $adjustPageSize = false) : void;
+    function AddPage($orientation='', $format='', $keepmargins=false, $tocpage=false);
+    function useImportedPage(string $pageId, $x = 0, $y = 0, $width = null, $height = null, $adjustPageSize = false);
     function Output($name='doc.pdf', $dest='I');
-    function Close() : void;
+    function Close();
 }
