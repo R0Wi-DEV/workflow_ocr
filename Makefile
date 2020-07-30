@@ -78,7 +78,6 @@ ifeq (, $(composer))
 	php $(build_tools_directory)/composer.phar update --prefer-dist
 else
 	composer install --prefer-dist
-	composer update --prefer-dist
 endif
 
 # Installs npm dependencies

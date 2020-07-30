@@ -4,7 +4,8 @@
 	<id>workflow_ocr</id>
 	<name>Workflow OCR</name>
 	<summary>OCR processing via workflow</summary>
-	<description>OCR processing via workflow</description>
+	<description>This app makes it possible to process various files via OCR algorithms. 
+	The processing is done via workflow-engine and can therefore easily be customized.</description>
 	<version>0.0.1</version>
 	<licence>agpl</licence>
 	<author mail="ro.windey@gmail.com">Robin Windey</author>
@@ -16,12 +17,11 @@
 	<category>tools</category>
 	<category>organization</category>
 	<category>workflow</category>
-	<!--TODO-->
-	<!--<website>https://github.com/nextcloud/workflow_script</website>
-	<bugs>https://github.com/nextcloud/workflow_script/issues</bugs>
-	<repository type="git">https://github.com/nextcloud/workflow_script.git</repository>
-	<screenshot>https://raw.githubusercontent.com/nextcloud/workflow_script/master/screenshots/flow-ui.png</screenshot>-->
+	<website>https://github.com/R0Wi/nextcloud_workflow_ocr</website>
+	<bugs>https://github.com/R0Wi/nextcloud_workflow_ocr/issues</bugs>
+	<repository type="git">https://github.com/R0Wi/nextcloud_workflow_ocr.git</repository>
+	<!--<screenshot>URL</screenshot>-->
 	<dependencies>
-		<nextcloud min-version="18" max-version="19" />
+		<nextcloud min-version="19" max-version="19" />
 	</dependencies>
 </info>

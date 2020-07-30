@@ -29,23 +29,6 @@
 					width: '100%'
 				},
 			}, [
-				/*createElement('input', {
-					attrs: {
-						type: 'text'
-					},
-					domProps: {
-						value: self.value,
-						required: 'true'
-					},
-					style: {
-						width: '100%'
-					},
-					on: {
-						input: function (event) {
-							self.$emit('input', event.target.value)
-						}
-					}
-				}),*/
 				createElement('a', {
 					attrs: {
 						href: self.link
@@ -61,8 +44,8 @@
 		},
 		data: function () {
 			return {
-				description: t('workflow_ocr', 'Description will be added soon') + '↗', // TODO
-				//link: 'https://github.com/nextcloud/workflow_script#placeholders'
+				description: t('workflow_ocr', 'Go to documentation') + '↗', 
+				link: 'https://github.com/R0Wi/nextcloud_workflow_ocr/blob/master/README.md'
 			}
 		}
 	};

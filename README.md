@@ -1,32 +1,32 @@
 
-# Nextcloud Workflow OCR App
+# Nextcloud Workflow OCR app
 
 ## Table of contents
-   * [Nextcloud Workflow OCR App](#nextcloud-workflow-ocr-app)
-      * [Setup](#setup)
-         * [App installation](#app-installation)
-            * [Backend Docker (recommended)](#backend-docker-recommended)
-            * [Backend manual](#backend-manual)
-         * [App settings](#app-settings)
-      * [Usage](#usage)
-      * [How it works](#how-it-works)
-         * [General](#general)
-         * [PDF](#pdf)
-      * [Limitations](#limitations)
-      * [Used libraries](#used-libraries)
+  * [Setup](#setup)
+    + [App installation](#app-installation)
+    + [Backend](#backend)
+  * [Usage](#usage)
+  * [How it works](#how-it-works)
+    + [General](#general)
+    + [PDF](#pdf)
+  * [Development](#development)
+    + [Dev setup](#dev-setup)
+    + [Adding a new `OcrProcessor`](#adding-a-new--ocrprocessor-)
+  * [Limitations](#limitations)
+  * [Used libraries & components](#used-libraries---components)
+
 
 ## Setup
 ### App installation
-First download and install the Nextcloud app (**TODO**). Alternatively you can install the app by cloning this repository into the Nextcloud apps folder and installing [composer](https://getcomposer.org/download/) dependencies.
+First download and install the Nextcloud Workflow OCR app from the official Nexcloud-appstore or by downloading the appropriate tarball from the [releases](https://github.com/R0Wi/nextcloud_workflow_ocr/releases) page. 
 ```
 cd /var/www/<NEXTCLOUD_INSTALL>/apps
-git clone https://github.com/R0Wi/nextcloud_workflow_ocr.git
-cd workflow_ocr
-composer install
+https://github.com/R0Wi/nextcloud_workflow_ocr/releases/download/<VERSION>/workflow_ocr.tar.gz
+tar -xzvf workflow_ocr.tar.gz
+rm workflow_ocr.tar.gz
 ```
-#### Backend Docker (recommended)
-**---not implemented yet---**
-#### Backend manual
+
+### Backend
 Make sure `Imagick` is installed (the command below is for debian based Linux systems. It might be different on your system.).
 ```
 sudo apt-get install php-imagick
@@ -45,30 +45,54 @@ After editing the file you would usually need to restart your webserver so that 
 
 You can find additional information about `Imagick` [here](https://www.php.net/manual/en/imagick.setup.php).
 
-For the OCR part the commandlinetool `tesseract` is used. Make sure you have the library and appropriate languages installed. I recommend installing the packages from [PPA](https://github.com/tesseract-ocr/tessdoc/blob/master/Home.md) because they're newer (i tested with `tesseract 4.1.1`). On debian based systems you might type the following for languages english and german:
-```
+For the OCR part the commandlinetool `tesseract` is used. Make sure you have the library and appropriate languages installed. I recommend installing the packages from [PPA](https://github.com/tesseract-ocr/tessdoc/blob/master/Home.md) because they're newer than the official package-sources (i tested with `tesseract 4.1.1`). On Ubuntu 18.04 you might type the following for languages english and german:
+```bash
+# Install PPA
+sudo add-apt-repository ppa:alex-p/tesseract-ocr
+sudo apt-get update
+
+# Install Tesseract and language-files
 sudo apt-get install tesseract-ocr tesseract-ocr-deu tesseract-ocr-eng
 ```
 You can read more about the installation of `tesseract` [here](https://github.com/tesseract-ocr/tesseract/wiki).
 
-### App settings
-Make sure the app settings are configured correctly depending on your backend configuration.
-
-TODO Screenshot, how to reach menu...
-
 ## Usage
-TODO
+You can configure the OCR processing via Nextcloud's workflow engine. Therefore configure a new flow via `Settings -> Flow -> Add new flow` (if you don't see `OCR file` here the app isn't installed properly or you forgot to activate it).
+![Usage setup](doc/img/usage_1.jpg "Usage")
+
+A typical setup for processing incoming PDF-files and adding a text-layer to them might look like this:
+![PDF setup](doc/img/usual_config_1.jpg "PDF setup")
 
 ## How it works
 ### General
-TODO
+Documentation will be added soon.
 ### PDF
-TODO
+Documentation will be added soon.
+
+## Development
+### Dev setup
+Tools and packages you need for development:
+* `make`
+* [`composer`](https://getcomposer.org/download/) (Will be automatically installed when running `make build`)
+* Properly setup `php`-environment
+* Webserver (like Apache)
+
+You can then build and install the app by cloning this repository into the Nextcloud apps folder and running `make build`.
+```bash
+cd /var/www/<NEXTCLOUD_INSTALL>/apps
+git clone https://github.com/R0Wi/nextcloud_workflow_ocr.git
+cd workflow_ocr
+make build
+```
+Don't forget to activate the app via Nextcloud web-gui.
+
+### Adding a new `OcrProcessor`
+Documentation will be added soon.
 
 ## Limitations
-* Pdf metadata (like author, comments, ...) is not available in the converted output pdf document
-* Currently only pdf documents can be used as input
-
+* **Currently only pdf documents (`application/pdf`) can be used as input.** Other mimetypes are currently ignored but might be added in the future.
+* Pdf metadata (like author, comments, ...) is not available in the converted output pdf document.
+* Currently files are only processed based on workflow-events so there is no batch-mechanism for applying OCR to already existing files. This is a feature which might be added in the future.
 
 ## Used libraries & components
 | Name | Version | Link |

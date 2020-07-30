@@ -66,11 +66,11 @@ class Operation implements ISpecificOperation {
 	}
 
 	public function getDisplayName(): string {
-		return $this->l->t('OCR file'); // TODO
+		return $this->l->t('OCR file');
 	}
 
 	public function getDescription(): string {
-		return $this->l->t('OCR processing via workflow'); // TODO
+		return $this->l->t('OCR processing via workflow'); 
 	}
 
 	public function getIcon(): string {
