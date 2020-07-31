@@ -73,6 +73,7 @@ jobs:
         uses: codecov/codecov-action@v1.0.12
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./apps/${{ env.APP_NAME }}/coverage_unittests.xml,./apps/${{ env.APP_NAME }}/coverage_integrationtests.xml
+          file: ./apps/${{ env.APP_NAME }}/coverage_unittests.xml
+          #files: ./apps/${{ env.APP_NAME }}/coverage_unittests.xml,./apps/${{ env.APP_NAME }}/coverage_integrationtests.xml
           name: codecov-umbrella
           fail_ci_if_error: true
