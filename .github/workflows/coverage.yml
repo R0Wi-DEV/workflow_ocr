@@ -70,13 +70,11 @@ jobs:
         working-directory: apps/${{ env.APP_NAME }}
         run: ./vendor/phpunit/phpunit/phpunit -c phpunit.integration.xml --coverage-clover=coverage_integrationtests.xml --whitelist=lib
 
-      - name: List files (debug)
-        run: ls -lah  
-        
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1.0.12
+        working-directory: apps/${{ env.APP_NAME }}
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: coverage_unittests.xml,coverage_integrationtests.xml
+          files: ./coverage_unittests.xml,./coverage_integrationtests.xml
           name: codecov-umbrella
           fail_ci_if_error: true
