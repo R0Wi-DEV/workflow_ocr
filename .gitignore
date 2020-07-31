@@ -2,3 +2,4 @@ vendor
 .php_cs.cache
 coverage*.xml
 build
+.phpunit.result.cache

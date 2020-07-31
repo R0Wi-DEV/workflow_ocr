@@ -1,7 +1,6 @@
 name: PHPUnit-Coverage
 
 on:
-  pull_request:
   push:
     branches:
       - master
@@ -64,11 +63,11 @@ jobs:
           php -S localhost:8080 &
       - name: PHPUnit
         working-directory: apps/${{ env.APP_NAME }}
-        run: ./vendor/phpunit/phpunit/phpunit -c phpunit.xml --coverage-clover=coverage_unittests.xml --whitelist=lib
+        run: ./vendor/phpunit/phpunit/phpunit -c phpunit.xml
 
       - name: PHPUnit integration
         working-directory: apps/${{ env.APP_NAME }}
-        run: ./vendor/phpunit/phpunit/phpunit -c phpunit.integration.xml --coverage-clover=coverage_integrationtests.xml --whitelist=lib
+        run: ./vendor/phpunit/phpunit/phpunit -c phpunit.integration.xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1.0.12

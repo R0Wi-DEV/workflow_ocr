@@ -8,7 +8,7 @@
  *
  * @author Robin Windey <ro.windey@gmail.com>
  *
- * @copyright Robin Windey 2019
+ * @copyright Robin Windey 2020
  */
 
 namespace OCA\WorkflowOcr\Tests\Integration\Controller;
@@ -26,7 +26,7 @@ use \PHPUnit\Framework\TestCase;
 class AppTest extends TestCase {
 	private $container;
 
-	public function setUp() {
+	protected function setUp() : void {
 		parent::setUp();
 		$app = new App(AppInfo\Application::APP_NAME);
 		$this->container = $app->getContainer();

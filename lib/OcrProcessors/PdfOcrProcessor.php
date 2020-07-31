@@ -182,7 +182,7 @@ class PdfOcrProcessor implements IOcrProcessor {
 
 		// Use Tesseract for ocr and converting image back to pdf
 		$singlePagePdf = $this->tesseract
-			->lang(['deu']) // TODO make configurable?
+			->lang(['deu', 'eng']) // TODO make configurable?
 			->imageData($data, $size)
 			->configFile('pdf')
 			->run();

@@ -129,4 +129,4 @@ That's all. If you now create a new workflow based on your added mimetype, your 
 | fpdi | >= 2.3 | https://www.setasign.com/products/fpdi/about/ |
 | fpdf | >= 1.8 | http://www.fpdf.org/ |
 | imagick php extension | >=2 | https://www.php.net/manual/de/book.imagick.php |
-| PHPUnit | >=7.5 | https://phpunit.de/ |
+| PHPUnit | >=8.0 | https://phpunit.de/ |
