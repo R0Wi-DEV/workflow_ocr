@@ -31,24 +31,24 @@ use PHPUnit\Framework\TestCase;
 use OCP\AppFramework\IAppContainer;
 
 class OcrProcessorFactoryTest extends TestCase {
-    /** @var IAppContainer */
-    private $appContainer;
+	/** @var IAppContainer */
+	private $appContainer;
 
-    protected function setUp() : void {
+	protected function setUp() : void {
 		parent::setUp();
-        $app = new Application();
-        $this->appContainer = $app->getContainer();
-    }    
-    
-    public function testReturnsPdfProcessor() {
-        $factory = new OcrProcessorFactory($this->appContainer);
-        $processor = $factory->create('application/pdf');
-        $this->assertInstanceOf(PdfOcrProcessor::class, $processor);
-    }
+		$app = new Application();
+		$this->appContainer = $app->getContainer();
+	}
+	
+	public function testReturnsPdfProcessor() {
+		$factory = new OcrProcessorFactory($this->appContainer);
+		$processor = $factory->create('application/pdf');
+		$this->assertInstanceOf(PdfOcrProcessor::class, $processor);
+	}
 
-    public function testThrowsNotFoundExceptionOnInvalidMimeType() {
-        $this->expectException(OcrProcessorNotFoundException::class);
-        $factory = new OcrProcessorFactory($this->appContainer);
-        $factory->create('no/mimetype');
-    }
+	public function testThrowsNotFoundExceptionOnInvalidMimeType() {
+		$this->expectException(OcrProcessorNotFoundException::class);
+		$factory = new OcrProcessorFactory($this->appContainer);
+		$factory->create('no/mimetype');
+	}
 }
