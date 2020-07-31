@@ -1,5 +1,10 @@
 
 # Nextcloud Workflow OCR app
+![PHPUnit](https://github.com/R0Wi/nextcloud_workflow_ocr/workflows/PHPUnit/badge.svg)
+[![codecov](https://codecov.io/gh/R0Wi/nextcloud_workflow_ocr/branch/master/graph/badge.svg)](https://codecov.io/gh/R0Wi/nextcloud_workflow_ocr)
+![Lint](https://github.com/R0Wi/nextcloud_workflow_ocr/workflows/Lint/badge.svg)
+[![Generic badge](https://img.shields.io/github/v/release/R0Wi/nextcloud_workflow_ocr)](https://github.com/R0Wi/nextcloud_workflow_ocr/releases)
+[![Generic badge](https://img.shields.io/badge/Nextcloud-19-orange)](https://github.com/nextcloud/server)
 
 ## Table of contents
   * [Setup](#setup)
