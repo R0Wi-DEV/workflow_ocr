@@ -71,8 +71,8 @@ jobs:
         run: ./vendor/phpunit/phpunit/phpunit -c phpunit.integration.xml --coverage-clover=coverage_integrationtests.xml --whitelist=lib
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1.0.12
         working-directory: apps/${{ env.APP_NAME }}
+        uses: codecov/codecov-action@v1.0.12
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage_unittests.xml,./coverage_integrationtests.xml
