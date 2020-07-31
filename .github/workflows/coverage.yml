@@ -71,4 +71,4 @@ jobs:
 
       - name: Upload coverage to Codecov
         working-directory: ./apps/${{ env.APP_NAME }}
-        run: curl -s https://codecov.io/bash | bash -s - -t ${{ secrets.CODECOV_TOKEN }} -F php -f coverage_unittests.xml -Z
+        run: curl -s https://codecov.io/bash | bash -s - -t ${{ secrets.CODECOV_TOKEN }} -F php -f coverage_unittests.xml -f coverage_integrationtests.xml -Z
