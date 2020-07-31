@@ -70,10 +70,5 @@ jobs:
         run: ./vendor/phpunit/phpunit/phpunit -c phpunit.integration.xml
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1.0.12
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./apps/${{ env.APP_NAME }}/coverage_unittests.xml
-          #files: ./apps/${{ env.APP_NAME }}/coverage_unittests.xml,./apps/${{ env.APP_NAME }}/coverage_integrationtests.xml
-          name: codecov-umbrella
-          fail_ci_if_error: true
+        working-directory: ./apps/${{ env.APP_NAME }}
+        run: curl -s https://codecov.io/bash | bash -s - -t ${{ secrets.CODECOV_TOKEN }} -F php -f coverage_unittests.xml -Z
