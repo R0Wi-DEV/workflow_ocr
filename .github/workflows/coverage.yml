@@ -73,6 +73,7 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1.0.12
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage_unittests.xml,./coverage_integrationtests.xml
           name: codecov-umbrella
           fail_ci_if_error: true
