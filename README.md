@@ -77,6 +77,12 @@ A typical setup for processing incoming PDF-files and adding a text-layer to the
 
 Note that currently only the events `File created` and `File updated` are supported. Other events will be ignored since they don't really make sense regarding the OCR-process.
 
+To **test** if your file gets processed properly you can do the following steps:
+1. Upload a new file which meets the criteria you've recently defined in the workflow creation.
+2. Go to your servers console and change into the Nextcloud installation directory (e.g. `cd /var/www/html/nextcloud`).
+3. Execute the cronjob file manually by typing `php cron.php` (this is the command you usually setup to be executed by linux crontab).
+4. If everything went fine you should see that there was a new version of your file created. If you uploaded a PDF file you should now be able to select text in it if it contained at least one image with scanned text.
+
 ## How it works
 ### General
 ![General diagramm](doc/diagramms/general.svg)
