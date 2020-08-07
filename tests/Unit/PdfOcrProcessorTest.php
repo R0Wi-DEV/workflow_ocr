@@ -177,6 +177,10 @@ class PdfOcrProcessorTest extends TestCase {
 			->method('getPages')
 			->with()
 			->willReturn($pageArray);
+		$fakePdfDocument->expects($this->once())
+			->method('getDetails')
+			->with()
+			->willReturn(array());
 
 		return $fakePdfDocument;
 	}

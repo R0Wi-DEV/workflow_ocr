@@ -121,7 +121,6 @@ That's all. If you now create a new workflow based on your added mimetype, your 
 
 ## Limitations
 * **Currently only pdf documents (`application/pdf`) can be used as input.** Other mimetypes are currently ignored but might be added in the future.
-* Pdf metadata (like author, comments, ...) is not available in the converted output pdf document.
 * Currently files are only processed based on workflow-events so there is no batch-mechanism for applying OCR to already existing files. This is a feature which might be added in the future.
 * If you encounter any problems with the OCR processing, you can always restore the original file via Nextcloud's version history.
 ![File versions](doc/img/file_versions.jpg)

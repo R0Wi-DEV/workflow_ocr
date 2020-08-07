@@ -44,8 +44,15 @@ class PdfOcrProcessor implements IOcrProcessor {
 	}
 
 	public function ocrFile(string $fileContent): string {
-		$pagesTextInfo = $this->getPagesTextInfo($fileContent);
-		
+		// Parse the content of the given file as PDF
+		$pdfContent = $this->pdfParser->parseContent($fileContent);
+
+		// Get metadata from parsed PDF
+		$metadata = $this->getMetadata($pdfContent);
+
+		// Get information of all PDF pages if they contain text or not
+		$pagesTextInfo = $this->getPagesTextInfo($pdfContent);
+
 		// Check if at least one page in PDF has no text
 		$this->ensureCanOcrPdf($pagesTextInfo);
 
@@ -56,19 +63,29 @@ class PdfOcrProcessor implements IOcrProcessor {
 		$this->ocrPages($splitted, $pagesTextInfo);
 
 		// Merge results
-		return $this->mergePdf($splitted);
+		return $this->mergePdf($splitted, $metadata);
+	}
+
+	/*
+	 * Returns an associative array (metadata name (string) => metadata value (string)) with PDF
+	 * document information.
+	 */
+	private function getMetadata(&$pdfContent) : array {
+		// Get metadata from PDF content
+		$metadata = $pdfContent->getDetails();
+
+		// Convert metadata either from Windows-1252 or Mac encoding to UTF-8
+		return mb_convert_encoding($metadata, "UTF-8", "Windows-1252, Mac");
 	}
 
 	/**
 	 * Returns an associative array (index (int) => containsText (bool)) with information, if the
 	 * page contains text or not. Index starts a 1.
 	 */
-	private function getPagesTextInfo(string $pdfContent) : array {
-		$pdf = $this->pdfParser->parseContent($pdfContent);
-
+	private function getPagesTextInfo(&$pdfContent) : array {
 		$tmpCnt = 1;
 		$indices = [];
-		$pages = $pdf->getPages();
+		$pages = $pdfContent->getPages();
 
 		foreach ($pages as $page) {
 			$txt = $page->getText();
@@ -193,7 +210,7 @@ class PdfOcrProcessor implements IOcrProcessor {
 	/**
 	 * Merges single page PDF array into one output PDF.
 	 */
-	private function mergePdf(array &$splitted) : string {
+	private function mergePdf(array &$splitted, array $metadata) : string {
 		try {
 			$outputPdf = $this->wrapperFactory->createFpdi();
 
@@ -205,6 +222,25 @@ class PdfOcrProcessor implements IOcrProcessor {
 				$outputPdf->useImportedPage($pageId);
 			}
 
+			// Set metadata in merged PDF
+			// Note that Producer and CreationDate is overwritten by FPDF and ModDate is not set
+			if (array_key_exists("Title", $metadata)) {
+				$outputPdf->SetTitle($metadata['Title'], true);
+			}
+			if (array_key_exists("Author", $metadata)) {
+				$outputPdf->SetAuthor($metadata['Author'], true);
+			}
+			if (array_key_exists("Subject", $metadata)) {
+				$outputPdf->SetSubject($metadata['Subject'], true);
+			}
+			if (array_key_exists("Keywords", $metadata)) {
+				$outputPdf->SetKeywords($metadata['Keywords'], true);
+			}
+			if (array_key_exists("Creator", $metadata)) {
+				$outputPdf->SetCreator($metadata['Creator'], true);
+			}
+
+			// Output content of merged PDF as string
 			$outputPdfContent = $outputPdf->Output(null, "S");
 			return $outputPdfContent;
 		} finally {
