@@ -180,7 +180,7 @@ class PdfOcrProcessorTest extends TestCase {
 		$fakePdfDocument->expects($this->once())
 			->method('getDetails')
 			->with()
-			->willReturn(array());
+			->willReturn([]);
 
 		return $fakePdfDocument;
 	}
