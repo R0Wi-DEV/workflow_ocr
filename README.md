@@ -56,6 +56,8 @@ After editing the file you would usually need to restart your webserver so that 
 
 You can find additional information about `Imagick` [here](https://www.php.net/manual/en/imagick.setup.php).
 
+> :warning: **Note that `Imagick` requires [Ghostscript](https://www.ghostscript.com) to properly read PDF files. You can find more details in the section [Supported Image Formats](https://imagemagick.org/script/formats.php#supported) of `Imagick`'s documentation.**
+
 #### Tesseract
 For the OCR part the commandlinetool `tesseract` is used. Make sure you have the library and appropriate languages installed. I recommend installing the packages from [PPA](https://github.com/tesseract-ocr/tessdoc/blob/master/Home.md) because they're newer than the official package-sources (i tested with `tesseract 4.1.1`). On Ubuntu 18.04 you might type the following for languages english and german:
 ```bash
@@ -134,5 +136,6 @@ That's all. If you now create a new workflow based on your added mimetype, your 
 | pdfparser | >= 0.15.0 | https://www.pdfparser.org/ |
 | fpdi | >= 2.3 | https://www.setasign.com/products/fpdi/about/ |
 | fpdf | >= 1.8 | http://www.fpdf.org/ |
-| imagick php extension | >=2 | https://www.php.net/manual/de/book.imagick.php |
-| PHPUnit | >=8.0 | https://phpunit.de/ |
+| imagick php extension | >= 2 | https://www.php.net/manual/de/book.imagick.php |
+| Ghostscript | >= 9.0 | https://www.ghostscript.com/ |
+| PHPUnit | >= 8.0 | https://phpunit.de/ |
