@@ -6,17 +6,18 @@ on:
       - master
       - stable*
 
+env:
+  APP_NAME: workflow_ocr
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          path: workflow_ocr
       - name: Run Makefile
-        run: cd workflow_ocr && make appstore
+        run: cd ${{ env.APP_NAME }} && make appstore
       - name: Upload artifacts
         uses: actions/upload-artifact@v1
         with:
-          name: workflow_ocr.tar.gz 
-          path: workflow_ocr/build/artifacts/appstore/workflow_ocr.tar.gz      
+          name: ${{ env.APP_NAME }}.tar.gz 
+          path: ${{ env.APP_NAME }}/build/artifacts/appstore/${{ env.APP_NAME }}.tar.gz      
