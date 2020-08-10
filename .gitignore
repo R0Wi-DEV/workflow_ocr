@@ -3,3 +3,4 @@ vendor
 coverage*.xml
 build
 .phpunit.result.cache
+.vscode

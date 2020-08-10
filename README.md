@@ -1,9 +1,9 @@
 
 # Nextcloud Workflow OCR app
-![PHPUnit](https://github.com/R0Wi/nextcloud_workflow_ocr/workflows/PHPUnit/badge.svg)
-[![codecov](https://codecov.io/gh/R0Wi/nextcloud_workflow_ocr/branch/master/graph/badge.svg)](https://codecov.io/gh/R0Wi/nextcloud_workflow_ocr)
-![Lint](https://github.com/R0Wi/nextcloud_workflow_ocr/workflows/Lint/badge.svg)
-[![Generic badge](https://img.shields.io/github/v/release/R0Wi/nextcloud_workflow_ocr)](https://github.com/R0Wi/nextcloud_workflow_ocr/releases)
+![PHPUnit](https://github.com/R0Wi/workflow_ocr/workflows/PHPUnit/badge.svg)
+[![codecov](https://codecov.io/gh/R0Wi/workflow_ocr/branch/master/graph/badge.svg)](https://codecov.io/gh/R0Wi/workflow_ocr)
+![Lint](https://github.com/R0Wi/workflow_ocr/workflows/Lint/badge.svg)
+[![Generic badge](https://img.shields.io/github/v/release/R0Wi/workflow_ocr)](https://github.com/R0Wi/workflow_ocr/releases)
 [![Generic badge](https://img.shields.io/badge/Nextcloud-19-orange)](https://github.com/nextcloud/server)
 
 ## Table of contents
@@ -25,10 +25,10 @@
 
 ## Setup
 ### App installation
-First download and install the Nextcloud Workflow OCR app from the official Nexcloud-appstore or by downloading the appropriate tarball from the [releases](https://github.com/R0Wi/nextcloud_workflow_ocr/releases) page. 
+First download and install the Nextcloud Workflow OCR app from the official Nexcloud-appstore or by downloading the appropriate tarball from the [releases](https://github.com/R0Wi/workflow_ocr/releases) page. 
 ```bash
 cd /var/www/<NEXTCLOUD_INSTALL>/apps
-wget https://github.com/R0Wi/nextcloud_workflow_ocr/releases/download/<VERSION>/workflow_ocr.tar.gz
+wget https://github.com/R0Wi/workflow_ocr/releases/download/<VERSION>/workflow_ocr.tar.gz
 tar -xzvf workflow_ocr.tar.gz
 rm workflow_ocr.tar.gz
 ```
@@ -115,7 +115,7 @@ Tools and packages you need for development:
 You can then build and install the app by cloning this repository into the Nextcloud apps folder and running `make build`.
 ```bash
 cd /var/www/<NEXTCLOUD_INSTALL>/apps
-git clone https://github.com/R0Wi/nextcloud_workflow_ocr.git workflow_ocr
+git clone https://github.com/R0Wi/workflow_ocr.git workflow_ocr
 cd workflow_ocr
 make build
 ```
