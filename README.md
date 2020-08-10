@@ -28,7 +28,7 @@
 First download and install the Nextcloud Workflow OCR app from the official Nexcloud-appstore or by downloading the appropriate tarball from the [releases](https://github.com/R0Wi/nextcloud_workflow_ocr/releases) page. 
 ```bash
 cd /var/www/<NEXTCLOUD_INSTALL>/apps
-https://github.com/R0Wi/nextcloud_workflow_ocr/releases/download/<VERSION>/workflow_ocr.tar.gz
+wget https://github.com/R0Wi/nextcloud_workflow_ocr/releases/download/<VERSION>/workflow_ocr.tar.gz
 tar -xzvf workflow_ocr.tar.gz
 rm workflow_ocr.tar.gz
 ```
