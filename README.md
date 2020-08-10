@@ -115,7 +115,7 @@ Tools and packages you need for development:
 You can then build and install the app by cloning this repository into the Nextcloud apps folder and running `make build`.
 ```bash
 cd /var/www/<NEXTCLOUD_INSTALL>/apps
-git clone https://github.com/R0Wi/nextcloud_workflow_ocr.git
+git clone https://github.com/R0Wi/nextcloud_workflow_ocr.git workflow_ocr
 cd workflow_ocr
 make build
 ```
