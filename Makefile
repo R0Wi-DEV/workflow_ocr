@@ -164,3 +164,12 @@ appstore:
 test: composer
 	$(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.xml
 	$(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.integration.xml
+
+.PHONY: lint
+lint: composer
+	composer run lint
+	composer run cs:check
+
+.PHONY: lint-fix
+lint-fix: composer
+	composer run cs:fix
