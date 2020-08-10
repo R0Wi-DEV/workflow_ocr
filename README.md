@@ -56,6 +56,8 @@ After editing the file you would usually need to restart your webserver so that 
 
 You can find additional information about `Imagick` [here](https://www.php.net/manual/en/imagick.setup.php).
 
+> :warning: **Note that `Imagick` requires [Ghostscript](https://www.ghostscript.com) to properly read PDF files. You can find more details in the section [Supported Image Formats](https://imagemagick.org/script/formats.php#supported) of `Imagick`'s documentation.**
+
 #### Tesseract
 For the OCR part the commandlinetool `tesseract` is used. Make sure you have the library and appropriate languages installed. I recommend installing the packages from [PPA](https://github.com/tesseract-ocr/tessdoc/blob/master/Home.md) because they're newer than the official package-sources (i tested with `tesseract 4.1.1`). On Ubuntu 18.04 you might type the following for languages english and german:
 ```bash
@@ -70,10 +72,16 @@ You can read more about the installation of `tesseract` [here](https://github.co
 
 ## Usage
 You can configure the OCR processing via Nextcloud's workflow engine. Therefore configure a new flow via `Settings -> Flow -> Add new flow` (if you don't see `OCR file` here the app isn't installed properly or you forgot to activate it).
-![Usage setup](doc/img/usage_1.jpg "Usage")
+
+<p align="center">
+  <img width="50%" src="doc/img/usage_1.jpg" alt="Usage setup">
+</p>
 
 A typical setup for processing incoming PDF-files and adding a text-layer to them might look like this:
-![PDF setup](doc/img/usual_config_1.jpg "PDF setup")
+
+<p align="center">
+  <img width="75%" src="doc/img/usual_config_1.jpg" alt="PDF setup">
+</p>
 
 Note that currently only the events `File created` and `File updated` are supported. Other events will be ignored since they don't really make sense regarding the OCR-process.
 
@@ -85,9 +93,15 @@ To **test** if your file gets processed properly you can do the following steps:
 
 ## How it works
 ### General
-![General diagramm](doc/diagramms/general.svg)
+<p align="center">
+  <img width="50%" src="doc/diagramms/general.svg" alt="General diagramm">
+</p>
+
 ### PDF
-![PDF diagramm](doc/diagramms/pdf.svg)
+<p align="center">
+  <img width="100%" src="doc/diagramms/pdf.svg" alt="PDF diagramm">
+</p>
+
 **Note on PDF processing:** since the processing algorithm for PDF files makes heavy use of splitting an recombining the single PDF pages, it could damage certain PDF files or manipulate the content somehow. 
 
 ## Development
@@ -124,7 +138,9 @@ That's all. If you now create a new workflow based on your added mimetype, your 
 * Pdf metadata (like author, comments, ...) is not available in the converted output pdf document.
 * Currently files are only processed based on workflow-events so there is no batch-mechanism for applying OCR to already existing files. This is a feature which might be added in the future.
 * If you encounter any problems with the OCR processing, you can always restore the original file via Nextcloud's version history.
-![File versions](doc/img/file_versions.jpg)
+  <p align="center">
+    <img width="75%" src="doc/img/file_versions.jpg" alt="File versions">
+  </p>
 
 ## Used libraries & components
 | Name | Version | Link |
@@ -134,5 +150,6 @@ That's all. If you now create a new workflow based on your added mimetype, your 
 | pdfparser | >= 0.15.0 | https://www.pdfparser.org/ |
 | fpdi | >= 2.3 | https://www.setasign.com/products/fpdi/about/ |
 | fpdf | >= 1.8 | http://www.fpdf.org/ |
-| imagick php extension | >=2 | https://www.php.net/manual/de/book.imagick.php |
-| PHPUnit | >=8.0 | https://phpunit.de/ |
+| imagick php extension | >= 2 | https://www.php.net/manual/de/book.imagick.php |
+| Ghostscript | >= 9.0 | https://www.ghostscript.com/ |
+| PHPUnit | >= 8.0 | https://phpunit.de/ |
