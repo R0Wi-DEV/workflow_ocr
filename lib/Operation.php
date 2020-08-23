@@ -38,6 +38,8 @@ use OCP\WorkflowEngine\IRuleMatcher;
 use OCP\WorkflowEngine\ISpecificOperation;
 use OCP\ILogger;
 use OCA\WorkflowOcr\BackgroundJobs\ProcessFileJob;
+use OCP\Files\FileInfo;
+use OCP\Files\Node;
 
 class Operation implements ISpecificOperation {
 
@@ -89,17 +91,25 @@ class Operation implements ISpecificOperation {
 			return;
 		}
 
+		/** @var Node*/
 		$node = $event->getSubject();
 
-		if (!$node instanceof \OC\Files\Node\File) {
+		if (!$node instanceof Node || $node->getType() !== FileInfo::TYPE_FILE) {
 			$this->logger->debug('Not processing event {eventname} because node is not a file.',
 					['eventname' => $eventName]);
 			return;
 		}
 
+		// '', admin, 'files', 'path/to/file.pdf'
+		list(,, $folder,) = explode('/', $node->getPath(), 4);
+		if($folder !== 'files') {
+			$this->logger->debug('Not processing event {eventname} because path {path} seems to be invalid.',
+					['eventname' => $eventName, 'path' => $node->getPath()]);
+			return;
+		}
+
 		$args = [
-			'filePath' => $node->getPath(),
-			'uid' => $this->userSession->getUser()->getUID() // TODO :: shared folders?
+			'filePath' => $node->getPath()
 		];
 		$this->jobList->add(ProcessFileJob::class, $args);
 	}
