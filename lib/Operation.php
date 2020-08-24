@@ -32,7 +32,6 @@ use OCP\BackgroundJob\IJobList;
 use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\GenericEvent;
 use OCP\IL10N;
-use OCP\IUserSession;
 use OCP\WorkflowEngine\IManager;
 use OCP\WorkflowEngine\IRuleMatcher;
 use OCP\WorkflowEngine\ISpecificOperation;
@@ -49,14 +48,11 @@ class Operation implements ISpecificOperation {
 	private $l;
 	/** @var ILogger */
 	private $logger;
-	/** @var IUserSession */
-	private $userSession;
 
-	public function __construct(IJobList $jobList, IL10N $l, IUserSession $userSession, ILogger $logger) {
+	public function __construct(IJobList $jobList, IL10N $l,  ILogger $logger) {
 		$this->jobList = $jobList;
 		$this->l = $l;
 		$this->logger = $logger;
-		$this->userSession = $userSession;
 	}
 
 	/**
