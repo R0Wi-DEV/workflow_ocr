@@ -98,7 +98,7 @@ class Operation implements ISpecificOperation {
 
 		// '', admin, 'files', 'path/to/file.pdf'
 		list(,, $folder,) = explode('/', $node->getPath(), 4);
-		if($folder !== 'files') {
+		if ($folder !== 'files') {
 			$this->logger->debug('Not processing event {eventname} because path {path} seems to be invalid.',
 					['eventname' => $eventName, 'path' => $node->getPath()]);
 			return;

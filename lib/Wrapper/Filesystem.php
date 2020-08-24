@@ -27,8 +27,7 @@ declare(strict_types=1);
 namespace OCA\WorkflowOcr\Wrapper;
 
 class Filesystem implements IFilesystem {
-
-    public function init(string $user, string $root) : void {
-        \OC\Files\Filesystem::init($user, $root);
-    }
+	public function init(string $user, string $root) : void {
+		\OC\Files\Filesystem::init($user, $root);
+	}
 }

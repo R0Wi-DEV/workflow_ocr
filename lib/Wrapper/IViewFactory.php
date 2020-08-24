@@ -28,10 +28,10 @@ namespace OCA\WorkflowOcr\Wrapper;
 
 interface IViewFactory {
 
-    /**
-     * Creates a new view wrapper for the given directory
-     * @param $directoryPath The path of the directory for which the view shall be created
-     * @return IView
-     */
-    function create(string $directoryPath) : IView;
+	/**
+	 * Creates a new view wrapper for the given directory
+	 * @param $directoryPath The path of the directory for which the view shall be created
+	 * @return IView
+	 */
+	public function create(string $directoryPath) : IView;
 }

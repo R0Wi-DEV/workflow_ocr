@@ -28,10 +28,10 @@ namespace OCA\WorkflowOcr\Wrapper;
 
 interface IFilesystem {
 
-    /**
-     * Init mountpoints for given user with given root
-     * @param $user Username
-     * @param $root Path of root folder
-     */
-    function init(string $user, string $root) : void;
+	/**
+	 * Init mountpoints for given user with given root
+	 * @param $user Username
+	 * @param $root Path of root folder
+	 */
+	public function init(string $user, string $root) : void;
 }
