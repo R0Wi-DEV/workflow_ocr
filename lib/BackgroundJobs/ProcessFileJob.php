@@ -74,7 +74,7 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
 	protected function run($argument) : void {
 		$this->logger->debug('Run ' . self::class . ' job. Argument: {argument}.', ['argument' => $argument]);
 		
-		list($success, $filePath) = $this->parseArguments($argument);
+		list($success, $filePath) = $this->tryParseArguments($argument);
 		if (!$success) {
 			return;
 		}
@@ -89,15 +89,19 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
 	/**
 	 * @param mixed $argument
 	 */
-	private function parseArguments($argument) : array {
-		$filePath = $argument['filePath'];
+	private function tryParseArguments($argument) : array {
+		$filePath = null;
+		$filePathKey = 'filePath';
 
-		if (!isset($filePath)) {
-			$this->logger->warning('Variable \'filePath\' not set in ' . self::class . ' method \'parseArguments\'.');
+		if (array_key_exists ($filePathKey , $argument)) {
+			$filePath = $argument[$filePathKey];
+		}
+		else {
+			$this->logger->warning('Variable \''. $filePathKey .'\' not set in ' . self::class . ' method \'parseArguments\'.');
 		}
 
 		return [
-			isset($filePath),
+			$filePath !== null,
 			$filePath
 		];
 	}
@@ -131,11 +135,11 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
 		}
 
 		$dirPath = dirname($filePath);
-		$filePath = basename($filePath);
+		$filename = basename($filePath);
 
 		// Create new file or file-version with OCR-file
 		$view = $this->viewFactory->create($dirPath);
-		$view->file_put_contents($filePath, $ocrFile);
+		$view->file_put_contents($filename, $ocrFile);
 	}
 
 	private function initFileSystem(string $filePath) : void {
