@@ -116,7 +116,20 @@ class ProcessFileJobTest extends TestCase {
 			$timeFactoryMock
 		);
 	}
-	
+    
+    public function testCatchesException() {
+        $this->processFileJob->setArgument(['filePath' => '/admin/files/somefile.pdf']);
+        $exception = new Exception();
+        $this->filesystem->method('init')
+            ->willThrowException($exception);
+        
+        $this->logger->expects($this->once())
+            ->method('logException')
+            ->with($exception);
+
+        $this->processFileJob->execute($this->jobList);
+    }
+    
 	/**
 	 * @dataProvider dataProvider_InvalidArguments
 	 */
