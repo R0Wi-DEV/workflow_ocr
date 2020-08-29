@@ -93,10 +93,9 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
 		$filePath = null;
 		$filePathKey = 'filePath';
 
-		if (array_key_exists ($filePathKey , $argument)) {
+		if (array_key_exists($filePathKey , $argument)) {
 			$filePath = $argument[$filePathKey];
-		}
-		else {
+		} else {
 			$this->logger->warning('Variable \''. $filePathKey .'\' not set in ' . self::class . ' method \'parseArguments\'.');
 		}
 

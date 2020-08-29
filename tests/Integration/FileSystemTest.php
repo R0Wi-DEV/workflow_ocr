@@ -28,35 +28,33 @@ use OCA\WorkflowOcr\Tests\TestUtils;
 use OCA\WorkflowOcr\Wrapper\Filesystem;
 use PHPUnit\Framework\TestCase;
 
-
 class FileSystemTest extends TestCase {
-    
-    /** @var TestUtils */
-    private $testUtils;
+	
+	/** @var TestUtils */
+	private $testUtils;
 
 	protected function setUp() : void {
 		parent::setUp();
 		$this->testUtils = new TestUtils();
-    }
+	}
 
-    public function testInit() {
-        $user = 'mytestuser';
-        $pw = 'myuserspw';
-        $path = '/mytestuser/files';
-        /** @var \OCP\IUser */
-        $userObject = null;
+	public function testInit() {
+		$user = 'mytestuser';
+		$pw = 'myuserspw';
+		$path = '/mytestuser/files';
+		/** @var \OCP\IUser */
+		$userObject = null;
 
-        try {
-            $userObject = $this->testUtils->createUser($user, $pw);
+		try {
+			$userObject = $this->testUtils->createUser($user, $pw);
 
-            $fileSystem = new Filesystem();
-            $fileSystem->init($user, $path);
-            $this->assertTrue(\OC\Files\Filesystem::$loaded);
-        }
-        finally {
-            if ($userObject && !$userObject->delete()) {
-                throw new Exception("Could not delete user " . $user);
-            }
-        }
-    }
+			$fileSystem = new Filesystem();
+			$fileSystem->init($user, $path);
+			$this->assertTrue(\OC\Files\Filesystem::$loaded);
+		} finally {
+			if ($userObject && !$userObject->delete()) {
+				throw new Exception("Could not delete user " . $user);
+			}
+		}
+	}
 }

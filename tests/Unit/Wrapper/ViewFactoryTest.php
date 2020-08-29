@@ -28,10 +28,9 @@ use OCA\WorkflowOcr\Wrapper\ViewFactory;
 use PHPUnit\Framework\TestCase;
 
 class ViewFactoryTest extends TestCase {
-
-    public function testFactoryReturnsIView() {
-        $viewFactory = new ViewFactory();
-        $view = $viewFactory->create('somePath');
-        $this->assertTrue($view instanceof IView);
-    }
+	public function testFactoryReturnsIView() {
+		$viewFactory = new ViewFactory();
+		$view = $viewFactory->create('somePath');
+		$this->assertTrue($view instanceof IView);
+	}
 }

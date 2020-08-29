@@ -21,17 +21,17 @@ use OCP\IUserManager;
 
 class TestUtils {
 
-    /** @var IAppContainer */
-    private $container;
+	/** @var IAppContainer */
+	private $container;
 
-    public function __construct() {
-        $app = new App(AppInfo\Application::APP_NAME);
-        $this->container = $app->getContainer();
-    }
+	public function __construct() {
+		$app = new App(AppInfo\Application::APP_NAME);
+		$this->container = $app->getContainer();
+	}
 
-    public function createUser($user, $pw) : IUser {
-        /** @var IUserManager */
-        $userManager = $this->container->query(IUserManager::class);
-        return $userManager->createUser($user, $pw);
-    }
+	public function createUser($user, $pw) : IUser {
+		/** @var IUserManager */
+		$userManager = $this->container->query(IUserManager::class);
+		return $userManager->createUser($user, $pw);
+	}
 }

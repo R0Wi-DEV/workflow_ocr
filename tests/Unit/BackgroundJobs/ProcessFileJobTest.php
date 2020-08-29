@@ -48,7 +48,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 
 class ProcessFileJobTest extends TestCase {
 
-    /** @var ILogger|MockObject */
+	/** @var ILogger|MockObject */
 	private $logger;
 	/** @var IRootFolder|MockObject */
 	private $rootFolder;
@@ -57,267 +57,267 @@ class ProcessFileJobTest extends TestCase {
 	/** @var IViewFactory|MockObject */
 	private $viewFactory;
 	/** @var IFilesystem|MockObject */
-    private $filesystem;
-    /** @var JobList */
-    private $jobList;
-    /** @var ProcessFileJob */
-    private $processFileJob;
+	private $filesystem;
+	/** @var JobList */
+	private $jobList;
+	/** @var ProcessFileJob */
+	private $processFileJob;
 
-    public function setUp() : void{
-        parent::setUp();
+	public function setUp() : void {
+		parent::setUp();
 
-        /** @var ILogger */
-        $this->logger = $this->createMock(ILogger::class);
-        /** @var IRootFolder */
-        $this->rootFolder = $this->createMock(IRootFolder::class);
-        /** @var IOcrService */
-        $this->ocrService = $this->createMock(IOcrService::class);
-        /** @var IViewFactory */
-        $this->viewFactory = $this->createMock(IViewFactory::class);
-        /** @var IFilesystem */
-        $this->filesystem = $this->createMock(IFilesystem::class);
+		/** @var ILogger */
+		$this->logger = $this->createMock(ILogger::class);
+		/** @var IRootFolder */
+		$this->rootFolder = $this->createMock(IRootFolder::class);
+		/** @var IOcrService */
+		$this->ocrService = $this->createMock(IOcrService::class);
+		/** @var IViewFactory */
+		$this->viewFactory = $this->createMock(IViewFactory::class);
+		/** @var IFilesystem */
+		$this->filesystem = $this->createMock(IFilesystem::class);
 
-        $this->processFileJob = new ProcessFileJob(
-            $this->logger,
-            $this->rootFolder,
-            $this->ocrService,
-            $this->viewFactory,
-            $this->filesystem
-        );
+		$this->processFileJob = new ProcessFileJob(
+			$this->logger,
+			$this->rootFolder,
+			$this->ocrService,
+			$this->viewFactory,
+			$this->filesystem
+		);
 
-        /** @var IConfig */
-        $configMock = $this->createMock(IConfig::class);
-        /** @var ITimeFactory */
-        $timeFactoryMock = $this->createMock(ITimeFactory::class);
-        /** @var MockObject|IDbConnection */
-        $connectionMock = $this->createMock(IDBConnection::class);
-        $queryBuilderMock = $this->createMock(IQueryBuilder::class);
-        $expressionBuilderMock = $this->createMock(IExpressionBuilder::class);
+		/** @var IConfig */
+		$configMock = $this->createMock(IConfig::class);
+		/** @var ITimeFactory */
+		$timeFactoryMock = $this->createMock(ITimeFactory::class);
+		/** @var MockObject|IDbConnection */
+		$connectionMock = $this->createMock(IDBConnection::class);
+		$queryBuilderMock = $this->createMock(IQueryBuilder::class);
+		$expressionBuilderMock = $this->createMock(IExpressionBuilder::class);
 
-        $queryBuilderMock->method('delete')
-            ->withAnyParameters()
-            ->willReturn($queryBuilderMock);
-        $queryBuilderMock->method('set')
-            ->withAnyParameters()
-            ->willReturn($queryBuilderMock);
-        $queryBuilderMock->method('update')
-            ->withAnyParameters()
-            ->willReturn($queryBuilderMock);
-        $queryBuilderMock->method('expr')
-            ->withAnyParameters()
-            ->willReturn($expressionBuilderMock);
-        $connectionMock->method('getQueryBuilder')
-            ->withAnyParameters()
-            ->willReturn($queryBuilderMock);
+		$queryBuilderMock->method('delete')
+			->withAnyParameters()
+			->willReturn($queryBuilderMock);
+		$queryBuilderMock->method('set')
+			->withAnyParameters()
+			->willReturn($queryBuilderMock);
+		$queryBuilderMock->method('update')
+			->withAnyParameters()
+			->willReturn($queryBuilderMock);
+		$queryBuilderMock->method('expr')
+			->withAnyParameters()
+			->willReturn($expressionBuilderMock);
+		$connectionMock->method('getQueryBuilder')
+			->withAnyParameters()
+			->willReturn($queryBuilderMock);
 
-        $this->jobList = new JobList(
-            $connectionMock,
-            $configMock,
-            $timeFactoryMock
-        );
-    }
-    
-    /**
+		$this->jobList = new JobList(
+			$connectionMock,
+			$configMock,
+			$timeFactoryMock
+		);
+	}
+	
+	/**
 	 * @dataProvider dataProvider_InvalidArguments
 	 */
-    public function testDoesNothingOnInvalidArguments($argument) {
-        $this->processFileJob->setArgument($argument);
-        $this->filesystem->expects($this->never())
-            ->method('init')
-            ->withAnyParameters();
-        $this->ocrService->expects($this->never())
-            ->method('ocrFile')
-            ->withAnyParameters();
-        $this->viewFactory->expects($this->never())
-            ->method('create')
-            ->withAnyParameters();
-        $this->logger->expects($this->once())
-            ->method('warning');
+	public function testDoesNothingOnInvalidArguments($argument) {
+		$this->processFileJob->setArgument($argument);
+		$this->filesystem->expects($this->never())
+			->method('init')
+			->withAnyParameters();
+		$this->ocrService->expects($this->never())
+			->method('ocrFile')
+			->withAnyParameters();
+		$this->viewFactory->expects($this->never())
+			->method('create')
+			->withAnyParameters();
+		$this->logger->expects($this->once())
+			->method('warning');
 
-        $this->processFileJob->execute($this->jobList);
-    }
+		$this->processFileJob->execute($this->jobList);
+	}
 
-    /**
+	/**
 	 * @dataProvider dataProvider_ValidArguments
 	 */
-    public function testCallsInitFilesystem(array $arguments, string $user, string $rootFolderPath) {
-        $this->processFileJob->setArgument($arguments);
-        $this->filesystem->expects($this->once())
-            ->method('init')
-            ->with($user, $rootFolderPath);
-        
-        $this->processFileJob->execute($this->jobList);
-    }
+	public function testCallsInitFilesystem(array $arguments, string $user, string $rootFolderPath) {
+		$this->processFileJob->setArgument($arguments);
+		$this->filesystem->expects($this->once())
+			->method('init')
+			->with($user, $rootFolderPath);
+		
+		$this->processFileJob->execute($this->jobList);
+	}
 
-    /**
+	/**
 	 * @dataProvider dataProvider_ValidArguments
 	 */
-    public function testCallsGetOnRootFolder(array $arguments, string $user, string $rootFolderPath) {
-        $this->processFileJob->setArgument($arguments);
-        $this->rootFolder->expects($this->once())
-            ->method('get')
-            ->with($arguments['filePath']);
-        
-        $this->processFileJob->execute($this->jobList);
-    }
+	public function testCallsGetOnRootFolder(array $arguments, string $user, string $rootFolderPath) {
+		$this->processFileJob->setArgument($arguments);
+		$this->rootFolder->expects($this->once())
+			->method('get')
+			->with($arguments['filePath']);
+		
+		$this->processFileJob->execute($this->jobList);
+	}
 
-    /**
+	/**
 	 * @dataProvider dataProvider_ValidArguments
 	 */
-    public function testCallsOcr_IfIsFile(array $arguments, string $user, string $rootFolderPath) {
-        $this->processFileJob->setArgument($arguments);
-       
-        $mimeType = 'application/pdf';
-        $content = 'someFileContent';
-        $fileMock = $this->createValidFileMock($mimeType, $content);
-        $this->rootFolder->method('get')
-            ->with($arguments['filePath'])
-            ->willReturn($fileMock);
+	public function testCallsOcr_IfIsFile(array $arguments, string $user, string $rootFolderPath) {
+		$this->processFileJob->setArgument($arguments);
+	   
+		$mimeType = 'application/pdf';
+		$content = 'someFileContent';
+		$fileMock = $this->createValidFileMock($mimeType, $content);
+		$this->rootFolder->method('get')
+			->with($arguments['filePath'])
+			->willReturn($fileMock);
 
-        $this->ocrService->expects($this->once())
-            ->method('ocrFile')
-            ->with($mimeType, $content);
+		$this->ocrService->expects($this->once())
+			->method('ocrFile')
+			->with($mimeType, $content);
 
-        $this->processFileJob->execute($this->jobList);
-    }
+		$this->processFileJob->execute($this->jobList);
+	}
 
-     /**
+	/**
 	 * @dataProvider dataProvider_ValidArguments
 	 */
-    public function testCreatesNewFileVersion(array $arguments, string $user, string $rootFolderPath) {
-        $this->processFileJob->setArgument($arguments);
-        $mimeType = 'application/pdf';
-        $content = 'someFileContent';
-        $ocrContent = 'someOcrProcessedFile';
-        $filePath = $arguments['filePath'];
+	public function testCreatesNewFileVersion(array $arguments, string $user, string $rootFolderPath) {
+		$this->processFileJob->setArgument($arguments);
+		$mimeType = 'application/pdf';
+		$content = 'someFileContent';
+		$ocrContent = 'someOcrProcessedFile';
+		$filePath = $arguments['filePath'];
 		$dirPath = dirname($filePath);
-        $filename = basename($filePath);
+		$filename = basename($filePath);
 
-        $fileMock = $this->createValidFileMock($mimeType, $content);
-        $this->rootFolder->method('get')
-            ->with($arguments['filePath'])
-            ->willReturn($fileMock);
+		$fileMock = $this->createValidFileMock($mimeType, $content);
+		$this->rootFolder->method('get')
+			->with($arguments['filePath'])
+			->willReturn($fileMock);
 
-        $this->ocrService->expects($this->once())
-            ->method('ocrFile')
-            ->willReturn($ocrContent);
+		$this->ocrService->expects($this->once())
+			->method('ocrFile')
+			->willReturn($ocrContent);
 
-        $viewMock = $this->createMock(IView::class);
-        $viewMock->expects($this->once())
-            ->method('file_put_contents')
-            ->with($filename, $ocrContent);
-        $this->viewFactory->expects($this->once())
-            ->method('create')
-            ->with($dirPath)
-            ->willReturn($viewMock);
+		$viewMock = $this->createMock(IView::class);
+		$viewMock->expects($this->once())
+			->method('file_put_contents')
+			->with($filename, $ocrContent);
+		$this->viewFactory->expects($this->once())
+			->method('create')
+			->with($dirPath)
+			->willReturn($viewMock);
 
-        $this->processFileJob->execute($this->jobList);
-    }
+		$this->processFileJob->execute($this->jobList);
+	}
 
-    public function testNotFoundLogsWarning_AndDoesNothingAfterwards() {
-        $this->processFileJob->setArgument(['filePath' => '/admin/files/somefile.pdf']);
+	public function testNotFoundLogsWarning_AndDoesNothingAfterwards() {
+		$this->processFileJob->setArgument(['filePath' => '/admin/files/somefile.pdf']);
 
-        $this->rootFolder->expects($this->once())
-            ->method('get')
-            ->willThrowException(new NotFoundException());
-        $this->logger->expects($this->once())
-            ->method('warning')
-            ->with($this->stringContains('not found'));
-        $this->ocrService->expects($this->never())
-            ->method('ocrFile');
+		$this->rootFolder->expects($this->once())
+			->method('get')
+			->willThrowException(new NotFoundException());
+		$this->logger->expects($this->once())
+			->method('warning')
+			->with($this->stringContains('not found'));
+		$this->ocrService->expects($this->never())
+			->method('ocrFile');
 
-        $this->processFileJob->execute($this->jobList);
-    }
+		$this->processFileJob->execute($this->jobList);
+	}
 
-    /**
-     * @dataProvider dataProvider_InvalidNodes
-     */
-    public function testDoesNotCallOcr_OnNonFile($invalidNode) {
-        $arguments = ['filePath' => '/admin/files/someInvalidStuff'];
-        $this->processFileJob->setArgument($arguments);
+	/**
+	 * @dataProvider dataProvider_InvalidNodes
+	 */
+	public function testDoesNotCallOcr_OnNonFile($invalidNode) {
+		$arguments = ['filePath' => '/admin/files/someInvalidStuff'];
+		$this->processFileJob->setArgument($arguments);
 
-        $this->rootFolder->method('get')
-            ->with($arguments['filePath'])
-            ->willReturn($invalidNode);
+		$this->rootFolder->method('get')
+			->with($arguments['filePath'])
+			->willReturn($invalidNode);
 
-        $this->ocrService->expects($this->never())
-            ->method('ocrFile');
+		$this->ocrService->expects($this->never())
+			->method('ocrFile');
 
-        $this->processFileJob->execute($this->jobList);
-    }
+		$this->processFileJob->execute($this->jobList);
+	}
 
-    /**
-     * @dataProvider dataProvider_OcrExceptions
-     */
-    public function testLogsInfo_OnOcrException(Exception $exception) {
-        $arguments = ['filePath' => '/admin/files/someInvalidStuff'];
-        $this->processFileJob->setArgument($arguments);
+	/**
+	 * @dataProvider dataProvider_OcrExceptions
+	 */
+	public function testLogsInfo_OnOcrException(Exception $exception) {
+		$arguments = ['filePath' => '/admin/files/someInvalidStuff'];
+		$this->processFileJob->setArgument($arguments);
 
-        $fileMock = $this->createValidFileMock();
-        $this->rootFolder->method('get')
-            ->with($arguments['filePath'])
-            ->willReturn($fileMock);
+		$fileMock = $this->createValidFileMock();
+		$this->rootFolder->method('get')
+			->with($arguments['filePath'])
+			->willReturn($fileMock);
 
-        $this->ocrService->method('ocrFile')
-            ->willThrowException($exception);
-        
-        $this->logger->expects($this->once())
-            ->method('info');
+		$this->ocrService->method('ocrFile')
+			->willThrowException($exception);
+		
+		$this->logger->expects($this->once())
+			->method('info');
 
-        $this->viewFactory->expects($this->never())
-            ->method('create');
+		$this->viewFactory->expects($this->never())
+			->method('create');
 
-        $this->processFileJob->execute($this->jobList);
-    }
+		$this->processFileJob->execute($this->jobList);
+	}
 
-    public function dataProvider_InvalidArguments() {
-        $arr = [
-            [['mykey' => 'myvalue']],
-            [['someotherkey' => 'someothervalue', 'k2' => 'v2']]
-        ];
-        return $arr;
-    }
+	public function dataProvider_InvalidArguments() {
+		$arr = [
+			[['mykey' => 'myvalue']],
+			[['someotherkey' => 'someothervalue', 'k2' => 'v2']]
+		];
+		return $arr;
+	}
 
-    public function dataProvider_ValidArguments() {
-        $arr = [
-            [['filePath' => '/admin/files/somefile.pdf'], 'admin', '/admin/files'],
-            [['filePath' => '/myuser/files/subfolder/someotherfile.docx'], 'myuser', '/myuser/files']
-        ];
-        return $arr;
-    }
+	public function dataProvider_ValidArguments() {
+		$arr = [
+			[['filePath' => '/admin/files/somefile.pdf'], 'admin', '/admin/files'],
+			[['filePath' => '/myuser/files/subfolder/someotherfile.docx'], 'myuser', '/myuser/files']
+		];
+		return $arr;
+	}
 
-    public function dataProvider_InvalidNodes() {
-        $folderMock = $this->createMock(Node::class);
-        $folderMock->method('getType')
-            ->willReturn(FileInfo::TYPE_FOLDER);
-        $fileInfoMock = $this->createMock(FileInfo::class);
-        $arr = [
-            [$folderMock],
-            [$fileInfoMock],
-            [null],
-            [(object)['someField' => 'someValue']]
-        ];
-        return $arr;
-    }
+	public function dataProvider_InvalidNodes() {
+		$folderMock = $this->createMock(Node::class);
+		$folderMock->method('getType')
+			->willReturn(FileInfo::TYPE_FOLDER);
+		$fileInfoMock = $this->createMock(FileInfo::class);
+		$arr = [
+			[$folderMock],
+			[$fileInfoMock],
+			[null],
+			[(object)['someField' => 'someValue']]
+		];
+		return $arr;
+	}
 
-    public function dataProvider_OcrExceptions() {
-        return [
-            [new OcrNotPossibleException('Ocr not possible')],
-            [new OcrProcessorNotFoundException()]
-        ];
-    }
+	public function dataProvider_OcrExceptions() {
+		return [
+			[new OcrNotPossibleException('Ocr not possible')],
+			[new OcrProcessorNotFoundException()]
+		];
+	}
 
-    /**
-     * @return File|MockObject
-     */
-    private function createValidFileMock(string $mimeType = 'application/pdf', string $content = 'someFileContent') {
-        $fileMock = $this->createMock(File::class);
-        $fileMock->method('getType')
-            ->willReturn(FileInfo::TYPE_FILE);
-        $fileMock->method('getMimeType')
-            ->willReturn($mimeType);
-        $fileMock->method('getContent')
-            ->willReturn($content);
-        return $fileMock;
-    }
+	/**
+	 * @return File|MockObject
+	 */
+	private function createValidFileMock(string $mimeType = 'application/pdf', string $content = 'someFileContent') {
+		$fileMock = $this->createMock(File::class);
+		$fileMock->method('getType')
+			->willReturn(FileInfo::TYPE_FILE);
+		$fileMock->method('getMimeType')
+			->willReturn($mimeType);
+		$fileMock->method('getContent')
+			->willReturn($content);
+		return $fileMock;
+	}
 }
