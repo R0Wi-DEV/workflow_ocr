@@ -66,10 +66,11 @@ jobs:
         working-directory: apps/${{ env.APP_NAME }}
         run: ./vendor/phpunit/phpunit/phpunit -c phpunit.xml
 
-      - name: PHPUnit integration
-        working-directory: apps/${{ env.APP_NAME }}
-        run: ./vendor/phpunit/phpunit/phpunit -c phpunit.integration.xml
+      #- name: PHPUnit integration
+      #  working-directory: apps/${{ env.APP_NAME }}
+      #  run: ./vendor/phpunit/phpunit/phpunit -c phpunit.integration.xml
 
       - name: Upload coverage to Codecov
         working-directory: ./apps/${{ env.APP_NAME }}
-        run: curl -s https://codecov.io/bash | bash -s - -t ${{ secrets.CODECOV_TOKEN }} -f coverage_unittests.xml -f coverage_integrationtests.xml -Z
+        run: curl -s https://codecov.io/bash | bash -s - -t ${{ secrets.CODECOV_TOKEN }} -f coverage_unittests.xml  -Z
+        #-f coverage_integrationtests.xml
