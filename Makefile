@@ -175,8 +175,9 @@ integrationtest: composer
 
 .PHONY: coverage
 coverage: composer
-	$(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.xml --coverage-clover coverage_unittests.xml
-	$(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.integration.xml --coverage-clover coverage_integrationtests.xml
+	$(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.xml --coverage-php coverage_unittests.cov
+	$(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.integration.xml --coverage-php coverage_integrationtests.cov
+	$(CURDIR)/vendor/phpunit/phpcov/phpcov merge --clover coverage.xml .
 
 .PHONY: lint
 lint: composer

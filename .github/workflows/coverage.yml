@@ -71,5 +71,4 @@ jobs:
         working-directory: ./apps/${{ env.APP_NAME }}
         run: |
           wget https://codecov.io/bash -O codecov.sh  
-          bash codecov.sh -t ${{ secrets.CODECOV_TOKEN }} -f coverage_unittests.xml -Z
-          bash codecov.sh -t ${{ secrets.CODECOV_TOKEN }} -f coverage_integrationtests.xml -Z
+          bash codecov.sh -t ${{ secrets.CODECOV_TOKEN }} -f coverage.xml -Z
