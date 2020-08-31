@@ -165,6 +165,19 @@ test: composer
 	$(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.xml
 	$(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.integration.xml
 
+.PHONY: unittest
+unittest: composer
+	$(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.xml
+
+.PHONY: integrationtest
+integrationtest: composer
+	$(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.integration.xml
+
+.PHONY: coverage
+coverage: composer
+	$(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.xml --coverage-clover coverage_unittests.xml
+	$(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.integration.xml --coverage-clover coverage_integrationtests.xml
+
 .PHONY: lint
 lint: composer
 	composer run lint
