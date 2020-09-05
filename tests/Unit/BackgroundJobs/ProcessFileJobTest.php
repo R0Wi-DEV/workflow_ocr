@@ -25,6 +25,7 @@ namespace OCA\WorkflowOcr\Tests\Unit\BackgroundJobs;
 
 use Exception;
 use OC\BackgroundJob\JobList;
+use OC\User\NoUserException;
 use OCA\WorkflowOcr\BackgroundJobs\ProcessFileJob;
 use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
 use OCA\WorkflowOcr\Exception\OcrProcessorNotFoundException;
@@ -43,6 +44,9 @@ use OCP\Files\NotFoundException;
 use OCP\IConfig;
 use OCP\IDBConnection;
 use OCP\ILogger;
+use OCP\IUser;
+use OCP\IUserManager;
+use OCP\IUserSession;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -58,6 +62,12 @@ class ProcessFileJobTest extends TestCase {
 	private $viewFactory;
 	/** @var IFilesystem|MockObject */
 	private $filesystem;
+	/** @var IUserSession|MockObject */
+	private $userSession;
+	/** @var IUserManager|MockObject */
+	private $userManager;
+	/** @var IUser|MockObject */
+	private $user;
 	/** @var JobList */
 	private $jobList;
 	/** @var ProcessFileJob */
@@ -76,13 +86,28 @@ class ProcessFileJobTest extends TestCase {
 		$this->viewFactory = $this->createMock(IViewFactory::class);
 		/** @var IFilesystem */
 		$this->filesystem = $this->createMock(IFilesystem::class);
+		/** @var IUserSession */
+		$this->userSession = $this->createMock(IUserSession::class);
+		
+		$userManager = $this->createMock(IUserManager::class);
+		$user = $this->createMock(IUser::class);
+		$userManager->method('get')
+			->withAnyParameters()
+			->willReturn($user);
+
+		/** @var IUserManager */
+		$this->userManager = $userManager;
+		/** @var IUser */
+		$this->user = $user;
 
 		$this->processFileJob = new ProcessFileJob(
 			$this->logger,
 			$this->rootFolder,
 			$this->ocrService,
 			$this->viewFactory,
-			$this->filesystem
+			$this->filesystem,
+			$this->userManager,
+			$this->userSession
 		);
 
 		/** @var IConfig */
@@ -117,8 +142,8 @@ class ProcessFileJobTest extends TestCase {
 		);
 	}
 	
-	public function testCatchesException() {
-		$this->processFileJob->setArgument(['filePath' => '/admin/files/somefile.pdf']);
+	public function testCatchesExceptionAndResetsUserEnvironment() {
+		$this->processFileJob->setArgument(['filePath' => '/admin/files/somefile.pdf', 'uid' => 'someuser']);
 		$exception = new Exception();
 		$this->filesystem->method('init')
 			->willThrowException($exception);
@@ -127,13 +152,20 @@ class ProcessFileJobTest extends TestCase {
 			->method('logException')
 			->with($exception);
 
+		// Make sure user-environment is reset after any exception
+		// so the user should be set on beginning but should also
+		// be reset to null after any run.
+		$this->userSession->expects($this->exactly(2))
+			->method('setUser')
+			->withConsecutive([$this->user],[null]);
+
 		$this->processFileJob->execute($this->jobList);
 	}
 	
 	/**
 	 * @dataProvider dataProvider_InvalidArguments
 	 */
-	public function testDoesNothingOnInvalidArguments($argument) {
+	public function testDoesNothingOnInvalidArguments($argument, $invalidCount) {
 		$this->processFileJob->setArgument($argument);
 		$this->filesystem->expects($this->never())
 			->method('init')
@@ -144,7 +176,7 @@ class ProcessFileJobTest extends TestCase {
 		$this->viewFactory->expects($this->never())
 			->method('create')
 			->withAnyParameters();
-		$this->logger->expects($this->once())
+		$this->logger->expects($this->exactly($invalidCount))
 			->method('warning');
 
 		$this->processFileJob->execute($this->jobList);
@@ -228,7 +260,7 @@ class ProcessFileJobTest extends TestCase {
 	}
 
 	public function testNotFoundLogsWarning_AndDoesNothingAfterwards() {
-		$this->processFileJob->setArgument(['filePath' => '/admin/files/somefile.pdf']);
+		$this->processFileJob->setArgument(['filePath' => '/admin/files/somefile.pdf', 'uid' => 'admin']);
 
 		$this->rootFolder->expects($this->once())
 			->method('get')
@@ -246,7 +278,7 @@ class ProcessFileJobTest extends TestCase {
 	 * @dataProvider dataProvider_InvalidNodes
 	 */
 	public function testDoesNotCallOcr_OnNonFile($invalidNode) {
-		$arguments = ['filePath' => '/admin/files/someInvalidStuff'];
+		$arguments = ['filePath' => '/admin/files/someInvalidStuff', 'uid' => 'admin'];
 		$this->processFileJob->setArgument($arguments);
 
 		$this->rootFolder->method('get')
@@ -263,7 +295,7 @@ class ProcessFileJobTest extends TestCase {
 	 * @dataProvider dataProvider_OcrExceptions
 	 */
 	public function testLogsInfo_OnOcrException(Exception $exception) {
-		$arguments = ['filePath' => '/admin/files/someInvalidStuff'];
+		$arguments = ['filePath' => '/admin/files/someInvalidStuff', 'uid' => 'admin'];
 		$this->processFileJob->setArgument($arguments);
 
 		$fileMock = $this->createValidFileMock();
@@ -283,18 +315,49 @@ class ProcessFileJobTest extends TestCase {
 		$this->processFileJob->execute($this->jobList);
 	}
 
+	public function testThrowsNoUserException_OnNonExistingUser() {
+		// Unfortunately method definitions can't yet be overwritten in
+		// PHPUnit, see https://github.com/sebastianbergmann/phpunit-documentation-english/issues/169
+		/** @var IUserManager|MockObject */
+		$userManager = $this->createMock(IUserManager::class);
+		$userManager->method('get')
+			->with('nonexistinguser')
+			->willReturn(null);
+
+		$this->logger->expects($this->once())
+			->method('logException')
+			->with($this->isInstanceOf(NoUserException::class));
+		
+		$processFileJob = new ProcessFileJob(
+			$this->logger,
+			$this->rootFolder,
+			$this->ocrService,
+			$this->viewFactory,
+			$this->filesystem,
+			$userManager,
+			$this->userSession
+		);
+		$arguments = ['filePath' => '/admin/files/someInvalidStuff', 'uid' => 'nonexistinguser'];
+		$processFileJob->setArgument($arguments);
+
+		$processFileJob->execute($this->jobList);
+	}
+
 	public function dataProvider_InvalidArguments() {
 		$arr = [
-			[['mykey' => 'myvalue']],
-			[['someotherkey' => 'someothervalue', 'k2' => 'v2']]
+			[null, 1],
+			[['mykey' => 'myvalue'], 2],
+			[['someotherkey' => 'someothervalue', 'k2' => 'v2'], 2],
+			[['uid' => 'someuser'], 1],
+			[['filePath' => 'somepath'], 1]
 		];
 		return $arr;
 	}
 
 	public function dataProvider_ValidArguments() {
 		$arr = [
-			[['filePath' => '/admin/files/somefile.pdf'], 'admin', '/admin/files'],
-			[['filePath' => '/myuser/files/subfolder/someotherfile.docx'], 'myuser', '/myuser/files']
+			[['filePath' => '/admin/files/somefile.pdf', 'uid' => 'admin'], 'admin', '/admin/files'],
+			[['filePath' => '/myuser/files/subfolder/someotherfile.docx', 'uid' => 'myuser'], 'myuser', '/myuser/files']
 		];
 		return $arr;
 	}

@@ -96,21 +96,40 @@ class Operation implements ISpecificOperation {
 			return;
 		}
 
-		// '', admin, 'files', 'path/to/file.pdf'
-		list(,, $folder,) = explode('/', $node->getPath(), 4);
-		if ($folder !== 'files') {
-			$this->logger->debug('Not processing event {eventname} because path {path} seems to be invalid.',
-					['eventname' => $eventName, 'path' => $node->getPath()]);
+		if (!$this->checkNode($node)) {
 			return;
 		}
 
 		$args = [
-			'filePath' => $node->getPath()
+			'filePath' => $node->getPath(),
+			'uid' => $node->getOwner()->getUID()
 		];
 		$this->jobList->add(ProcessFileJob::class, $args);
 	}
 
 	public function getEntityId(): string {
 		return File::class;
+	}
+
+	private function checkNode(Node $node) : bool {
+		// Check path has valid structure
+		$filePath = $node->getPath();
+		// '', admin, 'files', 'path/to/file.pdf'
+		list(,, $folder,) = explode('/', $filePath, 4);
+		if ($folder !== 'files') {
+			$this->logger->debug('Not processing event because path \'{path}\' seems to be invalid.',
+					['path' => $filePath]);
+			return false;
+		}
+
+		// Check owner exists
+		$owner = $node->getOwner();
+		if ($owner === null) {
+			$this->logger->debug('Not processing event because file with path \'{path}\' has no owner.',
+					['path' => $filePath]);
+			return false;
+		}
+
+		return true;
 	}
 }

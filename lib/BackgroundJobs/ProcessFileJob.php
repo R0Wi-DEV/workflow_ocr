@@ -26,6 +26,7 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\BackgroundJobs;
 
+use OC\User\NoUserException;
 use OCP\Files\IRootFolder;
 use OCP\Files\NotFoundException;
 use OCP\ILogger;
@@ -37,6 +38,9 @@ use OCA\WorkflowOcr\Wrapper\IFilesystem;
 use OCA\WorkflowOcr\Wrapper\IViewFactory;
 use OCP\Files\FileInfo;
 use OCP\Files\Node;
+use OCP\IUserManager;
+use OCP\IUser;
+use OCP\IUserSession;
 
 /**
  * Represents a QuedJob which processes
@@ -54,63 +58,89 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
 	private $viewFactory;
 	/** @var IFilesystem */
 	private $filesystem;
+	/** @var IUserManager */
+	private $userManager;
+	/** @var IUserSession */
+	private $userSession;
 	
 	public function __construct(
 		ILogger $logger,
 		IRootFolder $rootFolder,
 		IOcrService $ocrService,
 		IViewFactory $viewFactory,
-		IFilesystem $filesystem) {
+		IFilesystem $filesystem,
+		IUserManager $userManager,
+		IUserSession $userSession) {
 		$this->logger = $logger;
 		$this->rootFolder = $rootFolder;
 		$this->ocrService = $ocrService;
 		$this->viewFactory = $viewFactory;
 		$this->filesystem = $filesystem;
+		$this->userManager = $userManager;
+		$this->userSession = $userSession;
 	}
 	
 	/**
 	 * @param mixed $argument
 	 */
 	protected function run($argument) : void {
-		$this->logger->debug('Run ' . self::class . ' job. Argument: {argument}.', ['argument' => $argument]);
+		$this->logger->debug('STARTED -- Run ' . self::class . ' job. Argument: {argument}.', ['argument' => $argument]);
 		
-		list($success, $filePath) = $this->tryParseArguments($argument);
+		list($success, $filePath, $uid) = $this->tryParseArguments($argument);
 		if (!$success) {
 			return;
 		}
 
 		try {
-			$this->runInternal($filePath);
+			$this->initUserEnvironment($uid);
+			$this->processFile($filePath);
 		} catch (\Throwable $ex) {
 			$this->logger->logException($ex);
+		} finally {
+			$this->shutdownUserEnvironment();
 		}
+
+		$this->logger->debug('ENDED -- Run ' . self::class . ' job. Argument: {argument}.', ['argument' => $argument]);
 	}
 
 	/**
 	 * @param mixed $argument
 	 */
 	private function tryParseArguments($argument) : array {
+		if (!is_array($argument)){
+			$this->logger->warning('Argument is no array in ' . self::class . ' method \'tryParseArguments\'.');
+			return [
+				false
+			];
+		}
+
 		$filePath = null;
 		$filePathKey = 'filePath';
-
 		if (array_key_exists($filePathKey , $argument)) {
 			$filePath = $argument[$filePathKey];
 		} else {
-			$this->logger->warning('Variable \''. $filePathKey .'\' not set in ' . self::class . ' method \'parseArguments\'.');
+			$this->logger->warning('Variable \''. $filePathKey .'\' not set in ' . self::class . ' method \'tryParseArguments\'.');
+		}
+
+		$uid = null;
+		$uidKey = 'uid';
+		if (array_key_exists($uidKey , $argument)) {
+			$uid = $argument[$uidKey];
+		} else {
+			$this->logger->warning('Variable \''. $uidKey .'\' not set in ' . self::class . ' method \'tryParseArguments\'.');
 		}
 
 		return [
-			$filePath !== null,
-			$filePath
+			$filePath !== null && $uid !== null,
+			$filePath,
+			$uid
 		];
 	}
 
 	/**
 	 * @param string $filePath  The file to be processed
 	 */
-	private function runInternal(string $filePath) : void {
-		$this->initFileSystem($filePath);
-		
+	private function processFile(string $filePath) : void {
 		try {
 			/** @var File */
 			$node = $this->rootFolder->get($filePath);
@@ -141,14 +171,31 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
 		$view->file_put_contents($filename, $ocrFile);
 	}
 
-	private function initFileSystem(string $filePath) : void {
-		$pathSegments = explode('/', $filePath, 4);
-		$user = $pathSegments[1];
-		$rootFolder = '/' . $pathSegments[1] . '/files';
-		$this->filesystem->init($user, $rootFolder);
+	/**
+	 * * @param string $uid 	The owners userId of the file to be processed
+	 */
+	private function initUserEnvironment(string $uid) : void {
+		/** @var IUser */
+		$user = $this->userManager->get($uid);
+		if (!$user) {
+			throw new NoUserException("User with uid '$uid' was not found");
+		}
+
+		$this->userSession->setUser($user);
+		$this->filesystem->init($uid, '/' . $uid . '/files');
 	}
 
+	/**
+	 * @param File $file
+	 */
 	private function ocrFile(File $file) : string {
 		return $this->ocrService->ocrFile($file->getMimeType(), $file->getContent());
+	}
+
+	/**
+	 * @param string $uid
+	 */
+	private function shutdownUserEnvironment() : void {
+		$this->userSession->setUser(null);
 	}
 }

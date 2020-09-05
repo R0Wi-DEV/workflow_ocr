@@ -32,6 +32,7 @@ use OCP\Files\FileInfo;
 use OCP\Files\Node;
 use OCP\IL10N;
 use OCP\ILogger;
+use OCP\IUser;
 use OCP\WorkflowEngine\IRuleMatcher;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -116,19 +117,26 @@ class OperationTest extends TestCase {
 		$operation->onEvent($eventName, $event, $ruleMatcher);
 	}
 
-	public function testAddWithCorrectFilePath() {
+	public function testAddWithCorrectFilePathAndUser() {
 		$filePath = "/admin/files/path/to/file.pdf";
+		$uid = 'admin';
 		$this->jobList->expects($this->once())
 			->method('add')
-			->with(ProcessFileJob::class, ['filePath' => $filePath]);
+			->with(ProcessFileJob::class, ['filePath' => $filePath, 'uid' => $uid]);
 		
 		$operation = new Operation($this->jobList, $this->l, $this->logger);
 
+		$userMock = $this->createMock(IUser::class);
+		$userMock->expects($this->once())
+			->method('getUID')
+			->willReturn($uid);
 		$fileMock = $this->createMock(Node::class);
 		$fileMock->method('getType')
 			->willReturn(FileInfo::TYPE_FILE);
 		$fileMock->method('getPath')
 			->willReturn($filePath);
+		$fileMock->method('getOwner')
+			->willReturn($userMock);
 		$event = new GenericEvent($fileMock);
 		/** @var IRuleMatcher */
 		$ruleMatcher = $this->createMock(IRuleMatcher::class);
