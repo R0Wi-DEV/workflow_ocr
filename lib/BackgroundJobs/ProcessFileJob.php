@@ -107,7 +107,7 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
 	 * @param mixed $argument
 	 */
 	private function tryParseArguments($argument) : array {
-		if (!is_array($argument)){
+		if (!is_array($argument)) {
 			$this->logger->warning('Argument is no array in ' . self::class . ' method \'tryParseArguments\'.');
 			return [
 				false
