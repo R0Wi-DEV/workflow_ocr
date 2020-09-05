@@ -18,6 +18,7 @@ use OCA\WorkflowOcr\AppInfo;
 use OCP\AppFramework\App;
 use OCP\IUser;
 use OCP\IUserManager;
+use OCP\IUserSession;
 
 class TestUtils {
 
@@ -33,5 +34,19 @@ class TestUtils {
 		/** @var IUserManager */
 		$userManager = $this->container->query(IUserManager::class);
 		return $userManager->createUser($user, $pw);
+	}
+
+	public function initUserEnvironment(IUser $user) : void {
+		$this->setUser($user);
+	}
+
+	public function shutDownUserEnvironment() : void {
+		$this->setUser(null);
+	}
+
+	private function setUser($user) : void {
+		/** @var IUserSession */
+		$userSession = $this->container->query(IUserSession::class);
+		$userSession->setUser($user);
 	}
 }
