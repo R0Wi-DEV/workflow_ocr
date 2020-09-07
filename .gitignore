@@ -1,6 +1,8 @@
 vendor
 .php_cs.cache
 coverage*.xml
+coverage*.html
 build
 .phpunit.result.cache
 .vscode
+*.cov

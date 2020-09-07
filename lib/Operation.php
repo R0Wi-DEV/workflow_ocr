@@ -32,12 +32,13 @@ use OCP\BackgroundJob\IJobList;
 use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\GenericEvent;
 use OCP\IL10N;
-use OCP\IUserSession;
 use OCP\WorkflowEngine\IManager;
 use OCP\WorkflowEngine\IRuleMatcher;
 use OCP\WorkflowEngine\ISpecificOperation;
 use OCP\ILogger;
 use OCA\WorkflowOcr\BackgroundJobs\ProcessFileJob;
+use OCP\Files\FileInfo;
+use OCP\Files\Node;
 
 class Operation implements ISpecificOperation {
 
@@ -47,14 +48,11 @@ class Operation implements ISpecificOperation {
 	private $l;
 	/** @var ILogger */
 	private $logger;
-	/** @var IUserSession */
-	private $userSession;
 
-	public function __construct(IJobList $jobList, IL10N $l, IUserSession $userSession, ILogger $logger) {
+	public function __construct(IJobList $jobList, IL10N $l,  ILogger $logger) {
 		$this->jobList = $jobList;
 		$this->l = $l;
 		$this->logger = $logger;
-		$this->userSession = $userSession;
 	}
 
 	/**
@@ -89,22 +87,49 @@ class Operation implements ISpecificOperation {
 			return;
 		}
 
+		/** @var Node*/
 		$node = $event->getSubject();
 
-		if (!$node instanceof \OC\Files\Node\File) {
+		if (!$node instanceof Node || $node->getType() !== FileInfo::TYPE_FILE) {
 			$this->logger->debug('Not processing event {eventname} because node is not a file.',
 					['eventname' => $eventName]);
 			return;
 		}
 
+		if (!$this->checkNode($node)) {
+			return;
+		}
+
 		$args = [
 			'filePath' => $node->getPath(),
-			'uid' => $this->userSession->getUser()->getUID() // TODO :: shared folders?
+			'uid' => $node->getOwner()->getUID()
 		];
 		$this->jobList->add(ProcessFileJob::class, $args);
 	}
 
 	public function getEntityId(): string {
 		return File::class;
+	}
+
+	private function checkNode(Node $node) : bool {
+		// Check path has valid structure
+		$filePath = $node->getPath();
+		// '', admin, 'files', 'path/to/file.pdf'
+		list(,, $folder,) = explode('/', $filePath, 4);
+		if ($folder !== 'files') {
+			$this->logger->debug('Not processing event because path \'{path}\' seems to be invalid.',
+					['path' => $filePath]);
+			return false;
+		}
+
+		// Check owner exists
+		$owner = $node->getOwner();
+		if ($owner === null) {
+			$this->logger->debug('Not processing event because file with path \'{path}\' has no owner.',
+					['path' => $filePath]);
+			return false;
+		}
+
+		return true;
 	}
 }

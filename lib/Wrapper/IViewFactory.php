@@ -26,24 +26,12 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\Wrapper;
 
-use \OC\Files\View;
-
-class ViewWrapper implements IView {
-	/** @var View */
-	private $wrappedView;
-
-	public function __construct(string $directoryPath) {
-		$this->wrappedView = new View($directoryPath);
-	}
+interface IViewFactory {
 
 	/**
-	 * @inheritdoc
+	 * Creates a new view wrapper for the given directory
+	 * @param $directoryPath The path of the directory for which the view shall be created
+	 * @return IView
 	 */
-	public function file_put_contents(string $filePath, string $content) : bool {
-		$retVal = $this->wrappedView->file_put_contents($filePath, $content);
-		if (is_bool($retVal)) {
-			return $retVal;
-		}
-		return boolval($retVal); // TODO :: method above returns numeric value (e.g. 10023)
-	}
+	public function create(string $directoryPath) : IView;
 }

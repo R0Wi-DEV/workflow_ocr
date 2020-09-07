@@ -30,6 +30,5 @@ namespace OCA\WorkflowOcr\Wrapper;
  * Interface for wrapping \OC\Files\View
  */
 interface IView {
-	public function init(string $rootPath) : void;
 	public function file_put_contents(string $filePath, string $content) : bool;
 }

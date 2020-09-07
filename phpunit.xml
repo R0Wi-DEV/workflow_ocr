@@ -20,7 +20,4 @@
             </exclude>
         </whitelist>
     </filter>
-    <logging>
-        <log type="coverage-clover" target="./coverage_unittests.xml"/>
-    </logging>
 </phpunit>

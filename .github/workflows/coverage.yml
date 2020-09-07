@@ -62,14 +62,13 @@ jobs:
           ./occ maintenance:install --verbose --database=${{ matrix.databases }} --database-name=nextcloud --database-host=127.0.0.1 --database-port=$DB_PORT --database-user=root --database-pass=rootpassword --admin-user admin --admin-pass password 
           ./occ app:enable ${{ env.APP_NAME }}
           php -S localhost:8080 &
-      - name: PHPUnit
+      
+      - name: Run tests with coverage tracking
         working-directory: apps/${{ env.APP_NAME }}
-        run: ./vendor/phpunit/phpunit/phpunit -c phpunit.xml
-
-      - name: PHPUnit integration
-        working-directory: apps/${{ env.APP_NAME }}
-        run: ./vendor/phpunit/phpunit/phpunit -c phpunit.integration.xml
+        run: make coverage
 
       - name: Upload coverage to Codecov
         working-directory: ./apps/${{ env.APP_NAME }}
-        run: curl -s https://codecov.io/bash | bash -s - -t ${{ secrets.CODECOV_TOKEN }} -F php -f coverage_unittests.xml -f coverage_integrationtests.xml -Z
+        run: |
+          wget https://codecov.io/bash -O codecov.sh  
+          bash codecov.sh -t ${{ secrets.CODECOV_TOKEN }} -f coverage.xml -Z
