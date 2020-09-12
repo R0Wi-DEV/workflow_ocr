@@ -1,0 +1,41 @@
+name: Build and publish app release
+
+on:
+  release:
+      types: [published]
+
+env:
+  APP_NAME: workflow_ocr
+
+jobs:
+  build_and_publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: ${{ env.APP_NAME }}
+      - name: Run build
+        run: cd ${{ env.APP_NAME }} && make appstore
+      - name: Upload app tarball to release
+        uses: svenstaro/upload-release-action@v2
+        id: attach_to_release
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ env.APP_NAME }}/build/artifacts/appstore/${{ env.APP_NAME }}.tar.gz
+          asset_name: ${{ env.APP_NAME }}.tar.gz 
+          tag: ${{ github.ref }}
+          overwrite: true
+      # TODO: maybe path appinfo.xml with current version
+      - name: Upload app to Nextcloud appstore
+        env:
+          APP_NAME: ${{ env.APP_NAME }}
+          APPSTORE_TOKEN: ${{ secrets.APPSTORE_TOKEN }}
+          NIGHTLY: ${{ github.event.release.prerelease }}
+          DOWNLOAD_URL: ${{ steps.attach_to_release.outputs.browser_download_url }}
+          ENCRYPTED_PK_PATH: ${{ github.workspace }}/${{ env.APP_NAME }}/.github/workflows/secrets/${{ env.APP_NAME }}.key.enc
+          PK_DECRYPT_PW: ${{ secrets.APP_PK_ENCRYPTION_KEY }}
+        run: |
+          cd ${{ env.APP_NAME }}/.github/workflows/scripts
+          chmod +x push_appstore.sh
+          ./push_appstore.sh
