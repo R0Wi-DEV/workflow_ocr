@@ -2,13 +2,13 @@ name: Build and publish app release
 
 on:
   release:
-#      types: [published]
+      types: [published]
 
 env:
   APP_NAME: workflow_ocr
 
 jobs:
-  build:
+  build_and_publish:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -30,3 +30,16 @@ jobs:
         env: 
           OUTPUT: ${{ steps.attach_to_release.outputs.browser_download_url }}
         run: echo "${OUTPUT}"
+      # TODO: maybe path appinfo.xml with current version
+      - name: Upload app to Nextcloud appstore
+        env:
+          APP_NAME: ${{ env.APP_NAME }}
+          APPSTORE_TOKEN: ${{ secrets.APPSTORE_TOKEN }}
+          NIGHTLY: ${{ github.event.release.prerelease }}
+          DOWNLOAD_URL: ${{ steps.attach_to_release.outputs.browser_download_url }}
+          ENCRYPTED_PK_PATH: ${{ env.APP_NAME }}/.github/workflows/${{ env.APP_NAME }}.key.enc
+          PK_DECRYPT_PW: ${{ secrets.APP_PK_ENCRYPTION_KEY }}
+        run: |
+          cd ${{ env.APP_NAME }}/.github/workflows/scripts
+          chmod +x push_appstore.sh
+          ./push_appstore.sh
