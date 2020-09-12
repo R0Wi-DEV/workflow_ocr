@@ -2,7 +2,7 @@ name: Build and publish app release
 
 on:
   release:
-      types: [published, created]
+#      types: [published]
 
 env:
   APP_NAME: workflow_ocr
