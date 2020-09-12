@@ -37,7 +37,7 @@ jobs:
           APPSTORE_TOKEN: ${{ secrets.APPSTORE_TOKEN }}
           NIGHTLY: ${{ github.event.release.prerelease }}
           DOWNLOAD_URL: ${{ steps.attach_to_release.outputs.browser_download_url }}
-          ENCRYPTED_PK_PATH: ${{ env.APP_NAME }}/.github/workflows/${{ env.APP_NAME }}.key.enc
+          ENCRYPTED_PK_PATH: ${{ env.APP_NAME }}/.github/workflows/secrets/${{ env.APP_NAME }}.key.enc
           PK_DECRYPT_PW: ${{ secrets.APP_PK_ENCRYPTION_KEY }}
         run: |
           cd ${{ env.APP_NAME }}/.github/workflows/scripts

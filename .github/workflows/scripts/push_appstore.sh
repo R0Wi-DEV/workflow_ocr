@@ -17,5 +17,5 @@ openssl aes-256-cbc -in $ENCRYPTED_PK_PATH -out ${APP_NAME}.key -pass pass:${PK_
 echo "Creating signature for app release"
 sign="`openssl dgst -sha512 -sign ${APP_NAME}.key ${APP_NAME}.tar.gz | openssl base64 -A`"
 
-echo "Creating new app release in Nextcloud appstore (nightly=${NIGHTLY}"
+echo "Creating new app release in Nextcloud appstore (nightly=${NIGHTLY})"
 curl -X POST https://apps.nextcloud.com/api/v1/apps/releases -H "Authorization: Token ${APPSTORE_TOKEN}" -H "Content-Type: application/json" -d "{\"download\":\"$download_url\", \"signature\": \"$sign\", \"nightly\": ${NIGHTLY} }"
