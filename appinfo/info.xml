@@ -20,7 +20,7 @@
 	<website>https://github.com/R0Wi/workflow_ocr</website>
 	<bugs>https://github.com/R0Wi/workflow_ocr/issues</bugs>
 	<repository type="git">https://github.com/R0Wi/workflow_ocr.git</repository>
-	<screenshot>https://github.com/R0Wi/workflow_ocr/blob/eb2d65e9610406bbab22c4c8dda1cea015b5c791/doc/img/usage_1.jpg</screenshot>
+	<screenshot>https://github.com/R0Wi/workflow_ocr/blob/eb2d65e9610406bbab22c4c8dda1cea015b5c791/doc/img/usage_1.jpg?raw=true</screenshot>
 	<dependencies>
 		<nextcloud min-version="19" max-version="19" />
 	</dependencies>
