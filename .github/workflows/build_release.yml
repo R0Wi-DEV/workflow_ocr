@@ -33,7 +33,7 @@ jobs:
           APPSTORE_TOKEN: ${{ secrets.APPSTORE_TOKEN }}
           NIGHTLY: ${{ github.event.release.prerelease }}
           DOWNLOAD_URL: ${{ steps.attach_to_release.outputs.browser_download_url }}
-          APP_PRIVATE_KEY_FILE: ${{ env.APP_NAME }}.key
+          APP_PRIVATE_KEY_FILE: ${{ github.workspace }}/${{ env.APP_NAME }}.key
         run: |
           echo "${{ secrets.APP_PRIVATE_KEY }}" > "$APP_PRIVATE_KEY_FILE"
           cd ${{ env.APP_NAME }}/.github/workflows/scripts
