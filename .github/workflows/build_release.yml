@@ -35,7 +35,7 @@ jobs:
           DOWNLOAD_URL: ${{ steps.attach_to_release.outputs.browser_download_url }}
           APP_PRIVATE_KEY_FILE: ~/.nextcloud_keys/${{ env.APP_NAME }}.key
         run: |
-          echo ${{ secrets.APP_PRIVATE_KEY }} > $APP_PRIVATE_KEY_FILE
+          echo "${{ secrets.APP_PRIVATE_KEY }}" > "$APP_PRIVATE_KEY_FILE"
           cd ${{ env.APP_NAME }}/.github/workflows/scripts
           chmod +x push_appstore.sh
           ./push_appstore.sh
