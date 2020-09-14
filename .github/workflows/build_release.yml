@@ -26,16 +26,11 @@ jobs:
           asset_name: ${{ env.APP_NAME }}.tar.gz 
           tag: ${{ github.ref }}
           overwrite: true
-      # TODO: maybe path appinfo.xml with current version
       - name: Upload app to Nextcloud appstore
-        env:
-          APP_NAME: ${{ env.APP_NAME }}
-          APPSTORE_TOKEN: ${{ secrets.APPSTORE_TOKEN }}
-          NIGHTLY: ${{ github.event.release.prerelease }}
-          DOWNLOAD_URL: ${{ steps.attach_to_release.outputs.browser_download_url }}
-          APP_PRIVATE_KEY_FILE: ${{ github.workspace }}/${{ env.APP_NAME }}.key
-        run: |
-          echo "${{ secrets.APP_PRIVATE_KEY }}" > "$APP_PRIVATE_KEY_FILE"
-          cd ${{ env.APP_NAME }}/.github/workflows/scripts
-          chmod +x push_appstore.sh
-          ./push_appstore.sh
+        uses: R0Wi/nextcloud-appstore-push-action@v1
+        with:
+          app_name: ${{ env.APP_NAME }}
+          appstore_token: ${{ secrets.APPSTORE_TOKEN }}
+          download_url: ${{ steps.attach_to_release.outputs.browser_download_url }}
+          app_private_key: ${{ secrets.APP_PRIVATE_KEY }}
+          nightly: ${{ github.event.release.prerelease }}
