@@ -32,8 +32,8 @@ wget https://github.com/R0Wi/workflow_ocr/releases/download/<VERSION>/workflow_o
 tar -xzvf workflow_ocr.tar.gz
 rm workflow_ocr.tar.gz
 ```
-### Nextcloud Cron
-Since the actual processing of the files is done asynchronously via Nextcloud's cronjob engine, make sure you've properly setup the cron functionallity as described [here](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/background_jobs_configuration.html#cron-jobs). If possible please use the [`crontab`](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/background_jobs_configuration.html#cron) approach for more reliability.
+### Nextcloud background jobs
+Since the actual processing of the files is done asynchronously via Nextcloud's background job engine, make sure you've properly setup the cron functionallity as described [here](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/background_jobs_configuration.html#cron-jobs). If possible please use the [`crontab`](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/background_jobs_configuration.html#cron) approach for more reliability.
 
 
 ### Backend
@@ -52,7 +52,15 @@ Make sure `Imagick` is properly configured so that it can access pdf files. On d
 </policymap>
 
 ```
-After editing the file you would usually need to restart your webserver so that the changes have an effect. Because the OCR processing is done in the background via cronjob that's not necessary in this case.
+If you use **any other background job setting than [`cron`](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/background_jobs_configuration.html#cron)** you'll have to restart your php environment for the above changes to be applied. Depending on your system this is usually done by restarting your `php-fpm`-daemon or webserver, for example:
+
+```bash
+# Restart php-fpm
+sudo systemctl restart php7.3-fpm.service
+
+# Restart Apache webserver
+sudo systemctl restart apache2
+```
 
 You can find additional information about `Imagick` [here](https://www.php.net/manual/en/imagick.setup.php).
 
