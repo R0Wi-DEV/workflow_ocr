@@ -76,7 +76,7 @@ class Operation implements ISpecificOperation {
 	}
 
 	public function isAvailableForScope(int $scope): bool {
-		return $scope === IManager::SCOPE_ADMIN;
+		return $scope === IManager::SCOPE_ADMIN || $scope === IManager::SCOPE_USER;
 	}
 
 	public function onEvent(string $eventName, Event $event, IRuleMatcher $ruleMatcher): void {

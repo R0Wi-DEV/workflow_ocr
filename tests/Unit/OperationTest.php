@@ -33,6 +33,7 @@ use OCP\Files\Node;
 use OCP\IL10N;
 use OCP\ILogger;
 use OCP\IUser;
+use OCP\WorkflowEngine\IManager;
 use OCP\WorkflowEngine\IRuleMatcher;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -145,6 +146,16 @@ class OperationTest extends TestCase {
 		$operation->onEvent($eventName, $event, $ruleMatcher);
 	}
 
+	/**
+	 * @dataProvider dataProvider_ValidScopes
+	 */
+	public function testIsAvailableForScope(int $scope) {
+		$operation = new Operation($this->jobList, $this->l, $this->logger);
+		$result = $operation->isAvailableForScope($scope);
+
+		$this->assertTrue($result);
+	}
+
 	public function dataProvider_InvalidEvents() {
 		$arr = [
 			["\OCP\Files\preWrite", new GenericEvent()],
@@ -170,5 +181,12 @@ class OperationTest extends TestCase {
 			["/some/somefile.txt"]
 		];
 		return $arr;
+	}
+
+	public function dataProvider_ValidScopes() {
+		return [
+			[IManager::SCOPE_ADMIN],
+			[IManager::SCOPE_USER]
+		];
 	}
 }
