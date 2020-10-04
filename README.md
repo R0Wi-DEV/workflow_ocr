@@ -7,9 +7,9 @@
 [![Generic badge](https://img.shields.io/badge/Nextcloud-19-orange)](https://github.com/nextcloud/server)
 
 ## Table of contents
-  * [Setup](#setup)
+* [Setup](#setup)
     + [App installation](#app-installation)
-    + [Nextcloud Cron](#nextcloud-cron)
+    + [Nextcloud background jobs](#nextcloud-background-jobs)
     + [Backend](#backend)
       - [Imagick](#imagick)
       - [Tesseract](#tesseract)
@@ -19,6 +19,7 @@
     + [PDF](#pdf)
   * [Development](#development)
     + [Dev setup](#dev-setup)
+    + [Debugging](#debugging)
     + [Adding a new `OcrProcessor`](#adding-a-new--ocrprocessor-)
   * [Limitations](#limitations)
   * [Used libraries & components](#used-libraries---components)
