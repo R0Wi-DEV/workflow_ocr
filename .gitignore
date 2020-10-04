@@ -4,5 +4,4 @@ coverage*.xml
 coverage*.html
 build
 .phpunit.result.cache
-.vscode
 *.cov
