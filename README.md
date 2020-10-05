@@ -7,9 +7,9 @@
 [![Generic badge](https://img.shields.io/badge/Nextcloud-19-orange)](https://github.com/nextcloud/server)
 
 ## Table of contents
-  * [Setup](#setup)
+* [Setup](#setup)
     + [App installation](#app-installation)
-    + [Nextcloud Cron](#nextcloud-cron)
+    + [Nextcloud background jobs](#nextcloud-background-jobs)
     + [Backend](#backend)
       - [Imagick](#imagick)
       - [Tesseract](#tesseract)
@@ -19,6 +19,7 @@
     + [PDF](#pdf)
   * [Development](#development)
     + [Dev setup](#dev-setup)
+    + [Debugging](#debugging)
     + [Adding a new `OcrProcessor`](#adding-a-new--ocrprocessor-)
   * [Limitations](#limitations)
   * [Used libraries & components](#used-libraries---components)
@@ -32,8 +33,8 @@ wget https://github.com/R0Wi/workflow_ocr/releases/download/<VERSION>/workflow_o
 tar -xzvf workflow_ocr.tar.gz
 rm workflow_ocr.tar.gz
 ```
-### Nextcloud Cron
-Since the actual processing of the files is done asynchronously via Nextcloud's cronjob engine, make sure you've properly setup the cron functionallity as described [here](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/background_jobs_configuration.html#cron-jobs). If possible please use the [`crontab`](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/background_jobs_configuration.html#cron) approach for more reliability.
+### Nextcloud background jobs
+Since the actual processing of the files is done asynchronously via Nextcloud's background job engine, make sure you've properly setup the cron functionallity as described [here](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/background_jobs_configuration.html#cron-jobs). If possible please use the [`crontab`](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/background_jobs_configuration.html#cron) approach for more reliability.
 
 
 ### Backend
@@ -52,7 +53,15 @@ Make sure `Imagick` is properly configured so that it can access pdf files. On d
 </policymap>
 
 ```
-After editing the file you would usually need to restart your webserver so that the changes have an effect. Because the OCR processing is done in the background via cronjob that's not necessary in this case.
+If you use **any other background job setting than [`cron`](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/background_jobs_configuration.html#cron)** you'll have to restart your php environment for the above changes to be applied. Depending on your system this is usually done by restarting your `php-fpm`-daemon or webserver, for example:
+
+```bash
+# Restart php-fpm
+sudo systemctl restart php7.3-fpm.service
+
+# Restart Apache webserver
+sudo systemctl restart apache2
+```
 
 You can find additional information about `Imagick` [here](https://www.php.net/manual/en/imagick.setup.php).
 
@@ -110,7 +119,9 @@ Tools and packages you need for development:
 * `make`
 * [`composer`](https://getcomposer.org/download/) (Will be automatically installed when running `make build`)
 * Properly setup `php`-environment
-* Webserver (like Apache)
+* Webserver (like [`Apache`](https://httpd.apache.org/))
+* [`XDebug`](https://xdebug.org/docs/install) and a `XDebug`-connector for your IDE (for example https://marketplace.visualstudio.com/items?itemName=felixfbecker.php-debug) if you want to debug PHP code
+* PHP IDE (we recommend [`VSCode`](https://code.visualstudio.com/))
 
 You can then build and install the app by cloning this repository into the Nextcloud apps folder and running `make build`.
 ```bash
@@ -120,6 +131,55 @@ cd workflow_ocr
 make build
 ```
 Don't forget to activate the app via Nextcloud web-gui.
+
+### Debugging
+We provide a preconfigured debug configuration file for `VSCode` at `.vscode/launch.json` which will automatically be recognized when opening this 
+repository inside of `VSCode`. If you've properly installed and configured the `XDebug`-plugin you should be able to see it in the upper left corner
+when being inside of the debug-tab.
+
+  <p align="center">
+    <img src="doc/img/debug.jpg" alt="VSCode debug profile">
+  </p>
+
+To get the debugger profiles working you need to ensure that `XDebug` for `Apache` (or your preferred webserver) is connected to you machine at
+port `9000` while `XDebug` for the PHP CLI should be configured to bind to port `9001`. Depending on your system a possible configuration could
+look like this:
+
+```ini
+; /etc/php/7.4/cli/php.ini
+; ...
+[Xdebug]
+zend_extension=/usr/lib/php/20190902/xdebug.so
+xdebug.remote_enable=1
+xdebug.remote_host=127.0.0.1
+xdebug.remote_port=9001
+xdebug.remote_autostart=1
+```
+
+```ini
+; /etc/php/7.4/apache2/php.ini
+; ...
+[Xdebug]
+zend_extension=/usr/lib/php/20190902/xdebug.so
+xdebug.remote_enable=1
+xdebug.remote_host=127.0.0.1
+xdebug.remote_port=9000
+xdebug.remote_autostart=1
+```
+
+The following table lists the various debug profiles:
+
+| Profile name            | Use                                                                                           |
+|-------------------------|-----------------------------------------------------------------------------------------------|
+| Listen for XDebug       | Starts XDebug listener for your webserver process.                                            |
+| Listen for XDebug (CLI) | Starts XDebug listener for your php cli process.                                              |
+| Run cron.php            | Runs Nextcloud's `cron.php` with debugger attached. Useful for debugging OCR-processing jobs. |
+| Debug Unittests         | Start PHPUnit Unittests with debugger attached.                                               |
+| Debug Integrationtests  | Start PHPUnit Integrationtests with debugger attached.                                        |
+
+If you're looking for some good sources on how to setup `VSCode` + `XDebug` we can recommend:
+* https://tighten.co/blog/configure-vscode-to-debug-phpunit-tests-with-xdebug/
+* https://code.visualstudio.com/docs/languages/php
 
 ### Adding a new `OcrProcessor`
 To support a new mimetype for being processed with OCR you have to follow a few easy steps:
