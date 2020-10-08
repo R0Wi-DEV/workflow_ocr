@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\Tests\Unit;
 
+use OCA\WorkflowEngine\Entity\File;
 use OCA\WorkflowOcr\BackgroundJobs\ProcessFileJob;
 use OCA\WorkflowOcr\Operation;
 use OCP\BackgroundJob\IJobList;
@@ -122,6 +123,32 @@ class OperationTest extends TestCase {
 		$operation->onEvent($eventName, $event, $ruleMatcher);
 	}
 
+	public function testDoesNothingOnFileWithoutOwner() {
+		$this->jobList->expects($this->never())
+			->method('add')
+			->withAnyParameters();
+		$this->logger->expects($this->once())
+			->method('debug')
+			->withAnyParameters();
+
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator);
+
+		$fileMock = $this->createMock(Node::class);
+		$fileMock->method('getType')
+			->willReturn(FileInfo::TYPE_FILE);
+		$fileMock->method('getPath')
+			->willReturn('/admin/files/path/to/file.pdf');
+		$fileMock->method('getOwner')
+			->willReturn(null);
+			
+		$event = new GenericEvent($fileMock);
+		/** @var IRuleMatcher */
+		$ruleMatcher = $this->createMock(IRuleMatcher::class);
+		$eventName = '\OCP\Files::postCreate';
+
+		$operation->onEvent($eventName, $event, $ruleMatcher);
+	}
+
 	public function testAddWithCorrectFilePathAndUser() {
 		$filePath = "/admin/files/path/to/file.pdf";
 		$uid = 'admin';
@@ -158,6 +185,55 @@ class OperationTest extends TestCase {
 		$result = $operation->isAvailableForScope($scope);
 
 		$this->assertTrue($result);
+	}
+
+	public function testDoesNothing_OnValidateOperation(){
+		$this->jobList->expects($this->never())
+			->method($this->anything());
+		$this->l->expects($this->never())
+			->method($this->anything());
+		$this->logger->expects($this->never())
+			->method($this->anything());
+		$this->urlGenerator->expects($this->never())
+			->method($this->anything());
+
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator);
+
+		$operation->validateOperation('aName', [], 'aOp');
+	}
+
+	public function testCallsLang_OnGetDisplayName() {
+		$this->l->expects($this->once())
+			->method('t');
+
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator);
+
+		$operation->getDisplayName();
+	}
+
+
+	public function testCallsLang_OnGetDescription() {
+		$this->l->expects($this->once())
+			->method('t');
+
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator);
+
+		$operation->getDescription();
+	}
+
+	public function testCallsUrlGenerator_OnGetIcon() {
+		$this->urlGenerator->expects($this->once())
+			->method('imagePath');
+
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator);
+
+		$operation->getIcon();
+	}
+
+	public function testEntityIdIsFile() {
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator);
+
+		$this->assertEquals(File::class, $operation->getEntityId());
 	}
 
 	public function dataProvider_InvalidEvents() {
