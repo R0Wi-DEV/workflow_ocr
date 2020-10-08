@@ -28,10 +28,10 @@ use OCA\WorkflowOcr\Exception\OcrProcessorNotFoundException;
 use OCA\WorkflowOcr\OcrProcessors\OcrProcessorFactory;
 use OCA\WorkflowOcr\OcrProcessors\PdfOcrProcessor;
 use PHPUnit\Framework\TestCase;
-use OCP\AppFramework\IAppContainer;
+use Psr\Container\ContainerInterface;
 
 class OcrProcessorFactoryTest extends TestCase {
-	/** @var IAppContainer */
+	/** @var ContainerInterface */
 	private $appContainer;
 
 	protected function setUp() : void {

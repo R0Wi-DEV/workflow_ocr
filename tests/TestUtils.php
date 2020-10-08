@@ -13,16 +13,16 @@
 
 namespace OCA\WorkflowOcr\Tests;
 
-use OCP\AppFramework\IAppContainer;
 use OCA\WorkflowOcr\AppInfo;
 use OCP\AppFramework\App;
 use OCP\IUser;
 use OCP\IUserManager;
 use OCP\IUserSession;
+use Psr\Container\ContainerInterface;
 
 class TestUtils {
 
-	/** @var IAppContainer */
+	/** @var ContainerInterface */
 	private $container;
 
 	public function __construct() {
@@ -32,7 +32,7 @@ class TestUtils {
 
 	public function createUser($user, $pw) : IUser {
 		/** @var IUserManager */
-		$userManager = $this->container->query(IUserManager::class);
+		$userManager = $this->container->get(IUserManager::class);
 		return $userManager->createUser($user, $pw);
 	}
 
@@ -46,7 +46,7 @@ class TestUtils {
 
 	private function setUser($user) : void {
 		/** @var IUserSession */
-		$userSession = $this->container->query(IUserSession::class);
+		$userSession = $this->container->get(IUserSession::class);
 		$userSession->setUser($user);
 	}
 }

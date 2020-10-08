@@ -26,7 +26,6 @@ namespace OCA\WorkflowOcr\Tests\Unit\Listener;
 use OCA\WorkflowOcr\Listener\RegisterFlowOperationsListener;
 use OCA\WorkflowOcr\Operation;
 use OCP\EventDispatcher\Event;
-use OCP\IServerContainer;
 use OCP\WorkflowEngine\Events\LoadSettingsScriptsEvent;
 use OCP\WorkflowEngine\Events\RegisterChecksEvent;
 use OCP\WorkflowEngine\Events\RegisterEntitiesEvent;
@@ -34,15 +33,16 @@ use OCP\WorkflowEngine\Events\RegisterOperationsEvent;
 use OCP\WorkflowEngine\IManager;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 
 class RegisterFlowOperationsListenerTest extends TestCase {
     
-    /** @var IServerContainer|MockObject */
+    /** @var ContainerInterface|MockObject */
     private $container;
     
     public function setUp() : void {
         parent::setUp();
-        $this->container = $this->createMock(IServerContainer::class);
+        $this->container = $this->createMock(ContainerInterface::class);
     }
 
     /**

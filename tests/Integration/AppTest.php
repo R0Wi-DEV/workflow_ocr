@@ -13,12 +13,13 @@
 
 namespace OCA\WorkflowOcr\Tests\Integration;
 
+use OC\AppFramework\Bootstrap\Coordinator;
 use OCA\WorkflowOcr\AppInfo\Application;
 use OCA\WorkflowOcr\Operation;
 use OCP\App\IAppManager;
 use OCP\AppFramework\App;
-use OCP\AppFramework\IAppContainer;
 use \PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use ReflectionClass;
 
 /**
@@ -27,7 +28,7 @@ use ReflectionClass;
  * against the database
  */
 class AppTest extends TestCase {
-	/** @var IAppContainer */
+	/** @var ContainerInterface */
 	private $container;
 
 	/** @var IAppManager */
@@ -51,10 +52,10 @@ class AppTest extends TestCase {
 	}
 
 	private function runBootstrapRegistrations() {
-		$bootstrapCoordinator = \OC::$server->query(\OC\AppFramework\Bootstrap\Coordinator::class);
+		$bootstrapCoordinator = $this->container->get(Coordinator::class);
 		
 		// HACK:: reset registrations and simulate request start
-		$reflectionClass = new ReflectionClass(\OC\AppFramework\Bootstrap\Coordinator::class);
+		$reflectionClass = new ReflectionClass(Coordinator::class);
 		$regContextProp = $reflectionClass->getProperty('registrationContext');
 		$regContextProp->setAccessible(true);
 		$regContextProp->setValue($bootstrapCoordinator, null);
