@@ -31,12 +31,13 @@ use OCP\EventDispatcher\GenericEvent;
 use OCP\Files\FileInfo;
 use OCP\Files\Node;
 use OCP\IL10N;
-use OCP\ILogger;
+use OCP\IURLGenerator;
 use OCP\IUser;
 use OCP\WorkflowEngine\IManager;
 use OCP\WorkflowEngine\IRuleMatcher;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 
 class OperationTest extends TestCase {
 	
@@ -44,14 +45,17 @@ class OperationTest extends TestCase {
 	private $jobList;
 	/** @var IL10N|MockObject */
 	private $l;
-	/** @var ILogger|MockObject */
+	/** @var LoggerInterface|MockObject */
 	private $logger;
+	/** @var IURLGenerator|MockObject */
+	private $urlGenerator;
 	
 	protected function setUp(): void {
 		parent::setUp();
 		$this->jobList = $this->createMock(IJobList::class);
 		$this->l = $this->createMock(IL10N::class);
-		$this->logger = $this->createMock(ILogger::class);
+		$this->logger = $this->createMock(LoggerInterface::class);
+		$this->urlGenerator = $this->createMock(IURLGenerator::class);
 	}
 
 	/**
@@ -65,7 +69,7 @@ class OperationTest extends TestCase {
 			->method('debug')
 			->withAnyParameters();
 
-		$operation = new Operation($this->jobList, $this->l, $this->logger);
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator);
 		/** @var IRuleMatcher */
 		$ruleMatcher = $this->createMock(IRuleMatcher::class);
 		$operation->onEvent($eventName, $event, $ruleMatcher);
@@ -79,7 +83,7 @@ class OperationTest extends TestCase {
 			->method('debug')
 			->withAnyParameters();
 		
-		$operation = new Operation($this->jobList, $this->l, $this->logger);
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator);
 
 		$fileMock = $this->createMock(Node::class);
 		$fileMock->method('getType')
@@ -103,7 +107,7 @@ class OperationTest extends TestCase {
 			->method('debug')
 			->withAnyParameters();
 		
-		$operation = new Operation($this->jobList, $this->l, $this->logger);
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator);
 
 		$fileMock = $this->createMock(Node::class);
 		$fileMock->method('getType')
@@ -125,7 +129,7 @@ class OperationTest extends TestCase {
 			->method('add')
 			->with(ProcessFileJob::class, ['filePath' => $filePath, 'uid' => $uid]);
 		
-		$operation = new Operation($this->jobList, $this->l, $this->logger);
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator);
 
 		$userMock = $this->createMock(IUser::class);
 		$userMock->expects($this->once())
@@ -150,7 +154,7 @@ class OperationTest extends TestCase {
 	 * @dataProvider dataProvider_ValidScopes
 	 */
 	public function testIsAvailableForScope(int $scope) {
-		$operation = new Operation($this->jobList, $this->l, $this->logger);
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator);
 		$result = $operation->isAvailableForScope($scope);
 
 		$this->assertTrue($result);

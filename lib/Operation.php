@@ -35,10 +35,11 @@ use OCP\IL10N;
 use OCP\WorkflowEngine\IManager;
 use OCP\WorkflowEngine\IRuleMatcher;
 use OCP\WorkflowEngine\ISpecificOperation;
-use OCP\ILogger;
 use OCA\WorkflowOcr\BackgroundJobs\ProcessFileJob;
 use OCP\Files\FileInfo;
 use OCP\Files\Node;
+use OCP\IURLGenerator;
+use Psr\Log\LoggerInterface;
 
 class Operation implements ISpecificOperation {
 
@@ -46,13 +47,16 @@ class Operation implements ISpecificOperation {
 	private $jobList;
 	/** @var IL10N */
 	private $l;
-	/** @var ILogger */
+	/** @var LoggerInterface */
 	private $logger;
+	/** @var IURLGenerator */
+	private $urlGenerator;
 
-	public function __construct(IJobList $jobList, IL10N $l,  ILogger $logger) {
+	public function __construct(IJobList $jobList, IL10N $l, LoggerInterface $logger, IURLGenerator $urlGenerator) {
 		$this->jobList = $jobList;
 		$this->l = $l;
 		$this->logger = $logger;
+		$this->urlGenerator = $urlGenerator;
 	}
 
 	/**
@@ -72,7 +76,7 @@ class Operation implements ISpecificOperation {
 	}
 
 	public function getIcon(): string {
-		return \OC::$server->getURLGenerator()->imagePath(Application::APP_NAME, 'app.svg');
+		return $this->urlGenerator->imagePath(Application::APP_NAME, 'app.svg');
 	}
 
 	public function isAvailableForScope(int $scope): bool {

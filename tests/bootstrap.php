@@ -8,7 +8,7 @@ if (!defined('PHPUNIT_RUN')) {
 
 require_once __DIR__.'/../../../lib/base.php';
 
-\OC::$loader->addValidRoot(OC::$SERVERROOT . '/tests');
+\OC::$loader->addValidRoot(\OC::$SERVERROOT . '/tests');
 \OC_App::loadApp(AppInfo\Application::APP_NAME);
 
 if (!class_exists('PHPUnit\Framework\TestCase')) {

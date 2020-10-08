@@ -43,16 +43,16 @@ use OCP\Files\Node;
 use OCP\Files\NotFoundException;
 use OCP\IConfig;
 use OCP\IDBConnection;
-use OCP\ILogger;
 use OCP\IUser;
 use OCP\IUserManager;
 use OCP\IUserSession;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use Psr\Log\LoggerInterface;
 
 class ProcessFileJobTest extends TestCase {
 
-	/** @var ILogger|MockObject */
+	/** @var LoggerInterface|MockObject */
 	private $logger;
 	/** @var IRootFolder|MockObject */
 	private $rootFolder;
@@ -76,8 +76,8 @@ class ProcessFileJobTest extends TestCase {
 	public function setUp() : void {
 		parent::setUp();
 
-		/** @var ILogger */
-		$this->logger = $this->createMock(ILogger::class);
+		/** @var LoggerInterface */
+		$this->logger = $this->createMock(LoggerInterface::class);
 		/** @var IRootFolder */
 		$this->rootFolder = $this->createMock(IRootFolder::class);
 		/** @var IOcrService */
@@ -144,13 +144,13 @@ class ProcessFileJobTest extends TestCase {
 	
 	public function testCatchesExceptionAndResetsUserEnvironment() {
 		$this->processFileJob->setArgument(['filePath' => '/admin/files/somefile.pdf', 'uid' => 'someuser']);
-		$exception = new Exception();
+		$exception = new Exception('someEx');
 		$this->filesystem->method('init')
 			->willThrowException($exception);
 		
 		$this->logger->expects($this->once())
-			->method('logException')
-			->with($exception);
+			->method('error')
+			->with($exception->getMessage(), [$exception]);
 
 		// Make sure user-environment is reset after any exception
 		// so the user should be set on beginning but should also
@@ -325,8 +325,10 @@ class ProcessFileJobTest extends TestCase {
 			->willReturn(null);
 
 		$this->logger->expects($this->once())
-			->method('logException')
-			->with($this->isInstanceOf(NoUserException::class));
+			->method('error')
+			->with($this->stringContains('nonexistinguser'), $this->callback(function($subject){
+				return is_array($subject) && ($subject[0] instanceof NoUserException);
+			}));
 		
 		$processFileJob = new ProcessFileJob(
 			$this->logger,
