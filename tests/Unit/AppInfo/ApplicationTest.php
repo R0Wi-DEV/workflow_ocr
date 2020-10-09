@@ -23,14 +23,12 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\Tests\Unit\AppInfo;
 
-use Exception;
 use OCA\WorkflowOcr\AppInfo\Application;
 use OCP\AppFramework\Bootstrap\IBootContext;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class ApplicationTest extends TestCase {
-	
 	public function testBootDoesNothingOnBootContext() {
 		/** @var IBootContext|MockObject */
 		$bootContext = $this->createMock(IBootContext::class);
@@ -40,7 +38,7 @@ class ApplicationTest extends TestCase {
 		$app = new Application();
 
 		$app->boot($bootContext);
-	}	
+	}
 
 	public function testAutoloadExecutedOnBoot() {
 		/** @var IBootContext|MockObject */
@@ -75,7 +73,7 @@ class ApplicationTest extends TestCase {
 		/** @var \Exception */
 		$ex = null;
 
-		try{
+		try {
 			// Simulate non-existing composer dir by renaming the existing one
 			if ($autoloadDirDoesNotExist) {
 				rename($composerDirOriginal, $composerDirMoveTo);
@@ -86,15 +84,12 @@ class ApplicationTest extends TestCase {
 			}
 			
 			$app->boot($bootContext);
-		}
-		catch(\Throwable $t){
+		} catch (\Throwable $t) {
 			$ex = $t;
-		}
-		finally {
+		} finally {
 			if ($autoloadDirDoesNotExist && is_dir($composerDirMoveTo)) {
 				rename($composerDirMoveTo, $composerDirOriginal);
-			}
-			else if (!$autoloadDirDoesNotExist && file_exists($autoloadMoveTo)) {
+			} elseif (!$autoloadDirDoesNotExist && file_exists($autoloadMoveTo)) {
 				rename($autoloadMoveTo, $autoloadOriginal);
 			}
 		}

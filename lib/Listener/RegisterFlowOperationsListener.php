@@ -45,6 +45,6 @@ class RegisterFlowOperationsListener implements IEventListener {
 			return;
 		}
 		$event->registerOperation($this->container->get(Operation::class));
-        Util::addScript(Application::APP_NAME, 'admin');
+		Util::addScript(Application::APP_NAME, 'admin');
 	}
 }

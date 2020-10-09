@@ -326,7 +326,7 @@ class ProcessFileJobTest extends TestCase {
 
 		$this->logger->expects($this->once())
 			->method('error')
-			->with($this->stringContains('nonexistinguser'), $this->callback(function($subject){
+			->with($this->stringContains('nonexistinguser'), $this->callback(function ($subject) {
 				return is_array($subject) && ($subject[0] instanceof NoUserException);
 			}));
 		

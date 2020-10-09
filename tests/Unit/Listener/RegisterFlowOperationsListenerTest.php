@@ -36,58 +36,58 @@ use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 
 class RegisterFlowOperationsListenerTest extends TestCase {
-    
-    /** @var ContainerInterface|MockObject */
-    private $container;
-    
-    public function setUp() : void {
-        parent::setUp();
-        $this->container = $this->createMock(ContainerInterface::class);
-    }
+	
+	/** @var ContainerInterface|MockObject */
+	private $container;
+	
+	public function setUp() : void {
+		parent::setUp();
+		$this->container = $this->createMock(ContainerInterface::class);
+	}
 
-    /**
-     * @dataProvider dataProvider_NonRegisterOperationsEvent
-     */
-    public function testDoesNothing_OnNonRegisterOpterationsEvent(Event $event) {
-        $this->container->expects($this->never())
-            ->method('get')
-            ->withAnyParameters();
+	/**
+	 * @dataProvider dataProvider_NonRegisterOperationsEvent
+	 */
+	public function testDoesNothing_OnNonRegisterOpterationsEvent(Event $event) {
+		$this->container->expects($this->never())
+			->method('get')
+			->withAnyParameters();
 
-        $listener = new RegisterFlowOperationsListener($this->container);
+		$listener = new RegisterFlowOperationsListener($this->container);
 
-        $listener->handle($event);
-    }
+		$listener->handle($event);
+	}
 
-    public function testRegistersOperationClassAndScripts_OnRegisterOperationsEvent() {
-        /** @var Operation|MockObject */
-        $operationMock = $this->createMock(Operation::class);
+	public function testRegistersOperationClassAndScripts_OnRegisterOperationsEvent() {
+		/** @var Operation|MockObject */
+		$operationMock = $this->createMock(Operation::class);
 
-        $this->container->expects($this->once())
-            ->method('get')
-            ->withAnyParameters()
-            ->willReturn($operationMock);
+		$this->container->expects($this->once())
+			->method('get')
+			->withAnyParameters()
+			->willReturn($operationMock);
 
-        /** @var IManager|MockObject */
-        $manager = $this->createMock(IManager::class);
-        $manager->expects($this->once())
-            ->method('registerOperation')
-            ->with($operationMock);
+		/** @var IManager|MockObject */
+		$manager = $this->createMock(IManager::class);
+		$manager->expects($this->once())
+			->method('registerOperation')
+			->with($operationMock);
 
-        $listener = new RegisterFlowOperationsListener($this->container);
+		$listener = new RegisterFlowOperationsListener($this->container);
 
-        $listener->handle(new RegisterOperationsEvent($manager));
+		$listener->handle(new RegisterOperationsEvent($manager));
 
-        $this->assertTrue(count(\OC_Util::$scripts) > 0);
-    }
+		$this->assertTrue(count(\OC_Util::$scripts) > 0);
+	}
 
-    public function dataProvider_NonRegisterOperationsEvent() {
-        /** @var IManager */
-        $manager = $this->createMock(IManager::class);
-        $arr = [
-            [ new RegisterEntitiesEvent($manager) ],
-            [ new RegisterChecksEvent($manager) ],
-            [ new LoadSettingsScriptsEvent() ]
-        ];
-        return $arr;
-    }
+	public function dataProvider_NonRegisterOperationsEvent() {
+		/** @var IManager */
+		$manager = $this->createMock(IManager::class);
+		$arr = [
+			[ new RegisterEntitiesEvent($manager) ],
+			[ new RegisterChecksEvent($manager) ],
+			[ new LoadSettingsScriptsEvent() ]
+		];
+		return $arr;
+	}
 }

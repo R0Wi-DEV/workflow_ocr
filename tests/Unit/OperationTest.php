@@ -187,7 +187,7 @@ class OperationTest extends TestCase {
 		$this->assertTrue($result);
 	}
 
-	public function testDoesNothing_OnValidateOperation(){
+	public function testDoesNothing_OnValidateOperation() {
 		$this->jobList->expects($this->never())
 			->method($this->anything());
 		$this->l->expects($this->never())
