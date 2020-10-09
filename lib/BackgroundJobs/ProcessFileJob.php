@@ -95,7 +95,7 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
 			$this->initUserEnvironment($uid);
 			$this->processFile($filePath);
 		} catch (\Throwable $ex) {
-			$this->logger->error($ex->getMessage(), [$ex]);
+			$this->logger->error($ex->getMessage(), ['exception' => $ex]);
 		} finally {
 			$this->shutdownUserEnvironment();
 		}

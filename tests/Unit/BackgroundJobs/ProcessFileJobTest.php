@@ -150,7 +150,7 @@ class ProcessFileJobTest extends TestCase {
 		
 		$this->logger->expects($this->once())
 			->method('error')
-			->with($exception->getMessage(), [$exception]);
+			->with($exception->getMessage(), ['exception' => $exception]);
 
 		// Make sure user-environment is reset after any exception
 		// so the user should be set on beginning but should also
@@ -327,7 +327,7 @@ class ProcessFileJobTest extends TestCase {
 		$this->logger->expects($this->once())
 			->method('error')
 			->with($this->stringContains('nonexistinguser'), $this->callback(function ($subject) {
-				return is_array($subject) && ($subject[0] instanceof NoUserException);
+				return is_array($subject) && ($subject['exception'] instanceof NoUserException);
 			}));
 		
 		$processFileJob = new ProcessFileJob(
