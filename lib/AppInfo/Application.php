@@ -53,6 +53,7 @@ use OCP\AppFramework\Bootstrap\IRegistrationContext;
 use OCP\WorkflowEngine\Events\RegisterOperationsEvent;
 
 class Application extends App implements IBootstrap {
+	public const COMPOSER_DIR = __DIR__ . '/../../vendor/';
 	public const APP_NAME = "workflow_ocr";
 
 	/**
@@ -62,6 +63,9 @@ class Application extends App implements IBootstrap {
 		parent::__construct(Application::APP_NAME, $urlParams);
 	}
 
+	/**
+	 * @inheritdoc
+	 */
 	public function register(IRegistrationContext $context): void {
 		$context->registerServiceAlias(IOcrService::class, OcrService::class);
 		$context->registerServiceAlias(IOcrProcessorFactory::class, OcrProcessorFactory::class);
@@ -76,7 +80,18 @@ class Application extends App implements IBootstrap {
 		$context->registerEventListener(RegisterOperationsEvent::class, RegisterFlowOperationsListener::class);
 	}
 
+	/**
+	 * @inheritdoc
+	 */
 	public function boot(IBootContext $context): void {
+		$this->requireAutoload();
+	}
 
+	private function requireAutoload(){
+		if (is_dir(self::COMPOSER_DIR) && file_exists(self::COMPOSER_DIR . 'autoload.php')) {
+			require_once self::COMPOSER_DIR . 'autoload.php';
+		} else {
+			throw new \Exception('Cannot include autoload. Did you run install dependencies using composer?');
+		}
 	}
 }
