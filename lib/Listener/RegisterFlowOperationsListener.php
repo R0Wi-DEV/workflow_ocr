@@ -21,34 +21,30 @@ declare(strict_types=1);
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OCA\WorkflowOcr\Tests\Unit\OcrProcessors;
+namespace OCA\WorkflowOcr\Listener;
 
 use OCA\WorkflowOcr\AppInfo\Application;
-use OCA\WorkflowOcr\Exception\OcrProcessorNotFoundException;
-use OCA\WorkflowOcr\OcrProcessors\OcrProcessorFactory;
-use OCA\WorkflowOcr\OcrProcessors\PdfOcrProcessor;
-use PHPUnit\Framework\TestCase;
+use OCA\WorkflowOcr\Operation;
+use OCP\EventDispatcher\Event;
+use OCP\EventDispatcher\IEventListener;
+use OCP\Util;
+use OCP\WorkflowEngine\Events\RegisterOperationsEvent;
 use Psr\Container\ContainerInterface;
 
-class OcrProcessorFactoryTest extends TestCase {
+class RegisterFlowOperationsListener implements IEventListener {
+
 	/** @var ContainerInterface */
-	private $appContainer;
+	private $container;
 
-	protected function setUp() : void {
-		parent::setUp();
-		$app = new Application();
-		$this->appContainer = $app->getContainer();
-	}
-	
-	public function testReturnsPdfProcessor() {
-		$factory = new OcrProcessorFactory($this->appContainer);
-		$processor = $factory->create('application/pdf');
-		$this->assertInstanceOf(PdfOcrProcessor::class, $processor);
+	public function __construct(ContainerInterface $container) {
+		$this->container = $container;
 	}
 
-	public function testThrowsNotFoundExceptionOnInvalidMimeType() {
-		$this->expectException(OcrProcessorNotFoundException::class);
-		$factory = new OcrProcessorFactory($this->appContainer);
-		$factory->create('no/mimetype');
+	public function handle(Event $event): void {
+		if (!$event instanceof RegisterOperationsEvent) {
+			return;
+		}
+		$event->registerOperation($this->container->get(Operation::class));
+		Util::addScript(Application::APP_NAME, 'admin');
 	}
 }

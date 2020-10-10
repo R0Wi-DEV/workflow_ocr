@@ -27,9 +27,9 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\AppInfo;
 
+use OCA\WorkflowOcr\Listener\RegisterFlowOperationsListener;
 use OCA\WorkflowOcr\OcrProcessors\IOcrProcessorFactory;
 use OCA\WorkflowOcr\OcrProcessors\OcrProcessorFactory;
-use OCA\WorkflowOcr\Operation;
 use OCA\WorkflowOcr\Service\IOcrService;
 use OCA\WorkflowOcr\Service\OcrService;
 use OCA\WorkflowOcr\Wrapper\Filesystem;
@@ -46,44 +46,52 @@ use OCA\WorkflowOcr\Wrapper\PdfParserWrapper;
 use OCA\WorkflowOcr\Wrapper\TesseractOcrWrapper;
 use OCA\WorkflowOcr\Wrapper\ViewFactory;
 use OCA\WorkflowOcr\Wrapper\WrapperFactory;
-use OCP\WorkflowEngine\IManager;
-use Symfony\Component\EventDispatcher\GenericEvent;
-use OCP\EventDispatcher\IEventDispatcher;
+use OCP\AppFramework\App;
+use OCP\AppFramework\Bootstrap\IBootContext;
+use OCP\AppFramework\Bootstrap\IBootstrap;
+use OCP\AppFramework\Bootstrap\IRegistrationContext;
+use OCP\WorkflowEngine\Events\RegisterOperationsEvent;
 
-class Application extends \OCP\AppFramework\App {
+class Application extends App implements IBootstrap {
+	public const COMPOSER_DIR = __DIR__ . '/../../vendor/';
 	public const APP_NAME = "workflow_ocr";
 
 	/**
 	 * Application constructor.
 	 */
-	public function __construct() {
-		parent::__construct(Application::APP_NAME);
-
-		$this->registerWorkflow();
-		$this->registerDependencies();
+	public function __construct(array $urlParams = []) {
+		parent::__construct(Application::APP_NAME, $urlParams);
 	}
 
-	private function registerWorkflow() :void {
-		/* @var IEventDispatcher $eventDispatcher */
-		$eventDispatcher = $this->getContainer()->query(IEventDispatcher::class);
-		$eventDispatcher->addListener(IManager::EVENT_NAME_REG_OPERATION, function (GenericEvent $event) {
-			$operation = $this->getContainer()->query(Operation::class);
-			$event->getSubject()->registerOperation($operation);
-			script(Application::APP_NAME, 'admin');
-		});
+	/**
+	 * @inheritdoc
+	 */
+	public function register(IRegistrationContext $context): void {
+		$context->registerServiceAlias(IOcrService::class, OcrService::class);
+		$context->registerServiceAlias(IOcrProcessorFactory::class, OcrProcessorFactory::class);
+		$context->registerServiceAlias(IPdfParser::class, PdfParserWrapper::class);
+		$context->registerServiceAlias(IImagick::class, ImagickWrapper::class);
+		$context->registerServiceAlias(ITesseractOcr::class, TesseractOcrWrapper::class);
+		$context->registerServiceAlias(IViewFactory::class, ViewFactory::class);
+		$context->registerServiceAlias(IFpdi::class, FpdiWrapper::class);
+		$context->registerServiceAlias(IWrapperFactory::class, WrapperFactory::class);
+		$context->registerServiceAlias(IFilesystem::class, Filesystem::class);
+
+		$context->registerEventListener(RegisterOperationsEvent::class, RegisterFlowOperationsListener::class);
 	}
 
-	private function registerDependencies() : void {
-		$container = $this->getContainer();
+	/**
+	 * @inheritdoc
+	 */
+	public function boot(IBootContext $context): void {
+		$this->requireAutoload();
+	}
 
-		$container->registerAlias(IOcrService::class, OcrService::class);
-		$container->registerAlias(IOcrProcessorFactory::class, OcrProcessorFactory::class);
-		$container->registerAlias(IPdfParser::class, PdfParserWrapper::class);
-		$container->registerAlias(IImagick::class, ImagickWrapper::class);
-		$container->registerAlias(ITesseractOcr::class, TesseractOcrWrapper::class);
-		$container->registerAlias(IViewFactory::class, ViewFactory::class);
-		$container->registerAlias(IFpdi::class, FpdiWrapper::class);
-		$container->registerAlias(IWrapperFactory::class, WrapperFactory::class);
-		$container->registerAlias(IFilesystem::class, Filesystem::class);
+	private function requireAutoload() {
+		if (is_dir(self::COMPOSER_DIR) && file_exists(self::COMPOSER_DIR . 'autoload.php')) {
+			require_once self::COMPOSER_DIR . 'autoload.php';
+		} else {
+			throw new \Exception('Cannot include autoload. Did you run install dependencies using composer?');
+		}
 	}
 }

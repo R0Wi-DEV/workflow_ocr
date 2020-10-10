@@ -11,12 +11,16 @@
  * @copyright Robin Windey 2020
  */
 
-namespace OCA\WorkflowOcr\Tests\Integration\Controller;
+namespace OCA\WorkflowOcr\Tests\Integration;
 
-use OCA\WorkflowOcr\AppInfo;
-
+use OC\AppFramework\Bootstrap\Coordinator;
+use OCA\WorkflowOcr\AppInfo\Application;
+use OCA\WorkflowOcr\Operation;
+use OCP\App\IAppManager;
 use OCP\AppFramework\App;
 use \PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
+use ReflectionClass;
 
 /**
  * This test shows how to make a small Integration Test. Query your class
@@ -24,16 +28,38 @@ use \PHPUnit\Framework\TestCase;
  * against the database
  */
 class AppTest extends TestCase {
+	/** @var ContainerInterface */
 	private $container;
+
+	/** @var IAppManager */
+	private $appManager;
 
 	protected function setUp() : void {
 		parent::setUp();
-		$app = new App(AppInfo\Application::APP_NAME);
+		$app = new App(Application::APP_NAME);
 		$this->container = $app->getContainer();
+		$this->appManager = $this->container->get(IAppManager::class);
 	}
 
 	public function testAppInstalled() {
-		$appManager = $this->container->query('OCP\App\IAppManager');
-		$this->assertTrue($appManager->isInstalled(AppInfo\Application::APP_NAME));
+		$this->assertTrue($this->appManager->isInstalled(Application::APP_NAME));
+	}
+
+	public function testOperationClassRegistered() {
+		$this->runBootstrapRegistrations();
+		$operation = $this->container->get(Operation::class);
+		$this->assertInstanceOf(Operation::class, $operation);
+	}
+
+	private function runBootstrapRegistrations() {
+		$bootstrapCoordinator = $this->container->get(Coordinator::class);
+		
+		// HACK:: reset registrations and simulate request start
+		$reflectionClass = new ReflectionClass(Coordinator::class);
+		$regContextProp = $reflectionClass->getProperty('registrationContext');
+		$regContextProp->setAccessible(true);
+		$regContextProp->setValue($bootstrapCoordinator, null);
+		
+		$bootstrapCoordinator->runRegistration();
 	}
 }

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\Tests\Unit;
 
+use OCA\WorkflowEngine\Entity\File;
 use OCA\WorkflowOcr\BackgroundJobs\ProcessFileJob;
 use OCA\WorkflowOcr\Operation;
 use OCP\BackgroundJob\IJobList;
@@ -31,12 +32,13 @@ use OCP\EventDispatcher\GenericEvent;
 use OCP\Files\FileInfo;
 use OCP\Files\Node;
 use OCP\IL10N;
-use OCP\ILogger;
+use OCP\IURLGenerator;
 use OCP\IUser;
 use OCP\WorkflowEngine\IManager;
 use OCP\WorkflowEngine\IRuleMatcher;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 
 class OperationTest extends TestCase {
 	
@@ -44,14 +46,17 @@ class OperationTest extends TestCase {
 	private $jobList;
 	/** @var IL10N|MockObject */
 	private $l;
-	/** @var ILogger|MockObject */
+	/** @var LoggerInterface|MockObject */
 	private $logger;
+	/** @var IURLGenerator|MockObject */
+	private $urlGenerator;
 	
 	protected function setUp(): void {
 		parent::setUp();
 		$this->jobList = $this->createMock(IJobList::class);
 		$this->l = $this->createMock(IL10N::class);
-		$this->logger = $this->createMock(ILogger::class);
+		$this->logger = $this->createMock(LoggerInterface::class);
+		$this->urlGenerator = $this->createMock(IURLGenerator::class);
 	}
 
 	/**
@@ -65,7 +70,7 @@ class OperationTest extends TestCase {
 			->method('debug')
 			->withAnyParameters();
 
-		$operation = new Operation($this->jobList, $this->l, $this->logger);
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator);
 		/** @var IRuleMatcher */
 		$ruleMatcher = $this->createMock(IRuleMatcher::class);
 		$operation->onEvent($eventName, $event, $ruleMatcher);
@@ -79,7 +84,7 @@ class OperationTest extends TestCase {
 			->method('debug')
 			->withAnyParameters();
 		
-		$operation = new Operation($this->jobList, $this->l, $this->logger);
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator);
 
 		$fileMock = $this->createMock(Node::class);
 		$fileMock->method('getType')
@@ -103,13 +108,39 @@ class OperationTest extends TestCase {
 			->method('debug')
 			->withAnyParameters();
 		
-		$operation = new Operation($this->jobList, $this->l, $this->logger);
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator);
 
 		$fileMock = $this->createMock(Node::class);
 		$fileMock->method('getType')
 			->willReturn(FileInfo::TYPE_FILE);
 		$fileMock->method('getPath')
 			->willReturn($filePath);
+		$event = new GenericEvent($fileMock);
+		/** @var IRuleMatcher */
+		$ruleMatcher = $this->createMock(IRuleMatcher::class);
+		$eventName = '\OCP\Files::postCreate';
+
+		$operation->onEvent($eventName, $event, $ruleMatcher);
+	}
+
+	public function testDoesNothingOnFileWithoutOwner() {
+		$this->jobList->expects($this->never())
+			->method('add')
+			->withAnyParameters();
+		$this->logger->expects($this->once())
+			->method('debug')
+			->withAnyParameters();
+
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator);
+
+		$fileMock = $this->createMock(Node::class);
+		$fileMock->method('getType')
+			->willReturn(FileInfo::TYPE_FILE);
+		$fileMock->method('getPath')
+			->willReturn('/admin/files/path/to/file.pdf');
+		$fileMock->method('getOwner')
+			->willReturn(null);
+			
 		$event = new GenericEvent($fileMock);
 		/** @var IRuleMatcher */
 		$ruleMatcher = $this->createMock(IRuleMatcher::class);
@@ -125,7 +156,7 @@ class OperationTest extends TestCase {
 			->method('add')
 			->with(ProcessFileJob::class, ['filePath' => $filePath, 'uid' => $uid]);
 		
-		$operation = new Operation($this->jobList, $this->l, $this->logger);
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator);
 
 		$userMock = $this->createMock(IUser::class);
 		$userMock->expects($this->once())
@@ -150,10 +181,59 @@ class OperationTest extends TestCase {
 	 * @dataProvider dataProvider_ValidScopes
 	 */
 	public function testIsAvailableForScope(int $scope) {
-		$operation = new Operation($this->jobList, $this->l, $this->logger);
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator);
 		$result = $operation->isAvailableForScope($scope);
 
 		$this->assertTrue($result);
+	}
+
+	public function testDoesNothing_OnValidateOperation() {
+		$this->jobList->expects($this->never())
+			->method($this->anything());
+		$this->l->expects($this->never())
+			->method($this->anything());
+		$this->logger->expects($this->never())
+			->method($this->anything());
+		$this->urlGenerator->expects($this->never())
+			->method($this->anything());
+
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator);
+
+		$operation->validateOperation('aName', [], 'aOp');
+	}
+
+	public function testCallsLang_OnGetDisplayName() {
+		$this->l->expects($this->once())
+			->method('t');
+
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator);
+
+		$operation->getDisplayName();
+	}
+
+
+	public function testCallsLang_OnGetDescription() {
+		$this->l->expects($this->once())
+			->method('t');
+
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator);
+
+		$operation->getDescription();
+	}
+
+	public function testCallsUrlGenerator_OnGetIcon() {
+		$this->urlGenerator->expects($this->once())
+			->method('imagePath');
+
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator);
+
+		$operation->getIcon();
+	}
+
+	public function testEntityIdIsFile() {
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator);
+
+		$this->assertEquals(File::class, $operation->getEntityId());
 	}
 
 	public function dataProvider_InvalidEvents() {

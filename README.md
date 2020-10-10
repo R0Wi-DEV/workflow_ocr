@@ -4,7 +4,7 @@
 [![codecov](https://codecov.io/gh/R0Wi/workflow_ocr/branch/master/graph/badge.svg)](https://codecov.io/gh/R0Wi/workflow_ocr)
 ![Lint](https://github.com/R0Wi/workflow_ocr/workflows/Lint/badge.svg)
 [![Generic badge](https://img.shields.io/github/v/release/R0Wi/workflow_ocr)](https://github.com/R0Wi/workflow_ocr/releases)
-[![Generic badge](https://img.shields.io/badge/Nextcloud-19-orange)](https://github.com/nextcloud/server)
+[![Generic badge](https://img.shields.io/badge/Nextcloud-20-orange)](https://github.com/nextcloud/server)
 
 ## Table of contents
 * [Setup](#setup)
@@ -20,6 +20,7 @@
   * [Development](#development)
     + [Dev setup](#dev-setup)
     + [Debugging](#debugging)
+    + [Executing tests](#executing-tests)
     + [Adding a new `OcrProcessor`](#adding-a-new--ocrprocessor-)
   * [Limitations](#limitations)
   * [Used libraries & components](#used-libraries---components)
@@ -180,6 +181,27 @@ The following table lists the various debug profiles:
 If you're looking for some good sources on how to setup `VSCode` + `XDebug` we can recommend:
 * https://tighten.co/blog/configure-vscode-to-debug-phpunit-tests-with-xdebug/
 * https://code.visualstudio.com/docs/languages/php
+
+### Executing tests
+To execute the implemented PHPUnit tests you can use one of the following commands:
+
+```bash
+# Only run unittests
+make unittest
+
+# Only run integrationtests
+make integrationtest
+
+# Run all tests
+make test
+
+# Run all tests and create HTML coverage report
+make html-coverage
+
+# Run all tests and create XML coverage report
+make coverage
+```
+> :warning: Make sure you activated the app before you run any tests (`php occ app:enable workflow_ocr`). Otherwise the initialization will fail.
 
 ### Adding a new `OcrProcessor`
 To support a new mimetype for being processed with OCR you have to follow a few easy steps:

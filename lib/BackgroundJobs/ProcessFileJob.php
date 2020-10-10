@@ -29,7 +29,6 @@ namespace OCA\WorkflowOcr\BackgroundJobs;
 use OC\User\NoUserException;
 use OCP\Files\IRootFolder;
 use OCP\Files\NotFoundException;
-use OCP\ILogger;
 use \OCP\Files\File;
 use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
 use OCA\WorkflowOcr\Exception\OcrProcessorNotFoundException;
@@ -41,6 +40,7 @@ use OCP\Files\Node;
 use OCP\IUserManager;
 use OCP\IUser;
 use OCP\IUserSession;
+use Psr\Log\LoggerInterface;
 
 /**
  * Represents a QuedJob which processes
@@ -48,7 +48,7 @@ use OCP\IUserSession;
  */
 class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
 
-	/** @var ILogger */
+	/** @var LoggerInterface */
 	protected $logger;
 	/** @var IRootFolder */
 	private $rootFolder;
@@ -64,7 +64,7 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
 	private $userSession;
 	
 	public function __construct(
-		ILogger $logger,
+		LoggerInterface $logger,
 		IRootFolder $rootFolder,
 		IOcrService $ocrService,
 		IViewFactory $viewFactory,
@@ -95,7 +95,7 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
 			$this->initUserEnvironment($uid);
 			$this->processFile($filePath);
 		} catch (\Throwable $ex) {
-			$this->logger->logException($ex);
+			$this->logger->error($ex->getMessage(), ['exception' => $ex]);
 		} finally {
 			$this->shutdownUserEnvironment();
 		}

@@ -24,17 +24,17 @@ declare(strict_types=1);
 namespace OCA\WorkflowOcr\OcrProcessors;
 
 use OCA\WorkflowOcr\Exception\OcrProcessorNotFoundException;
-use OCP\AppFramework\IAppContainer;
+use Psr\Container\ContainerInterface;
 
 class OcrProcessorFactory implements IOcrProcessorFactory {
 	private static $mapping = [
 		'application/pdf' => PdfOcrProcessor::class
 	];
 	
-	/** @var IAppContainer */
+	/** @var ContainerInterface */
 	private $container;
 
-	public function __construct(IAppContainer $container) {
+	public function __construct(ContainerInterface $container) {
 		$this->container = $container;
 	}
 
@@ -44,6 +44,6 @@ class OcrProcessorFactory implements IOcrProcessorFactory {
 		}
 		$className = self::$mapping[$mimeType];
 
-		return $this->container->query($className);
+		return $this->container->get($className);
 	}
 }
