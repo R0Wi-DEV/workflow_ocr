@@ -1,0 +1,5 @@
+# This is the template for release-drafter Github actions
+template: |
+  ## Changes
+
+  $CHANGES

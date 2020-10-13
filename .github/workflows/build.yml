@@ -1,10 +1,7 @@
 name: Build artifact
 
 on:
-  push:
-    branches:
-      - master
-      - stable*
+  workflow_dispatch:
 
 env:
   APP_NAME: workflow_ocr

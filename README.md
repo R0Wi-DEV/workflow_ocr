@@ -6,24 +6,8 @@
 [![Generic badge](https://img.shields.io/github/v/release/R0Wi/workflow_ocr)](https://github.com/R0Wi/workflow_ocr/releases)
 [![Generic badge](https://img.shields.io/badge/Nextcloud-20-orange)](https://github.com/nextcloud/server)
 
-## Table of contents
-* [Setup](#setup)
-    + [App installation](#app-installation)
-    + [Nextcloud background jobs](#nextcloud-background-jobs)
-    + [Backend](#backend)
-      - [Imagick](#imagick)
-      - [Tesseract](#tesseract)
-  * [Usage](#usage)
-  * [How it works](#how-it-works)
-    + [General](#general)
-    + [PDF](#pdf)
-  * [Development](#development)
-    + [Dev setup](#dev-setup)
-    + [Debugging](#debugging)
-    + [Executing tests](#executing-tests)
-    + [Adding a new `OcrProcessor`](#adding-a-new--ocrprocessor-)
-  * [Limitations](#limitations)
-  * [Used libraries & components](#used-libraries---components)
+<!-- START doctoc -->
+<!-- END doctoc -->
 
 ## Setup
 ### App installation
