@@ -1,0 +1,35 @@
+name: CS-Fix
+
+on:
+  pull_request:
+
+jobs:
+  php-cs-fixer:
+    name: php-cs-fixer
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php-versions: ['7.4']
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.head_ref }}
+
+    - name: Set up php
+      uses: shivammathur/setup-php@v1
+      with:
+        php-version: ${{ matrix.php-versions }}
+        coverage: none
+
+    - name: Install dependencies
+      run: composer i
+
+    - name: Run coding standard formatter
+      run: composer run cs:fix
+
+    - uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: Apply php-cs-fixer changes
