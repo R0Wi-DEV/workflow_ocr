@@ -30,7 +30,7 @@ class CommandWrapper implements ICommand {
 	private $command;
 
 	public function __construct() {
-		$command = new Command();
+		$this->command = new Command();
 	}
 
 	/**
