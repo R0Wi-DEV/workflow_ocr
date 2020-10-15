@@ -32,20 +32,12 @@ use OCA\WorkflowOcr\OcrProcessors\IOcrProcessorFactory;
 use OCA\WorkflowOcr\OcrProcessors\OcrProcessorFactory;
 use OCA\WorkflowOcr\Service\IOcrService;
 use OCA\WorkflowOcr\Service\OcrService;
+use OCA\WorkflowOcr\Wrapper\CommandWrapper;
 use OCA\WorkflowOcr\Wrapper\Filesystem;
-use OCA\WorkflowOcr\Wrapper\FpdiWrapper;
+use OCA\WorkflowOcr\Wrapper\ICommand;
 use OCA\WorkflowOcr\Wrapper\IFilesystem;
-use OCA\WorkflowOcr\Wrapper\IFpdi;
-use OCA\WorkflowOcr\Wrapper\IImagick;
-use OCA\WorkflowOcr\Wrapper\ImagickWrapper;
-use OCA\WorkflowOcr\Wrapper\IPdfParser;
-use OCA\WorkflowOcr\Wrapper\ITesseractOcr;
 use OCA\WorkflowOcr\Wrapper\IViewFactory;
-use OCA\WorkflowOcr\Wrapper\IWrapperFactory;
-use OCA\WorkflowOcr\Wrapper\PdfParserWrapper;
-use OCA\WorkflowOcr\Wrapper\TesseractOcrWrapper;
 use OCA\WorkflowOcr\Wrapper\ViewFactory;
-use OCA\WorkflowOcr\Wrapper\WrapperFactory;
 use OCP\AppFramework\App;
 use OCP\AppFramework\Bootstrap\IBootContext;
 use OCP\AppFramework\Bootstrap\IBootstrap;
@@ -69,13 +61,9 @@ class Application extends App implements IBootstrap {
 	public function register(IRegistrationContext $context): void {
 		$context->registerServiceAlias(IOcrService::class, OcrService::class);
 		$context->registerServiceAlias(IOcrProcessorFactory::class, OcrProcessorFactory::class);
-		$context->registerServiceAlias(IPdfParser::class, PdfParserWrapper::class);
-		$context->registerServiceAlias(IImagick::class, ImagickWrapper::class);
-		$context->registerServiceAlias(ITesseractOcr::class, TesseractOcrWrapper::class);
 		$context->registerServiceAlias(IViewFactory::class, ViewFactory::class);
-		$context->registerServiceAlias(IFpdi::class, FpdiWrapper::class);
-		$context->registerServiceAlias(IWrapperFactory::class, WrapperFactory::class);
 		$context->registerServiceAlias(IFilesystem::class, Filesystem::class);
+		$context->registerServiceAlias(ICommand::class, CommandWrapper::class);
 
 		$context->registerEventListener(RegisterOperationsEvent::class, RegisterFlowOperationsListener::class);
 	}

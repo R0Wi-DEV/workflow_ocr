@@ -23,161 +23,78 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\Tests\Unit\OcrProcessors;
 
-use PHPUnit\Framework\TestCase;
 use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
 use OCA\WorkflowOcr\OcrProcessors\PdfOcrProcessor;
-use OCA\WorkflowOcr\Wrapper\IFpdi;
-use OCA\WorkflowOcr\Wrapper\IImagick;
-use OCA\WorkflowOcr\Wrapper\IPdfParser;
-use OCA\WorkflowOcr\Wrapper\ITesseractOcr;
-use OCA\WorkflowOcr\Wrapper\IWrapperFactory;
+use OCA\WorkflowOcr\Wrapper\ICommand;
 use PHPUnit\Framework\MockObject\MockObject;
-use \Smalot\PdfParser\Document;
-use Smalot\PdfParser\Page;
+use PHPUnit\Framework\TestCase;
 
 class PdfOcrProcessorTest extends TestCase {
-	/** @var MockObject|IPdfParser */
-	private $pdfParser;
-	/** @var MockObject|ITesseractOcr */
-	private $tesseract;
-	/** @var MockObject|IWrapperFactory */
-	private $wrapperFactory;
-	/** @var MockObject|IFpdi */
-	private $fpdi;
-	/** @var MockObject|IImagick */
-	private $imagick;
+	/** @var ICommand|MockObject */
+	private $command;
 
 	protected function setUp(): void {
 		parent::setUp();
 
-		$this->pdfParser = $this->createMock(IPdfParser::class);
-		$this->tesseract = $this->createMock(ITesseractOcr::class);
-		$this->wrapperFactory = $this->createMock(IWrapperFactory::class);
-		$this->fpdi = $this->createMock(IFpdi::class);
-		$this->imagick = $this->createMock(IImagick::class);
-		$this->wrapperFactory->method('createFpdi')
-				->withAnyParameters()
-				->willReturn($this->fpdi);
-		$this->wrapperFactory->method('createImagick')
-				->with()
-				->willReturn($this->imagick);
+		$this->command = $this->createMock(ICommand::class);
 	}
 
-	public function testThrowsOcrNotPossibleException_IfPdfContainsPagesWithTextOnly() {
-		/*
-			Setup fake PDF document with 2 pages containing text-layer
-		*/
-		$fakePdfDocument = $this->setUpFakePdfDocument('Page1Text', 'Page2Text');
-		$this->pdfParser->expects($this->once())
-			->method('parseContent')
-			->with('someBinaryPdfContent')
-			->willReturn($fakePdfDocument);
+	public function testCallsCommandInterface() {
+		$pdfBefore = 'someFileContent';
+		$pdfAfter = 'someOcrFileContent';
 
-		$this->expectException(OcrNotPossibleException::class);
-		$pdfProcessor = new PdfOcrProcessor($this->pdfParser, $this->tesseract, $this->wrapperFactory);
-		$pdfProcessor->ocrFile('someBinaryPdfContent');
-	}
-
-	public function testSplitPdfIsDone() {
-		/*
-			Setup fake PDF document with 3 pages containing no text-layers
-		*/
-		$fakePdfDocument = $this->setUpFakePdfDocument('', '', '');
-		$this->pdfParser->expects($this->once())
-			->method('parseContent')
-			->with('someBinaryPdfContent')
-			->willReturn($fakePdfDocument);
-		$this->fpdi->expects($this->once())
-			->method('getPageCount')
-			->with()
-			->willReturn(3);
-		$this->fpdi->method('getTemplatesize')
-			->willReturn([
-				'orientation' => 'someOrientation',
-				'width' => 50,
-				'height' => 50
-			]);
-		$this->fpdi->method('Output')
-			->with(null, "S")
-			->willReturn('someBinaryPdfContentOfOnePage');
-		$this->fpdi->expects($this->atLeast(3))
-			->method('import')
-			->with($this->logicalOr($this->equalTo(1), $this->equalTo(2), $this->equalTo(3)));
-
-		$pdfProcessor = new PdfOcrProcessor($this->pdfParser, $this->tesseract, $this->wrapperFactory);
-		$pdfProcessor->ocrFile('someBinaryPdfContent');
-	}
-
-	public function testOcrIsCalledForEachPageWithoutText() {
-		/*
-			Setup fake PDF document with 3 pages. 2 without text-layer and one with text-layer.
-		*/
-		$fakePdfDocument = $this->setUpFakePdfDocument('', 'thisPageContainsText', '');
-		$this->pdfParser->expects($this->once())
-			->method('parseContent')
-			->with('someBinaryPdfContent')
-			->willReturn($fakePdfDocument);
-		$this->fpdi->expects($this->once())
-			->method('getPageCount')
-			->with()
-			->willReturn(3);
-		$this->fpdi->method('getTemplatesize')
-			->willReturn([
-				'orientation' => 'someOrientation',
-				'width' => 50,
-				'height' => 50
-			]);
-		$this->fpdi->method('Output')
-			->with(null, "S")
-			->willReturn('someBinaryPdfContentOfOnePage');
+		$this->command->expects($this->once())
+			->method('setCommand')
+			->willReturn($this->command);
+		$this->command->expects($this->once())
+			->method('setStdIn')
+			->with($pdfBefore)
+			->willReturn($this->command);
+		$this->command->expects($this->once())
+			->method('execute')
+			->willReturn(true);
+		$this->command->expects($this->once())
+			->method('getOutput')
+			->willReturn($pdfAfter);
 		
-		$imageBlob = 'someImageBlob';
-		$imageSize = 16;
-		$this->imagick->method('getImageBlob')
-			 ->with()
-			 ->willReturn($imageBlob);
-		$this->imagick->method('getImageLength')
-			 ->with()
-			 ->willReturn($imageSize);
-
-		// These methods are called for each page which is processed
-		$this->tesseract->expects($this->exactly(2))
-			->method('lang')
-			->with(['deu', 'eng'])
-			->willReturn($this->tesseract);
-		$this->tesseract->expects($this->exactly(2))
-			->method('imageData')
-			->with($imageBlob, $imageSize)
-			->willReturn($this->tesseract);
-		$this->tesseract->expects($this->exactly(2))
-			->method('configFile')
-			->with('pdf')
-			->willReturn($this->tesseract);
-		$this->tesseract->expects($this->exactly(2))
-			->method('run')
-			->with();
-
-		$pdfProcessor = new PdfOcrProcessor($this->pdfParser, $this->tesseract, $this->wrapperFactory);
-		$pdfProcessor->ocrFile('someBinaryPdfContent');
+		$processor = new PdfOcrProcessor($this->command);
+		$result = $processor->ocrFile($pdfBefore);
+		
+		$this->assertEquals($pdfAfter, $result);
 	}
 
-	private function setUpFakePdfDocument(...$pageTexts) : MockObject {
-		$pageArray = [];
-		foreach ($pageTexts as $pageText) {
-			$fakePage = $this->createMock(Page::class);
-			$fakePage->expects($this->once())
-				->method('getText')
-				->with()
-				->willReturn($pageText);
-			$pageArray[] = $fakePage;
+	public function testThrowsOcrNotPossibleException() {
+		$pdfBefore = 'someFileContent';
+		$pdfAfter = 'someOcrFileContent';
+
+		$this->command->expects($this->once())
+			->method('setCommand')
+			->willReturn($this->command);
+		$this->command->expects($this->once())
+			->method('setStdIn')
+			->with($pdfBefore)
+			->willReturn($this->command);
+		$this->command->expects($this->once())
+			->method('execute')
+			->willReturn(false);
+		$this->command->expects($this->never())
+			->method('getOutput');
+		$this->command->expects($this->once())
+			->method('getError');
+		$this->command->expects($this->once())
+			->method('getExitCode');
+
+		$processor = new PdfOcrProcessor($this->command);
+		$thrown = false;
+
+		try {
+			$result = $processor->ocrFile($pdfBefore);
 		}
-
-		$fakePdfDocument = $this->createMock(Document::class);
-		$fakePdfDocument->expects($this->once())
-			->method('getPages')
-			->with()
-			->willReturn($pageArray);
-
-		return $fakePdfDocument;
+		catch(\Throwable $t){
+			$thrown = true;
+			$this->assertInstanceOf(OcrNotPossibleException::class, $t);
+		}
+		
+		$this->assertTrue($thrown);
 	}
 }
