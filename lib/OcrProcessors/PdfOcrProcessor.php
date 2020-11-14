@@ -39,12 +39,15 @@ class PdfOcrProcessor implements IOcrProcessor {
 			->setCommand("ocrmypdf --skip-text -q - - | cat")
 			->setStdIn($fileContent);
 
-		if ($this->command->execute()) {
+		$success = $this->command->execute();
+		$errorOutput = $this->command->getError();
+		$stdErr = $this->command->getStdErr();
+		$exitCode = $this->command->getExitCode();
+
+		if ($success && $errorOutput === '' && $stdErr === '') {
 			return $this->command->getOutput();
 		} else {
-			$error = $this->command->getError();
-			$exitCode = $this->command->getExitCode();
-			throw new OcrNotPossibleException('OCRmyPDF exited abnormally with exit-code ' . $exitCode . '. Message: ' . $error);
+			throw new OcrNotPossibleException('OCRmyPDF exited abnormally with exit-code ' . $exitCode . '. Message: ' . $errorOutput . ' ' . $stdErr);
 		}
 	}
 }

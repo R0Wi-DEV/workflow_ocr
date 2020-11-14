@@ -36,6 +36,8 @@ use OCP\WorkflowEngine\IManager;
 use OCP\WorkflowEngine\IRuleMatcher;
 use OCP\WorkflowEngine\ISpecificOperation;
 use OCA\WorkflowOcr\BackgroundJobs\ProcessFileJob;
+use OCA\WorkflowOcr\Helper\IProcessingFileAccessor;
+use OCA\WorkflowOcr\Helper\SynchronizationHelper;
 use OCP\Files\FileInfo;
 use OCP\Files\Node;
 use OCP\IURLGenerator;
@@ -51,12 +53,15 @@ class Operation implements ISpecificOperation {
 	private $logger;
 	/** @var IURLGenerator */
 	private $urlGenerator;
+	/** @var SynchronizationHelper */
+	private $processingFileAccessor;
 
-	public function __construct(IJobList $jobList, IL10N $l, LoggerInterface $logger, IURLGenerator $urlGenerator) {
+	public function __construct(IJobList $jobList, IL10N $l, LoggerInterface $logger, IURLGenerator $urlGenerator, IProcessingFileAccessor $processingFileAccessor) {
 		$this->jobList = $jobList;
 		$this->l = $l;
 		$this->logger = $logger;
 		$this->urlGenerator = $urlGenerator;
+		$this->processingFileAccessor = $processingFileAccessor;
 	}
 
 	/**
@@ -131,6 +136,13 @@ class Operation implements ISpecificOperation {
 		if ($owner === null) {
 			$this->logger->debug('Not processing event because file with path \'{path}\' has no owner.',
 					['path' => $filePath]);
+			return false;
+		}
+
+		// Check if the event was triggered by OCR rewrite of the file
+		if ($node->getId() === $this->processingFileAccessor->getCurrentlyProcessedFileId()) {
+			$this->logger->debug('Not processing event because file with path \'{path}\' was written by OCR process.',
+			['path' => $filePath]);
 			return false;
 		}
 

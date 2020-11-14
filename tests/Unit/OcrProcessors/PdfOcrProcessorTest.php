@@ -89,8 +89,7 @@ class PdfOcrProcessorTest extends TestCase {
 
 		try {
 			$result = $processor->ocrFile($pdfBefore);
-		}
-		catch(\Throwable $t){
+		} catch (\Throwable $t) {
 			$thrown = true;
 			$this->assertInstanceOf(OcrNotPossibleException::class, $t);
 		}

@@ -34,46 +34,53 @@ class CommandWrapper implements ICommand {
 	}
 
 	/**
-     * @inheritdoc
-     */
+	 * @inheritdoc
+	 */
 	public function setCommand(string $command) : ICommand {
 		$this->command->setCommand($command);
 		return $this;
 	}
 
 	/**
-     * @inheritdoc
-     */
+	 * @inheritdoc
+	 */
 	public function setStdIn(string $stdIn) : ICommand {
 		$this->command->setStdIn($stdIn);
 		return $this;
 	}
 	
 	/**
-     * @inheritdoc
-     */
+	 * @inheritdoc
+	 */
 	public function execute() : bool {
 		return (bool)$this->command->execute();
 	}
 	
 	/**
-     * @inheritdoc
-     */
+	 * @inheritdoc
+	 */
 	public function getOutput(bool $trim = true) : string {
 		return (string)$this->command->getOutput($trim);
 	}
 	
 	/**
-     * @inheritdoc
-     */
+	 * @inheritdoc
+	 */
 	public function getError(bool $trim = true) : string {
 		return (string)$this->command->getError($trim);
 	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public function getStdErr(bool $trim = true) : string {
+		return (string)$this->command->getStdErr($trim);
+	}
 	
 	/**
-     * @inheritdoc
-     */
-    public function getExitCode() {
+	 * @inheritdoc
+	 */
+	public function getExitCode() {
 		return $this->command->getExitCode();
 	}
 }

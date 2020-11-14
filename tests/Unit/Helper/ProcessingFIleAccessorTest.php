@@ -5,9 +5,7 @@ declare(strict_types=1);
 /**
  * @copyright Copyright (c) 2020 Robin Windey <ro.windey@gmail.com>
  *
- * @author Robin Windey <ro.windey@gmail.com>
- *
- * @license GNU AGPL version 3 or any later version
+ *  @license GNU AGPL version 3 or any later version
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,29 +19,25 @@ declare(strict_types=1);
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
-namespace OCA\WorkflowOcr\Wrapper;
+namespace OCA\WorkflowOcr\Tests\Unit\Helper;
 
-use \OC\Files\View;
+use OCA\WorkflowOcr\Helper\ProcessingFileAccessor;
+use PHPUnit\Framework\TestCase;
 
-class ViewWrapper implements IView {
-	/** @var View */
-	private $wrappedView;
+class ProcessingFileAccessorTest extends TestCase {
+	public function testSingleton() {
+		$o1 = ProcessingFileAccessor::getInstance();
+		$o2 = ProcessingFileAccessor::getInstance();
 
-	public function __construct(string $directoryPath) {
-		$this->wrappedView = new View($directoryPath);
+		$this->assertTrue($o1 === $o2);
 	}
-
-	/**
-	 * @inheritdoc
-	 */
-	public function file_put_contents(string $filePath, string $content) : bool {
-		$retVal = $this->wrappedView->file_put_contents($filePath, $content);
-		if (is_bool($retVal)) {
-			return $retVal;
-		}
-		return boolval($retVal);
+	
+	public function testGetSet() {
+		$o = ProcessingFileAccessor::getInstance();
+		$o ->setCurrentlyProcessedFileId(42);
+		$this->assertEquals(42, $o->getCurrentlyProcessedFileId());
+		$o->setCurrentlyProcessedFileId(null);
 	}
 }

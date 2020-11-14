@@ -27,6 +27,8 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\AppInfo;
 
+use OCA\WorkflowOcr\Helper\IProcessingFileAccessor;
+use OCA\WorkflowOcr\Helper\ProcessingFileAccessor;
 use OCA\WorkflowOcr\Listener\RegisterFlowOperationsListener;
 use OCA\WorkflowOcr\OcrProcessors\IOcrProcessorFactory;
 use OCA\WorkflowOcr\OcrProcessors\OcrProcessorFactory;
@@ -64,6 +66,10 @@ class Application extends App implements IBootstrap {
 		$context->registerServiceAlias(IViewFactory::class, ViewFactory::class);
 		$context->registerServiceAlias(IFilesystem::class, Filesystem::class);
 		$context->registerServiceAlias(ICommand::class, CommandWrapper::class);
+
+		$context->registerService(IProcessingFileAccessor::class, function () {
+			return ProcessingFileAccessor::getInstance();
+		});
 
 		$context->registerEventListener(RegisterOperationsEvent::class, RegisterFlowOperationsListener::class);
 	}

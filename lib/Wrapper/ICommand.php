@@ -28,47 +28,53 @@ namespace OCA\WorkflowOcr\Wrapper;
  */
 interface ICommand {
 	/**
-     * @param string $command the command or full command string to execute,
-     * like 'gzip' or 'gzip -d'.  You can still call addArg() to add more
-     * arguments to the command. If $escapeCommand was set to true, the command
-     * gets escaped with escapeshellcmd().
-     * @return static for method chaining
-     */
+	 * @param string $command the command or full command string to execute,
+	 * like 'gzip' or 'gzip -d'.  You can still call addArg() to add more
+	 * arguments to the command. If $escapeCommand was set to true, the command
+	 * gets escaped with escapeshellcmd().
+	 * @return static for method chaining
+	 */
 	public function setCommand(string $command) : ICommand;
 	
 	/**
-     * @param string|resource $stdIn If set, the string will be piped to the
-     * command via standard input. This enables the same functionality as
-     * piping on the command line. It can also be a resource like a file
-     * handle or a stream in which case its content will be piped into the
-     * command like an input redirection.
-     * @return static for method chaining
-     */
+	 * @param string|resource $stdIn If set, the string will be piped to the
+	 * command via standard input. This enables the same functionality as
+	 * piping on the command line. It can also be a resource like a file
+	 * handle or a stream in which case its content will be piped into the
+	 * command like an input redirection.
+	 * @return static for method chaining
+	 */
 	public function setStdIn(string $stdIn) : ICommand;
 	
 	/**
-     * Execute the command
-     *
-     * @return bool whether execution was successful. If `false`, error details
-     * can be obtained from getError(), getStdErr() and getExitCode().
-     */
+	 * Execute the command
+	 *
+	 * @return bool whether execution was successful. If `false`, error details
+	 * can be obtained from getError(), getStdErr() and getExitCode().
+	 */
 	public function execute() : bool;
 	
 	/**
-     * @param bool $trim whether to `trim()` the return value. The default is `true`.
-     * @return string the command output (stdout). Empty if none.
-     */
+	 * @param bool $trim whether to `trim()` the return value. The default is `true`.
+	 * @return string the command output (stdout). Empty if none.
+	 */
 	public function getOutput(bool $trim = true) : string;
 	
 	/**
-     * @param bool $trim whether to `trim()` the return value. The default is `true`.
-     * @return string the error message, either stderr or an internal message.
-     * Empty string if none.
-     */
+	 * @param bool $trim whether to `trim()` the return value. The default is `true`.
+	 * @return string the error message, either stderr or an internal message.
+	 * Empty string if none.
+	 */
 	public function getError(bool $trim = true) : string;
+	 
+	/**
+	 * @param bool $trim whether to `trim()` the return value. The default is `true`.
+	 * @return string the stderr output. Empty if none.
+	 */
+	public function getStdErr(bool $trim = true) : string;
 	
 	/**
-     * @return int|null the exit code or null if command was not executed yet
-     */
-    public function getExitCode();
+	 * @return int|null the exit code or null if command was not executed yet
+	 */
+	public function getExitCode();
 }
