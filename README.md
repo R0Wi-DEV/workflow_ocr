@@ -14,8 +14,6 @@
   - [App installation](#app-installation)
   - [Nextcloud background jobs](#nextcloud-background-jobs)
   - [Backend](#backend)
-    - [Imagick](#imagick)
-    - [Tesseract](#tesseract)
 - [Usage](#usage)
 - [How it works](#how-it-works)
   - [General](#general)
