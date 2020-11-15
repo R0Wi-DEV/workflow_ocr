@@ -90,11 +90,7 @@ To **test** if your file gets processed properly you can do the following steps:
 </p>
 
 ### PDF
-<p align="center">
-  <img width="100%" src="doc/diagramms/pdf.svg" alt="PDF diagramm">
-</p>
-
-**Note on PDF processing:** since the processing algorithm for PDF files makes heavy use of splitting an recombining the single PDF pages, it could damage certain PDF files or manipulate the content somehow. 
+For processing PDF files the external commandline tool [`OCRmyPDF`](https://github.com/jbarlow83/OCRmyPDF) is used. The tool is invoked with the [`--skip-text`](https://ocrmypdf.readthedocs.io/en/latest/advanced.html#when-ocr-is-skipped) parameter so that it will skip pages which already contain text. Therefore it is possible to process PDF files containing both "born digital" and scanned content.
 
 ## Development
 ### Dev setup

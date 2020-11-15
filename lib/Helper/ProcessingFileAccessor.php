@@ -37,7 +37,7 @@ class ProcessingFileAccessor implements IProcessingFileAccessor {
 	/** @var ProcessingFileAccessor */
 	private static $instance;
 	public static function getInstance() : ProcessingFileAccessor {
-		if (self::$instance == null) {
+		if (self::$instance === null) {
 			self::$instance = new ProcessingFileAccessor();
 		}
 		return self::$instance;
