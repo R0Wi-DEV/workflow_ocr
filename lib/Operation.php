@@ -105,7 +105,9 @@ class Operation implements ISpecificOperation {
 			return;
 		}
 
-		if (!$this->checkNode($node)) {
+		if (!$this->pathIsValid($node) ||
+			!$this->ownerExists($node) ||
+			$this->eventTriggeredByOcrProcess($node)) {
 			return;
 		}
 
@@ -120,7 +122,7 @@ class Operation implements ISpecificOperation {
 		return File::class;
 	}
 
-	private function checkNode(Node $node) : bool {
+	private function pathIsValid(Node $node) : bool {
 		// Check path has valid structure
 		$filePath = $node->getPath();
 		// '', admin, 'files', 'path/to/file.pdf'
@@ -131,21 +133,29 @@ class Operation implements ISpecificOperation {
 			return false;
 		}
 
-		// Check owner exists
+		return true;
+	}
+
+	private function ownerExists(Node $node) : bool {
+		// Check owner of file exists
 		$owner = $node->getOwner();
 		if ($owner === null) {
 			$this->logger->debug('Not processing event because file with path \'{path}\' has no owner.',
-					['path' => $filePath]);
-			return false;
-		}
-
-		// Check if the event was triggered by OCR rewrite of the file
-		if ($node->getId() === $this->processingFileAccessor->getCurrentlyProcessedFileId()) {
-			$this->logger->debug('Not processing event because file with path \'{path}\' was written by OCR process.',
-			['path' => $filePath]);
+					['path' => $node->getPath()]);
 			return false;
 		}
 
 		return true;
+	}
+
+	private function eventTriggeredByOcrProcess(Node $node) : bool {
+		// Check if the event was triggered by OCR rewrite of the file
+		if ($node->getId() === $this->processingFileAccessor->getCurrentlyProcessedFileId()) {
+			$this->logger->debug('Not processing event because file with path \'{path}\' was written by OCR process.',
+			['path' => $node->getPath()]);
+			return true;
+		}
+
+		return false;
 	}
 }

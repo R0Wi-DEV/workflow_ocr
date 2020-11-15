@@ -44,6 +44,7 @@ class ProcessingFileAccessor implements IProcessingFileAccessor {
 	}
 
 	private function __construct() {
+		// Just ensuring singleton instance ...
 	}
 
 	/**
