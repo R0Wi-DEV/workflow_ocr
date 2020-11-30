@@ -25,6 +25,7 @@ namespace OCA\WorkflowOcr\Tests\Unit;
 
 use OCA\WorkflowEngine\Entity\File;
 use OCA\WorkflowOcr\BackgroundJobs\ProcessFileJob;
+use OCA\WorkflowOcr\Helper\IProcessingFileAccessor;
 use OCA\WorkflowOcr\Operation;
 use OCP\BackgroundJob\IJobList;
 use OCP\EventDispatcher\Event;
@@ -50,13 +51,16 @@ class OperationTest extends TestCase {
 	private $logger;
 	/** @var IURLGenerator|MockObject */
 	private $urlGenerator;
-	
+	/** @var IProcessingFileAccessor|MockObject */
+	private $processingFileAccessor;
+
 	protected function setUp(): void {
 		parent::setUp();
 		$this->jobList = $this->createMock(IJobList::class);
 		$this->l = $this->createMock(IL10N::class);
 		$this->logger = $this->createMock(LoggerInterface::class);
 		$this->urlGenerator = $this->createMock(IURLGenerator::class);
+		$this->processingFileAccessor = $this->createMock(IProcessingFileAccessor::class);
 	}
 
 	/**
@@ -70,7 +74,7 @@ class OperationTest extends TestCase {
 			->method('debug')
 			->withAnyParameters();
 
-		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator);
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor);
 		/** @var IRuleMatcher */
 		$ruleMatcher = $this->createMock(IRuleMatcher::class);
 		$operation->onEvent($eventName, $event, $ruleMatcher);
@@ -84,7 +88,7 @@ class OperationTest extends TestCase {
 			->method('debug')
 			->withAnyParameters();
 		
-		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator);
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor);
 
 		$fileMock = $this->createMock(Node::class);
 		$fileMock->method('getType')
@@ -97,6 +101,43 @@ class OperationTest extends TestCase {
 		$operation->onEvent($eventName, $event, $ruleMatcher);
 	}
 
+	public function testDoesNothingOnPostWriteTriggeredByCurrentOcrProcess() {
+		$this->jobList->expects($this->never())
+			->method('add')
+			->withAnyParameters();
+		$this->logger->expects($this->once())
+			->method('debug')
+			->withAnyParameters();
+
+		/** @var IProcessingFileAccessor|MockObject */
+		$processingFileAccessorMock = $this->createMock(IProcessingFileAccessor::class);
+		$processingFileAccessorMock->expects($this->once())
+			->method('getCurrentlyProcessedFileId')
+			->willReturn(42);
+		
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $processingFileAccessorMock);
+
+		$userMock = $this->createMock(IUser::class);
+		$userMock->expects($this->never())
+			->method('getUID');
+		$fileMock = $this->createMock(Node::class);
+		$fileMock->method('getType')
+			->willReturn(FileInfo::TYPE_FILE);
+		$fileMock->method('getPath')
+			->willReturn('/someuser/files/somefile.pdf');
+		$fileMock->method('getOwner')
+			->willReturn($userMock);
+		$fileMock->method('getId')
+			->willReturn(42);
+		$event = new GenericEvent($fileMock);
+		/** @var IRuleMatcher */
+		$ruleMatcher = $this->createMock(IRuleMatcher::class);
+		$eventName = '\OCP\Files::postCreate';
+
+		$operation->onEvent($eventName, $event, $ruleMatcher);
+	}
+
+
 	/**
 	 * @dataProvider dataProvider_InvalidFilePaths
 	 */
@@ -108,7 +149,7 @@ class OperationTest extends TestCase {
 			->method('debug')
 			->withAnyParameters();
 		
-		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator);
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor);
 
 		$fileMock = $this->createMock(Node::class);
 		$fileMock->method('getType')
@@ -131,7 +172,7 @@ class OperationTest extends TestCase {
 			->method('debug')
 			->withAnyParameters();
 
-		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator);
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor);
 
 		$fileMock = $this->createMock(Node::class);
 		$fileMock->method('getType')
@@ -156,7 +197,7 @@ class OperationTest extends TestCase {
 			->method('add')
 			->with(ProcessFileJob::class, ['filePath' => $filePath, 'uid' => $uid]);
 		
-		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator);
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor);
 
 		$userMock = $this->createMock(IUser::class);
 		$userMock->expects($this->once())
@@ -169,6 +210,8 @@ class OperationTest extends TestCase {
 			->willReturn($filePath);
 		$fileMock->method('getOwner')
 			->willReturn($userMock);
+		$fileMock->method('getId')
+			->willReturn(42);
 		$event = new GenericEvent($fileMock);
 		/** @var IRuleMatcher */
 		$ruleMatcher = $this->createMock(IRuleMatcher::class);
@@ -181,7 +224,7 @@ class OperationTest extends TestCase {
 	 * @dataProvider dataProvider_ValidScopes
 	 */
 	public function testIsAvailableForScope(int $scope) {
-		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator);
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor);
 		$result = $operation->isAvailableForScope($scope);
 
 		$this->assertTrue($result);
@@ -197,7 +240,7 @@ class OperationTest extends TestCase {
 		$this->urlGenerator->expects($this->never())
 			->method($this->anything());
 
-		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator);
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor);
 
 		$operation->validateOperation('aName', [], 'aOp');
 	}
@@ -206,7 +249,7 @@ class OperationTest extends TestCase {
 		$this->l->expects($this->once())
 			->method('t');
 
-		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator);
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor);
 
 		$operation->getDisplayName();
 	}
@@ -216,7 +259,7 @@ class OperationTest extends TestCase {
 		$this->l->expects($this->once())
 			->method('t');
 
-		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator);
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor);
 
 		$operation->getDescription();
 	}
@@ -225,13 +268,13 @@ class OperationTest extends TestCase {
 		$this->urlGenerator->expects($this->once())
 			->method('imagePath');
 
-		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator);
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor);
 
 		$operation->getIcon();
 	}
 
 	public function testEntityIdIsFile() {
-		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator);
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor);
 
 		$this->assertEquals(File::class, $operation->getEntityId());
 	}

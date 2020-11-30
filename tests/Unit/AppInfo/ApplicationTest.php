@@ -47,9 +47,9 @@ class ApplicationTest extends TestCase {
 
 		$app->boot($bootContext);
 
-		// PdfParser is one of the dependencies included by autoload.php
-		$phpParserExists = class_exists('Smalot\PdfParser\Parser');
-		$this->assertTrue($phpParserExists);
+		// 'Command' is one of the dependencies included by autoload.php
+		$commandClassExists = class_exists('mikehaertl\shellcommand\Command');
+		$this->assertTrue($commandClassExists);
 	}
 
 	/**

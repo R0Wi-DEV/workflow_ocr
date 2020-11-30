@@ -14,8 +14,6 @@
   - [App installation](#app-installation)
   - [Nextcloud background jobs](#nextcloud-background-jobs)
   - [Backend](#backend)
-    - [Imagick](#imagick)
-    - [Tesseract](#tesseract)
 - [Usage](#usage)
 - [How it works](#how-it-works)
   - [General](#general)
@@ -44,46 +42,23 @@ Since the actual processing of the files is done asynchronously via Nextcloud's 
 
 
 ### Backend
-#### Imagick
-Make sure `Imagick` is installed (the command below is for debian based Linux systems. It might be different on your system.).
-```bash
-sudo apt-get install php-imagick
-```
+> :warning: Since `v1.20.1` you'll have to install `OCRmyPDF`.
 
-Make sure `Imagick` is properly configured so that it can access pdf files. On debian based systems edit the configuration file `/etc/ImageMagick-6/policy.xml` (path might be different on your system). It has to contain at least this line:
-```xml
-<policymap>
-  <!-- [...] -->
-  <policy domain="coder" rights="read" pattern="PDF" />
-  <!-- [...] -->
-</policymap>
-
-```
-If you use **any other background job setting than [`cron`](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/background_jobs_configuration.html#cron)** you'll have to restart your php environment for the above changes to be applied. Depending on your system this is usually done by restarting your `php-fpm`-daemon or webserver, for example:
+In the backend [`OCRmyPDF`](https://github.com/jbarlow83/OCRmyPDF) is used for processing PDF files. Make sure you have this commandline tool installed.
 
 ```bash
-# Restart php-fpm
-sudo systemctl restart php7.3-fpm.service
+apt-get install ocrmypdf
+``` 
 
-# Restart Apache webserver
-sudo systemctl restart apache2
-```
+Also if you want to use specific language settings please install the corresponding `tesseract` packages.
 
-You can find additional information about `Imagick` [here](https://www.php.net/manual/en/imagick.setup.php).
-
-> :warning: **Note that `Imagick` requires [Ghostscript](https://www.ghostscript.com) to properly read PDF files. You can find more details in the section [Supported Image Formats](https://imagemagick.org/script/formats.php#supported) of `Imagick`'s documentation.**
-
-#### Tesseract
-For the OCR part the commandlinetool `tesseract` is used. Make sure you have the library and appropriate languages installed. I recommend installing the packages from [PPA](https://github.com/tesseract-ocr/tessdoc/blob/master/Home.md) because they're newer than the official package-sources (i tested with `tesseract 4.1.1`). On Ubuntu 18.04 you might type the following for languages english and german:
 ```bash
-# Install PPA
-sudo add-apt-repository ppa:alex-p/tesseract-ocr
-sudo apt-get update
+# English
+apt-get install tesseract-ocr-eng
 
-# Install Tesseract and language-files
-sudo apt-get install tesseract-ocr tesseract-ocr-deu tesseract-ocr-eng
+# German
+apt-get install tesseract-ocr-deu
 ```
-You can read more about the installation of `tesseract` [here](https://github.com/tesseract-ocr/tesseract/wiki).
 
 ## Usage
 You can configure the OCR processing via Nextcloud's workflow engine. Therefore configure a new flow via `Settings -> Flow -> Add new flow` (if you don't see `OCR file` here the app isn't installed properly or you forgot to activate it).
@@ -113,11 +88,7 @@ To **test** if your file gets processed properly you can do the following steps:
 </p>
 
 ### PDF
-<p align="center">
-  <img width="100%" src="doc/diagramms/pdf.svg" alt="PDF diagramm">
-</p>
-
-**Note on PDF processing:** since the processing algorithm for PDF files makes heavy use of splitting an recombining the single PDF pages, it could damage certain PDF files or manipulate the content somehow. 
+For processing PDF files, the external command line tool [`OCRmyPDF`](https://github.com/jbarlow83/OCRmyPDF) is used. The tool is invoked with the [`--redo-ocr`](https://ocrmypdf.readthedocs.io/en/latest/advanced.html#when-ocr-is-skipped) parameter so that it will perform a detailed text analysis. The detailed analysis masks out visible text and sends the image of each page to the OCR processor. After processing, additional text is inserted as OCR, whereas existing text in a mixed file document (images embedded into text pages) is not disrupted.
 
 ## Development
 ### Dev setup
@@ -232,11 +203,6 @@ That's all. If you now create a new workflow based on your added mimetype, your 
 ## Used libraries & components
 | Name | Version | Link |
 |---|---|---|
-| tesseract_ocr | >= 2.9 | https://github.com/thiagoalessio/tesseract-ocr-for-php |
-| tesseract (commandline) | >= 4.0 | https://github.com/tesseract-ocr/tesseract |
-| pdfparser | >= 0.15.0 | https://www.pdfparser.org/ |
-| fpdi | >= 2.3 | https://www.setasign.com/products/fpdi/about/ |
-| fpdf | >= 1.8 | http://www.fpdf.org/ |
-| imagick php extension | >= 2 | https://www.php.net/manual/de/book.imagick.php |
-| Ghostscript | >= 9.0 | https://www.ghostscript.com/ |
+| OCRmyPDF (commandline) | >= 9.6.0 | https://github.com/jbarlow83/OCRmyPDF |
+| php-shellcommand | >= 1.6 | https://github.com/mikehaertl/php-shellcommand |
 | PHPUnit | >= 8.0 | https://phpunit.de/ |

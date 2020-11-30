@@ -21,9 +21,26 @@ declare(strict_types=1);
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OCA\WorkflowOcr\Wrapper;
+namespace OCA\WorkflowOcr\Tests\Unit\Wrapper;
 
-interface IWrapperFactory {
-	public function createFpdi(string $pdfContent = '') : IFpdi;
-	public function createImagick() : IImagick;
+use OCA\WorkflowOcr\Wrapper\CommandWrapper;
+use PHPUnit\Framework\TestCase;
+
+class CommandWrapperTest extends TestCase {
+	public function testWrappingPositiveCommand() {
+		$cmd = new CommandWrapper();
+		$cmd->setCommand('cat')
+			->setStdIn('hello');
+		$this->assertTrue($cmd->execute());
+		$this->assertEquals('hello', $cmd->getOutput());
+		$this->assertEquals(0, $cmd->getExitCode());
+	}
+
+	public function testWrappingNegativeCommand() {
+		$cmd = new CommandWrapper();
+		$cmd->setCommand('echo hello 1>&2');
+		$cmd->execute();
+		$this->assertEquals('hello', $cmd->getStdErr());
+		$this->assertEquals('', $cmd->getError());
+	}
 }

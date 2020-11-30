@@ -32,6 +32,7 @@ use OCP\Files\NotFoundException;
 use \OCP\Files\File;
 use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
 use OCA\WorkflowOcr\Exception\OcrProcessorNotFoundException;
+use OCA\WorkflowOcr\Helper\IProcessingFileAccessor;
 use OCA\WorkflowOcr\Service\IOcrService;
 use OCA\WorkflowOcr\Wrapper\IFilesystem;
 use OCA\WorkflowOcr\Wrapper\IViewFactory;
@@ -62,6 +63,8 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
 	private $userManager;
 	/** @var IUserSession */
 	private $userSession;
+	/** @var IProcessingFileAccessor */
+	private $processingFileAccessor;
 	
 	public function __construct(
 		LoggerInterface $logger,
@@ -70,7 +73,8 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
 		IViewFactory $viewFactory,
 		IFilesystem $filesystem,
 		IUserManager $userManager,
-		IUserSession $userSession) {
+		IUserSession $userSession,
+		IProcessingFileAccessor $processingFileAccessor) {
 		$this->logger = $logger;
 		$this->rootFolder = $rootFolder;
 		$this->ocrService = $ocrService;
@@ -78,6 +82,7 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
 		$this->filesystem = $filesystem;
 		$this->userManager = $userManager;
 		$this->userSession = $userSession;
+		$this->processingFileAccessor = $processingFileAccessor;
 	}
 	
 	/**
@@ -153,6 +158,7 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
 			$this->logger->info('Skipping process for \'' . $filePath . '\'. It is not a file');
 			return;
 		}
+
 		try {
 			$ocrFile = $this->ocrFile($node);
 		} catch (OcrNotPossibleException $ocrNpEx) {
@@ -163,12 +169,7 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
 			return;
 		}
 
-		$dirPath = dirname($filePath);
-		$filename = basename($filePath);
-
-		// Create new file or file-version with OCR-file
-		$view = $this->viewFactory->create($dirPath);
-		$view->file_put_contents($filename, $ocrFile);
+		$this->createNewFileVersion($filePath, $ocrFile, $node->getId());
 	}
 
 	/**
@@ -192,10 +193,30 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
 		return $this->ocrService->ocrFile($file->getMimeType(), $file->getContent());
 	}
 
-	/**
-	 * @param string $uid
-	 */
 	private function shutdownUserEnvironment() : void {
 		$this->userSession->setUser(null);
+	}
+
+	/**
+	 * @param string $filePath		The filepath of the file to write
+	 * @param string $ocrContent	The new filecontent (which was OCR processed)
+	 * @param string $fileId		The id of the file to write. Used for locking.
+	 */
+	private function createNewFileVersion(string $filePath, string $ocrContent, int $fileId) : void {
+		$dirPath = dirname($filePath);
+		$filename = basename($filePath);
+		
+		$this->processingFileAccessor->setCurrentlyProcessedFileId($fileId);
+
+		try {
+			$view = $this->viewFactory->create($dirPath);
+			// Create new file or file-version with OCR-file
+			// This will trigger 'postWrite' event which would normally
+			// add the file to the queue again but this is tackled
+			// by the processingFileAccessor.
+			$view->file_put_contents($filename, $ocrContent);
+		} finally {
+			$this->processingFileAccessor->setCurrentlyProcessedFileId(null);
+		}
 	}
 }
