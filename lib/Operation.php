@@ -36,6 +36,8 @@ use OCP\WorkflowEngine\IManager;
 use OCP\WorkflowEngine\IRuleMatcher;
 use OCP\WorkflowEngine\ISpecificOperation;
 use OCA\WorkflowOcr\BackgroundJobs\ProcessFileJob;
+use OCA\WorkflowOcr\Helper\IProcessingFileAccessor;
+use OCA\WorkflowOcr\Helper\SynchronizationHelper;
 use OCP\Files\FileInfo;
 use OCP\Files\Node;
 use OCP\IURLGenerator;
@@ -51,12 +53,15 @@ class Operation implements ISpecificOperation {
 	private $logger;
 	/** @var IURLGenerator */
 	private $urlGenerator;
+	/** @var SynchronizationHelper */
+	private $processingFileAccessor;
 
-	public function __construct(IJobList $jobList, IL10N $l, LoggerInterface $logger, IURLGenerator $urlGenerator) {
+	public function __construct(IJobList $jobList, IL10N $l, LoggerInterface $logger, IURLGenerator $urlGenerator, IProcessingFileAccessor $processingFileAccessor) {
 		$this->jobList = $jobList;
 		$this->l = $l;
 		$this->logger = $logger;
 		$this->urlGenerator = $urlGenerator;
+		$this->processingFileAccessor = $processingFileAccessor;
 	}
 
 	/**
@@ -100,7 +105,9 @@ class Operation implements ISpecificOperation {
 			return;
 		}
 
-		if (!$this->checkNode($node)) {
+		if (!$this->pathIsValid($node) ||
+			!$this->ownerExists($node) ||
+			$this->eventTriggeredByOcrProcess($node)) {
 			return;
 		}
 
@@ -115,7 +122,7 @@ class Operation implements ISpecificOperation {
 		return File::class;
 	}
 
-	private function checkNode(Node $node) : bool {
+	private function pathIsValid(Node $node) : bool {
 		// Check path has valid structure
 		$filePath = $node->getPath();
 		// '', admin, 'files', 'path/to/file.pdf'
@@ -126,14 +133,29 @@ class Operation implements ISpecificOperation {
 			return false;
 		}
 
-		// Check owner exists
+		return true;
+	}
+
+	private function ownerExists(Node $node) : bool {
+		// Check owner of file exists
 		$owner = $node->getOwner();
 		if ($owner === null) {
 			$this->logger->debug('Not processing event because file with path \'{path}\' has no owner.',
-					['path' => $filePath]);
+					['path' => $node->getPath()]);
 			return false;
 		}
 
 		return true;
+	}
+
+	private function eventTriggeredByOcrProcess(Node $node) : bool {
+		// Check if the event was triggered by OCR rewrite of the file
+		if ($node->getId() === $this->processingFileAccessor->getCurrentlyProcessedFileId()) {
+			$this->logger->debug('Not processing event because file with path \'{path}\' was written by OCR process.',
+			['path' => $node->getPath()]);
+			return true;
+		}
+
+		return false;
 	}
 }

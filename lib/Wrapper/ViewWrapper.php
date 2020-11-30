@@ -44,6 +44,6 @@ class ViewWrapper implements IView {
 		if (is_bool($retVal)) {
 			return $retVal;
 		}
-		return boolval($retVal); // TODO :: method above returns numeric value (e.g. 10023)
+		return boolval($retVal);
 	}
 }
