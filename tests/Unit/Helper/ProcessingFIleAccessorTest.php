@@ -21,14 +21,23 @@ declare(strict_types=1);
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OCA\WorkflowOcr\Wrapper;
+namespace OCA\WorkflowOcr\Tests\Unit\Helper;
 
-class WrapperFactory implements IWrapperFactory {
-	public function createFpdi(string $pdfContent = ''): IFpdi {
-		return new FpdiWrapper($pdfContent);
+use OCA\WorkflowOcr\Helper\ProcessingFileAccessor;
+use PHPUnit\Framework\TestCase;
+
+class ProcessingFileAccessorTest extends TestCase {
+	public function testSingleton() {
+		$o1 = ProcessingFileAccessor::getInstance();
+		$o2 = ProcessingFileAccessor::getInstance();
+
+		$this->assertTrue($o1 === $o2);
 	}
-
-	public function createImagick(): IImagick {
-		return new ImagickWrapper();
+	
+	public function testGetSet() {
+		$o = ProcessingFileAccessor::getInstance();
+		$o ->setCurrentlyProcessedFileId(42);
+		$this->assertEquals(42, $o->getCurrentlyProcessedFileId());
+		$o->setCurrentlyProcessedFileId(null);
 	}
 }

@@ -29,6 +29,7 @@ use OC\User\NoUserException;
 use OCA\WorkflowOcr\BackgroundJobs\ProcessFileJob;
 use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
 use OCA\WorkflowOcr\Exception\OcrProcessorNotFoundException;
+use OCA\WorkflowOcr\Helper\IProcessingFileAccessor;
 use OCA\WorkflowOcr\Service\IOcrService;
 use OCA\WorkflowOcr\Wrapper\IFilesystem;
 use OCA\WorkflowOcr\Wrapper\IView;
@@ -68,6 +69,8 @@ class ProcessFileJobTest extends TestCase {
 	private $userManager;
 	/** @var IUser|MockObject */
 	private $user;
+	/** @var IProcessingFileAccessor|MockObject */
+	private $processingFileAccessor;
 	/** @var JobList */
 	private $jobList;
 	/** @var ProcessFileJob */
@@ -76,18 +79,13 @@ class ProcessFileJobTest extends TestCase {
 	public function setUp() : void {
 		parent::setUp();
 
-		/** @var LoggerInterface */
 		$this->logger = $this->createMock(LoggerInterface::class);
-		/** @var IRootFolder */
 		$this->rootFolder = $this->createMock(IRootFolder::class);
-		/** @var IOcrService */
 		$this->ocrService = $this->createMock(IOcrService::class);
-		/** @var IViewFactory */
 		$this->viewFactory = $this->createMock(IViewFactory::class);
-		/** @var IFilesystem */
 		$this->filesystem = $this->createMock(IFilesystem::class);
-		/** @var IUserSession */
 		$this->userSession = $this->createMock(IUserSession::class);
+		$this->processingFileAccessor = $this->createMock(IProcessingFileAccessor::class);
 		
 		$userManager = $this->createMock(IUserManager::class);
 		$user = $this->createMock(IUser::class);
@@ -95,9 +93,7 @@ class ProcessFileJobTest extends TestCase {
 			->withAnyParameters()
 			->willReturn($user);
 
-		/** @var IUserManager */
 		$this->userManager = $userManager;
-		/** @var IUser */
 		$this->user = $user;
 
 		$this->processFileJob = new ProcessFileJob(
@@ -107,7 +103,8 @@ class ProcessFileJobTest extends TestCase {
 			$this->viewFactory,
 			$this->filesystem,
 			$this->userManager,
-			$this->userSession
+			$this->userSession,
+			$this->processingFileAccessor
 		);
 
 		/** @var IConfig */
@@ -337,12 +334,60 @@ class ProcessFileJobTest extends TestCase {
 			$this->viewFactory,
 			$this->filesystem,
 			$userManager,
-			$this->userSession
+			$this->userSession,
+			$this->processingFileAccessor
 		);
 		$arguments = ['filePath' => '/admin/files/someInvalidStuff', 'uid' => 'nonexistinguser'];
 		$processFileJob->setArgument($arguments);
 
 		$processFileJob->execute($this->jobList);
+	}
+
+	/**
+	 * @dataProvider dataProvider_ValidArguments
+	 */
+	public function testCallsProcessingFileAccessor(array $arguments, string $user, string $rootFolderPath) {
+		$this->processFileJob->setArgument($arguments);
+		$mimeType = 'application/pdf';
+		$content = 'someFileContent';
+		$ocrContent = 'someOcrProcessedFile';
+		$filePath = $arguments['filePath'];
+		$dirPath = dirname($filePath);
+		$filename = basename($filePath);
+
+		$fileMock = $this->createValidFileMock($mimeType, $content);
+		$this->rootFolder->method('get')
+			->with($arguments['filePath'])
+			->willReturn($fileMock);
+
+		$this->ocrService->expects($this->once())
+			->method('ocrFile')
+			->willReturn($ocrContent);
+
+		$viewMock = $this->createMock(IView::class);
+		$this->viewFactory->expects($this->once())
+			->method('create')
+			->willReturn($viewMock);
+
+		$calledWith42 = 0;
+		$calledWithNull = 0;
+
+		$this->processingFileAccessor->expects($this->exactly(2))
+			->method('setCurrentlyProcessedFileId')
+			->with($this->callback(function ($id) use (&$calledWith42, &$calledWithNull) {
+				if ($id === 42) {
+					$calledWith42++;
+				} elseif ($id === null) {
+					$calledWithNull++;
+				}
+
+				return true;
+			}));
+
+		$this->processFileJob->execute($this->jobList);
+
+		$this->assertEquals(1, $calledWith42);
+		$this->assertEquals(1, $calledWithNull);
 	}
 
 	public function dataProvider_InvalidArguments() {
@@ -396,6 +441,8 @@ class ProcessFileJobTest extends TestCase {
 			->willReturn($mimeType);
 		$fileMock->method('getContent')
 			->willReturn($content);
+		$fileMock->method('getId')
+			->willReturn(42);
 		return $fileMock;
 	}
 }
