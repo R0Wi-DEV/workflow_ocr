@@ -36,7 +36,7 @@ class PdfOcrProcessor implements IOcrProcessor {
 
 	public function ocrFile(string $fileContent): string {
 		$this->command
-			->setCommand("ocrmypdf --skip-text -q - - | cat")
+			->setCommand("ocrmypdf --redo-ocr -q - - | cat")
 			->setStdIn($fileContent);
 
 		$success = $this->command->execute();

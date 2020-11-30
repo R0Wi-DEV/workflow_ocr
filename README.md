@@ -88,7 +88,7 @@ To **test** if your file gets processed properly you can do the following steps:
 </p>
 
 ### PDF
-For processing PDF files the external commandline tool [`OCRmyPDF`](https://github.com/jbarlow83/OCRmyPDF) is used. The tool is invoked with the [`--skip-text`](https://ocrmypdf.readthedocs.io/en/latest/advanced.html#when-ocr-is-skipped) parameter so that it will skip pages which already contain text. Therefore it is possible to process PDF files containing both "born digital" and scanned content.
+For processing PDF files, the external command line tool [`OCRmyPDF`](https://github.com/jbarlow83/OCRmyPDF) is used. The tool is invoked with the [`--redo-ocr`](https://ocrmypdf.readthedocs.io/en/latest/advanced.html#when-ocr-is-skipped) parameter so that it will perform a detailed text analysis. The detailed analysis masks out visible text and sends the image of each page to the OCR processor. After processing, additional text is inserted as OCR, whereas existing text in a mixed file document (images embedded into text pages) is not disrupted.
 
 ## Development
 ### Dev setup
