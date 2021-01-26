@@ -27,8 +27,8 @@ use OCA\WorkflowOcr\AppInfo\Application;
 use OCA\WorkflowOcr\Exception\OcrProcessorNotFoundException;
 use OCA\WorkflowOcr\OcrProcessors\OcrProcessorFactory;
 use OCA\WorkflowOcr\OcrProcessors\PdfOcrProcessor;
-use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
+use Test\TestCase;
 
 class OcrProcessorFactoryTest extends TestCase {
 	/** @var ContainerInterface */
@@ -39,7 +39,7 @@ class OcrProcessorFactoryTest extends TestCase {
 		$app = new Application();
 		$this->appContainer = $app->getContainer();
 	}
-	
+
 	public function testReturnsPdfProcessor() {
 		$factory = new OcrProcessorFactory($this->appContainer);
 		$processor = $factory->create('application/pdf');
@@ -50,5 +50,29 @@ class OcrProcessorFactoryTest extends TestCase {
 		$this->expectException(OcrProcessorNotFoundException::class);
 		$factory = new OcrProcessorFactory($this->appContainer);
 		$factory->create('no/mimetype');
+	}
+
+	// Related to BUG #43
+	public function testOcrProcessorsAreNotCached() {
+		/** @var array mimetype -> ocr processor classname */
+		$mapping = $this->invokePrivate(OcrProcessorFactory::class, 'mapping');
+		$factory = new OcrProcessorFactory($this->appContainer);
+
+		foreach ($mapping as $mimetype => $className) {
+			$processor1 = $factory->create($mimetype);
+			$processor2 = $factory->create($mimetype);
+			$this->assertFalse($processor1 === $processor2);
+		}
+	}
+
+	// Related to #43
+	public function testPdfCommandNotCached() {
+		$factory = new OcrProcessorFactory($this->appContainer);
+		$processor1 = $factory->create('application/pdf');
+		$processor2 = $factory->create('application/pdf');
+		$cmd1 = $this->invokePrivate($processor1, 'command');
+		$cmd2 = $this->invokePrivate($processor2, 'command');
+
+		$this->assertFalse($cmd1 === $cmd2);
 	}
 }

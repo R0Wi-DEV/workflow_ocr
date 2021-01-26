@@ -24,18 +24,33 @@ declare(strict_types=1);
 namespace OCA\WorkflowOcr\OcrProcessors;
 
 use OCA\WorkflowOcr\Exception\OcrProcessorNotFoundException;
+use OCA\WorkflowOcr\Wrapper\ICommand;
+use OCP\AppFramework\Bootstrap\IRegistrationContext;
 use Psr\Container\ContainerInterface;
 
 class OcrProcessorFactory implements IOcrProcessorFactory {
 	private static $mapping = [
 		'application/pdf' => PdfOcrProcessor::class
 	];
-	
+
 	/** @var ContainerInterface */
 	private $container;
 
 	public function __construct(ContainerInterface $container) {
 		$this->container = $container;
+	}
+
+	public static function registerOcrProcessors(IRegistrationContext $context) : void {
+		/*
+		*	BUG #43: registerServiceAlias uses shared = false so every call to
+		*	get() on the container interface will return a new instance. If we
+		*	don't register this explicitly the instance will be cached as a kind of
+		*	"singleton per request" which leads to problems regarding the reused Command object
+		*	under the hood.
+		*/
+		$context->registerService(PdfOcrProcessor::class, function (ContainerInterface $c) {
+			return new PdfOcrProcessor($c->get(ICommand::class));
+		}, false);
 	}
 
 	public function create(string $mimeType) : IOcrProcessor {
