@@ -12,12 +12,12 @@ env:
 
 jobs:
   php:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     strategy:
       matrix:
-        php-versions: ['7.2', '7.3', '7.4']
-  
+        php-versions: ['7.3', '7.4']
+
     name: php${{ matrix.php-versions }}
     steps:
       - uses: actions/checkout@v2
@@ -30,16 +30,16 @@ jobs:
 
       - name: Lint
         run: composer run lint
-   
+
   nc-app-code-check:
-    name: nc-app-code-check-${{ matrix.php-versions }}-${{ matrix.databases }}-${{ matrix.server-versions }}
+    name: nc-app-code-check-${{ matrix.php-versions }}-${{ matrix.databases }}
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
         php-versions: ['7.4']
         databases: ['sqlite']
-        server-versions: ['stable20']
+        server-versions: ['stable21']
 
     steps:
     - name: Checkout server
@@ -54,29 +54,29 @@ jobs:
         auth_header="$(git config --local --get http.https://github.com/.extraheader)"
         git submodule sync --recursive
         git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
-   
+
     - name: Checkout app
       uses: actions/checkout@v2
       with:
         path: apps/${{ env.APP_NAME }}
-  
+
     - name: Set up php ${{ matrix.php-versions }}
       uses: shivammathur/setup-php@v1
       with:
         php-version: ${{ matrix.php-versions }}
         extensions: mbstring, iconv, fileinfo, intl, sqlite, pdo_sqlite
         coverage: none
- 
+
     - name: Install dependencies
       working-directory: apps/${{ env.APP_NAME }}
       run: composer i
- 
+
     - name: Set up Nextcloud
       env:
         DB_PORT: 4444
       run: |
         mkdir data
-        ./occ maintenance:install --verbose --database=${{ matrix.databases }} --database-name=nextcloud --database-host=127.0.0.1 --database-port=$DB_PORT --database-user=root --database-pass=rootpassword --admin-user admin --admin-pass password 
+        ./occ maintenance:install --verbose --database=${{ matrix.databases }} --database-name=nextcloud --database-host=127.0.0.1 --database-port=$DB_PORT --database-user=root --database-pass=rootpassword --admin-user admin --admin-pass password
         ./occ app:enable ${{ env.APP_NAME }}
         php -S localhost:8080 &
 

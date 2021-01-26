@@ -18,9 +18,8 @@ use OCA\WorkflowOcr\AppInfo\Application;
 use OCA\WorkflowOcr\Operation;
 use OCP\App\IAppManager;
 use OCP\AppFramework\App;
-use \PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
-use ReflectionClass;
+use Test\TestCase;
 
 /**
  * This test shows how to make a small Integration Test. Query your class
@@ -45,21 +44,33 @@ class AppTest extends TestCase {
 		$this->assertTrue($this->appManager->isInstalled(Application::APP_NAME));
 	}
 
-	public function testOperationClassRegistered() {
-		$this->runBootstrapRegistrations();
+	/**
+	 * @dataProvider trueFalseProvider
+	 */
+	public function testOperationClassRegistered(bool $lazy) {
+		$this->runBootstrapRegistrations($lazy);
 		$operation = $this->container->get(Operation::class);
 		$this->assertInstanceOf(Operation::class, $operation);
 	}
 
-	private function runBootstrapRegistrations() {
+	public function trueFalseProvider() {
+		return [
+			[true],
+			[false]
+		];
+	}
+
+	private function runBootstrapRegistrations(bool $lazy) {
+		/** @var Coordinator */
 		$bootstrapCoordinator = $this->container->get(Coordinator::class);
-		
+
 		// HACK:: reset registrations and simulate request start
-		$reflectionClass = new ReflectionClass(Coordinator::class);
-		$regContextProp = $reflectionClass->getProperty('registrationContext');
-		$regContextProp->setAccessible(true);
-		$regContextProp->setValue($bootstrapCoordinator, null);
+		$this->invokePrivate($bootstrapCoordinator, 'registrationContext', [null]);
 		
-		$bootstrapCoordinator->runRegistration();
+		if ($lazy) {
+			$bootstrapCoordinator->runLazyRegistration(Application::APP_NAME);
+		} else {
+			$bootstrapCoordinator->runInitialRegistration();
+		}
 	}
 }
