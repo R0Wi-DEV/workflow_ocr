@@ -44,7 +44,7 @@ Since the actual processing of the files is done asynchronously via Nextcloud's 
 ### Backend
 > :warning: Since `v1.20.1` you'll have to install `OCRmyPDF`.
 
-In the backend [`OCRmyPDF`](https://github.com/jbarlow83/OCRmyPDF) is used for processing PDF files. Make sure you have this commandline tool installed.
+In the backend [`OCRmyPDF`](https://github.com/jbarlow83/OCRmyPDF) is used for processing PDF files. Make sure you have this commandline tool installed. Make sure you have the appropriate version (see below, Used libraries').  
 
 ```bash
 apt-get install ocrmypdf
@@ -203,6 +203,6 @@ That's all. If you now create a new workflow based on your added mimetype, your 
 ## Used libraries & components
 | Name | Version | Link |
 |---|---|---|
-| OCRmyPDF (commandline) | >= 9.6.0 | https://github.com/jbarlow83/OCRmyPDF |
+| OCRmyPDF (commandline) | >= 9.6.0 | https://github.com/jbarlow83/OCRmyPDF On Debian, you might need to manually install a more recent version as described in https://ocrmypdf.readthedocs.io/en/latest/installation.html#ubuntu-18-04-lts; see https://github.com/R0Wi/workflow_ocr/issues/46 |
 | php-shellcommand | >= 1.6 | https://github.com/mikehaertl/php-shellcommand |
 | PHPUnit | >= 8.0 | https://phpunit.de/ |
