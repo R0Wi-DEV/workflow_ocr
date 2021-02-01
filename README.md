@@ -186,9 +186,20 @@ To support a new mimetype for being processed with OCR you have to follow a few 
 ```php
 private static $mapping = [
         'application/pdf' => PdfOcrProcessor::class,
-        // Add your class here
+		// Add your class here, for example:
+		'mymimetype' => MyOcrProcessor::class
     ];
 ```
+3. Register a factory for creating your newly added processor in `lib/OcrProcessors/OcrProcessorFactory.php` by adding an appropriate function inside of `registerOcrProcessors`.
+```php
+public static function registerOcrProcessors(IRegistrationContext $context) : void {
+		// [...]
+		$context->registerService(MyOcrProcessor::class, function(ContainerInterface $c) {
+			return new /* your factory goes here */
+		}, false);
+	}
+```
+
 That's all. If you now create a new workflow based on your added mimetype, your implementation should be triggered by the app. The return value of `ocrFile(string $fileContent)` will be interpreted as the file content of the scanned file. This one is used to create a new file version in Nextcloud.
 
 ## Limitations

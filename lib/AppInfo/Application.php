@@ -65,11 +65,17 @@ class Application extends App implements IBootstrap {
 		$context->registerServiceAlias(IOcrProcessorFactory::class, OcrProcessorFactory::class);
 		$context->registerServiceAlias(IViewFactory::class, ViewFactory::class);
 		$context->registerServiceAlias(IFilesystem::class, Filesystem::class);
-		$context->registerServiceAlias(ICommand::class, CommandWrapper::class);
+
+		// BUG #43
+		$context->registerService(ICommand::class, function () {
+			return new CommandWrapper();
+		}, false);
 
 		$context->registerService(IProcessingFileAccessor::class, function () {
 			return ProcessingFileAccessor::getInstance();
 		});
+
+		OcrProcessorFactory::registerOcrProcessors($context);
 
 		$context->registerEventListener(RegisterOperationsEvent::class, RegisterFlowOperationsListener::class);
 	}
