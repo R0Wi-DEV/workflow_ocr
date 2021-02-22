@@ -1,23 +1,25 @@
-<phpunit bootstrap="tests/bootstrap.php" 
-         colors="true" 
+<?xml version="1.0"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+         bootstrap="tests/bootstrap.php"
+         colors="true"
          verbose="true"
          timeoutForSmallTests="900"
          timeoutForMediumTests="900"
          timeoutForLargeTests="900">
-    <testsuite name="unit">
-        <directory>./tests/Unit</directory>
-    </testsuite>
-    <!-- filters for code coverage -->
-    <filter>
-        <whitelist>
-            <directory suffix=".php">./</directory>
-            <exclude>
-                <directory suffix=".php">./appinfo</directory>
-                <directory suffix=".php">./l10n</directory>
-                <directory suffix=".php">./templates</directory>
-                <directory suffix=".php">./tests</directory>
-                <directory suffix=".php">./vendor</directory>
-            </exclude>
-        </whitelist>
-    </filter>
+  <coverage>
+    <include>
+      <directory suffix=".php">./</directory>
+    </include>
+    <exclude>
+      <directory suffix=".php">./appinfo</directory>
+      <directory suffix=".php">./l10n</directory>
+      <directory suffix=".php">./templates</directory>
+      <directory suffix=".php">./tests</directory>
+      <directory suffix=".php">./vendor</directory>
+    </exclude>
+  </coverage>
+  <testsuite name="unit">
+    <directory>./tests/Unit</directory>
+  </testsuite>
 </phpunit>
