@@ -91,7 +91,7 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
 	protected function run($argument) : void {
 		$this->logger->debug('STARTED -- Run ' . self::class . ' job. Argument: {argument}.', ['argument' => $argument]);
 		
-		list($success, $filePath, $uid) = $this->tryParseArguments($argument);
+		[$success, $filePath, $uid] = $this->tryParseArguments($argument);
 		if (!$success) {
 			return;
 		}

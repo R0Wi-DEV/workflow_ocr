@@ -126,7 +126,7 @@ class Operation implements ISpecificOperation {
 		// Check path has valid structure
 		$filePath = $node->getPath();
 		// '', admin, 'files', 'path/to/file.pdf'
-		list(,, $folder,) = explode('/', $filePath, 4);
+		[,, $folder,] = explode('/', $filePath, 4);
 		if ($folder !== 'files') {
 			$this->logger->debug('Not processing event because path \'{path}\' seems to be invalid.',
 					['path' => $filePath]);
