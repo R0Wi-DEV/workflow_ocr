@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        php-versions: ['7.3', '7.4']
+        php-versions: ['7.3', '7.4', '8.0']
 
     name: php${{ matrix.php-versions }}
     steps:
@@ -37,7 +37,7 @@ jobs:
 
     strategy:
       matrix:
-        php-versions: ['7.4']
+        php-versions: ['8.0']
         databases: ['sqlite']
         server-versions: ['stable21']
 
