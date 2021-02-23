@@ -7,6 +7,9 @@
          timeoutForSmallTests="900"
          timeoutForMediumTests="900"
          timeoutForLargeTests="900">
+  <testsuite name="unit">
+    <directory>./tests/Unit</directory>
+  </testsuite>
   <coverage>
     <include>
       <directory suffix=".php">./</directory>
@@ -19,7 +22,4 @@
       <directory suffix=".php">./vendor</directory>
     </exclude>
   </coverage>
-  <testsuite name="unit">
-    <directory>./tests/Unit</directory>
-  </testsuite>
 </phpunit>

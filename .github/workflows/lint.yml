@@ -18,7 +18,7 @@ jobs:
       matrix:
         php-versions: ['7.3', '7.4', '8.0']
 
-    name: php${{ matrix.php-versions }}
+    name: php-lint-${{ matrix.php-versions }}
     steps:
       - uses: actions/checkout@v2
 
@@ -32,7 +32,7 @@ jobs:
         run: composer run lint
 
   nc-app-code-check:
-    name: nc-app-code-check-${{ matrix.php-versions }}-${{ matrix.databases }}
+    name: nc-app-code-check
     runs-on: ubuntu-20.04
 
     strategy:
