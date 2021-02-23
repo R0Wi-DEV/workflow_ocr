@@ -6,11 +6,11 @@ on:
 jobs:
   php-cs-fixer:
     name: php-cs-fixer
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     strategy:
       matrix:
-        php-versions: ['7.4']
+        php-versions: ['8.0']
 
     steps:
     - name: Checkout
@@ -19,7 +19,7 @@ jobs:
         ref: ${{ github.head_ref }}
 
     - name: Set up php
-      uses: shivammathur/setup-php@v1
+      uses: shivammathur/setup-php@v2
       with:
         php-version: ${{ matrix.php-versions }}
         coverage: none
