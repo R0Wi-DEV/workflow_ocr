@@ -18,7 +18,7 @@ jobs:
       matrix:
         php-versions: ['7.3', '7.4', '8.0']
 
-    name: php-lint-${{ matrix.php-versions }}
+    name: php${{ matrix.php-versions }}-LINT
     steps:
       - uses: actions/checkout@v2
 
@@ -32,14 +32,14 @@ jobs:
         run: composer run lint
 
   nc-app-code-check:
-    name: nc-app-code-check
+    name: nc-app-code-check-${{ matrix.php-versions }}-${{ matrix.databases }}-CODECHECK
     runs-on: ubuntu-20.04
 
     strategy:
       matrix:
         php-versions: ['8.0']
         databases: ['sqlite']
-        server-versions: ['stable21']
+        server-versions: ['stable22']
 
     steps:
     - name: Checkout server
