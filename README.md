@@ -4,7 +4,7 @@
 [![codecov](https://codecov.io/gh/R0Wi/workflow_ocr/branch/master/graph/badge.svg)](https://codecov.io/gh/R0Wi/workflow_ocr)
 ![Lint](https://github.com/R0Wi/workflow_ocr/workflows/Lint/badge.svg)
 [![Generic badge](https://img.shields.io/github/v/release/R0Wi/workflow_ocr)](https://github.com/R0Wi/workflow_ocr/releases)
-[![Generic badge](https://img.shields.io/badge/Nextcloud-21-orange)](https://github.com/nextcloud/server)
+[![Generic badge](https://img.shields.io/badge/Nextcloud-22-orange)](https://github.com/nextcloud/server)
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -21,6 +21,7 @@
 - [Development](#development)
   - [Dev setup](#dev-setup)
   - [Debugging](#debugging)
+  - [`docker`-based setup](#docker-based-setup)
   - [Executing tests](#executing-tests)
   - [Adding a new `OcrProcessor`](#adding-a-new-ocrprocessor)
 - [Limitations](#limitations)
@@ -84,7 +85,7 @@ To **test** if your file gets processed properly you can do the following steps:
 ## How it works
 ### General
 <p align="center">
-  <img width="50%" src="doc/diagramms/general.svg" alt="General diagramm">
+  <img width="50%" src="doc/diagramms/general.png" alt="General diagramm">
 </p>
 
 ### PDF
@@ -118,8 +119,8 @@ when being inside of the debug-tab.
     <img src="doc/img/debug.jpg" alt="VSCode debug profile">
   </p>
 
-To get the debugger profiles working you need to ensure that `XDebug` for `Apache` (or your preferred webserver) is connected to you machine at
-port `9000` while `XDebug` for the PHP CLI should be configured to bind to port `9001`. Depending on your system a possible configuration could
+To get the debugger profiles working you need to ensure that `XDebug` for `Apache` (or your preferred webserver) and `XDebug` for PHP CLI both connect to your machine at
+port `9003`. Depending on your system a possible configuration could
 look like this:
 
 ```ini
@@ -129,7 +130,7 @@ look like this:
 zend_extension=/usr/lib/php/20190902/xdebug.so
 xdebug.remote_enable=1
 xdebug.remote_host=127.0.0.1
-xdebug.remote_port=9001
+xdebug.remote_port=9003
 xdebug.remote_autostart=1
 ```
 
@@ -140,7 +141,7 @@ xdebug.remote_autostart=1
 zend_extension=/usr/lib/php/20190902/xdebug.so
 xdebug.remote_enable=1
 xdebug.remote_host=127.0.0.1
-xdebug.remote_port=9000
+xdebug.remote_port=9003
 xdebug.remote_autostart=1
 ```
 
@@ -157,6 +158,55 @@ The following table lists the various debug profiles:
 If you're looking for some good sources on how to setup `VSCode` + `XDebug` we can recommend:
 * https://tighten.co/blog/configure-vscode-to-debug-phpunit-tests-with-xdebug/
 * https://code.visualstudio.com/docs/languages/php
+
+### `docker`-based setup
+If you're interested in a `docker`-based setup we can recommend
+the images from https://github.com/thecodingmachine/docker-images-php which already come with `Apache` and
+`XDebug` installed.
+
+A working `docker-compose.yml`-file could look like this:
+```yaml
+version: '3'
+services:
+  apache_dev:
+    restart: always
+    container_name: apache_dev
+    image: ${IMAGE}-custom
+    build:
+      dockerfile: ./Dockerfile
+      args:
+        IMAGE: ${IMAGE}
+    environment:
+      - PHP_INI_MEMORY_LIMIT=1g
+      - PHP_INI_ERROR_REPORTING=E_ALL
+      - PHP_INI_XDEBUG__START_WITH_REQUEST=yes
+      - PHP_INI_XDEBUG__LOG_LEVEL=7
+      - PHP_EXTENSIONS=xdebug gd intl bcmath gmp imagick
+    volumes:
+      - ./html:/var/www/html
+      - ./000-default.conf:/etc/apache2/sites-enabled/000-default.conf
+    ports:
+      - 80:80
+    networks:
+      - web_dev
+```
+`IMAGE` could be set to `IMAGE=thecodingmachine/php:7.4-v4-apache-node14` and the content of `Dockerfile` might
+look like this:
+
+```dockerfile
+ARG IMAGE
+FROM $IMAGE
+
+USER root
+RUN    apt-get update \
+    && apt-get install -y make ocrmypdf tesseract-ocr-eng tesseract-ocr-deu smbclient \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
+USER docker
+```
+> :information_source: Please note that these are just
+working snippets which you might have to modify to fit
+your needs.
 
 ### Executing tests
 To execute the implemented PHPUnit tests you can use one of the following commands:

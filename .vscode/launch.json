@@ -9,20 +9,20 @@
             "name": "Listen for XDebug",
             "type": "php",
             "request": "launch",
-            "port": 9000
+            "port": 9003
         },
         {
             "name": "Listen for XDebug (CLI)",
             "type": "php",
             "request": "launch",
-            "port": 9001
+            "port": 9003
         },
         {
             "name": "Run cron.php",
             "type": "php",
             "request": "launch",
             "program": "${workspaceRoot}/../../cron.php",
-            "port": 9001
+            "port": 9003
         },
         {
             "name": "Debug Unittests",
@@ -31,7 +31,7 @@
             "program": "${workspaceRoot}/vendor/phpunit/phpunit/phpunit",
             "args": ["-c", "phpunit.xml"],
             "cwd": "${workspaceRoot}",
-            "port": 9001
+            "port": 9003
         },
         {
             "name": "Debug Integrationtests",
@@ -40,7 +40,7 @@
             "program": "${workspaceRoot}/vendor/phpunit/phpunit/phpunit",
             "args": ["-c", "phpunit.integration.xml"],
             "cwd": "${workspaceRoot}",
-            "port": 9001
+            "port": 9003
         }
     ]
 }

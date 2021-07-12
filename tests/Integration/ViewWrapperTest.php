@@ -23,60 +23,42 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\Tests\Integration;
 
-use Exception;
 use OC\Files\View;
-use OCA\WorkflowOcr\Tests\TestUtils;
 use OCA\WorkflowOcr\Wrapper\ViewWrapper;
 use Test\TestCase;
+use Test\Traits\UserTrait;
 
 /**
  * @group DB
  */
 class ViewWrapperTest extends TestCase {
-	
-	/** @var TestUtils */
-	private $testUtils;
+	use UserTrait;
+
+	private const USER = 'mytestuser';
 
 	protected function setUp() : void {
 		parent::setUp();
-		$this->testUtils = new TestUtils();
+		$this->createUser(self::USER, 'pass');
+		$this->loginAsUser(self::USER);
 	}
 
 	/**
 	 * @dataProvider dataProvider_FilePutContents
 	 */
 	public function testFilePutContents(string $filename, bool $expectedResult) {
-		$user = 'mytestuser';
-		$pw = 'myuserspw';
 		$path = '/mytestuser/files';
 		$content = 'hello world';
+		$viewWrapper = new ViewWrapper($path);
 
-		/** @var \OCP\IUser */
-		$userObject = null;
+		$result = $viewWrapper->file_put_contents($filename, $content);
+		$this->assertEquals($expectedResult, $result);
 
-		try {
-			$userObject = $this->testUtils->createUser($user, $pw);
-			$this->loginAsUser($user);
-
-			$viewWrapper = new ViewWrapper($path);
-
-			$result = $viewWrapper->file_put_contents($filename, $content);
-			$this->assertEquals($expectedResult, $result);
-
-			// If we expect that we can write to the file we should
-			// be able to read the file afterwards
-			if ($expectedResult) {
-				$ncView = new View($path);
-				$readContent = $ncView->file_get_contents($filename);
-				$this->assertEquals($content, $readContent);
-			}
-		} finally {
-			if ($userObject) {
-				$this->logout();
-				if (!$userObject->delete()) {
-					throw new Exception("Could not delete user " . $user);
-				}
-			}
+		// If we expect that we can write to the file we should
+		// be able to read the file afterwards
+		if ($expectedResult) {
+			$ncView = new View($path);
+			$readContent = $ncView->file_get_contents($filename);
+			$this->assertEquals($content, $readContent);
 		}
 	}
 
