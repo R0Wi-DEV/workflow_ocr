@@ -42,7 +42,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
 class OperationTest extends TestCase {
-	
+
 	/** @var IJobList|MockObject */
 	private $jobList;
 	/** @var IL10N|MockObject */
@@ -53,6 +53,8 @@ class OperationTest extends TestCase {
 	private $urlGenerator;
 	/** @var IProcessingFileAccessor|MockObject */
 	private $processingFileAccessor;
+	/** @var IRuleMatcher|MockObject */
+	private $ruleMatcher;
 
 	protected function setUp(): void {
 		parent::setUp();
@@ -61,6 +63,9 @@ class OperationTest extends TestCase {
 		$this->logger = $this->createMock(LoggerInterface::class);
 		$this->urlGenerator = $this->createMock(IURLGenerator::class);
 		$this->processingFileAccessor = $this->createMock(IProcessingFileAccessor::class);
+		$this->ruleMatcher = $this->createMock(IRuleMatcher::class);
+		$this->ruleMatcher->method('getFlows')
+			->willReturn([$this->createMock(Operation::class)]); // simulate single matching operation
 	}
 
 	/**
@@ -75,9 +80,30 @@ class OperationTest extends TestCase {
 			->withAnyParameters();
 
 		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor);
-		/** @var IRuleMatcher */
+		$operation->onEvent($eventName, $event, $this->ruleMatcher);
+	}
+
+	/**
+	 * @dataProvider dataProvider_InvalidRuleMatcherResults
+	 */
+	public function testDoesNothingIfRuleMatcherDoesNotMatch($ruleMatcherResult) {
+		$this->jobList->expects($this->never())
+			->method('add')
+			->withAnyParameters();
+		$this->logger->expects($this->once())
+			->method('debug')
+			->withAnyParameters();
+
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor);
+
+		/** @var IRuleMatcher|MockObject */
 		$ruleMatcher = $this->createMock(IRuleMatcher::class);
-		$operation->onEvent($eventName, $event, $ruleMatcher);
+		$ruleMatcher->expects($this->once())
+			->method('getFlows')
+			->with(true)
+			->willReturn($ruleMatcherResult);
+
+		$operation->onEvent("\OCP\Files::postCreate", new GenericEvent(), $ruleMatcher);
 	}
 
 	public function testDoesNothingOnFolderEvent() {
@@ -87,18 +113,16 @@ class OperationTest extends TestCase {
 		$this->logger->expects($this->once())
 			->method('debug')
 			->withAnyParameters();
-		
+
 		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor);
 
 		$fileMock = $this->createMock(Node::class);
 		$fileMock->method('getType')
 			->willReturn(FileInfo::TYPE_FOLDER);
 		$event = new GenericEvent($fileMock);
-		/** @var IRuleMatcher */
-		$ruleMatcher = $this->createMock(IRuleMatcher::class);
 		$eventName = '\OCP\Files::postCreate';
 
-		$operation->onEvent($eventName, $event, $ruleMatcher);
+		$operation->onEvent($eventName, $event, $this->ruleMatcher);
 	}
 
 	public function testDoesNothingOnPostWriteTriggeredByCurrentOcrProcess() {
@@ -114,7 +138,7 @@ class OperationTest extends TestCase {
 		$processingFileAccessorMock->expects($this->once())
 			->method('getCurrentlyProcessedFileId')
 			->willReturn(42);
-		
+
 		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $processingFileAccessorMock);
 
 		$userMock = $this->createMock(IUser::class);
@@ -130,11 +154,9 @@ class OperationTest extends TestCase {
 		$fileMock->method('getId')
 			->willReturn(42);
 		$event = new GenericEvent($fileMock);
-		/** @var IRuleMatcher */
-		$ruleMatcher = $this->createMock(IRuleMatcher::class);
 		$eventName = '\OCP\Files::postCreate';
 
-		$operation->onEvent($eventName, $event, $ruleMatcher);
+		$operation->onEvent($eventName, $event, $this->ruleMatcher);
 	}
 
 
@@ -148,7 +170,7 @@ class OperationTest extends TestCase {
 		$this->logger->expects($this->once())
 			->method('debug')
 			->withAnyParameters();
-		
+
 		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor);
 
 		$fileMock = $this->createMock(Node::class);
@@ -157,11 +179,9 @@ class OperationTest extends TestCase {
 		$fileMock->method('getPath')
 			->willReturn($filePath);
 		$event = new GenericEvent($fileMock);
-		/** @var IRuleMatcher */
-		$ruleMatcher = $this->createMock(IRuleMatcher::class);
 		$eventName = '\OCP\Files::postCreate';
 
-		$operation->onEvent($eventName, $event, $ruleMatcher);
+		$operation->onEvent($eventName, $event, $this->ruleMatcher);
 	}
 
 	public function testDoesNothingOnFileWithoutOwner() {
@@ -181,13 +201,11 @@ class OperationTest extends TestCase {
 			->willReturn('/admin/files/path/to/file.pdf');
 		$fileMock->method('getOwner')
 			->willReturn(null);
-			
+
 		$event = new GenericEvent($fileMock);
-		/** @var IRuleMatcher */
-		$ruleMatcher = $this->createMock(IRuleMatcher::class);
 		$eventName = '\OCP\Files::postCreate';
 
-		$operation->onEvent($eventName, $event, $ruleMatcher);
+		$operation->onEvent($eventName, $event, $this->ruleMatcher);
 	}
 
 	public function testAddWithCorrectFilePathAndUser() {
@@ -196,7 +214,7 @@ class OperationTest extends TestCase {
 		$this->jobList->expects($this->once())
 			->method('add')
 			->with(ProcessFileJob::class, ['filePath' => $filePath, 'uid' => $uid]);
-		
+
 		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor);
 
 		$userMock = $this->createMock(IUser::class);
@@ -213,11 +231,9 @@ class OperationTest extends TestCase {
 		$fileMock->method('getId')
 			->willReturn(42);
 		$event = new GenericEvent($fileMock);
-		/** @var IRuleMatcher */
-		$ruleMatcher = $this->createMock(IRuleMatcher::class);
 		$eventName = '\OCP\Files::postCreate';
 
-		$operation->onEvent($eventName, $event, $ruleMatcher);
+		$operation->onEvent($eventName, $event, $this->ruleMatcher);
 	}
 
 	/**
@@ -281,20 +297,27 @@ class OperationTest extends TestCase {
 
 	public function dataProvider_InvalidEvents() {
 		$arr = [
-			["\OCP\Files\preWrite", new GenericEvent()],
-			["\OCP\Files\preCreate", new GenericEvent()],
-			["\OCP\Files\preDelete", new GenericEvent()],
-			["\OCP\Files\postDelete", new GenericEvent()],
-			["\OCP\Files\postTouch", new GenericEvent()],
-			["\OCP\Files\preTouch", new GenericEvent()],
-			["\OCP\Files\preCopy", new GenericEvent()],
-			["\OCP\Files\postCopy", new GenericEvent()],
-			["\OCP\Files\preRename", new GenericEvent()],
-			["\OCP\Files\postRename", new GenericEvent()],
-			["\OCP\Files\postWrite", new Event()],
-			["\OCP\Files\postCreate", new Event()],
+			["\OCP\Files::preWrite", new GenericEvent()],
+			["\OCP\Files::preCreate", new GenericEvent()],
+			["\OCP\Files::preDelete", new GenericEvent()],
+			["\OCP\Files::postDelete", new GenericEvent()],
+			["\OCP\Files::postTouch", new GenericEvent()],
+			["\OCP\Files::preTouch", new GenericEvent()],
+			["\OCP\Files::preCopy", new GenericEvent()],
+			["\OCP\Files::postCopy", new GenericEvent()],
+			["\OCP\Files::preRename", new GenericEvent()],
+			["\OCP\Files::postRename", new GenericEvent()],
+			["\OCP\Files::postWrite", new Event()],
+			["\OCP\Files::postCreate", new Event()],
 		];
 		return $arr;
+	}
+
+	public function dataProvider_InvalidRuleMatcherResults() {
+		return [
+			[ [] ],
+			[ null ]
+		];
 	}
 
 	public function dataProvider_InvalidFilePaths() {
