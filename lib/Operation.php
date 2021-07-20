@@ -89,15 +89,15 @@ class Operation implements ISpecificOperation {
 	}
 
 	public function onEvent(string $eventName, Event $event, IRuleMatcher $ruleMatcher): void {
-		if ($eventName !== '\OCP\Files::postCreate' && $eventName !== '\OCP\Files::postWrite' ||
-			!$event instanceof GenericEvent) {
-			$this->logger->debug('Not processing event {eventname} with argument {event}.',
-					['eventname' => $eventName, 'event' => $event]);
+		if (!$this->checkEvent($eventName, $event) ||
+			!$this->checkRuleMatcher($ruleMatcher)) {
 			return;
 		}
 
+		/** @var GenericEvent */
+		$genericEvent = $event;
 		/** @var Node*/
-		$node = $event->getSubject();
+		$node = $genericEvent->getSubject();
 
 		if (!$node instanceof Node || $node->getType() !== FileInfo::TYPE_FILE) {
 			$this->logger->debug('Not processing event {eventname} because node is not a file.',
@@ -120,6 +120,25 @@ class Operation implements ISpecificOperation {
 
 	public function getEntityId(): string {
 		return File::class;
+	}
+
+	private function checkEvent(string $eventName, Event $event) : bool {
+		if ($eventName !== '\OCP\Files::postCreate' && $eventName !== '\OCP\Files::postWrite' ||
+			!$event instanceof GenericEvent) {
+			$this->logger->debug('Not processing event {eventname} with argument {event}.',
+					['eventname' => $eventName, 'event' => $event]);
+			return false;
+		}
+		return true;
+	}
+
+	private function checkRuleMatcher(IRuleMatcher $ruleMatcher) : bool {
+		$match = $ruleMatcher->getFlows(true);
+		if (!$match) {
+			$this->logger->debug('Not processing event because IRuleMatcher->getFlows did not return anything');
+			return false;
+		}
+		return true;
 	}
 
 	private function pathIsValid(Node $node) : bool {
