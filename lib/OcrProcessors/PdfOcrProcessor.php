@@ -25,13 +25,18 @@ namespace OCA\WorkflowOcr\OcrProcessors;
 
 use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
 use OCA\WorkflowOcr\Wrapper\ICommand;
+use Psr\Log\LoggerInterface;
 
 class PdfOcrProcessor implements IOcrProcessor {
 	/** @var ICommand */
 	private $command;
 
-	public function __construct(ICommand $command) {
+	/** @var LoggerInterface */
+	private $logger;
+
+	public function __construct(ICommand $command, LoggerInterface $logger) {
 		$this->command = $command;
+		$this->logger = $logger;
 	}
 
 	public function ocrFile(string $fileContent): string {
@@ -40,14 +45,20 @@ class PdfOcrProcessor implements IOcrProcessor {
 			->setStdIn($fileContent);
 
 		$success = $this->command->execute();
+
 		$errorOutput = $this->command->getError();
 		$stdErr = $this->command->getStdErr();
 		$exitCode = $this->command->getExitCode();
 
-		if ($success && $errorOutput === '' && $stdErr === '') {
+		if ($success) {
+			if ($stdErr !== '' || $errorOutput !== '') {
+				// Log warning if ocrmypdf wrote a warning to the stderr
+				$this->logger->warning('OCRmyPDF succeeded with warning(s): {stdErr}, {errorOutput}', [$stdErr, $errorOutput]);
+			}
+
 			return $this->command->getOutput();
-		} else {
-			throw new OcrNotPossibleException('OCRmyPDF exited abnormally with exit-code ' . $exitCode . '. Message: ' . $errorOutput . ' ' . $stdErr);
 		}
+
+		throw new OcrNotPossibleException('OCRmyPDF exited abnormally with exit-code ' . $exitCode . '. Message: ' . $errorOutput . ' ' . $stdErr);
 	}
 }
