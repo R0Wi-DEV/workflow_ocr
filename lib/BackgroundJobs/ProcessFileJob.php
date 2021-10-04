@@ -155,17 +155,17 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
 		}
 
 		if (!$node instanceof Node || $node->getType() !== FileInfo::TYPE_FILE) {
-			$this->logger->info('Skipping process for \'' . $filePath . '\'. It is not a file');
+			$this->logger->warning('Skipping process for \'' . $filePath . '\'. It is not a file');
 			return;
 		}
 
 		try {
 			$ocrFile = $this->ocrFile($node);
 		} catch (OcrNotPossibleException $ocrNpEx) {
-			$this->logger->info('OCR for file ' . $node->getPath() . ' not possible. Message: ' . $ocrNpEx->getMessage());
+			$this->logger->error('OCR for file ' . $node->getPath() . ' not possible. Message: ' . $ocrNpEx->getMessage());
 			return;
 		} catch (OcrProcessorNotFoundException $ocrProcNfEx) {
-			$this->logger->info('OCR processor not found for mimetype ' . $node->getMimeType());
+			$this->logger->error('OCR processor not found for mimetype ' . $node->getMimeType());
 			return;
 		}
 
