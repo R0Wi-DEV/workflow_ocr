@@ -260,6 +260,12 @@ That's all. If you now create a new workflow based on your added mimetype, your 
   <p align="center">
     <img width="75%" src="doc/img/file_versions.jpg" alt="File versions">
   </p>
+  If you want to clean the files history for all files and only preserve the newest file version, you can use
+  
+  ```bash
+  sudo -u www-data php occ versions:cleanup
+  ```
+  Read more about this in the [docs](https://docs.nextcloud.com/server/stable/admin_manual/configuration_server/occ_command.html?#versions).
 
 ## Used libraries & components
 | Name | Version | Link |

@@ -315,8 +315,7 @@ class OperationTest extends TestCase {
 
 	public function dataProvider_InvalidRuleMatcherResults() {
 		return [
-			[ [] ],
-			[ null ]
+			[ [] ]
 		];
 	}
 

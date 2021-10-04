@@ -27,6 +27,7 @@ use OCA\WorkflowOcr\Exception\OcrProcessorNotFoundException;
 use OCA\WorkflowOcr\Wrapper\ICommand;
 use OCP\AppFramework\Bootstrap\IRegistrationContext;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 
 class OcrProcessorFactory implements IOcrProcessorFactory {
 	private static $mapping = [
@@ -49,7 +50,7 @@ class OcrProcessorFactory implements IOcrProcessorFactory {
 		*	under the hood.
 		*/
 		$context->registerService(PdfOcrProcessor::class, function (ContainerInterface $c) {
-			return new PdfOcrProcessor($c->get(ICommand::class));
+			return new PdfOcrProcessor($c->get(ICommand::class), $c->get(LoggerInterface::class));
 		}, false);
 	}
 
