@@ -28,15 +28,20 @@ use OCA\WorkflowOcr\OcrProcessors\PdfOcrProcessor;
 use OCA\WorkflowOcr\Wrapper\ICommand;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 
 class PdfOcrProcessorTest extends TestCase {
 	/** @var ICommand|MockObject */
 	private $command;
 
+	/** @var LoggerInterface|MockObject */
+	private $logger;
+
 	protected function setUp(): void {
 		parent::setUp();
 
 		$this->command = $this->createMock(ICommand::class);
+		$this->logger = $this->createMock(LoggerInterface::class);
 	}
 
 	public function testCallsCommandInterface() {
@@ -57,7 +62,7 @@ class PdfOcrProcessorTest extends TestCase {
 			->method('getOutput')
 			->willReturn($pdfAfter);
 		
-		$processor = new PdfOcrProcessor($this->command);
+		$processor = new PdfOcrProcessor($this->command, $this->logger);
 		$result = $processor->ocrFile($pdfBefore);
 		
 		$this->assertEquals($pdfAfter, $result);
@@ -65,7 +70,6 @@ class PdfOcrProcessorTest extends TestCase {
 
 	public function testThrowsOcrNotPossibleException() {
 		$pdfBefore = 'someFileContent';
-		$pdfAfter = 'someOcrFileContent';
 
 		$this->command->expects($this->once())
 			->method('setCommand')
@@ -84,16 +88,41 @@ class PdfOcrProcessorTest extends TestCase {
 		$this->command->expects($this->once())
 			->method('getExitCode');
 
-		$processor = new PdfOcrProcessor($this->command);
+		$processor = new PdfOcrProcessor($this->command, $this->logger);
 		$thrown = false;
 
 		try {
-			$result = $processor->ocrFile($pdfBefore);
+			$processor->ocrFile($pdfBefore);
 		} catch (\Throwable $t) {
 			$thrown = true;
 			$this->assertInstanceOf(OcrNotPossibleException::class, $t);
 		}
 		
 		$this->assertTrue($thrown);
+	}
+
+	public function testLogsWarningIfOcrMyPdfSucceedsWithWarningOutput() {
+		$this->command->expects($this->once())
+			->method('execute')
+			->willReturn(true);
+		$this->command->expects($this->once())
+			->method('getError')
+			->willReturn('error');
+		$this->command->expects($this->once())
+			->method('getStdErr')
+			->willReturn('stdErr');
+		$this->logger->expects($this->once())
+			->method('warning')
+			->with(
+				$this->stringStartsWith('OCRmyPDF succeeded with warning(s):'),
+				$this->callback(function ($paramsArray) {
+					return is_array($paramsArray) &&
+							count($paramsArray) === 2 &&
+							$paramsArray[0] === 'stdErr' &&
+							$paramsArray[1] === 'error';
+				}));
+
+		$processor = new PdfOcrProcessor($this->command, $this->logger);
+		$processor->ocrFile('someContent');
 	}
 }

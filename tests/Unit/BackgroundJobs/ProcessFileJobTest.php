@@ -291,7 +291,7 @@ class ProcessFileJobTest extends TestCase {
 	/**
 	 * @dataProvider dataProvider_OcrExceptions
 	 */
-	public function testLogsInfo_OnOcrException(Exception $exception) {
+	public function testLogsError_OnOcrException(Exception $exception) {
 		$arguments = ['filePath' => '/admin/files/someInvalidStuff', 'uid' => 'admin'];
 		$this->processFileJob->setArgument($arguments);
 
@@ -304,7 +304,7 @@ class ProcessFileJobTest extends TestCase {
 			->willThrowException($exception);
 		
 		$this->logger->expects($this->once())
-			->method('info');
+			->method('error');
 
 		$this->viewFactory->expects($this->never())
 			->method('create');
