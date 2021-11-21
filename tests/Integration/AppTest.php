@@ -44,6 +44,12 @@ class AppTest extends TestCase {
 		$this->assertTrue($this->appManager->isInstalled(Application::APP_NAME));
 	}
 
+	public function testSomething() {
+		/** @var Coordinator */
+		$bootstrapCoordinator = $this->container->get(Coordinator::class);
+		$bootstrapCoordinator->runLazyRegistration(\OCA\WorkflowEngine\AppInfo\Application::APP_ID);
+	}
+
 	/**
 	 * @dataProvider trueFalseProvider
 	 */

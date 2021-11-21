@@ -26,8 +26,8 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr;
 
-use OCA\WorkflowEngine\Entity\File;
 use OCA\WorkflowOcr\AppInfo\Application;
+use OCA\WorkflowEngine\Entity\File;
 use OCP\BackgroundJob\IJobList;
 use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\GenericEvent;
@@ -39,8 +39,10 @@ use OCA\WorkflowOcr\BackgroundJobs\ProcessFileJob;
 use OCA\WorkflowOcr\Helper\IProcessingFileAccessor;
 use OCA\WorkflowOcr\Helper\SynchronizationHelper;
 use OCP\Files\FileInfo;
+use OCP\Files\IRootFolder;
 use OCP\Files\Node;
 use OCP\IURLGenerator;
+use OCP\SystemTag\MapperEvent;
 use Psr\Log\LoggerInterface;
 
 class Operation implements ISpecificOperation {
@@ -55,13 +57,22 @@ class Operation implements ISpecificOperation {
 	private $urlGenerator;
 	/** @var SynchronizationHelper */
 	private $processingFileAccessor;
+	/** @var IRootFolder */
+	private $rootFolder;
 
-	public function __construct(IJobList $jobList, IL10N $l, LoggerInterface $logger, IURLGenerator $urlGenerator, IProcessingFileAccessor $processingFileAccessor) {
+	public function __construct(
+		IJobList $jobList,
+		IL10N $l,
+		LoggerInterface $logger,
+		IURLGenerator $urlGenerator,
+		IProcessingFileAccessor $processingFileAccessor,
+		IRootFolder $rootFolder) {
 		$this->jobList = $jobList;
 		$this->l = $l;
 		$this->logger = $logger;
 		$this->urlGenerator = $urlGenerator;
 		$this->processingFileAccessor = $processingFileAccessor;
+		$this->rootFolder = $rootFolder;
 	}
 
 	/**
@@ -89,19 +100,14 @@ class Operation implements ISpecificOperation {
 	}
 
 	public function onEvent(string $eventName, Event $event, IRuleMatcher $ruleMatcher): void {
-		if (!$this->checkEvent($eventName, $event) ||
-			!$this->checkRuleMatcher($ruleMatcher)) {
+		$this->logger->debug('onEvent: ' . $eventName);
+
+		if (!$this->checkRuleMatcher($ruleMatcher)) {
 			return;
 		}
 
-		/** @var GenericEvent */
-		$genericEvent = $event;
-		/** @var Node*/
-		$node = $genericEvent->getSubject();
-
-		if (!$node instanceof Node || $node->getType() !== FileInfo::TYPE_FILE) {
-			$this->logger->debug('Not processing event {eventname} because node is not a file.',
-					['eventname' => $eventName]);
+		// $node will be passed by reference
+		if (!$this->tryGetFile($eventName, $event, $node)) {
 			return;
 		}
 
@@ -115,6 +121,9 @@ class Operation implements ISpecificOperation {
 			'filePath' => $node->getPath(),
 			'uid' => $node->getOwner()->getUID()
 		];
+
+		$this->logger->debug('Adding file to jobqueue: ' . json_encode($args));
+
 		$this->jobList->add(ProcessFileJob::class, $args);
 	}
 
@@ -122,13 +131,65 @@ class Operation implements ISpecificOperation {
 		return File::class;
 	}
 
-	private function checkEvent(string $eventName, Event $event) : bool {
-		if ($eventName !== '\OCP\Files::postCreate' && $eventName !== '\OCP\Files::postWrite' ||
-			!$event instanceof GenericEvent) {
-			$this->logger->debug('Not processing event {eventname} with argument {event}.',
-					['eventname' => $eventName, 'event' => $event]);
+	private function tryGetFile(string $eventName, Event $event, ?Node & $node) : bool {
+		// Handle file creation/ file change events
+		if ($event instanceof GenericEvent) {
+			return $this->tryGetFileFromGenericEvent($eventName, $event, $node);
+		}
+
+		// Handle file tag assigned events
+		if ($event instanceof MapperEvent) {
+			return $this->tryGetFileFromMapperEvent($eventName, $event, $node);	
+		}
+
+		$this->logger->warning('Not processing event {eventname} because the event type {eventtype} is not supported.',
+				['eventname' => $eventName],
+				['eventtype' => get_class($event)]);
+
+		return false;
+	}
+
+	private function tryGetFileFromGenericEvent(string $eventName, GenericEvent $event, ?Node & $node) : bool {
+		$node = $event->getSubject();
+
+		if (!$node instanceof Node || $node->getType() !== FileInfo::TYPE_FILE) {
+			$this->logger->debug(
+				'Not processing event {eventname} because node is not a file.',
+				['eventname' => $eventName]
+			);
 			return false;
 		}
+
+		return true;
+	}
+
+	private function tryGetFileFromMapperEvent(string $eventName, MapperEvent $event, ?Node & $node) : bool {
+		if ($event->getObjectType() !== 'files') {
+			$this->logger->warning('Do not process MapperEvent of type {type}',
+			['type' => $event->getObjectType()]);
+			return false;
+		}
+
+		$fileId = intval($event->getObjectId());
+		if ($fileId === 0) {
+			$this->logger->warning(
+				'Not processing event {eventname} because file id  \'{fileid}\' could not be casted to integer.',
+				['eventname' => $eventName],
+				['fileid' => $event->getObjectId()]
+			);
+			return false;
+		}
+
+		$files = $this->rootFolder->getById($fileId);
+		if (count($files) <= 0 || !($files[0] instanceof \OCP\Files\File)) {
+			$this->logger->warning(
+				'Not processing event {eventname} because node with id  \'{fileid}\' could not be found or is not a file.',
+				['eventname' => $eventName],
+				['fileid' => $fileId]);
+			return false;
+		}
+
+		$node = $files[0];
 		return true;
 	}
 
