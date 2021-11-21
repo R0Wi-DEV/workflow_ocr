@@ -175,15 +175,15 @@ integrationtest: composer
 
 .PHONY: html-coverage
 html-coverage: composer
-	$(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.xml --coverage-php coverage_unittests.cov
-	$(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.integration.xml --coverage-php coverage_integrationtests.cov
-	$(CURDIR)/vendor/phpunit/phpcov/phpcov merge --html coverage_html .
+	XDEBUG_MODE=coverage $(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.xml --coverage-php coverage_unittests.cov
+	XDEBUG_MODE=coverage $(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.integration.xml --coverage-php coverage_integrationtests.cov
+	XDEBUG_MODE=coverage $(CURDIR)/vendor/phpunit/phpcov/phpcov merge --html coverage_html .
 
 .PHONY: coverage
 coverage: composer
-	$(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.xml --coverage-php coverage_unittests.cov
-	$(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.integration.xml --coverage-php coverage_integrationtests.cov
-	$(CURDIR)/vendor/phpunit/phpcov/phpcov merge --clover coverage.xml .
+	XDEBUG_MODE=coverage $(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.xml --coverage-php coverage_unittests.cov
+	XDEBUG_MODE=coverage $(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.integration.xml --coverage-php coverage_integrationtests.cov
+	XDEBUG_MODE=coverage $(CURDIR)/vendor/phpunit/phpcov/phpcov merge --clover coverage.xml .
 
 .PHONY: lint
 lint: composer
