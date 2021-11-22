@@ -39,6 +39,9 @@
 #        "build": "node node_modules/gulp-cli/bin/gulp.js"
 #    },
 
+SHELL := /bin/bash
+VERSION := $(subst v,,$(VERSION))
+
 app_name=$(notdir $(CURDIR))
 build_tools_directory=$(CURDIR)/build/tools
 source_build_directory=$(CURDIR)/build/artifacts/source
@@ -128,9 +131,19 @@ source:
 	--exclude="../$(app_name)/*.log" \
 	--exclude="../$(app_name)/js/*.log" \
 
+# Sets version attribute inside appinf/info.xml
+.PHONY: setversion
+setversion:
+	if [ -z "${VERSION}" ]; then \
+		echo "Please set VERSION variable"; \
+		exit 1; \
+	fi
+	sed -i "s/__VERSION__/$(VERSION)/" $(CURDIR)/appinfo/info.xml
+
 # Builds the source package for the app store, ignores php and js tests
 .PHONY: appstore
 appstore:
+	make setversion
 	make distclean
 	make composer-build
 	rm -rf $(appstore_build_directory)
