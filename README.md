@@ -15,6 +15,9 @@
   - [Nextcloud background jobs](#nextcloud-background-jobs)
   - [Backend](#backend)
 - [Usage](#usage)
+  - [Trigger OCR if file was created or updated](#trigger-ocr-if-file-was-created-or-updated)
+  - [Trigger OCR on tag assigning](#trigger-ocr-on-tag-assigning)
+  - [Testing your configuration](#testing-your-configuration)
 - [How it works](#how-it-works)
   - [General](#general)
   - [PDF](#pdf)
@@ -31,7 +34,7 @@
 
 ## Setup
 ### App installation
-First download and install the Nextcloud Workflow OCR app from the official Nexcloud-appstore or by downloading the appropriate tarball from the [releases](https://github.com/R0Wi/workflow_ocr/releases) page. 
+First download and install the Nextcloud Workflow OCR app from the official [Nexcloud-appstore](https://apps.nextcloud.com/apps/workflow_ocr) or by downloading the appropriate tarball from the [releases](https://github.com/R0Wi/workflow_ocr/releases) page. 
 ```bash
 cd /var/www/<NEXTCLOUD_INSTALL>/apps
 wget https://github.com/R0Wi/workflow_ocr/releases/download/<VERSION>/workflow_ocr.tar.gz
@@ -62,11 +65,15 @@ apt-get install tesseract-ocr-deu
 ```
 
 ## Usage
-You can configure the OCR processing via Nextcloud's workflow engine. Therefore configure a new flow via `Settings -> Flow -> Add new flow` (if you don't see `OCR file` here the app isn't installed properly or you forgot to activate it).
+You can configure the OCR processing via Nextcloud's workflow engine. Therefore configure a new flow via `Settings` &#8594; `Flow` &#8594; `Add new flow` (if you don't see `OCR file` here the app isn't installed properly or you forgot to activate it).
 
 <p align="center">
   <img width="50%" src="doc/img/usage_1.jpg" alt="Usage setup">
 </p>
+
+### Trigger OCR if file was created or updated
+
+If you want a newly uploaded file to be processed via OCR or if you want to process a file which was updated, use the **When**-conditions `File created` or `File updated` or both.
 
 A typical setup for processing incoming PDF-files and adding a text-layer to them might look like this:
 
@@ -74,13 +81,35 @@ A typical setup for processing incoming PDF-files and adding a text-layer to the
   <img width="75%" src="doc/img/usual_config_1.jpg" alt="PDF setup">
 </p>
 
-Note that currently only the events `File created` and `File updated` are supported. Other events will be ignored since they don't really make sense regarding the OCR-process.
+> :warning: Please ensure to use the `File MIME type` &#8594; **`is`** &#8594; `PDF documents` operator, otherwise you might not be able to save the workflow like discussed [here](https://github.com/R0Wi/workflow_ocr/issues/41).
+
+### Trigger OCR on tag assigning
+
+If you have existing files which you want to process after they have been created, or if you want to filter manually which files are processed, you can use the `Tag assigned` event to trigger the OCR process if a user adds a specific tag to a file. Such a setup might look like this:
+
+<p align="center">
+  <img width="75%" src="doc/img/tag_assigned_config.png" alt="Tag assigned setup">
+</p>
+
+After that you should be able to add a file to the OCR processing queue by assigning the configured tag to a file:
+
+<p align="center">
+  <img width="75%" src="doc/img/assign_tag_1.png" alt="Tag assign frontend 1">
+</p>
+<p align="center">
+  <img width="50%" src="doc/img/assign_tag_2.png" alt="Tag assign frontend 2">
+</p>
+
+### Testing your configuration
 
 To **test** if your file gets processed properly you can do the following steps:
 1. Upload a new file which meets the criteria you've recently defined in the workflow creation.
 2. Go to your servers console and change into the Nextcloud installation directory (e.g. `cd /var/www/html/nextcloud`).
 3. Execute the cronjob file manually e.g. by typing `sudo -u www-data php cron.php ` (this is the command you usually setup to be executed by linux crontab).
 4. If everything went fine you should see that there was a new version of your file created. If you uploaded a PDF file you should now be able to select text in it if it contained at least one image with scanned text.
+  <p align="center">
+    <img width="75%" src="doc/img/file_versions.jpg" alt="File versions">
+  </p>
 
 ## How it works
 ### General
