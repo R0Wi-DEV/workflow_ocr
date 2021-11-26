@@ -31,10 +31,13 @@ use OCP\BackgroundJob\IJobList;
 use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\GenericEvent;
 use OCP\Files\FileInfo;
+use OCP\Files\Folder;
+use OCP\Files\IRootFolder;
 use OCP\Files\Node;
 use OCP\IL10N;
 use OCP\IURLGenerator;
 use OCP\IUser;
+use OCP\SystemTag\MapperEvent;
 use OCP\WorkflowEngine\IManager;
 use OCP\WorkflowEngine\IRuleMatcher;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -55,49 +58,37 @@ class OperationTest extends TestCase {
 	private $processingFileAccessor;
 	/** @var IRuleMatcher|MockObject */
 	private $ruleMatcher;
+	/** @var IRootFolder|MockObject */
+	private $rootFolder;
 
 	protected function setUp(): void {
 		parent::setUp();
+		
 		$this->jobList = $this->createMock(IJobList::class);
 		$this->l = $this->createMock(IL10N::class);
 		$this->logger = $this->createMock(LoggerInterface::class);
 		$this->urlGenerator = $this->createMock(IURLGenerator::class);
 		$this->processingFileAccessor = $this->createMock(IProcessingFileAccessor::class);
 		$this->ruleMatcher = $this->createMock(IRuleMatcher::class);
+		$this->rootFolder = $this->createMock(IRootFolder::class);
+
 		$this->ruleMatcher->method('getFlows')
 			->willReturn([$this->createMock(Operation::class)]); // simulate single matching operation
 	}
 
-	/**
-	 * @dataProvider dataProvider_InvalidEvents
-	 */
-	public function testDoesNothingOnInvalidEvent(string $eventName, Event $event) {
+	public function testDoesNothingIfRuleMatcherDoesNotMatch() {
 		$this->jobList->expects($this->never())
 			->method('add')
 			->withAnyParameters();
-		$this->logger->expects($this->once())
+		$this->logger->expects($this->atLeastOnce())
 			->method('debug')
 			->withAnyParameters();
 
-		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor);
-		$operation->onEvent($eventName, $event, $this->ruleMatcher);
-	}
-
-	/**
-	 * @dataProvider dataProvider_InvalidRuleMatcherResults
-	 */
-	public function testDoesNothingIfRuleMatcherDoesNotMatch($ruleMatcherResult) {
-		$this->jobList->expects($this->never())
-			->method('add')
-			->withAnyParameters();
-		$this->logger->expects($this->once())
-			->method('debug')
-			->withAnyParameters();
-
-		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor);
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
 
 		/** @var IRuleMatcher|MockObject */
-		$ruleMatcher = $this->createMock(IRuleMatcher::class);
+		$ruleMatcher = $this->createMock(IRuleMatcher::class); // test only works with local mock
+		$ruleMatcherResult = [];
 		$ruleMatcher->expects($this->once())
 			->method('getFlows')
 			->with(true)
@@ -110,11 +101,11 @@ class OperationTest extends TestCase {
 		$this->jobList->expects($this->never())
 			->method('add')
 			->withAnyParameters();
-		$this->logger->expects($this->once())
+		$this->logger->expects($this->atLeastOnce())
 			->method('debug')
 			->withAnyParameters();
 
-		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor);
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
 
 		$fileMock = $this->createMock(Node::class);
 		$fileMock->method('getType')
@@ -126,20 +117,20 @@ class OperationTest extends TestCase {
 	}
 
 	public function testDoesNothingOnPostWriteTriggeredByCurrentOcrProcess() {
+		$fileId = 42;
+
 		$this->jobList->expects($this->never())
 			->method('add')
 			->withAnyParameters();
-		$this->logger->expects($this->once())
+		$this->logger->expects($this->atLeastOnce())
 			->method('debug')
 			->withAnyParameters();
 
-		/** @var IProcessingFileAccessor|MockObject */
-		$processingFileAccessorMock = $this->createMock(IProcessingFileAccessor::class);
-		$processingFileAccessorMock->expects($this->once())
+		$this->processingFileAccessor->expects($this->once())
 			->method('getCurrentlyProcessedFileId')
-			->willReturn(42);
+			->willReturn($fileId);
 
-		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $processingFileAccessorMock);
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
 
 		$userMock = $this->createMock(IUser::class);
 		$userMock->expects($this->never())
@@ -152,7 +143,7 @@ class OperationTest extends TestCase {
 		$fileMock->method('getOwner')
 			->willReturn($userMock);
 		$fileMock->method('getId')
-			->willReturn(42);
+			->willReturn($fileId);
 		$event = new GenericEvent($fileMock);
 		$eventName = '\OCP\Files::postCreate';
 
@@ -167,11 +158,11 @@ class OperationTest extends TestCase {
 		$this->jobList->expects($this->never())
 			->method('add')
 			->withAnyParameters();
-		$this->logger->expects($this->once())
+		$this->logger->expects($this->exactly(2))
 			->method('debug')
 			->withAnyParameters();
 
-		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor);
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
 
 		$fileMock = $this->createMock(Node::class);
 		$fileMock->method('getType')
@@ -188,11 +179,11 @@ class OperationTest extends TestCase {
 		$this->jobList->expects($this->never())
 			->method('add')
 			->withAnyParameters();
-		$this->logger->expects($this->once())
+		$this->logger->expects($this->atLeastOnce())
 			->method('debug')
 			->withAnyParameters();
 
-		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor);
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
 
 		$fileMock = $this->createMock(Node::class);
 		$fileMock->method('getType')
@@ -215,7 +206,7 @@ class OperationTest extends TestCase {
 			->method('add')
 			->with(ProcessFileJob::class, ['filePath' => $filePath, 'uid' => $uid]);
 
-		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor);
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
 
 		$userMock = $this->createMock(IUser::class);
 		$userMock->expects($this->once())
@@ -240,7 +231,7 @@ class OperationTest extends TestCase {
 	 * @dataProvider dataProvider_ValidScopes
 	 */
 	public function testIsAvailableForScope(int $scope) {
-		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor);
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
 		$result = $operation->isAvailableForScope($scope);
 
 		$this->assertTrue($result);
@@ -256,7 +247,7 @@ class OperationTest extends TestCase {
 		$this->urlGenerator->expects($this->never())
 			->method($this->anything());
 
-		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor);
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
 
 		$operation->validateOperation('aName', [], 'aOp');
 	}
@@ -265,7 +256,7 @@ class OperationTest extends TestCase {
 		$this->l->expects($this->once())
 			->method('t');
 
-		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor);
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
 
 		$operation->getDisplayName();
 	}
@@ -275,7 +266,7 @@ class OperationTest extends TestCase {
 		$this->l->expects($this->once())
 			->method('t');
 
-		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor);
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
 
 		$operation->getDescription();
 	}
@@ -284,39 +275,135 @@ class OperationTest extends TestCase {
 		$this->urlGenerator->expects($this->once())
 			->method('imagePath');
 
-		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor);
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
 
 		$operation->getIcon();
 	}
 
 	public function testEntityIdIsFile() {
-		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor);
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
 
 		$this->assertEquals(File::class, $operation->getEntityId());
 	}
 
-	public function dataProvider_InvalidEvents() {
-		$arr = [
-			["\OCP\Files::preWrite", new GenericEvent()],
-			["\OCP\Files::preCreate", new GenericEvent()],
-			["\OCP\Files::preDelete", new GenericEvent()],
-			["\OCP\Files::postDelete", new GenericEvent()],
-			["\OCP\Files::postTouch", new GenericEvent()],
-			["\OCP\Files::preTouch", new GenericEvent()],
-			["\OCP\Files::preCopy", new GenericEvent()],
-			["\OCP\Files::postCopy", new GenericEvent()],
-			["\OCP\Files::preRename", new GenericEvent()],
-			["\OCP\Files::postRename", new GenericEvent()],
-			["\OCP\Files::postWrite", new Event()],
-			["\OCP\Files::postCreate", new Event()],
-		];
-		return $arr;
+	public function testDoesNothingOnUnsupportedEvent() {
+		$event = new Event();
+		$eventName = '\OCP\Files::someOtherEvent';
+
+		$this->jobList->expects($this->never())
+			->method('add');
+		$this->logger->expects($this->once())
+			->method('warning')
+			->withAnyParameters();
+		
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
+		
+		$operation->onEvent($eventName, $event, $this->ruleMatcher);
 	}
 
-	public function dataProvider_InvalidRuleMatcherResults() {
-		return [
-			[ [] ]
-		];
+	public function testDoesNothingOnMapperTypeEventWithObjectTypeFolder() {
+		$eventName = '\OCP\SystemTag\ISystemTagObjectMapper::assignTags';
+		$event = new MapperEvent($eventName, 'folder', '42', ['ocr']);
+
+		$this->jobList->expects($this->never())
+			->method('add');
+		$this->logger->expects($this->once())
+			->method('warning')
+			->withAnyParameters();
+		
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
+		
+		$operation->onEvent($eventName, $event, $this->ruleMatcher);
+	}
+
+	public function testDoesNothingOnMapperEventHavingInvalidFileId() {
+		$eventName = '\OCP\SystemTag\ISystemTagObjectMapper::assignTags';
+		$event = new MapperEvent($eventName, 'files', 'notAInteger', ['ocr']);
+
+		$this->jobList->expects($this->never())
+			->method('add');
+		$this->logger->expects($this->once())
+			->method('warning')
+			->withAnyParameters();
+		
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
+		
+		$operation->onEvent($eventName, $event, $this->ruleMatcher);
+	}
+
+	public function testDoesNothingOnMapperEventIfFileNotFound() {
+		$eventName = '\OCP\SystemTag\ISystemTagObjectMapper::assignTags';
+		$event = new MapperEvent($eventName, 'files', '42', ['ocr']);
+
+		$this->jobList->expects($this->never())
+			->method('add');
+		$this->logger->expects($this->once())
+			->method('warning')
+			->withAnyParameters();
+		$this->rootFolder = $this->createMock(IRootFolder::class);
+		$this->rootFolder->expects($this->once())
+			->method('getById')
+			->with(42)
+			->willReturn([]);
+		
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
+		
+		$operation->onEvent($eventName, $event, $this->ruleMatcher);
+	}
+
+	public function testDoesNothingOnMapperEventIfObjectIdIsFolder() {
+		$eventName = '\OCP\SystemTag\ISystemTagObjectMapper::assignTags';
+		$event = new MapperEvent($eventName, 'files', '42', ['ocr']);
+
+		$this->jobList->expects($this->never())
+			->method('add');
+		$this->logger->expects($this->once())
+			->method('warning')
+			->withAnyParameters();
+		$this->rootFolder = $this->createMock(IRootFolder::class);
+		$this->rootFolder->expects($this->once())
+			->method('getById')
+			->with(42)
+			->willReturn([$this->createMock(Folder::class)]);
+		
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
+		
+		$operation->onEvent($eventName, $event, $this->ruleMatcher);
+	}
+
+	public function testFileAddedToQueueOnTagAssignedEvent() {
+		$eventName = '\OCP\SystemTag\ISystemTagObjectMapper::assignTags';
+		$fileId = 1234;
+		$event = new MapperEvent($eventName, 'files', strval($fileId), ['ocr']);
+		$filePath = '/someUser/files/someFile.pdf';
+		$uid = 'someUser';
+
+		$this->jobList->expects($this->once())
+			->method('add')
+			->with(ProcessFileJob::class, ['filePath' => $filePath, 'uid' => $uid]);
+
+		$userMock = $this->createMock(IUser::class);
+		$userMock->expects($this->once())
+			->method('getUID')
+			->willReturn($uid);
+		$fileMock = $this->createMock(\OCP\Files\File::class);
+		$fileMock->method('getType')
+			->willReturn(FileInfo::TYPE_FILE);
+		$fileMock->method('getPath')
+			->willReturn($filePath);
+		$fileMock->method('getOwner')
+			->willReturn($userMock);
+		$fileMock->method('getId')
+			->willReturn($fileId);
+		$rootFolder = $this->createMock(IRootFolder::class);
+		$rootFolder->expects($this->once())
+			->method('getById')
+			->with($fileId)
+			->willReturn([$fileMock]);
+
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $rootFolder);
+		
+		$operation->onEvent($eventName, $event, $this->ruleMatcher);
 	}
 
 	public function dataProvider_InvalidFilePaths() {

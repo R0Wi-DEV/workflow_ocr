@@ -9,5 +9,5 @@ jobs:
    steps:
     - uses: technote-space/toc-generator@v2
       with:
-        CREATE_PR: false
+        CREATE_PR: true
         TOC_TITLE: "## Table of contents"
