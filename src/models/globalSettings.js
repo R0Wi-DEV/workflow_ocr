@@ -1,9 +1,6 @@
-<?php
-
-declare(strict_types=1);
 
 /**
- * @copyright Copyright (c) 2020 Robin Windey <ro.windey@gmail.com>
+ * @copyright Copyright (c) 2021 Robin Windey <ro.windey@gmail.com>
  *
  * @author Robin Windey <ro.windey@gmail.com>
  *
@@ -24,23 +21,21 @@ declare(strict_types=1);
  *
  */
 
-namespace OCA\WorkflowOcr\Wrapper;
+/** @class */
+export default class GlobalSettings {
 
-use \OC\Files\View;
-
-class ViewWrapper implements IView {
-	/** @var View */
-	private $wrappedView;
-
-	public function __construct(string $directoryPath) {
-		$this->wrappedView = new View($directoryPath);
-	}
+	/** @member {?number} */
+	processorCount
 
 	/**
-	 * @inheritdoc
+	 * Create a new GlobalSettings from the given plain object data
+	 *
+	 * @param {object} data GlobalSettings config data to construct an instance from
+	 * @param {?number} data.processorCount Processor count setting
 	 */
-	public function file_put_contents(string $filePath, string $content) : bool {
-		$retVal = $this->wrappedView->file_put_contents($filePath, $content);
-		return boolval($retVal);
+	constructor(data) {
+		data ??= {}
+		this.processorCount = data.processorCount ? parseInt(data.processorCount) : null
 	}
+
 }

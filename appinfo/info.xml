@@ -17,6 +17,9 @@
 	<category>tools</category>
 	<category>organization</category>
 	<category>workflow</category>
+	<settings>
+		<admin>OCA\WorkflowOcr\Settings\AdminSettings</admin>
+	</settings>
 	<website>https://github.com/R0Wi/workflow_ocr</website>
 	<bugs>https://github.com/R0Wi/workflow_ocr/issues</bugs>
 	<repository type="git">https://github.com/R0Wi/workflow_ocr.git</repository>

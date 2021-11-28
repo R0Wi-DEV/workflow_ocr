@@ -26,19 +26,24 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\Service;
 
+use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCA\WorkflowOcr\OcrProcessors\IOcrProcessorFactory;
 
 class OcrService implements IOcrService {
 	/** @var IOcrProcessorFactory */
 	private $ocrProcessorFactory;
 
-	public function __construct(IOcrProcessorFactory $ocrProcessorFactory) {
+	/** @var IGlobalSettingsService */
+	private $globalSettingsService;
+
+	public function __construct(IOcrProcessorFactory $ocrProcessorFactory, IGlobalSettingsService $globalSettingsService) {
 		$this->ocrProcessorFactory = $ocrProcessorFactory;
+		$this->globalSettingsService = $globalSettingsService;
 	}
 
 	/** @inheritdoc */
-	public function ocrFile(string $mimeType, string $fileContent) : string {
+	public function ocrFile(string $mimeType, string $fileContent, WorkflowSettings $settings) : string {
 		$ocrProcessor = $this->ocrProcessorFactory->create($mimeType);
-		return $ocrProcessor->ocrFile($fileContent);
+		return $ocrProcessor->ocrFile($fileContent, $settings, $this->globalSettingsService->getGlobalSettings());
 	}
 }

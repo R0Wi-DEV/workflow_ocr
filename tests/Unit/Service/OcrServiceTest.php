@@ -23,8 +23,11 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\Tests\Unit\Service;
 
+use OCA\WorkflowOcr\Model\GlobalSettings;
+use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCA\WorkflowOcr\OcrProcessors\IOcrProcessor;
 use OCA\WorkflowOcr\OcrProcessors\IOcrProcessorFactory;
+use OCA\WorkflowOcr\Service\IGlobalSettingsService;
 use OCA\WorkflowOcr\Service\OcrService;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -35,24 +38,30 @@ class OcrServiceTest extends TestCase {
 	private $ocrProcessorFactory;
 	/** @var IOcrProcessor|MockObject */
 	private $ocrProcessor;
+	/** @var IGlobalSettingsService|MockObject*/
+	private $globalSettingsService;
 	/** @var OcrService */
 	private $ocrService;
 
 	public function setUp() : void {
 		parent::setUp();
 
-		/** @var IOcrProcessorFactory */
-		$ocrProcessorFactory = $this->createMock(IOcrProcessorFactory::class);
-		$ocrProcessor = $this->createMock(IOcrProcessor::class);
+		$this->globalSettingsService = $this->createMock(IGlobalSettingsService::class);
+		$this->ocrProcessorFactory = $this->createMock(IOcrProcessorFactory::class);
+		$this->ocrProcessor = $this->createMock(IOcrProcessor::class);
 
-		$this->ocrProcessorFactory = $ocrProcessorFactory;
-		$this->ocrProcessor = $ocrProcessor;
-		$this->ocrService = new OcrService($this->ocrProcessorFactory);
+		$this->ocrService = new OcrService($this->ocrProcessorFactory, $this->globalSettingsService);
 	}
 
 	public function testCallsOcrProcessor_WithCorrectArguments() {
 		$mime = 'application/pdf';
 		$content = 'someFileContent';
+		$settings = new WorkflowSettings();
+		$globalSettings = new GlobalSettings();
+
+		$this->globalSettingsService->expects($this->once())
+			->method('getGlobalSettings')
+			->willReturn($globalSettings);
 
 		$this->ocrProcessorFactory->expects($this->once())
 			->method('create')
@@ -61,8 +70,8 @@ class OcrServiceTest extends TestCase {
 
 		$this->ocrProcessor->expects($this->once())
 			->method('ocrFile')
-			->with($content);
+			->with($content, $settings, $globalSettings);
 
-		$this->ocrService->ocrFile($mime, $content);
+		$this->ocrService->ocrFile($mime, $content, $settings);
 	}
 }

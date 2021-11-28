@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * @copyright Copyright (c) 2020 Robin Windey <ro.windey@gmail.com>
+ * @copyright Copyright (c) 2021 Robin Windey <ro.windey@gmail.com>
  *
  * @author Robin Windey <ro.windey@gmail.com>
  *
@@ -24,23 +24,10 @@ declare(strict_types=1);
  *
  */
 
-namespace OCA\WorkflowOcr\Wrapper;
 
-use \OC\Files\View;
-
-class ViewWrapper implements IView {
-	/** @var View */
-	private $wrappedView;
-
-	public function __construct(string $directoryPath) {
-		$this->wrappedView = new View($directoryPath);
-	}
-
-	/**
-	 * @inheritdoc
-	 */
-	public function file_put_contents(string $filePath, string $content) : bool {
-		$retVal = $this->wrappedView->file_put_contents($filePath, $content);
-		return boolval($retVal);
-	}
-}
+return [
+	'routes' => [
+		['name' => 'GlobalSettings#getGlobalSettings', 'url' => '/admin/settings', 'verb' => 'GET'],
+		['name' => 'GlobalSettings#setGlobalSettings', 'url' => '/admin/settings', 'verb' => 'PUT']
+	]
+];

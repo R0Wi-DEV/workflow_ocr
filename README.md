@@ -17,6 +17,7 @@
 - [Usage](#usage)
   - [Trigger OCR if file was created or updated](#trigger-ocr-if-file-was-created-or-updated)
   - [Trigger OCR on tag assigning](#trigger-ocr-on-tag-assigning)
+  - [Global settings](#global-settings)
   - [Testing your configuration](#testing-your-configuration)
 - [How it works](#how-it-works)
   - [General](#general)
@@ -71,7 +72,9 @@ You can configure the OCR processing via Nextcloud's workflow engine. Therefore 
   <img width="50%" src="doc/img/usage_1.jpg" alt="Usage setup">
 </p>
 
-### Trigger OCR if file was created or updated
+### Useful triggers
+
+#### Trigger OCR if file was created or updated
 
 If you want a newly uploaded file to be processed via OCR or if you want to process a file which was updated, use the **When**-conditions `File created` or `File updated` or both.
 
@@ -83,7 +86,7 @@ A typical setup for processing incoming PDF-files and adding a text-layer to the
 
 > :warning: Please ensure to use the `File MIME type` &#8594; **`is`** &#8594; `PDF documents` operator, otherwise you might not be able to save the workflow like discussed [here](https://github.com/R0Wi/workflow_ocr/issues/41).
 
-### Trigger OCR on tag assigning
+#### Trigger OCR on tag assigning
 
 If you have existing files which you want to process after they have been created, or if you want to filter manually which files are processed, you can use the `Tag assigned` event to trigger the OCR process if a user adds a specific tag to a file. Such a setup might look like this:
 
@@ -99,6 +102,25 @@ After that you should be able to add a file to the OCR processing queue by assig
 <p align="center">
   <img width="50%" src="doc/img/assign_tag_2.png" alt="Tag assign frontend 2">
 </p>
+
+### Settings
+
+#### Per workflow settings
+// TODO
+
+#### Global settings
+As a Nextcloud administrator you're able to configure global settings which apply to all configured OCR-workflows on the current system.
+Go to `settings` &#8594; `flow` and scroll down to `Workflow OCR`:
+
+<p align="center">
+  <img width="75%" src="doc/img/global_settings.png" alt="Global settings">
+</p>
+
+Currently the following settings can be applied globally:
+
+Name | Description
+-----|------------
+Processor cores | Defines the number of processor cores to use for OCR processing. When the input is a PDF file, this corresponds to the [`ocrmypdf` CPU limit](https://ocrmypdf.readthedocs.io/en/latest/pdfsecurity.html?highlight=%22-j%22#limiting-cpu-usage).
 
 ### Testing your configuration
 

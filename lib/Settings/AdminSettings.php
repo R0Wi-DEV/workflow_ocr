@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * @copyright Copyright (c) 2020 Robin Windey <ro.windey@gmail.com>
+ * @copyright Copyright (c) 2021 Robin Windey <ro.windey@gmail.com>
  *
  * @author Robin Windey <ro.windey@gmail.com>
  *
@@ -24,23 +24,22 @@ declare(strict_types=1);
  *
  */
 
-namespace OCA\WorkflowOcr\Wrapper;
+namespace OCA\WorkflowOcr\Settings;
 
-use \OC\Files\View;
+use OCA\WorkflowOcr\AppInfo\Application;
+use OCP\AppFramework\Http\TemplateResponse;
+use OCP\Settings\ISettings;
 
-class ViewWrapper implements IView {
-	/** @var View */
-	private $wrappedView;
-
-	public function __construct(string $directoryPath) {
-		$this->wrappedView = new View($directoryPath);
+class AdminSettings implements ISettings {
+	public function getForm() : TemplateResponse {
+		return new TemplateResponse(Application::APP_NAME, 'adminsettings', [], 'blank');
 	}
-
-	/**
-	 * @inheritdoc
-	 */
-	public function file_put_contents(string $filePath, string $content) : bool {
-		$retVal = $this->wrappedView->file_put_contents($filePath, $content);
-		return boolval($retVal);
+	
+	public function getSection(): string {
+		return 'workflow';
+	}
+	
+	public function getPriority(): int {
+		return 75;
 	}
 }

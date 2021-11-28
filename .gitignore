@@ -6,4 +6,6 @@ coverage_html
 build
 .phpunit.result.cache
 *.cov
+node_modules
+js
 coverage

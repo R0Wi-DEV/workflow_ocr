@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * @copyright Copyright (c) 2020 Robin Windey <ro.windey@gmail.com>
+ * @copyright Copyright (c) 2021 Robin Windey <ro.windey@gmail.com>
  *
  * @author Robin Windey <ro.windey@gmail.com>
  *
@@ -24,23 +24,20 @@ declare(strict_types=1);
  *
  */
 
-namespace OCA\WorkflowOcr\Wrapper;
+namespace OCA\WorkflowOcr\Service;
 
-use \OC\Files\View;
+use OCA\WorkflowOcr\Model\GlobalSettings;
 
-class ViewWrapper implements IView {
-	/** @var View */
-	private $wrappedView;
-
-	public function __construct(string $directoryPath) {
-		$this->wrappedView = new View($directoryPath);
-	}
+interface IGlobalSettingsService {
+	/**
+	 * Loads all global settings for OCR workflow app
+	 * @return GlobalSettings An data object of global settings
+	 */
+	public function getGlobalSettings() : GlobalSettings;
 
 	/**
-	 * @inheritdoc
+	 * Saves all global settings for OCR workflow app
+	 * @param GlobalSettings $globalSettings An data object of global settings
 	 */
-	public function file_put_contents(string $filePath, string $content) : bool {
-		$retVal = $this->wrappedView->file_put_contents($filePath, $content);
-		return boolval($retVal);
-	}
+	public function setGlobalSettings(GlobalSettings $globalSettings);
 }

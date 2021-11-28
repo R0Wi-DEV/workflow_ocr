@@ -33,6 +33,7 @@ use \OCP\Files\File;
 use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
 use OCA\WorkflowOcr\Exception\OcrProcessorNotFoundException;
 use OCA\WorkflowOcr\Helper\IProcessingFileAccessor;
+use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCA\WorkflowOcr\Service\IOcrService;
 use OCA\WorkflowOcr\Wrapper\IFilesystem;
 use OCA\WorkflowOcr\Wrapper\IViewFactory;
@@ -91,14 +92,14 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
 	protected function run($argument) : void {
 		$this->logger->debug('STARTED -- Run ' . self::class . ' job. Argument: {argument}.', ['argument' => $argument]);
 		
-		[$success, $filePath, $uid] = $this->tryParseArguments($argument);
+		[$success, $filePath, $uid, $settings] = $this->tryParseArguments($argument);
 		if (!$success) {
 			return;
 		}
 
 		try {
 			$this->initUserEnvironment($uid);
-			$this->processFile($filePath);
+			$this->processFile($filePath, $settings);
 		} catch (\Throwable $ex) {
 			$this->logger->error($ex->getMessage(), ['exception' => $ex]);
 		} finally {
@@ -135,17 +136,28 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
 			$this->logger->warning('Variable \''. $uidKey .'\' not set in ' . self::class . ' method \'tryParseArguments\'.');
 		}
 
+		$settings = null;
+		$settingsKey = 'settings';
+		if (array_key_exists($settingsKey , $argument)) {
+			$jsonSettings = $argument[$settingsKey];
+			$settings = new WorkflowSettings($jsonSettings);
+		} else {
+			$this->logger->warning('Variable \''. $settingsKey .'\' not set in ' . self::class . ' method \'tryParseArguments\'.');
+		}
+
 		return [
-			$filePath !== null && $uid !== null,
+			$filePath !== null && $uid !== null && $settings !== null,
 			$filePath,
-			$uid
+			$uid,
+			$settings
 		];
 	}
 
 	/**
 	 * @param string $filePath  The file to be processed
+	 * @param WorkflowSettings $settings The settings to be used for processing
 	 */
-	private function processFile(string $filePath) : void {
+	private function processFile(string $filePath, WorkflowSettings $settings) : void {
 		try {
 			/** @var File */
 			$node = $this->rootFolder->get($filePath);
@@ -160,7 +172,7 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
 		}
 
 		try {
-			$ocrFile = $this->ocrFile($node);
+			$ocrFile = $this->ocrFile($node, $settings);
 		} catch (OcrNotPossibleException $ocrNpEx) {
 			$this->logger->error('OCR for file ' . $node->getPath() . ' not possible. Message: ' . $ocrNpEx->getMessage());
 			return;
@@ -188,9 +200,10 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
 
 	/**
 	 * @param File $file
+	 * @param WorkflowSettings $settings
 	 */
-	private function ocrFile(File $file) : string {
-		return $this->ocrService->ocrFile($file->getMimeType(), $file->getContent());
+	private function ocrFile(File $file, WorkflowSettings $settings) : string {
+		return $this->ocrService->ocrFile($file->getMimeType(), $file->getContent(), $settings);
 	}
 
 	private function shutdownUserEnvironment() : void {
@@ -200,7 +213,7 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
 	/**
 	 * @param string $filePath		The filepath of the file to write
 	 * @param string $ocrContent	The new filecontent (which was OCR processed)
-	 * @param string $fileId		The id of the file to write. Used for locking.
+	 * @param int $fileId		The id of the file to write. Used for locking.
 	 */
 	private function createNewFileVersion(string $filePath, string $ocrContent, int $fileId) : void {
 		$dirPath = dirname($filePath);
