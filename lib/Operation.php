@@ -38,6 +38,7 @@ use OCP\WorkflowEngine\ISpecificOperation;
 use OCA\WorkflowOcr\BackgroundJobs\ProcessFileJob;
 use OCA\WorkflowOcr\Helper\IProcessingFileAccessor;
 use OCA\WorkflowOcr\Helper\SynchronizationHelper;
+use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCP\Files\FileInfo;
 use OCP\Files\IRootFolder;
 use OCP\Files\Node;
@@ -80,7 +81,9 @@ class Operation implements ISpecificOperation {
 	 * @since 9.1
 	 */
 	public function validateOperation(string $name, array $checks, string $operation): void {
-		// nothing to do
+		if (!WorkflowSettings::canConstruct($operation)) {
+			throw new \UnexpectedValueException($this->l->t('Workflow settings JSON value cannot be parsed'));
+		}
 	}
 
 	public function getDisplayName(): string {
@@ -102,7 +105,7 @@ class Operation implements ISpecificOperation {
 	public function onEvent(string $eventName, Event $event, IRuleMatcher $ruleMatcher): void {
 		$this->logger->debug('onEvent: ' . $eventName);
 
-		if (!$this->checkRuleMatcher($ruleMatcher)) {
+		if (!($match = $this->getMatch($ruleMatcher))) {
 			return;
 		}
 
@@ -119,11 +122,12 @@ class Operation implements ISpecificOperation {
 
 		$args = [
 			'filePath' => $node->getPath(),
-			'uid' => $node->getOwner()->getUID()
+			'uid' => $node->getOwner()->getUID(),
+			'settings' => $match['operation']
 		];
-
+	
 		$this->logger->debug('Adding file to jobqueue: ' . json_encode($args));
-
+	
 		$this->jobList->add(ProcessFileJob::class, $args);
 	}
 
@@ -193,13 +197,12 @@ class Operation implements ISpecificOperation {
 		return true;
 	}
 
-	private function checkRuleMatcher(IRuleMatcher $ruleMatcher) : bool {
+	private function getMatch(IRuleMatcher $ruleMatcher) : array {
 		$match = $ruleMatcher->getFlows(true);
 		if (!$match) {
 			$this->logger->debug('Not processing event because IRuleMatcher->getFlows did not return anything');
-			return false;
 		}
-		return true;
+		return $match;
 	}
 
 	private function pathIsValid(Node $node) : bool {

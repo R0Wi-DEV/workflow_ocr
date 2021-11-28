@@ -3,9 +3,11 @@
 	  xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
 	<id>workflow_ocr</id>
 	<name>Workflow OCR</name>
-	<summary>OCR processing via workflow</summary>
+	<summary>Serverside OCR processing via workflow-engine</summary>
 	<description>This app makes it possible to process various files via OCR algorithms.
-	The processing is done via workflow-engine and can therefore easily be customized.</description>
+	The processing is done via workflow-engine and can therefore easily be customized.
+	Please note that you'll have to install the OcrMyPDF CLI on your Nextcloud server to
+	process PDF files. More installation instructions can be found in the docs https://github.com/R0Wi/workflow_ocr/blob/master/README.md.</description>
 	<version>1.23.0</version>
 	<licence>agpl</licence>
 	<author mail="ro.windey@gmail.com">Robin Windey</author>
@@ -17,6 +19,9 @@
 	<category>tools</category>
 	<category>organization</category>
 	<category>workflow</category>
+	<settings>
+		<admin>OCA\WorkflowOcr\Settings\GlobalSettings</admin>
+	</settings>
 	<website>https://github.com/R0Wi/workflow_ocr</website>
 	<bugs>https://github.com/R0Wi/workflow_ocr/issues</bugs>
 	<repository type="git">https://github.com/R0Wi/workflow_ocr.git</repository>

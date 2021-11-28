@@ -87,6 +87,7 @@ class ProcessFileJobTest extends TestCase {
 		$this->userSession = $this->createMock(IUserSession::class);
 		$this->processingFileAccessor = $this->createMock(IProcessingFileAccessor::class);
 		
+		/** @var MockObject|IUserManager */
 		$userManager = $this->createMock(IUserManager::class);
 		$user = $this->createMock(IUser::class);
 		$userManager->method('get')
@@ -113,6 +114,7 @@ class ProcessFileJobTest extends TestCase {
 		$timeFactoryMock = $this->createMock(ITimeFactory::class);
 		/** @var MockObject|IDbConnection */
 		$connectionMock = $this->createMock(IDBConnection::class);
+		/** @var MockObject|IQueryBuilder */
 		$queryBuilderMock = $this->createMock(IQueryBuilder::class);
 		$expressionBuilderMock = $this->createMock(IExpressionBuilder::class);
 
@@ -137,10 +139,15 @@ class ProcessFileJobTest extends TestCase {
 			$configMock,
 			$timeFactoryMock
 		);
+
+		$this->processFileJob->setArgument([
+			'filePath' => '/admin/files/somefile.pdf',
+			'uid' => 'someuser',
+			'settings' => '{}'
+		]);
 	}
 	
 	public function testCatchesExceptionAndResetsUserEnvironment() {
-		$this->processFileJob->setArgument(['filePath' => '/admin/files/somefile.pdf', 'uid' => 'someuser']);
 		$exception = new Exception('someEx');
 		$this->filesystem->method('init')
 			->willThrowException($exception);
@@ -244,6 +251,7 @@ class ProcessFileJobTest extends TestCase {
 			->method('ocrFile')
 			->willReturn($ocrContent);
 
+		/** @var MockObject|IView */
 		$viewMock = $this->createMock(IView::class);
 		$viewMock->expects($this->once())
 			->method('file_put_contents')
@@ -257,8 +265,6 @@ class ProcessFileJobTest extends TestCase {
 	}
 
 	public function testNotFoundLogsWarning_AndDoesNothingAfterwards() {
-		$this->processFileJob->setArgument(['filePath' => '/admin/files/somefile.pdf', 'uid' => 'admin']);
-
 		$this->rootFolder->expects($this->once())
 			->method('get')
 			->willThrowException(new NotFoundException());
@@ -275,11 +281,8 @@ class ProcessFileJobTest extends TestCase {
 	 * @dataProvider dataProvider_InvalidNodes
 	 */
 	public function testDoesNotCallOcr_OnNonFile($invalidNode) {
-		$arguments = ['filePath' => '/admin/files/someInvalidStuff', 'uid' => 'admin'];
-		$this->processFileJob->setArgument($arguments);
-
 		$this->rootFolder->method('get')
-			->with($arguments['filePath'])
+			->with('/admin/files/somefile.pdf')
 			->willReturn($invalidNode);
 
 		$this->ocrService->expects($this->never())
@@ -292,12 +295,9 @@ class ProcessFileJobTest extends TestCase {
 	 * @dataProvider dataProvider_OcrExceptions
 	 */
 	public function testLogsError_OnOcrException(Exception $exception) {
-		$arguments = ['filePath' => '/admin/files/someInvalidStuff', 'uid' => 'admin'];
-		$this->processFileJob->setArgument($arguments);
-
 		$fileMock = $this->createValidFileMock();
 		$this->rootFolder->method('get')
-			->with($arguments['filePath'])
+			->with('/admin/files/somefile.pdf')
 			->willReturn($fileMock);
 
 		$this->ocrService->method('ocrFile')
@@ -337,7 +337,7 @@ class ProcessFileJobTest extends TestCase {
 			$this->userSession,
 			$this->processingFileAccessor
 		);
-		$arguments = ['filePath' => '/admin/files/someInvalidStuff', 'uid' => 'nonexistinguser'];
+		$arguments = ['filePath' => '/admin/files/someInvalidStuff', 'uid' => 'nonexistinguser', 'settings' => '{}'];
 		$processFileJob->setArgument($arguments);
 
 		$processFileJob->execute($this->jobList);
@@ -393,23 +393,24 @@ class ProcessFileJobTest extends TestCase {
 	public function dataProvider_InvalidArguments() {
 		$arr = [
 			[null, 1],
-			[['mykey' => 'myvalue'], 2],
-			[['someotherkey' => 'someothervalue', 'k2' => 'v2'], 2],
-			[['uid' => 'someuser'], 1],
-			[['filePath' => 'somepath'], 1]
+			[['mykey' => 'myvalue'], 3],
+			[['someotherkey' => 'someothervalue', 'k2' => 'v2'], 3],
+			[['uid' => 'someuser'], 2],
+			[['filePath' => 'somepath'], 2]
 		];
 		return $arr;
 	}
 
 	public function dataProvider_ValidArguments() {
 		$arr = [
-			[['filePath' => '/admin/files/somefile.pdf', 'uid' => 'admin'], 'admin', '/admin/files'],
-			[['filePath' => '/myuser/files/subfolder/someotherfile.docx', 'uid' => 'myuser'], 'myuser', '/myuser/files']
+			[['filePath' => '/admin/files/somefile.pdf', 'uid' => 'admin', 'settings' => '{}'], 'admin', '/admin/files'],
+			[['filePath' => '/myuser/files/subfolder/someotherfile.docx', 'uid' => 'myuser', 'settings' => '{}'], 'myuser', '/myuser/files']
 		];
 		return $arr;
 	}
 
 	public function dataProvider_InvalidNodes() {
+		/** @var MockObject|Node */
 		$folderMock = $this->createMock(Node::class);
 		$folderMock->method('getType')
 			->willReturn(FileInfo::TYPE_FOLDER);
@@ -434,6 +435,7 @@ class ProcessFileJobTest extends TestCase {
 	 * @return File|MockObject
 	 */
 	private function createValidFileMock(string $mimeType = 'application/pdf', string $content = 'someFileContent') {
+		/** @var MockObject|File */
 		$fileMock = $this->createMock(File::class);
 		$fileMock->method('getType')
 			->willReturn(FileInfo::TYPE_FILE);

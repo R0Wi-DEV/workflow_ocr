@@ -15,8 +15,12 @@
   - [Nextcloud background jobs](#nextcloud-background-jobs)
   - [Backend](#backend)
 - [Usage](#usage)
-  - [Trigger OCR if file was created or updated](#trigger-ocr-if-file-was-created-or-updated)
-  - [Trigger OCR on tag assigning](#trigger-ocr-on-tag-assigning)
+  - [Useful triggers](#useful-triggers)
+    - [Trigger OCR if file was created or updated](#trigger-ocr-if-file-was-created-or-updated)
+    - [Trigger OCR on tag assigning](#trigger-ocr-on-tag-assigning)
+  - [Settings](#settings)
+    - [Per workflow settings](#per-workflow-settings)
+    - [Global settings](#global-settings)
   - [Testing your configuration](#testing-your-configuration)
 - [How it works](#how-it-works)
   - [General](#general)
@@ -71,7 +75,9 @@ You can configure the OCR processing via Nextcloud's workflow engine. Therefore 
   <img width="50%" src="doc/img/usage_1.jpg" alt="Usage setup">
 </p>
 
-### Trigger OCR if file was created or updated
+### Useful triggers
+
+#### Trigger OCR if file was created or updated
 
 If you want a newly uploaded file to be processed via OCR or if you want to process a file which was updated, use the **When**-conditions `File created` or `File updated` or both.
 
@@ -83,7 +89,7 @@ A typical setup for processing incoming PDF-files and adding a text-layer to the
 
 > :warning: Please ensure to use the `File MIME type` &#8594; **`is`** &#8594; `PDF documents` operator, otherwise you might not be able to save the workflow like discussed [here](https://github.com/R0Wi/workflow_ocr/issues/41).
 
-### Trigger OCR on tag assigning
+#### Trigger OCR on tag assigning
 
 If you have existing files which you want to process after they have been created, or if you want to filter manually which files are processed, you can use the `Tag assigned` event to trigger the OCR process if a user adds a specific tag to a file. Such a setup might look like this:
 
@@ -99,6 +105,36 @@ After that you should be able to add a file to the OCR processing queue by assig
 <p align="center">
   <img width="50%" src="doc/img/assign_tag_2.png" alt="Tag assign frontend 2">
 </p>
+
+### Settings
+
+#### Per workflow settings
+Anyone who can create new workflows (admin or regular user) can configure settings for the OCR processing for a specific workflow. These settings are only applied to the specific workflow and do not affect other workflows.
+
+<p align="center">
+  <img width="75%" src="doc/img/per_workflow_settings.png" alt="Per workflow settings">
+</p>
+
+Currently the following settings are available per workflow:
+
+Name | Description
+--- | ---
+Languages | The languages to be used for OCR processing. The languages can be choosen from a dropdown list. For PDF files this setting corresponds to the `-l` parameter of `ocrmypdf`. **Please note** that you'll have to install the appropriate languages like described in the [`ocrmypdf` documentation](https://ocrmypdf.readthedocs.io/en/latest/languages.html).
+Remove background | If the switch is set, the OCR processor will try to remove the background of the document before processing and instead set a white background. For PDF files this setting corresponds to the [`--remove-background`](https://ocrmypdf.readthedocs.io/en/latest/cookbook.html?highlight=remove-background#image-processing) parameter of `ocrmypdf`. **Please note** that without setting this option, the [`--redo-ocr`](https://ocrmypdf.readthedocs.io/en/latest/errors.html?highlight=redo-ocr#page-already-has-text) option will be set, which is **not** compatible to the mentioned `--remove-background`-parameter. So if you set this switch to "on", make sure your PDF documents do not already contain text, otherwise you might find errors in your NC logs and OCR is not possible.
+
+#### Global settings
+As a Nextcloud administrator you're able to configure global settings which apply to all configured OCR-workflows on the current system.
+Go to `Settings` &#8594; `Flow` and scroll down to `Workflow OCR`:
+
+<p align="center">
+  <img width="75%" src="doc/img/global_settings.png" alt="Global settings">
+</p>
+
+Currently the following settings can be applied globally:
+
+Name | Description
+-----|------------
+Processor cores | Defines the number of processor cores to use for OCR processing. When the input is a PDF file, this corresponds to the [`ocrmypdf` CPU limit](https://ocrmypdf.readthedocs.io/en/latest/pdfsecurity.html?highlight=%22-j%22#limiting-cpu-usage). This setting can be especially useful if you have a small backend system which has only limited power.
 
 ### Testing your configuration
 
@@ -124,6 +160,7 @@ For processing PDF files, the external command line tool [`OCRmyPDF`](https://gi
 ### Dev setup
 Tools and packages you need for development:
 * `make`
+* `node` and `npm`
 * [`composer`](https://getcomposer.org/download/) (Will be automatically installed when running `make build`)
 * Properly setup `php`-environment
 * Webserver (like [`Apache`](https://httpd.apache.org/))
@@ -279,7 +316,7 @@ public static function registerOcrProcessors(IRegistrationContext $context) : vo
 	}
 ```
 
-That's all. If you now create a new workflow based on your added mimetype, your implementation should be triggered by the app. The return value of `ocrFile(string $fileContent)` will be interpreted as the file content of the scanned file. This one is used to create a new file version in Nextcloud.
+That's all. If you now create a new workflow based on your added mimetype, your implementation should be triggered by the app. The return value of `ocrFile(string $fileContent, WorkflowSettings $settings, GlobalSettings $globalSettings)` will be interpreted as the file content of the scanned file. This one is used to create a new file version in Nextcloud.
 
 ## Limitations
 * **Currently only pdf documents (`application/pdf`) can be used as input.** Other mimetypes are currently ignored but might be added in the future.
@@ -301,4 +338,5 @@ That's all. If you now create a new workflow based on your added mimetype, your 
 |---|---|---|
 | OCRmyPDF (commandline) | >= 9.6.0 | https://github.com/jbarlow83/OCRmyPDF On Debian, you might need to manually install a more recent version as described in https://ocrmypdf.readthedocs.io/en/latest/installation.html#ubuntu-18-04-lts; see https://github.com/R0Wi/workflow_ocr/issues/46 |
 | php-shellcommand | >= 1.6 | https://github.com/mikehaertl/php-shellcommand |
+| chain | >= 0.9.0 | https://packagist.org/packages/cocur/chain |
 | PHPUnit | >= 8.0 | https://phpunit.de/ |
