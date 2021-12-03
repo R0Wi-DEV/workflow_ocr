@@ -39,7 +39,7 @@ jobs:
       matrix:
         php-versions: ['8.0']
         databases: ['sqlite']
-        server-versions: ['stable22']
+        server-versions: ['stable23']
 
     steps:
     - name: Checkout server
