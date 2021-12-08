@@ -50,15 +50,24 @@ class PdfOcrProcessor implements IOcrProcessor {
 		$stdErr = $this->command->getStdErr();
 		$exitCode = $this->command->getExitCode();
 
-		if ($success) {
-			if ($stdErr !== '' || $errorOutput !== '') {
-				// Log warning if ocrmypdf wrote a warning to the stderr
-				$this->logger->warning('OCRmyPDF succeeded with warning(s): {stdErr}, {errorOutput}', [$stdErr, $errorOutput]);
-			}
-
-			return $this->command->getOutput();
+		if (!$success) {
+			throw new OcrNotPossibleException('OCRmyPDF exited abnormally with exit-code ' . $exitCode . '. Message: ' . $errorOutput . ' ' . $stdErr);
 		}
 
-		throw new OcrNotPossibleException('OCRmyPDF exited abnormally with exit-code ' . $exitCode . '. Message: ' . $errorOutput . ' ' . $stdErr);
+		if ($stdErr !== '' || $errorOutput !== '') {
+			// Log warning if ocrmypdf wrote a warning to the stderr
+			$this->logger->warning('OCRmyPDF succeeded with warning(s): {stdErr}, {errorOutput}', [
+				'stdErr' => $stdErr,
+				'errorOutput' => $errorOutput
+			]);
+		}
+
+		$ocrOutput = $this->command->getOutput();
+
+		if (!$ocrOutput) {
+			throw new OcrNotPossibleException('OCRmyPDF did not produce any output');
+		}
+
+		return $ocrOutput;
 	}
 }

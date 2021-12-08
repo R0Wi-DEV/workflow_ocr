@@ -6,3 +6,4 @@ coverage_html
 build
 .phpunit.result.cache
 *.cov
+coverage

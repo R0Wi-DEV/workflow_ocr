@@ -107,22 +107,54 @@ class PdfOcrProcessorTest extends TestCase {
 			->willReturn(true);
 		$this->command->expects($this->once())
 			->method('getError')
-			->willReturn('error');
+			->willReturn('getErrorOutput');
 		$this->command->expects($this->once())
 			->method('getStdErr')
-			->willReturn('stdErr');
+			->willReturn('stdErrOutput');
+		$this->command->expects($this->once())
+			->method('getOutput')
+			->willReturn('someOcrFileContent');
 		$this->logger->expects($this->once())
 			->method('warning')
 			->with(
-				$this->stringStartsWith('OCRmyPDF succeeded with warning(s):'),
+				'OCRmyPDF succeeded with warning(s): {stdErr}, {errorOutput}',
 				$this->callback(function ($paramsArray) {
 					return is_array($paramsArray) &&
 							count($paramsArray) === 2 &&
-							$paramsArray[0] === 'stdErr' &&
-							$paramsArray[1] === 'error';
+							$paramsArray['stdErr'] === 'stdErrOutput' &&
+							$paramsArray['errorOutput'] === 'getErrorOutput';
 				}));
 
 		$processor = new PdfOcrProcessor($this->command, $this->logger);
 		$processor->ocrFile('someContent');
+	}
+
+	public function testThrowsErrorIfOcrFileWasEmpty() {
+		$this->command->expects($this->once())
+			->method('execute')
+			->willReturn(true);
+		$this->command->expects($this->once())
+			->method('getError')
+			->willReturn('error');
+		$this->command->expects($this->once())
+			->method('getStdErr')
+			->willReturn('stdErr');
+		$this->command->expects($this->once())
+			->method('getOutput')
+			->willReturn('');
+
+	
+		$thrown = false;
+		$processor = new PdfOcrProcessor($this->command, $this->logger);
+
+		try {
+			$processor->ocrFile('someContent');
+		} catch (\Throwable $t) {
+			$thrown = true;
+			$this->assertInstanceOf(OcrNotPossibleException::class, $t);
+			$this->assertEquals('OCRmyPDF did not produce any output', $t->getMessage());
+		}
+		
+		$this->assertTrue($thrown);
 	}
 }
