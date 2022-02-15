@@ -85,20 +85,27 @@ composer-build:
 
 # Installs npm dependencies
 .PHONY: npm-install
-npm-install:
+npm-install: check-npm
 ifeq (,$(wildcard $(CURDIR)/package.json))
-	cd js && $(npm) npm run dev-install
+	cd js && npm run dev-install
 else
 	npm run dev-install
 endif
 
 # Runs npm build script
 .PHONY: npm-build
-npm-build:
+npm-build: check-npm
 ifeq (,$(wildcard $(CURDIR)/package.json))
-	cd js && $(npm) npm run build
+	cd js && npm run build
 else
 	npm run build
+endif
+
+# Checks if npm is installed
+.PHONY: check-npm
+check-npm:
+ifeq (,$(npm))
+	$(error npm is not installed. Please install Node in version mentioned in package.json on your system)
 endif
 
 # Removes the appstore build

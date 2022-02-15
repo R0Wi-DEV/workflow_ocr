@@ -58,7 +58,7 @@ class PdfOcrProcessor implements IOcrProcessor {
 
 	public function ocrFile(string $fileContent, WorkflowSettings $settings, GlobalSettings $globalSettings): string {
 		$commandStr = 'ocrmypdf -q ' . $this->getCommandlineArgs($settings, $globalSettings) . ' - - | cat';
-		
+
 		$this->command
 			->setCommand($commandStr)
 			->setStdIn($fileContent);
@@ -83,13 +83,13 @@ class PdfOcrProcessor implements IOcrProcessor {
 		}
 
 		$ocrFileContent = $this->command->getOutput();
-			
+
 		if (!$ocrFileContent) {
 			throw new OcrNotPossibleException('OCRmyPDF did not produce any output');
 		}
 
 		$this->logger->debug("OCR processing was successful");
-			
+
 		return $ocrFileContent;
 	}
 
