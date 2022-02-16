@@ -1,6 +1,7 @@
 {
     "require": {
-        "mikehaertl/php-shellcommand": "^1.6"
+        "mikehaertl/php-shellcommand": "^1.6",
+        "cocur/chain": "^0.9.0"
     },
     "require-dev": {
         "phpunit/phpunit": "9.3.*",
@@ -12,7 +13,7 @@
         "classmap-authoritative": true
     },
     "scripts": {
-        "lint": "find . -name \\*.php -not -path './vendor/*' -exec php -l \"{}\" \\;",
+        "lint": "find . -name \\*.php -not -path './vendor/*' -not -path './node_modules/*' -exec php -l \"{}\" \\;",
         "cs:check": "php-cs-fixer fix --dry-run --diff",
         "cs:fix": "php-cs-fixer fix"
     }	

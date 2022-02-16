@@ -23,11 +23,28 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\OcrProcessors;
 
+use Cocur\Chain\Chain;
 use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
+use OCA\WorkflowOcr\Model\GlobalSettings;
+use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCA\WorkflowOcr\Wrapper\ICommand;
 use Psr\Log\LoggerInterface;
 
 class PdfOcrProcessor implements IOcrProcessor {
+	/** @var array
+	 * Mapping for VUE frontend lang settings.
+	 * See also https://github.com/tesseract-ocr/tesseract/blob/main/doc/tesseract.1.asc#languages
+	 */
+	private static $langMapping = [
+		'de' => 'deu',
+		'en' => 'eng',
+		'fr' => 'fra',
+		'it' => 'ita',
+		'es' => 'spa',
+		'pt' => 'por',
+		'ru' => 'rus'
+	];
+
 	/** @var ICommand */
 	private $command;
 
@@ -39,13 +56,16 @@ class PdfOcrProcessor implements IOcrProcessor {
 		$this->logger = $logger;
 	}
 
-	public function ocrFile(string $fileContent): string {
+	public function ocrFile(string $fileContent, WorkflowSettings $settings, GlobalSettings $globalSettings): string {
+		$commandStr = 'ocrmypdf -q ' . $this->getCommandlineArgs($settings, $globalSettings) . ' - - | cat';
+
 		$this->command
-			->setCommand("ocrmypdf --redo-ocr -q - - | cat")
+			->setCommand($commandStr)
 			->setStdIn($fileContent);
 
-		$success = $this->command->execute();
+		$this->logger->debug('Running command: ' . $commandStr);
 
+		$success = $this->command->execute();
 		$errorOutput = $this->command->getError();
 		$stdErr = $this->command->getStdErr();
 		$exitCode = $this->command->getExitCode();
@@ -62,12 +82,42 @@ class PdfOcrProcessor implements IOcrProcessor {
 			]);
 		}
 
-		$ocrOutput = $this->command->getOutput();
+		$ocrFileContent = $this->command->getOutput();
 
-		if (!$ocrOutput) {
+		if (!$ocrFileContent) {
 			throw new OcrNotPossibleException('OCRmyPDF did not produce any output');
 		}
 
-		return $ocrOutput;
+		$this->logger->debug("OCR processing was successful");
+
+		return $ocrFileContent;
+	}
+
+	private function getCommandlineArgs(WorkflowSettings $settings, GlobalSettings $globalSettings): string {
+		$args = [];
+			
+		// Language settings
+		if ($settings->getLanguages()) {
+			$langStr = Chain::create($settings->getLanguages())
+				->map(function ($langCode) {
+					return self::$langMapping[(string)$langCode] ?? null;
+				})
+				->filter(function ($l) {
+					return $l !== null;
+				})
+				->join('+');
+			$args[] = "-l $langStr";
+		}
+
+		// Remove background option (incompatible with redo-ocr)
+		$args[] = $settings->getRemoveBackground() ? '--remove-background' : '--redo-ocr';
+
+		// Number of CPU's to be used
+		$processorCount = intval($globalSettings->processorCount);
+		if ($processorCount > 0) {
+			$args[] = '-j ' . $processorCount;
+		}
+
+		return implode(' ', $args);
 	}
 }

@@ -41,6 +41,18 @@
             "args": ["-c", "phpunit.integration.xml"],
             "cwd": "${workspaceRoot}",
             "port": 9003
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug VUE Unit Test (current file)",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+              "run-script",
+              "test:debug",
+              "${file}"
+            ],
+            "port": 9229
         }
     ]
 }
