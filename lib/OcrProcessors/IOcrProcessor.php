@@ -24,13 +24,17 @@ declare(strict_types=1);
 namespace OCA\WorkflowOcr\OcrProcessors;
 
 use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
+use OCA\WorkflowOcr\Model\GlobalSettings;
+use OCA\WorkflowOcr\Model\WorkflowSettings;
 
 interface IOcrProcessor {
 	/**
 	 * Processes OCR on the given file
-	 * @var string $fileContent  The file to be processed
-	 * @return string   The processed file as byte string
+	 * @param string 			$fileContent  		The file to be processed
+	 * @param WorkflowSettings 	$settings 			The settings to be used for this specific workflow
+	 * @param GlobalSettings 	$globalSettings 	The global settings configured for all OCR workflows on this system
+	 * @return string   							The processed file as byte string
 	 * @throws OcrNotPossibleException
 	 */
-	public function ocrFile(string $fileContent) : string;
+	public function ocrFile(string $fileContent, WorkflowSettings $settings, GlobalSettings $globalSettings) : string;
 }

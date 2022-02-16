@@ -56,13 +56,10 @@ all: build
 .PHONY: build
 build:
 ifneq (,$(wildcard $(CURDIR)/composer.json))
-	make composer
+	make composer-build
 endif
 ifneq (,$(wildcard $(CURDIR)/package.json))
-	make npm
-endif
-ifneq (,$(wildcard $(CURDIR)/js/package.json))
-	make npm
+	make npm-install && make npm-build
 endif
 
 # Installs and updates the composer dependencies. If composer is not installed
@@ -87,12 +84,28 @@ composer-build:
 	composer install --no-dev --prefer-dist
 
 # Installs npm dependencies
-.PHONY: npm
-npm:
+.PHONY: npm-install
+npm-install: check-npm
 ifeq (,$(wildcard $(CURDIR)/package.json))
-	cd js && $(npm) run build
+	cd js && npm run dev-install
+else
+	npm run dev-install
+endif
+
+# Runs npm build script
+.PHONY: npm-build
+npm-build: check-npm
+ifeq (,$(wildcard $(CURDIR)/package.json))
+	cd js && npm run build
 else
 	npm run build
+endif
+
+# Checks if npm is installed
+.PHONY: check-npm
+check-npm:
+ifeq (,$(npm))
+	$(error npm is not installed. Please install Node in version mentioned in package.json on your system)
 endif
 
 # Removes the appstore build
@@ -106,8 +119,7 @@ clean:
 distclean: clean
 	rm -rf vendor
 	rm -rf node_modules
-	rm -rf js/vendor
-	rm -rf js/node_modules
+	rm -rf js
 
 # Builds the source and appstore package
 .PHONY: dist
@@ -132,10 +144,11 @@ source:
 .PHONY: appstore
 appstore:
 	make distclean
-	make composer-build
+	make build
 	rm -rf $(appstore_build_directory)
 	mkdir -p $(appstore_build_directory)
 	tar cvzf $(appstore_package_name).tar.gz \
+	--no-wildcards-match-slash \
 	--exclude-vcs \
 	--exclude="../$(app_name)/build" \
 	--exclude="../$(app_name)/tests" \
@@ -144,6 +157,8 @@ appstore:
 	--exclude="../$(app_name)/phpunit*xml" \
 	--exclude="../$(app_name)/coverage*xml" \
 	--exclude="../$(app_name)/composer.*" \
+	--exclude="../$(app_name)/coverage_html" \
+	--exclude="../$(app_name)/coverage" \
 	--exclude="../$(app_name)/js/node_modules" \
 	--exclude="../$(app_name)/js/tests" \
 	--exclude="../$(app_name)/js/test" \
@@ -152,12 +167,19 @@ appstore:
 	--exclude="../$(app_name)/js/bower.json" \
 	--exclude="../$(app_name)/js/karma.*" \
 	--exclude="../$(app_name)/js/protractor.*" \
+	--exclude="../$(app_name)/js/*.map" \
+	--exclude="../$(app_name)/js/.*" \
 	--exclude="../$(app_name)/package.json" \
 	--exclude="../$(app_name)/bower.json" \
 	--exclude="../$(app_name)/karma.*" \
 	--exclude="../$(app_name)/protractor\.*" \
 	--exclude="../$(app_name)/.*" \
-	--exclude="../$(app_name)/js/.*" \
+	--exclude="../$(app_name)/src" \
+	--exclude="../$(app_name)/node_modules" \
+	--exclude="../$(app_name)/*.js" \
+	--exclude="../$(app_name)/*.json" \
+	--exclude="../$(app_name)/*.lock" \
+	--exclude="../$(app_name)/*.cov" \
 	../$(app_name) \
 
 .PHONY: test
@@ -173,23 +195,31 @@ unittest: composer
 integrationtest: composer
 	$(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.integration.xml
 
+.PHONY: coverage-php
+coverage-php:
+	XDEBUG_MODE=coverage $(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.xml --coverage-php coverage/coverage_unittests.cov
+	XDEBUG_MODE=coverage $(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.integration.xml --coverage-php coverage/coverage_integrationtests.cov
+	XDEBUG_MODE=coverage $(CURDIR)/vendor/phpunit/phpcov/phpcov merge --clover ./coverage/php-coverage.xml ./coverage
+
 .PHONY: html-coverage
-html-coverage: composer
-	XDEBUG_MODE=coverage $(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.xml --coverage-php coverage_unittests.cov
-	XDEBUG_MODE=coverage $(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.integration.xml --coverage-php coverage_integrationtests.cov
+html-coverage: composer coverage-php
 	XDEBUG_MODE=coverage $(CURDIR)/vendor/phpunit/phpcov/phpcov merge --html coverage_html .
 
-.PHONY: coverage
-coverage: composer
-	XDEBUG_MODE=coverage $(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.xml --coverage-php coverage_unittests.cov
-	XDEBUG_MODE=coverage $(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.integration.xml --coverage-php coverage_integrationtests.cov
-	XDEBUG_MODE=coverage $(CURDIR)/vendor/phpunit/phpcov/phpcov merge --clover coverage.xml .
+# Coverage PHP and JS + merge coverage
+.PHONY: coverage-all
+coverage-all: composer npm-install coverage-php js-test
 
 .PHONY: lint
-lint: composer
+lint: composer npm-install
 	composer run lint
 	composer run cs:check
+	npm run lint
 
 .PHONY: lint-fix
-lint-fix: composer
+lint-fix: composer npm-install
 	composer run cs:fix
+	npm run lint:fix
+
+.PHONY: js-test
+js-test:
+	npm run test:unit
