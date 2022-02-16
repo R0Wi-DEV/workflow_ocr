@@ -41,9 +41,6 @@ class ViewWrapper implements IView {
 	 */
 	public function file_put_contents(string $filePath, string $content) : bool {
 		$retVal = $this->wrappedView->file_put_contents($filePath, $content);
-		if (is_bool($retVal)) {
-			return $retVal;
-		}
 		return boolval($retVal);
 	}
 }
