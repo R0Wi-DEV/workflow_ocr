@@ -43,6 +43,7 @@ use OCP\WorkflowEngine\IRuleMatcher;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use UnexpectedValueException;
 
 class OperationTest extends TestCase {
 
@@ -61,6 +62,8 @@ class OperationTest extends TestCase {
 	/** @var IRootFolder|MockObject */
 	private $rootFolder;
 
+	private const SETTINGS = "{\"languages\":[\"de\"],\"removeBackground\":true}";
+
 	protected function setUp(): void {
 		parent::setUp();
 		
@@ -72,8 +75,9 @@ class OperationTest extends TestCase {
 		$this->ruleMatcher = $this->createMock(IRuleMatcher::class);
 		$this->rootFolder = $this->createMock(IRootFolder::class);
 
+		$match = ['operation' => self::SETTINGS];
 		$this->ruleMatcher->method('getFlows')
-			->willReturn([$this->createMock(Operation::class)]); // simulate single matching operation
+			->willReturn($match); // simulate single matching operation
 	}
 
 	public function testDoesNothingIfRuleMatcherDoesNotMatch() {
@@ -132,9 +136,11 @@ class OperationTest extends TestCase {
 
 		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
 
+		/** @var MockObject|IUser */
 		$userMock = $this->createMock(IUser::class);
 		$userMock->expects($this->never())
 			->method('getUID');
+		/** @var MockObject|Node */
 		$fileMock = $this->createMock(Node::class);
 		$fileMock->method('getType')
 			->willReturn(FileInfo::TYPE_FILE);
@@ -164,6 +170,7 @@ class OperationTest extends TestCase {
 
 		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
 
+		/** @var MockObject|Node */
 		$fileMock = $this->createMock(Node::class);
 		$fileMock->method('getType')
 			->willReturn(FileInfo::TYPE_FILE);
@@ -185,6 +192,7 @@ class OperationTest extends TestCase {
 
 		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
 
+		/** @var MockObject|Node */
 		$fileMock = $this->createMock(Node::class);
 		$fileMock->method('getType')
 			->willReturn(FileInfo::TYPE_FILE);
@@ -204,14 +212,16 @@ class OperationTest extends TestCase {
 		$uid = 'admin';
 		$this->jobList->expects($this->once())
 			->method('add')
-			->with(ProcessFileJob::class, ['filePath' => $filePath, 'uid' => $uid]);
+			->with(ProcessFileJob::class, ['filePath' => $filePath, 'uid' => $uid, 'settings' => self::SETTINGS]);
 
 		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
 
+		/** @var MockObject|IUser */
 		$userMock = $this->createMock(IUser::class);
 		$userMock->expects($this->once())
 			->method('getUID')
 			->willReturn($uid);
+		/** @var MockObject|Node */
 		$fileMock = $this->createMock(Node::class);
 		$fileMock->method('getType')
 			->willReturn(FileInfo::TYPE_FILE);
@@ -237,7 +247,10 @@ class OperationTest extends TestCase {
 		$this->assertTrue($result);
 	}
 
-	public function testDoesNothing_OnValidateOperation() {
+	/**
+	 * @dataProvider dataProvider_EmptyOperationSettings
+	 */
+	public function testValidateOperationAcceptsEmptyOperationSettings($settings) {
 		$this->jobList->expects($this->never())
 			->method($this->anything());
 		$this->l->expects($this->never())
@@ -249,7 +262,14 @@ class OperationTest extends TestCase {
 
 		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
 
-		$operation->validateOperation('aName', [], 'aOp');
+		$operation->validateOperation('', [], $settings);
+	}
+
+	public function testOnValidateOperationThrowsUnexpectedValueExceptionIfJsonSettingsAreInvalid() {
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
+
+		$this->expectException(UnexpectedValueException::class);
+		$operation->validateOperation('aName', [], '{ "invalid; "json" }');
 	}
 
 	public function testCallsLang_OnGetDisplayName() {
@@ -340,6 +360,7 @@ class OperationTest extends TestCase {
 		$this->logger->expects($this->once())
 			->method('warning')
 			->withAnyParameters();
+		/** @var MockObject|IRootFolder */
 		$this->rootFolder = $this->createMock(IRootFolder::class);
 		$this->rootFolder->expects($this->once())
 			->method('getById')
@@ -360,6 +381,7 @@ class OperationTest extends TestCase {
 		$this->logger->expects($this->once())
 			->method('warning')
 			->withAnyParameters();
+		/** @var MockObject|IRootFolder */
 		$this->rootFolder = $this->createMock(IRootFolder::class);
 		$this->rootFolder->expects($this->once())
 			->method('getById')
@@ -380,12 +402,14 @@ class OperationTest extends TestCase {
 
 		$this->jobList->expects($this->once())
 			->method('add')
-			->with(ProcessFileJob::class, ['filePath' => $filePath, 'uid' => $uid]);
+			->with(ProcessFileJob::class, ['filePath' => $filePath, 'uid' => $uid, 'settings' => self::SETTINGS]);
 
+		/** @var MockObject|IUser */
 		$userMock = $this->createMock(IUser::class);
 		$userMock->expects($this->once())
 			->method('getUID')
 			->willReturn($uid);
+		/** @var MockObject|\OCP\Files\File */
 		$fileMock = $this->createMock(\OCP\Files\File::class);
 		$fileMock->method('getType')
 			->willReturn(FileInfo::TYPE_FILE);
@@ -395,6 +419,7 @@ class OperationTest extends TestCase {
 			->willReturn($userMock);
 		$fileMock->method('getId')
 			->willReturn($fileId);
+		/** @var MockObject|IRootFolder */
 		$rootFolder = $this->createMock(IRootFolder::class);
 		$rootFolder->expects($this->once())
 			->method('getById')
@@ -419,6 +444,13 @@ class OperationTest extends TestCase {
 		return [
 			[IManager::SCOPE_ADMIN],
 			[IManager::SCOPE_USER]
+		];
+	}
+
+	public function dataProvider_EmptyOperationSettings() {
+		return [
+			[''],
+			['{}']
 		];
 	}
 }
