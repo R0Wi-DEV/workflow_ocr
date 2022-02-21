@@ -26,14 +26,17 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\Service;
 
+use OCA\WorkflowOcr\Model\WorkflowSettings;
+
 interface IOcrService {
 	/**
 	 * Processes OCR on the given file
-	 * @param string $mimeType        The mimetype of the file to be processed
-	 * @param string $fileContent     The file to be processed
-	 * @return string                 The processed pdf as byte string
+	 * @param string $mimeType        		The mimetype of the file to be processed
+	 * @param string $fileContent     		The file to be processed
+	 * @param WorkflowSettings $settings 	The settings to be used for processing
+	 * @return string                 		The processed pdf as byte string
 	 * @throws \OCA\WorkflowOcr\Exception\OcrNotPossibleException
 	 * @throws \OCA\WorkflowOcr\Exception\OcrProcessorNotFoundException
 	 */
-	public function ocrFile(string $mimeType, string $fileContent) : string;
+	public function ocrFile(string $mimeType, string $fileContent, WorkflowSettings $settings) : string;
 }
