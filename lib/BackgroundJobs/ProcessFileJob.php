@@ -174,7 +174,10 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
 			return;
 		}
 
-		$this->createNewFileVersion($filePath, $ocrFile, $node->getId());
+		if ($node->getMimeType() == "application/pdf")
+			$this->createNewFileVersion($filePath, $ocrFile, $node->getId());
+		else
+			$this->createNewFileVersion($filePath.".pdf", $ocrFile, $node->getId());
 	}
 
 	private function getNode(string $filePath) : ?Node {

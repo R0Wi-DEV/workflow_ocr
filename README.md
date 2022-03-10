@@ -25,6 +25,7 @@
 - [How it works](#how-it-works)
   - [General](#general)
   - [PDF](#pdf)
+  - [Images](#images)
 - [Development](#development)
   - [Dev setup](#dev-setup)
   - [Debugging](#debugging)
@@ -52,11 +53,13 @@ Since the actual processing of the files is done asynchronously via Nextcloud's 
 ### Backend
 > :warning: Since `v1.20.1` you'll have to install `OCRmyPDF`.
 
-In the backend [`OCRmyPDF`](https://github.com/jbarlow83/OCRmyPDF) is used for processing PDF files. Make sure you have this commandline tool installed. Make sure you have the appropriate version (see below, Used libraries').  
+In the backend [`OCRmyPDF`](https://github.com/jbarlow83/OCRmyPDF) is used for processing PDF files. Make sure you have this commandline tool installed. Make sure you have the appropriate version (see below, Used libraries').
 
 ```bash
 apt-get install ocrmypdf
 ``` 
+
+For conversion of non-PDF image files, the commandline tool 'convert' from ImageMagick is used.
 
 Also if you want to use specific language settings please install the corresponding `tesseract` packages.
 
@@ -155,6 +158,9 @@ To **test** if your file gets processed properly you can do the following steps:
 
 ### PDF
 For processing PDF files, the external command line tool [`OCRmyPDF`](https://github.com/jbarlow83/OCRmyPDF) is used. The tool is invoked with the [`--redo-ocr`](https://ocrmypdf.readthedocs.io/en/latest/advanced.html#when-ocr-is-skipped) parameter so that it will perform a detailed text analysis. The detailed analysis masks out visible text and sends the image of each page to the OCR processor. After processing, additional text is inserted as OCR, whereas existing text in a mixed file document (images embedded into text pages) is not disrupted.
+
+### Images
+For processing images (JPG, PNG), the external command line tool 'convert' (part of ImageMagick) is used. This performs a file-type conversion only. To also OCR the file, create a separate flow for the generated PDF file.
 
 ## Development
 ### Dev setup
