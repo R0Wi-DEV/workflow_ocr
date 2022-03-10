@@ -31,7 +31,9 @@ use Psr\Log\LoggerInterface;
 
 class OcrProcessorFactory implements IOcrProcessorFactory {
 	private static $mapping = [
-		'application/pdf' => PdfOcrProcessor::class
+		'application/pdf' => PdfOcrProcessor::class,
+		'image/jpeg' => ImageOcrProcessor::class,
+		'image/png' => ImageOcrProcessor::class,
 	];
 
 	/** @var ContainerInterface */
