@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * @copyright Copyright (c) 2020 Robin Windey <ro.windey@gmail.com>
+ * @copyright Copyright (c) 2022 Robin Windey <ro.windey@gmail.com>
  *
  *  @license GNU AGPL version 3 or any later version
  *
@@ -21,18 +21,23 @@ declare(strict_types=1);
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OCA\WorkflowOcr\OcrProcessors;
+namespace OCA\WorkflowOcr\Wrapper;
 
-interface IOcrProcessorFactory {
-	/**
-	 * Creates a IOcrProcessor object for the given mimetype
-	 */
-	public function create(string $mimeType) : IOcrProcessor;
+use Imagick;
 
+class ImageToPdfConverter implements IImageToPdfConverter {
+	
 	/**
-	 * Returns true, if an OCR processor for the given mimetype
-	 * can be constructed.
-	 * @return bool
+	 * @inheritdoc
 	 */
-	public function canCreate(string $mimeType) : bool;
+	public function convertToPdf(string $imageBlob): string {
+		$image = new Imagick();
+		try {
+			$image->readImageBlob($imageBlob);
+			$image->setImageFormat('pdf');
+			return $image->getImageBlob();
+		} finally {
+			$image->destroy();
+		}
+	}
 }

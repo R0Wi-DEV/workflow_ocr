@@ -23,19 +23,25 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\OcrProcessors;
 
-use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
-use OCA\WorkflowOcr\Model\GlobalSettings;
-use OCA\WorkflowOcr\Model\WorkflowSettings;
-use OCP\Files\File;
+/**
+ * Represents a file which was processed via OCR.
+ */
+class OcrProcessorResult {
+	/** @var string */
+	private $fileContent;
+	/** @var string */
+	private $fileExtension;
 
-interface IOcrProcessor {
-	/**
-	 * Processes OCR on the given file
-	 * @param File 				$file  				The file to be processed
-	 * @param WorkflowSettings 	$settings 			The settings to be used for this specific workflow
-	 * @param GlobalSettings 	$globalSettings 	The global settings configured for all OCR workflows on this system
-	 * @return string   							The processed file as byte string
-	 * @throws OcrNotPossibleException
-	 */
-	public function ocrFile(File $file, WorkflowSettings $settings, GlobalSettings $globalSettings) : OcrProcessorResult;
+	public function __construct(string $fileContent, string $fileExtension) {
+		$this->fileContent = $fileContent;
+		$this->fileExtension = $fileExtension;
+	}
+
+	public function getFileContent(): string {
+		return $this->fileContent;
+	}
+
+	public function getFileExtension(): string {
+		return $this->fileExtension;
+	}
 }

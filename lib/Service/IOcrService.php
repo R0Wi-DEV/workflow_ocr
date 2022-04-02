@@ -27,6 +27,8 @@ declare(strict_types=1);
 namespace OCA\WorkflowOcr\Service;
 
 use OCA\WorkflowOcr\Model\WorkflowSettings;
+use OCA\WorkflowOcr\OcrProcessors\OcrProcessorResult;
+use OCP\Files\File;
 
 interface IOcrService {
 	/**
@@ -38,5 +40,5 @@ interface IOcrService {
 	 * @throws \OCA\WorkflowOcr\Exception\OcrNotPossibleException
 	 * @throws \OCA\WorkflowOcr\Exception\OcrProcessorNotFoundException
 	 */
-	public function ocrFile(string $mimeType, string $fileContent, WorkflowSettings $settings) : string;
+	public function ocrFile(File $file, WorkflowSettings $settings) : OcrProcessorResult;
 }

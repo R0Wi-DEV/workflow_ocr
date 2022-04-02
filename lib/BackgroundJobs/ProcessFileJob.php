@@ -170,7 +170,7 @@ class ProcessFileJob extends \OCP\BackgroundJob\QueuedJob {
 		}
 
 		try {
-			$ocrFile = $this->ocrFile($node, $settings);
+			$ocrFile = $this->ocrService->ocrFile($node, $settings);
 		} catch (OcrNotPossibleException $ocrNpEx) {
 			$this->logger->error('OCR for file ' . $node->getPath() . ' not possible. Message: ' . $ocrNpEx->getMessage());
 			return;
@@ -179,10 +179,16 @@ class ProcessFileJob extends \OCP\BackgroundJob\QueuedJob {
 			return;
 		}
 
-		if ($node->getMimeType() == "application/pdf")
-			$this->createNewFileVersion($filePath, $ocrFile, $node->getId());
-		else
-			$this->createNewFileVersion($filePath.".pdf", $ocrFile, $node->getId());
+		$fileContent = $ocrFile->getFileContent();
+		$nodeId = $node->getId();
+		$originalFileExtension = $node->getExtension();
+		$newFileExtension = $ocrFile->getFileExtension();
+
+		if ($originalFileExtension === $newFileExtension) {
+			$this->createNewFileVersion($filePath, $fileContent, $nodeId);
+		} else {
+			$this->createNewFileVersion($filePath.".pdf", $fileContent, $nodeId);
+		}
 	}
 
 	private function getNode(string $filePath) : ?Node {
@@ -214,14 +220,6 @@ class ProcessFileJob extends \OCP\BackgroundJob\QueuedJob {
 
 		$this->userSession->setUser($user);
 		$this->filesystem->init($uid, '/' . $uid . '/files');
-	}
-
-	/**
-	 * @param File $file
-	 * @param WorkflowSettings $settings
-	 */
-	private function ocrFile(File $file, WorkflowSettings $settings) : string {
-		return $this->ocrService->ocrFile($file->getMimeType(), $file->getContent(), $settings);
 	}
 
 	private function shutdownUserEnvironment() : void {

@@ -28,6 +28,8 @@ use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
 use OCA\WorkflowOcr\Model\GlobalSettings;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCA\WorkflowOcr\Wrapper\ICommand;
+use OCA\WorkflowOcr\Wrapper\IImageToPdfConverter;
+use OCP\Files\File;
 use Psr\Log\LoggerInterface;
 
 class PdfOcrProcessor implements IOcrProcessor {
@@ -49,20 +51,31 @@ class PdfOcrProcessor implements IOcrProcessor {
 	/** @var ICommand */
 	private $command;
 
+	/** @var IImageToPdfConverter */
+	private $converter;
+
 	/** @var LoggerInterface */
 	private $logger;
 
-	public function __construct(ICommand $command, LoggerInterface $logger) {
+	public function __construct(ICommand $command, IImageToPdfConverter $converter, LoggerInterface $logger) {
 		$this->command = $command;
+		$this->converter = $converter;
 		$this->logger = $logger;
 	}
 
-	public function ocrFile(string $fileContent, WorkflowSettings $settings, GlobalSettings $globalSettings): string {
+	public function ocrFile(File $file, WorkflowSettings $settings, GlobalSettings $globalSettings): OcrProcessorResult {
+		if ($file->getMimeType() !== 'application/pdf') {
+			// Convert file to pdf. Here we assume that we're dealing with an image input
+			$pdfContent = $this->converter->convertToPdf($file->getContent());
+		} else {
+			$pdfContent = $file->getContent();
+		}
+		
 		$commandStr = 'ocrmypdf -q ' . $this->getCommandlineArgs($settings, $globalSettings) . ' - - | cat';
 
 		$this->command
 			->setCommand($commandStr)
-			->setStdIn($fileContent);
+			->setStdIn($pdfContent);
 
 		$this->logger->debug('Running command: ' . $commandStr);
 
@@ -91,7 +104,7 @@ class PdfOcrProcessor implements IOcrProcessor {
 
 		$this->logger->debug("OCR processing was successful");
 
-		return $ocrFileContent;
+		return new OcrProcessorResult($ocrFileContent, "pdf");
 	}
 
 	private function getCommandlineArgs(WorkflowSettings $settings, GlobalSettings $globalSettings): string {

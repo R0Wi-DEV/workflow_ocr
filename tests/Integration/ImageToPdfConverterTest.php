@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * @copyright Copyright (c) 2020 Robin Windey <ro.windey@gmail.com>
+ * @copyright Copyright (c) 2022 Robin Windey <ro.windey@gmail.com>
  *
  *  @license GNU AGPL version 3 or any later version
  *
@@ -21,18 +21,19 @@ declare(strict_types=1);
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OCA\WorkflowOcr\OcrProcessors;
+namespace OCA\WorkflowOcr\Tests\Integration;
 
-interface IOcrProcessorFactory {
-	/**
-	 * Creates a IOcrProcessor object for the given mimetype
-	 */
-	public function create(string $mimeType) : IOcrProcessor;
+use OCA\WorkflowOcr\Wrapper\ImageToPdfConverter;
+use Test\TestCase;
 
-	/**
-	 * Returns true, if an OCR processor for the given mimetype
-	 * can be constructed.
-	 * @return bool
-	 */
-	public function canCreate(string $mimeType) : bool;
+class ImageToPdfConverterTest extends TestCase {
+	public function testConvertToPdf() {
+		$imagePath = realpath('./tests/Integration/data/testdocument.png');
+		$pngContent = file_get_contents($imagePath);
+		$imageToPdfConverter = new ImageToPdfConverter();
+		$result = $imageToPdfConverter->convertToPdf($pngContent);
+
+		$matchCnt = preg_match('/^%PDF-1.\d+/', $result);
+		$this->assertTrue($matchCnt === 1);
+	}
 }

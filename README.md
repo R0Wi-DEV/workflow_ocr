@@ -59,7 +59,23 @@ In the backend [`OCRmyPDF`](https://github.com/jbarlow83/OCRmyPDF) is used for p
 apt-get install ocrmypdf
 ``` 
 
-For conversion of non-PDF image files, the commandline tool 'convert' from ImageMagick is used.
+To convert image files (`jpg`/`png`) to PDF, the [`imagick`](https://www.php.net/manual/de/book.imagick.php) PHP extension is used. Make sure you have the [`imagemagick`](https://imagemagick.org/index.php) tool installed and the PHP extension activated.
+
+```bash
+apt-get install imagemagick php-imagick
+```
+
+To allow `imagick` to work with PDF files, add/change the following line in your `policy.xml`, so that `rights` is changed from `none` to `read | write`:
+
+```xml
+<policymap>
+  <!-- [...] -->
+  <policy domain="coder" rights="read | write" pattern="PDF" />
+</policymap>
+
+```
+
+Depending on your system and version of imagemagick, this file is usually located in `/etc/ImageMagick-6/policy.xml`.
 
 Also if you want to use specific language settings please install the corresponding `tesseract` packages.
 
@@ -163,7 +179,7 @@ To **test** if your file gets processed properly you can do the following steps:
 For processing PDF files, the external command line tool [`OCRmyPDF`](https://github.com/jbarlow83/OCRmyPDF) is used. The tool is invoked with the [`--redo-ocr`](https://ocrmypdf.readthedocs.io/en/latest/advanced.html#when-ocr-is-skipped) parameter so that it will perform a detailed text analysis. The detailed analysis masks out visible text and sends the image of each page to the OCR processor. After processing, additional text is inserted as OCR, whereas existing text in a mixed file document (images embedded into text pages) is not disrupted.
 
 ### Images
-For processing images (JPG, PNG), the external command line tool 'convert' (part of ImageMagick) is used. This performs a file-type conversion only. To also OCR the file, create a separate flow for the generated PDF file.
+For processing images (currently `jpg` and `png` are supported), the PHP library [`imagick`](https://www.php.net/manual/de/book.imagick) is used. This performs a file-type conversion to PDF before processing the file. The converted PDF file will then be saved as a new file with the original filename and the extension `.pdf` (for example `myImage.jpg` will be saved to `myImage.jpg.pdf`). The original image fill will remain untouched.
 
 ## Development
 ### Dev setup
@@ -349,3 +365,4 @@ That's all. If you now create a new workflow based on your added mimetype, your 
 | php-shellcommand | >= 1.6 | https://github.com/mikehaertl/php-shellcommand |
 | chain | >= 0.9.0 | https://packagist.org/packages/cocur/chain |
 | PHPUnit | >= 8.0 | https://phpunit.de/ |
+| imagick | | https://www.php.net/manual/de/book.imagick |

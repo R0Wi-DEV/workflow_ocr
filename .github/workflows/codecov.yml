@@ -37,6 +37,7 @@ jobs:
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+
       - name: Checkout app
         uses: actions/checkout@v2
         with:
@@ -47,12 +48,16 @@ jobs:
         with:
           php-version: ${{ matrix.php-versions }}
           tools: phpunit
-          extensions: mbstring, iconv, fileinfo, intl, sqlite, pdo_sqlite, gd, zip
+          extensions: mbstring, iconv, fileinfo, intl, sqlite, pdo_sqlite, gd, zip, imagick
           coverage: xdebug
 
       - name: Set up PHPUnit
         working-directory: apps/${{ env.APP_NAME }}
         run: composer i
+
+      - name: Copy Imagick config
+        run: |
+          sudo cp apps/${{ env.APP_NAME }}/tests/Integration/data/imagick-policy.xml /etc/ImageMagick-6/policy.xml
 
       - name: Set up Nextcloud
         env:
