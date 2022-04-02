@@ -26,6 +26,7 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr;
 
+use OC\Comments\Comment;
 use OCA\WorkflowOcr\AppInfo\Application;
 use OCA\WorkflowEngine\Entity\File;
 use OCP\BackgroundJob\IJobList;
@@ -38,6 +39,8 @@ use OCP\WorkflowEngine\ISpecificOperation;
 use OCA\WorkflowOcr\BackgroundJobs\ProcessFileJob;
 use OCA\WorkflowOcr\Helper\IProcessingFileAccessor;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
+use OCA\WorkflowOcr\Helper\SynchronizationHelper;
+use OCP\Comments\ICommentsManager;
 use OCP\Files\FileInfo;
 use OCP\Files\IRootFolder;
 use OCP\Files\Node;
@@ -59,6 +62,8 @@ class Operation implements ISpecificOperation {
 	private $processingFileAccessor;
 	/** @var IRootFolder */
 	private $rootFolder;
+	/** @var ICommentsManager */
+	private $commentsManager;
 
 	public function __construct(
 		IJobList $jobList,
@@ -66,13 +71,15 @@ class Operation implements ISpecificOperation {
 		LoggerInterface $logger,
 		IURLGenerator $urlGenerator,
 		IProcessingFileAccessor $processingFileAccessor,
-		IRootFolder $rootFolder) {
+		IRootFolder $rootFolder,
+		ICommentsManager $commentsManager) {
 		$this->jobList = $jobList;
 		$this->l = $l;
 		$this->logger = $logger;
 		$this->urlGenerator = $urlGenerator;
 		$this->processingFileAccessor = $processingFileAccessor;
 		$this->rootFolder = $rootFolder;
+		$this->commentsManager = $commentsManager;
 	}
 
 	/**
@@ -83,6 +90,11 @@ class Operation implements ISpecificOperation {
 		if (!WorkflowSettings::canConstruct($operation)) {
 			throw new \UnexpectedValueException($this->l->t('Workflow settings JSON value cannot be parsed'));
 		}
+		// nothing to do
+		$comment = $this->commentsManager->create("users", "robin", "files", "249")
+			->setMessage("OCR operation")
+			->setVerb('comment');
+		$this->commentsManager->save($comment);
 	}
 
 	public function getDisplayName(): string {
