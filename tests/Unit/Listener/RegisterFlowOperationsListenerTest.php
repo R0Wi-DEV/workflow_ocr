@@ -23,9 +23,12 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\Tests\Unit\Listener;
 
+use Cocur\Chain\Chain;
+use OCA\WorkflowOcr\AppInfo\Application;
 use OCA\WorkflowOcr\Listener\RegisterFlowOperationsListener;
 use OCA\WorkflowOcr\Operation;
 use OCP\EventDispatcher\Event;
+use OCP\Util;
 use OCP\WorkflowEngine\Events\LoadSettingsScriptsEvent;
 use OCP\WorkflowEngine\Events\RegisterChecksEvent;
 use OCP\WorkflowEngine\Events\RegisterEntitiesEvent;
@@ -77,7 +80,16 @@ class RegisterFlowOperationsListenerTest extends TestCase {
 
 		$listener->handle(new RegisterOperationsEvent($manager));
 
-		$this->assertTrue(count(\OC_Util::$scripts) > 0);
+		$scripts = Util::getScripts();
+		$appName = Application::APP_NAME;
+
+		$scriptCount = Chain::create($scripts)
+			->filter(function ($script) use ($appName) {
+				return strpos($script, "$appName/l10n/") !== false || strpos($script, "$appName/js/workflow_ocr-main") !== false;
+			})
+			->count();
+		
+		$this->assertEquals(2, $scriptCount);
 	}
 
 	public function dataProvider_NonRegisterOperationsEvent() {

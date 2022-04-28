@@ -10,8 +10,8 @@ beforeEach(() => {
 describe('Init tests', () => {
 	test('Component value shall be empty if user does not make any settings', () => {
 		const wrapper = mount(WorkflowOcr)
-		expect(wrapper.vm.value).toEqual("")
-	})	
+		expect(wrapper.vm.value).toEqual('')
+	})
 })
 
 describe('Language settings tests', () => {

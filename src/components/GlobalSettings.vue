@@ -52,27 +52,27 @@ import { getGlobalSettings, setGlobalSettings } from '../service/globalSettingsS
 export default {
 	name: 'GlobalSettings',
 	components: {
-		SettingsSection,
+		SettingsSection: SettingsSection,
 	},
 	data: () => ({
 		settings: {},
 	}),
 	computed: {
-		description() {
+		description: function() {
 			return this.translate('Global settings applied to all OCR workflows.')
 		},
 	},
-	mounted() {
+	mounted: function() {
 		this.loadSettings()
 	},
 	methods: {
-		async save() {
+		save: async function() {
 			this.settings = await setGlobalSettings(this.settings)
 		},
-		async loadSettings() {
+		loadSettings: async function() {
 			this.settings = await getGlobalSettings()
 		},
-		translate(str) {
+		translate: function(str) {
 			return t(appId, str)
 		},
 	},

@@ -9,3 +9,4 @@ build
 node_modules
 js
 coverage
+.php-cs-fixer.cache 
