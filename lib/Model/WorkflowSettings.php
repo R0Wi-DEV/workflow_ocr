@@ -72,6 +72,9 @@ class WorkflowSettings {
 		return true;
 	}
 
+	/**
+	 * @return void
+	 */
 	private function setJson(string $json = null) {
 		if (!$json) {
 			return;

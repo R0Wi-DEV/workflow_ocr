@@ -8,6 +8,7 @@
         "phpunit/php-code-coverage": "9.2.5",
         "phpunit/phpcov": "8.2.*",
         "nextcloud/coding-standard": "^1.0",
+        "vimeo/psalm": "^4.22",
         "christophwurst/nextcloud": "dev-master"
     },
     "config": {
@@ -20,6 +21,10 @@
     "scripts": {
         "lint": "find . -name \\*.php -not -path './vendor/*' -not -path './node_modules/*' -exec php -l \"{}\" \\;",
         "cs:check": "php-cs-fixer fix --dry-run --diff",
-        "cs:fix": "php-cs-fixer fix"
+        "cs:fix": "php-cs-fixer fix",
+        "psalm": "psalm --threads=1",
+		"psalm:update-baseline": "psalm --threads=1 --update-baseline",
+		"psalm:clear": "psalm --clear-cache && psalm --clear-global-cache",
+		"psalm:fix": "psalm --alter --issues=InvalidReturnType,InvalidNullableReturnType,MissingParamType,InvalidFalsableReturnType"
     }	
 }

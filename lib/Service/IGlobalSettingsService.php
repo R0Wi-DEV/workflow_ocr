@@ -39,5 +39,5 @@ interface IGlobalSettingsService {
 	 * Saves all global settings for OCR workflow app
 	 * @param GlobalSettings $globalSettings An data object of global settings
 	 */
-	public function setGlobalSettings(GlobalSettings $globalSettings);
+	public function setGlobalSettings(GlobalSettings $globalSettings) : void;
 }

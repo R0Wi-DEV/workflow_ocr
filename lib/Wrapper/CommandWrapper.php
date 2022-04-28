@@ -43,6 +43,8 @@ class CommandWrapper implements ICommand {
 
 	/**
 	 * @inheritdoc
+	 *
+	 * @param string $stdIn
 	 */
 	public function setStdIn(string $stdIn) : ICommand {
 		$this->command->setStdIn($stdIn);

@@ -26,7 +26,6 @@ namespace OCA\WorkflowOcr\OcrProcessors;
 interface IOcrProcessorFactory {
 	/**
 	 * Creates a IOcrProcessor object for the given mimetype
-	 * @return IOcrProcessor|null
 	 */
 	public function create(string $mimeType) : IOcrProcessor;
 }
