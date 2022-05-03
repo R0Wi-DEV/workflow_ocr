@@ -57,8 +57,8 @@ const availableLanguages = [
 export default {
 	name: 'WorkflowOcr',
 	components: {
-		Multiselect,
-		CheckboxRadioSwitch,
+		Multiselect: Multiselect,
+		CheckboxRadioSwitch: CheckboxRadioSwitch,
 	},
 	props: {
 		// Will be set by the parent (serialized JSON value)
@@ -68,11 +68,11 @@ export default {
 		},
 	},
 	data: () => ({
-		availableLanguages,
+		availableLanguages: availableLanguages,
 	}),
 	computed: {
 		selectedLanguages: {
-			get() {
+			get: function() {
 				const model = this.getModel()
 				return model.languages
 					? model.languages.map(langCode => {
@@ -85,29 +85,29 @@ export default {
 					}).filter(entry => entry !== null)
 					: []
 			},
-			set(langArray) {
+			set: function(langArray) {
 				const model = this.getModel()
 				model.languages = langArray.map(lang => lang.langCode).filter(lang => lang !== null)
 				this.$emit('input', JSON.stringify(model))
 			},
 		},
 		removeBackground: {
-			get() {
+			get: function() {
 				const model = this.getModel()
 				return !!model.removeBackground
 			},
-			set(checked) {
+			set: function(checked) {
 				const model = this.getModel()
 				model.removeBackground = !!checked
 				this.$emit('input', JSON.stringify(model))
 			},
 		},
-		placeholder() {
+		placeholder: function() {
 			return this.translate('Select language(s)')
 		},
 	},
 	methods: {
-		getModel() {
+		getModel: function() {
 			/*
 			 * Model structure which is captured by NC parent as JSON string:
 			 * {
@@ -117,7 +117,7 @@ export default {
 			 */
 			return this.value ? JSON.parse(this.value) : {}
 		},
-		translate(str) {
+		translate: function(str) {
 			return t(appId, str)
 		},
 	},

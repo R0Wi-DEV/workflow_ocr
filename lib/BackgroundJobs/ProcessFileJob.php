@@ -122,7 +122,7 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
 
 		$filePath = null;
 		$filePathKey = 'filePath';
-		if (array_key_exists($filePathKey , $argument)) {
+		if (array_key_exists($filePathKey, $argument)) {
 			$filePath = $argument[$filePathKey];
 		} else {
 			$this->logVariableKeyNotSet($filePathKey, 'tryParseArguments');
@@ -130,7 +130,7 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
 
 		$uid = null;
 		$uidKey = 'uid';
-		if (array_key_exists($uidKey , $argument)) {
+		if (array_key_exists($uidKey, $argument)) {
 			$uid = $argument[$uidKey];
 		} else {
 			$this->logVariableKeyNotSet($uidKey, 'tryParseArguments');
@@ -138,7 +138,7 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
 
 		$settings = null;
 		$settingsKey = 'settings';
-		if (array_key_exists($settingsKey , $argument)) {
+		if (array_key_exists($settingsKey, $argument)) {
 			$jsonSettings = $argument[$settingsKey];
 			$settings = new WorkflowSettings($jsonSettings);
 		} else {

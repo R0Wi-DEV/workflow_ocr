@@ -161,7 +161,7 @@ class ProcessFileJobTest extends TestCase {
 		// be reset to null after any run.
 		$this->userSession->expects($this->exactly(2))
 			->method('setUser')
-			->withConsecutive([$this->user],[null]);
+			->withConsecutive([$this->user], [null]);
 
 		$this->processFileJob->execute($this->jobList);
 	}

@@ -63,8 +63,10 @@ class GlobalSettingsService implements IGlobalSettingsService {
 
 	/**
 	 * @inheritDoc
+	 *
+	 * @return void
 	 */
-	public function setGlobalSettings(GlobalSettings $settings) {
+	public function setGlobalSettings(GlobalSettings $settings) : void {
 		foreach ($this->getProperties($settings) as $prop) {
 			$key = $prop->getName();
 			$value = $settings->$key;
