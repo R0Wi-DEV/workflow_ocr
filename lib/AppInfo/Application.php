@@ -40,8 +40,6 @@ use OCA\WorkflowOcr\Wrapper\CommandWrapper;
 use OCA\WorkflowOcr\Wrapper\Filesystem;
 use OCA\WorkflowOcr\Wrapper\ICommand;
 use OCA\WorkflowOcr\Wrapper\IFilesystem;
-use OCA\WorkflowOcr\Wrapper\IImageToPdfConverter;
-use OCA\WorkflowOcr\Wrapper\ImageToPdfConverter;
 use OCA\WorkflowOcr\Wrapper\IViewFactory;
 use OCA\WorkflowOcr\Wrapper\ViewFactory;
 use OCP\AppFramework\App;
@@ -70,7 +68,6 @@ class Application extends App implements IBootstrap {
 		$context->registerServiceAlias(IViewFactory::class, ViewFactory::class);
 		$context->registerServiceAlias(IFilesystem::class, Filesystem::class);
 		$context->registerServiceAlias(IGlobalSettingsService::class, GlobalSettingsService::class);
-		$context->registerServiceAlias(IImageToPdfConverter::class, ImageToPdfConverter::class);
 
 		// BUG #43
 		$context->registerService(ICommand::class, function () {

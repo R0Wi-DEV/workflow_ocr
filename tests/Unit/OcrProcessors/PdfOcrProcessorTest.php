@@ -28,7 +28,6 @@ use OCA\WorkflowOcr\Model\GlobalSettings;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCA\WorkflowOcr\OcrProcessors\PdfOcrProcessor;
 use OCA\WorkflowOcr\Wrapper\ICommand;
-use OCA\WorkflowOcr\Wrapper\IImageToPdfConverter;
 use OCP\Files\File;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -52,14 +51,11 @@ class PdfOcrProcessorTest extends TestCase {
 	private $defaultSettings;
 	/** @var GlobalSettings */
 	private $defaultGlobalSettings;
-	/** @var IImageToPdfConverter|MockObject */
-	private $imageToPdfConverter;
 
 	protected function setUp(): void {
 		parent::setUp();
 
 		$this->command = $this->createMock(ICommand::class);
-		$this->imageToPdfConverter = $this->createMock(IImageToPdfConverter::class);
 		$this->logger = $this->createMock(LoggerInterface::class);
 		$this->defaultSettings = new WorkflowSettings();
 		$this->defaultGlobalSettings = new GlobalSettings();
@@ -91,7 +87,7 @@ class PdfOcrProcessorTest extends TestCase {
 			->method('execute')
 			->willReturn(true);
 		
-		$processor = new PdfOcrProcessor($this->command, $this->imageToPdfConverter, $this->logger);
+		$processor = new PdfOcrProcessor($this->command, $this->logger);
 		$result = $processor->ocrFile($this->fileBefore, $this->defaultSettings, $this->defaultGlobalSettings);
 		
 		$this->assertEquals(self::FILE_CONTENT_AFTER, $result->getFileContent());
@@ -111,7 +107,7 @@ class PdfOcrProcessorTest extends TestCase {
 		$this->command->expects($this->once())
 			->method('getExitCode');
 
-		$processor = new PdfOcrProcessor($this->command, $this->imageToPdfConverter, $this->logger);
+		$processor = new PdfOcrProcessor($this->command, $this->logger);
 		$thrown = false;
 
 		try {
@@ -150,7 +146,7 @@ class PdfOcrProcessorTest extends TestCase {
 							$paramsArray['errorOutput'] === 'getErrorOutput';
 				}));
 
-		$processor = new PdfOcrProcessor($this->command, $this->imageToPdfConverter, $this->logger);
+		$processor = new PdfOcrProcessor($this->command, $this->logger);
 		$processor->ocrFile($this->fileBefore, $this->defaultSettings, $this->defaultGlobalSettings);
 	}
 
@@ -167,7 +163,7 @@ class PdfOcrProcessorTest extends TestCase {
 		$this->ocrMyPdfOutput = "";
 	
 		$thrown = false;
-		$processor = new PdfOcrProcessor($this->command, $this->imageToPdfConverter, $this->logger);
+		$processor = new PdfOcrProcessor($this->command, $this->logger);
 
 		try {
 			$processor->ocrFile($this->fileBefore, $this->defaultSettings, $this->defaultGlobalSettings);
@@ -191,7 +187,7 @@ class PdfOcrProcessorTest extends TestCase {
 			->method('getOutput')
 			->willReturn('someOcrContent');
 
-		$processor = new PdfOcrProcessor($this->command, $this->imageToPdfConverter, $this->logger);
+		$processor = new PdfOcrProcessor($this->command, $this->logger);
 		$processor->ocrFile($this->fileBefore, new WorkflowSettings('{"languages": ["de", "en"] }'), $this->defaultGlobalSettings);
 	}
 
@@ -206,7 +202,7 @@ class PdfOcrProcessorTest extends TestCase {
 			->method('getOutput')
 			->willReturn('someOcrContent');
 
-		$processor = new PdfOcrProcessor($this->command, $this->imageToPdfConverter, $this->logger);
+		$processor = new PdfOcrProcessor($this->command, $this->logger);
 		$processor->ocrFile($this->fileBefore, new WorkflowSettings('{"languages": ["de", "invalid", "en"] }'), $this->defaultGlobalSettings);
 	}
 
@@ -221,7 +217,7 @@ class PdfOcrProcessorTest extends TestCase {
 			->method('getOutput')
 			->willReturn('someOcrContent');
 
-		$processor = new PdfOcrProcessor($this->command, $this->imageToPdfConverter, $this->logger);
+		$processor = new PdfOcrProcessor($this->command, $this->logger);
 		$processor->ocrFile($this->fileBefore, new WorkflowSettings('{"removeBackground": true }'), $this->defaultGlobalSettings);
 	}
 
@@ -236,7 +232,7 @@ class PdfOcrProcessorTest extends TestCase {
 			->method('getOutput')
 			->willReturn('someOcrContent');
 
-		$processor = new PdfOcrProcessor($this->command, $this->imageToPdfConverter, $this->logger);
+		$processor = new PdfOcrProcessor($this->command, $this->logger);
 		$processor->ocrFile($this->fileBefore, $this->defaultSettings, $this->defaultGlobalSettings);
 	}
 
@@ -253,31 +249,7 @@ class PdfOcrProcessorTest extends TestCase {
 
 		$this->defaultGlobalSettings->processorCount = 42;
 
-		$processor = new PdfOcrProcessor($this->command, $this->imageToPdfConverter, $this->logger);
-		$processor->ocrFile($this->fileBefore, $this->defaultSettings, $this->defaultGlobalSettings);
-	}
-
-	public function testConvertsNonPdfFilesBeforeProcessing() {
-		$this->fileBeforeMimeType = 'image/jpeg';
-		$this->imageToPdfConverter->expects($this->once())
-			->method('convertToPdf')
-			->with(self::FILE_CONTENT_BEFORE)
-			->willReturn("somePdfContent");
-
-		$this->command->expects($this->once())
-			->method('setCommand')
-			->willReturn($this->command);
-		$this->command->expects($this->once())
-			->method('setStdin')
-			->with("somePdfContent");
-		$this->command->expects($this->once())
-			->method('execute')
-			->willReturn(true);
-		$this->command->expects($this->once())
-			->method('getOutput')
-			->willReturn('someOcrContent');
-
-		$processor = new PdfOcrProcessor($this->command, $this->imageToPdfConverter, $this->logger);
+		$processor = new PdfOcrProcessor($this->command, $this->logger);
 		$processor->ocrFile($this->fileBefore, $this->defaultSettings, $this->defaultGlobalSettings);
 	}
 }

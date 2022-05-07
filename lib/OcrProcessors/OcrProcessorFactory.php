@@ -25,7 +25,6 @@ namespace OCA\WorkflowOcr\OcrProcessors;
 
 use OCA\WorkflowOcr\Exception\OcrProcessorNotFoundException;
 use OCA\WorkflowOcr\Wrapper\ICommand;
-use OCA\WorkflowOcr\Wrapper\IImageToPdfConverter;
 use OCP\AppFramework\Bootstrap\IRegistrationContext;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
@@ -33,8 +32,8 @@ use Psr\Log\LoggerInterface;
 class OcrProcessorFactory implements IOcrProcessorFactory {
 	private static $mapping = [
 		'application/pdf' => PdfOcrProcessor::class,
-		'image/jpeg' => PdfOcrProcessor::class,
-		'image/png' => PdfOcrProcessor::class
+		'image/jpeg' => ImageOcrProcessor::class,
+		'image/png' => ImageOcrProcessor::class
 	];
 
 	/** @var ContainerInterface */
@@ -53,7 +52,10 @@ class OcrProcessorFactory implements IOcrProcessorFactory {
 		*	under the hood.
 		*/
 		$context->registerService(PdfOcrProcessor::class, function (ContainerInterface $c) {
-			return new PdfOcrProcessor($c->get(ICommand::class), $c->get(IImageToPdfConverter::class), $c->get(LoggerInterface::class));
+			return new PdfOcrProcessor($c->get(ICommand::class), $c->get(LoggerInterface::class));
+		}, false);
+		$context->registerService(ImageOcrProcessor::class, function (ContainerInterface $c) {
+			return new ImageOcrProcessor($c->get(ICommand::class), $c->get(LoggerInterface::class));
 		}, false);
 	}
 

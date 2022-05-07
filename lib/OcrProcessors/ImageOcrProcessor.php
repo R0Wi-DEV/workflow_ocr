@@ -21,23 +21,13 @@ declare(strict_types=1);
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OCA\WorkflowOcr\Wrapper;
+namespace OCA\WorkflowOcr\OcrProcessors;
 
-use Imagick;
+use OCA\WorkflowOcr\Model\WorkflowSettings;
+use OCA\WorkflowOcr\Model\GlobalSettings;
 
-class ImageToPdfConverter implements IImageToPdfConverter {
-	
-	/**
-	 * @inheritdoc
-	 */
-	public function convertToPdf(string $imageBlob): string {
-		$image = new Imagick();
-		try {
-			$image->readImageBlob($imageBlob);
-			$image->setImageFormat('pdf');
-			return $image->getImageBlob();
-		} finally {
-			$image->destroy();
-		}
+class ImageOcrProcessor extends OcrMyPdfBasedProcessor {
+	protected function getAdditionalCommandlineArgs(WorkflowSettings $settings, GlobalSettings $globalSettings): string {
+		return '--image-dpi 300';
 	}
 }
