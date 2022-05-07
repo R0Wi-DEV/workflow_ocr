@@ -34,7 +34,6 @@ interface IOcrProcessor {
 	 * @param File 				$file  				The file to be processed
 	 * @param WorkflowSettings 	$settings 			The settings to be used for this specific workflow
 	 * @param GlobalSettings 	$globalSettings 	The global settings configured for all OCR workflows on this system
-	 * @return string   							The processed file as byte string
 	 * @throws OcrNotPossibleException
 	 */
 	public function ocrFile(File $file, WorkflowSettings $settings, GlobalSettings $globalSettings) : OcrProcessorResult;

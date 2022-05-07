@@ -8,7 +8,7 @@
         "phpunit/php-code-coverage": "9.2.5",
         "phpunit/phpcov": "8.2.*",
         "nextcloud/coding-standard": "^1.0",
-        "vimeo/psalm": "^4.22",
+        "vimeo/psalm": "^4.23",
         "christophwurst/nextcloud": "dev-master"
     },
     "config": {
@@ -25,6 +25,7 @@
         "psalm": "psalm --threads=1",
 		"psalm:update-baseline": "psalm --threads=1 --update-baseline",
 		"psalm:clear": "psalm --clear-cache && psalm --clear-global-cache",
-		"psalm:fix": "psalm --alter --issues=InvalidReturnType,InvalidNullableReturnType,MissingParamType,InvalidFalsableReturnType"
+		"psalm:fix": "psalm --alter --issues=InvalidReturnType,InvalidNullableReturnType,MissingParamType,InvalidFalsableReturnType",
+        "psalm:write-baseline": "psalm --threads=1 --set-baseline=./tests/psalm-baseline.xml"
     }	
 }

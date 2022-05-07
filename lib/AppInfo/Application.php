@@ -93,7 +93,7 @@ class Application extends App implements IBootstrap {
 		$this->requireAutoload();
 	}
 
-	private function requireAutoload() {
+	private function requireAutoload(): void {
 		if (is_dir(self::COMPOSER_DIR) && file_exists(self::COMPOSER_DIR . 'autoload.php')) {
 			require_once self::COMPOSER_DIR . 'autoload.php';
 		} else {
