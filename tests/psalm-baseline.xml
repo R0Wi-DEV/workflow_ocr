@@ -8,7 +8,7 @@
   </file>
   <file src="lib/BackgroundJobs/ProcessFileJob.php">
     <UndefinedClass occurrences="1">
-      <code>\OC\BackgroundJob\QueuedJob</code>
+      <code>\OCP\BackgroundJob\QueuedJob</code>
     </UndefinedClass>
   </file>
   <file src="lib/Controller/GlobalSettingsController.php">
