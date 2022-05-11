@@ -105,8 +105,10 @@ class ProcessFileJobTest extends TestCase {
 			$this->filesystem,
 			$this->userManager,
 			$this->userSession,
-			$this->processingFileAccessor
+			$this->processingFileAccessor,
+			$this->createMock(ITimeFactory::class)
 		);
+		$this->processFileJob->setId(111);
 
 		/** @var IConfig */
 		$configMock = $this->createMock(IConfig::class);
@@ -335,9 +337,11 @@ class ProcessFileJobTest extends TestCase {
 			$this->filesystem,
 			$userManager,
 			$this->userSession,
-			$this->processingFileAccessor
+			$this->processingFileAccessor,
+			$this->createMock(ITimeFactory::class)
 		);
-		$arguments = ['filePath' => '/admin/files/someInvalidStuff', 'uid' => 'nonexistinguser', 'settings' => '{}'];
+		$processFileJob->setId(111);
+		$arguments = ['filePath' => '/nonexistinguser/files/someInvalidStuff', 'settings' => '{}'];
 		$processFileJob->setArgument($arguments);
 
 		$processFileJob->execute($this->jobList);
@@ -393,18 +397,17 @@ class ProcessFileJobTest extends TestCase {
 	public function dataProvider_InvalidArguments() {
 		$arr = [
 			[null, 1],
-			[['mykey' => 'myvalue'], 3],
-			[['someotherkey' => 'someothervalue', 'k2' => 'v2'], 3],
-			[['uid' => 'someuser'], 2],
-			[['filePath' => 'somepath'], 2]
+			[['mykey' => 'myvalue'], 2],
+			[['someotherkey' => 'someothervalue', 'k2' => 'v2'], 2],
+			[['filePath' => 'someInvalidPath'], 1]
 		];
 		return $arr;
 	}
 
 	public function dataProvider_ValidArguments() {
 		$arr = [
-			[['filePath' => '/admin/files/somefile.pdf', 'uid' => 'admin', 'settings' => '{}'], 'admin', '/admin/files'],
-			[['filePath' => '/myuser/files/subfolder/someotherfile.docx', 'uid' => 'myuser', 'settings' => '{}'], 'myuser', '/myuser/files']
+			[['filePath' => '/admin/files/somefile.pdf', 'settings' => '{}'], 'admin', '/admin/files'],
+			[['filePath' => '/myuser/files/subfolder/someotherfile.docx', 'settings' => '{}'], 'myuser', '/myuser/files']
 		];
 		return $arr;
 	}
