@@ -37,6 +37,7 @@ use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCA\WorkflowOcr\Service\IOcrService;
 use OCA\WorkflowOcr\Wrapper\IFilesystem;
 use OCA\WorkflowOcr\Wrapper\IViewFactory;
+use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\Files\FileInfo;
 use OCP\Files\Node;
 use OCP\IUserManager;
@@ -48,7 +49,7 @@ use Psr\Log\LoggerInterface;
  * Represents a QuedJob which processes
  * a OCR on a single file.
  */
-class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
+class ProcessFileJob extends \OCP\BackgroundJob\QueuedJob {
 
 	/** @var LoggerInterface */
 	protected $logger;
@@ -75,7 +76,9 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
 		IFilesystem $filesystem,
 		IUserManager $userManager,
 		IUserSession $userSession,
-		IProcessingFileAccessor $processingFileAccessor) {
+		IProcessingFileAccessor $processingFileAccessor,
+		ITimeFactory $timeFactory) {
+		parent::__construct($timeFactory);
 		$this->logger = $logger;
 		$this->rootFolder = $rootFolder;
 		$this->ocrService = $ocrService;
@@ -121,19 +124,21 @@ class ProcessFileJob extends \OC\BackgroundJob\QueuedJob {
 		}
 
 		$filePath = null;
+		$uid = null;
 		$filePathKey = 'filePath';
 		if (array_key_exists($filePathKey, $argument)) {
 			$filePath = $argument[$filePathKey];
+			// '', admin, 'files', 'path/to/file.pdf'
+			$splitted = explode('/', $filePath, 4);
+			if (count($splitted) < 4) {
+				$this->logger->warning('File path "' . $filePath . '" is not valid in ' . self::class . ' method \'tryParseArguments\'.');
+				return [
+					false
+				];
+			}
+			$uid = $splitted[1];
 		} else {
 			$this->logVariableKeyNotSet($filePathKey, 'tryParseArguments');
-		}
-
-		$uid = null;
-		$uidKey = 'uid';
-		if (array_key_exists($uidKey, $argument)) {
-			$uid = $argument[$uidKey];
-		} else {
-			$this->logVariableKeyNotSet($uidKey, 'tryParseArguments');
 		}
 
 		$settings = null;
