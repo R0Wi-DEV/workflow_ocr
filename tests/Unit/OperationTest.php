@@ -176,6 +176,8 @@ class OperationTest extends TestCase {
 			->willReturn(FileInfo::TYPE_FILE);
 		$fileMock->method('getPath')
 			->willReturn($filePath);
+		$fileMock->method('getId')
+			->willReturn(42);
 		$event = new GenericEvent($fileMock);
 		$eventName = '\OCP\Files::postCreate';
 
@@ -212,13 +214,13 @@ class OperationTest extends TestCase {
 		$uid = 'admin';
 		$this->jobList->expects($this->once())
 			->method('add')
-			->with(ProcessFileJob::class, ['filePath' => $filePath, 'uid' => $uid, 'settings' => self::SETTINGS]);
+			->with(ProcessFileJob::class, ['filePath' => $filePath, 'settings' => self::SETTINGS]);
 
 		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
 
 		/** @var MockObject|IUser */
 		$userMock = $this->createMock(IUser::class);
-		$userMock->expects($this->once())
+		$userMock->expects($this->never())
 			->method('getUID')
 			->willReturn($uid);
 		/** @var MockObject|Node */
@@ -402,11 +404,11 @@ class OperationTest extends TestCase {
 
 		$this->jobList->expects($this->once())
 			->method('add')
-			->with(ProcessFileJob::class, ['filePath' => $filePath, 'uid' => $uid, 'settings' => self::SETTINGS]);
+			->with(ProcessFileJob::class, ['filePath' => $filePath, 'settings' => self::SETTINGS]);
 
 		/** @var MockObject|IUser */
 		$userMock = $this->createMock(IUser::class);
-		$userMock->expects($this->once())
+		$userMock->expects($this->never())
 			->method('getUID')
 			->willReturn($uid);
 		/** @var MockObject|\OCP\Files\File */
