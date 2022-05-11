@@ -105,30 +105,17 @@ class Operation implements ISpecificOperation {
 	public function onEvent(string $eventName, Event $event, IRuleMatcher $ruleMatcher): void {
 		$this->logger->debug('onEvent: ' . $eventName);
 
-		if (!($match = $this->getMatch($ruleMatcher))) {
+		// $node and $argsArray will be passed by reference
+		if (!($match = $this->getMatch($ruleMatcher)) ||
+			!$this->tryGetFile($eventName, $event, $node) ||
+			$this->eventTriggeredByOcrProcess($node) ||
+			!$this->tryGetJobArgs($node, $match, $argsArray)) {
 			return;
 		}
-
-		// $node will be passed by reference
-		if (!$this->tryGetFile($eventName, $event, $node)) {
-			return;
-		}
-
-		if (!$this->pathIsValid($node) ||
-			!$this->ownerExists($node) ||
-			$this->eventTriggeredByOcrProcess($node)) {
-			return;
-		}
-
-		$args = [
-			'filePath' => $node->getPath(),
-			'uid' => $node->getOwner()->getUID(),
-			'settings' => $match['operation']
-		];
 	
-		$this->logger->debug('Adding file to jobqueue: ' . json_encode($args));
+		$this->logger->debug('Adding file to jobqueue: ' . json_encode($argsArray));
 	
-		$this->jobList->add(ProcessFileJob::class, $args);
+		$this->jobList->add(ProcessFileJob::class, $argsArray);
 	}
 
 	public function getEntityId(): string {
@@ -205,7 +192,12 @@ class Operation implements ISpecificOperation {
 		return $match;
 	}
 
-	private function pathIsValid(Node $node) : bool {
+	/**
+	 * @param Node $node
+	 * @param array $match
+	 * @param array $argsArray
+	 */
+	private function tryGetJobArgs(Node $node, $match, & $argsArray) : bool {
 		// Check path has valid structure
 		$filePath = $node->getPath();
 		// '', admin, 'files', 'path/to/file.pdf'
@@ -216,17 +208,10 @@ class Operation implements ISpecificOperation {
 			return false;
 		}
 
-		return true;
-	}
-
-	private function ownerExists(Node $node) : bool {
-		// Check owner of file exists
-		$owner = $node->getOwner();
-		if ($owner === null) {
-			$this->logger->debug('Not processing event because file with path \'{path}\' has no owner.',
-					['path' => $node->getPath()]);
-			return false;
-		}
+		$argsArray = [
+			'filePath' => $filePath,
+			'settings' => $match['operation']
+		];
 
 		return true;
 	}
