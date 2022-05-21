@@ -55,10 +55,6 @@ jobs:
         working-directory: apps/${{ env.APP_NAME }}
         run: composer i
 
-      - name: Copy Imagick config
-        run: |
-          sudo cp apps/${{ env.APP_NAME }}/tests/Integration/data/imagick-policy.xml /etc/ImageMagick-6/policy.xml
-
       - name: Set up Nextcloud
         env:
           DB_PORT: 4444

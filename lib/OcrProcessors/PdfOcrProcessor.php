@@ -23,9 +23,5 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\OcrProcessors;
 
-use OCA\WorkflowOcr\Wrapper\ICommand;
-use Psr\Log\LoggerInterface;
-
 class PdfOcrProcessor extends OcrMyPdfBasedProcessor {
-
 }
