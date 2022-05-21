@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * @copyright Copyright (c) 2020 Robin Windey <ro.windey@gmail.com>
+ * @copyright Copyright (c) 2022 Robin Windey <ro.windey@gmail.com>
  *
  *  @license GNU AGPL version 3 or any later version
  *
@@ -23,5 +23,11 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\OcrProcessors;
 
-class PdfOcrProcessor extends OcrMyPdfBasedProcessor {
+use OCA\WorkflowOcr\Model\WorkflowSettings;
+use OCA\WorkflowOcr\Model\GlobalSettings;
+
+class ImageOcrProcessor extends OcrMyPdfBasedProcessor {
+	protected function getAdditionalCommandlineArgs(WorkflowSettings $settings, GlobalSettings $globalSettings): string {
+		return '--image-dpi 300';
+	}
 }

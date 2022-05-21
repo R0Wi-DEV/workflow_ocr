@@ -31,7 +31,9 @@ use Psr\Log\LoggerInterface;
 
 class OcrProcessorFactory implements IOcrProcessorFactory {
 	private static $mapping = [
-		'application/pdf' => PdfOcrProcessor::class
+		'application/pdf' => PdfOcrProcessor::class,
+		'image/jpeg' => ImageOcrProcessor::class,
+		'image/png' => ImageOcrProcessor::class
 	];
 
 	/** @var ContainerInterface */
@@ -52,14 +54,23 @@ class OcrProcessorFactory implements IOcrProcessorFactory {
 		$context->registerService(PdfOcrProcessor::class, function (ContainerInterface $c) {
 			return new PdfOcrProcessor($c->get(ICommand::class), $c->get(LoggerInterface::class));
 		}, false);
+		$context->registerService(ImageOcrProcessor::class, function (ContainerInterface $c) {
+			return new ImageOcrProcessor($c->get(ICommand::class), $c->get(LoggerInterface::class));
+		}, false);
 	}
 
+	/** @inheritdoc */
 	public function create(string $mimeType) : IOcrProcessor {
-		if (!array_key_exists($mimeType, self::$mapping)) {
+		if (!$this->canCreate($mimeType)) {
 			throw new OcrProcessorNotFoundException($mimeType);
 		}
 		$className = self::$mapping[$mimeType];
 
 		return $this->container->get($className);
+	}
+
+	/** @inheritdoc */
+	public function canCreate(string $mimeType) : bool {
+		return array_key_exists($mimeType, self::$mapping);
 	}
 }

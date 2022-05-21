@@ -25,6 +25,7 @@ namespace OCA\WorkflowOcr\Tests\Unit\OcrProcessors;
 
 use OCA\WorkflowOcr\AppInfo\Application;
 use OCA\WorkflowOcr\Exception\OcrProcessorNotFoundException;
+use OCA\WorkflowOcr\OcrProcessors\IOcrProcessor;
 use OCA\WorkflowOcr\OcrProcessors\OcrProcessorFactory;
 use OCA\WorkflowOcr\OcrProcessors\PdfOcrProcessor;
 use Psr\Container\ContainerInterface;
@@ -52,27 +53,59 @@ class OcrProcessorFactoryTest extends TestCase {
 		$factory->create('no/mimetype');
 	}
 
-	// Related to BUG #43
-	public function testOcrProcessorsAreNotCached() {
-		/** @var array mimetype -> ocr processor classname */
-		$mapping = $this->invokePrivate(OcrProcessorFactory::class, 'mapping');
-		$factory = new OcrProcessorFactory($this->appContainer);
+	/**
+	 * @dataProvider dataProvider_mimeTypes
+	 */
+	public function testOcrProcessorsAreNotCached($mimetype) {
+		// Related to BUG #43
 
-		foreach ($mapping as $mimetype => $className) {
-			$processor1 = $factory->create($mimetype);
-			$processor2 = $factory->create($mimetype);
-			$this->assertFalse($processor1 === $processor2);
-		}
+		$factory = new OcrProcessorFactory($this->appContainer);
+		$processor1 = $factory->create($mimetype);
+		$processor2 = $factory->create($mimetype);
+		$this->assertFalse($processor1 === $processor2);
 	}
 
-	// Related to #43
-	public function testPdfCommandNotCached() {
-		$factory = new OcrProcessorFactory($this->appContainer);
-		$processor1 = $factory->create('application/pdf');
-		$processor2 = $factory->create('application/pdf');
-		$cmd1 = $this->invokePrivate($processor1, 'command');
-		$cmd2 = $this->invokePrivate($processor2, 'command');
+	/**
+	 * @dataProvider dataProvider_mimeTypes
+	 */
+	public function testPdfCommandNotCached($mimetype) {
+		// Related to BUG #43
 
+		$factory = new OcrProcessorFactory($this->appContainer);
+		$processor1 = $factory->create($mimetype);
+		$processor2 = $factory->create($mimetype);
+		$cmd1 = $this->getCommandObject($processor1);
+		$cmd2 = $this->getCommandObject($processor2);
+
+		$this->assertFalse($cmd1 === false);
+		$this->assertFalse($cmd2 === false);
 		$this->assertFalse($cmd1 === $cmd2);
+	}
+
+	public function dataProvider_mimeTypes() {
+		$mimetypes = [];
+		$mapping = $this->invokePrivate(OcrProcessorFactory::class, 'mapping');
+		foreach ($mapping as $mimetype => $className) {
+			$mimetypes[] = [$mimetype];
+		}
+		return $mimetypes;
+	}
+
+	private function getCommandObject(IOcrProcessor $ocrProcessor) {
+		$reflection = new \ReflectionClass($ocrProcessor);
+		if ($reflection->hasProperty('command')) {
+			return $this->getCommandObjectFromReflection($reflection, $ocrProcessor);
+		}
+		$reflection = $reflection->getParentClass();
+		return $this->getCommandObjectFromReflection($reflection, $ocrProcessor);
+	}
+
+	private function getCommandObjectFromReflection(\ReflectionClass $reflection, IOcrProcessor $object) {
+		if ($reflection->hasProperty('command')) {
+			$property = $reflection->getProperty('command');
+			$property->setAccessible(true);
+			return $property->getValue($object);
+		}
+		return false;
 	}
 }

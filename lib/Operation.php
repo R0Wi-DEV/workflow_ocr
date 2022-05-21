@@ -37,7 +37,6 @@ use OCP\WorkflowEngine\IRuleMatcher;
 use OCP\WorkflowEngine\ISpecificOperation;
 use OCA\WorkflowOcr\BackgroundJobs\ProcessFileJob;
 use OCA\WorkflowOcr\Helper\IProcessingFileAccessor;
-use OCA\WorkflowOcr\Helper\SynchronizationHelper;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCP\Files\FileInfo;
 use OCP\Files\IRootFolder;
@@ -56,7 +55,7 @@ class Operation implements ISpecificOperation {
 	private $logger;
 	/** @var IURLGenerator */
 	private $urlGenerator;
-	/** @var SynchronizationHelper */
+	/** @var IProcessingFileAccessor */
 	private $processingFileAccessor;
 	/** @var IRootFolder */
 	private $rootFolder;

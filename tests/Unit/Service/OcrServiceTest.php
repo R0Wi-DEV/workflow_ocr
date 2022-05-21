@@ -29,6 +29,7 @@ use OCA\WorkflowOcr\OcrProcessors\IOcrProcessor;
 use OCA\WorkflowOcr\OcrProcessors\IOcrProcessorFactory;
 use OCA\WorkflowOcr\Service\IGlobalSettingsService;
 use OCA\WorkflowOcr\Service\OcrService;
+use OCP\Files\File;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -42,6 +43,8 @@ class OcrServiceTest extends TestCase {
 	private $globalSettingsService;
 	/** @var OcrService */
 	private $ocrService;
+	/** @var File|MockObject */
+	private $fileInput;
 
 	public function setUp() : void {
 		parent::setUp();
@@ -49,6 +52,7 @@ class OcrServiceTest extends TestCase {
 		$this->globalSettingsService = $this->createMock(IGlobalSettingsService::class);
 		$this->ocrProcessorFactory = $this->createMock(IOcrProcessorFactory::class);
 		$this->ocrProcessor = $this->createMock(IOcrProcessor::class);
+		$this->fileInput = $this->createMock(File::class);
 
 		$this->ocrService = new OcrService($this->ocrProcessorFactory, $this->globalSettingsService);
 	}
@@ -58,6 +62,11 @@ class OcrServiceTest extends TestCase {
 		$content = 'someFileContent';
 		$settings = new WorkflowSettings();
 		$globalSettings = new GlobalSettings();
+
+		$this->fileInput->method('getMimeType')
+			->willReturn($mime);
+		$this->fileInput->method('getContent')
+			->willReturn($content);
 
 		$this->globalSettingsService->expects($this->once())
 			->method('getGlobalSettings')
@@ -70,8 +79,8 @@ class OcrServiceTest extends TestCase {
 
 		$this->ocrProcessor->expects($this->once())
 			->method('ocrFile')
-			->with($content, $settings, $globalSettings);
+			->with($this->fileInput, $settings, $globalSettings);
 
-		$this->ocrService->ocrFile($mime, $content, $settings);
+		$this->ocrService->ocrFile($this->fileInput, $settings);
 	}
 }
