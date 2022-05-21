@@ -42,7 +42,8 @@ class PdfOcrProcessor implements IOcrProcessor {
 		'it' => 'ita',
 		'es' => 'spa',
 		'pt' => 'por',
-		'ru' => 'rus'
+		'ru' => 'rus',
+		'chi' => 'chi_sim'
 	];
 
 	/** @var ICommand */
