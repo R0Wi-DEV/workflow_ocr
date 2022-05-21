@@ -1,17 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <files psalm-version="4.23.0@f1fe6ff483bf325c803df9f510d09a03fd796f88">
   <file src="lib/BackgroundJobs/ProcessFileJob.php">
-    <UndefinedClass occurrences="1">
-      <code>\OCP\BackgroundJob\QueuedJob</code>
-    </UndefinedClass>
-  </file>
-  <file src="lib/Operation.php">
-    <MissingDependency occurrences="4">
+    <MissingDependency occurrences="3">
       <code>$this-&gt;rootFolder</code>
       <code>IRootFolder</code>
       <code>IRootFolder</code>
-      <code>ProcessFileJob</code>
     </MissingDependency>
+    <UndefinedClass occurrences="1">
+      <code>NoUserException</code>
+    </UndefinedClass>
+  </file>
+  <file src="lib/Operation.php">
+    <MissingDependency occurrences="3">
+      <code>$this-&gt;rootFolder</code>
+      <code>IRootFolder</code>
+      <code>IRootFolder</code>
+    </MissingDependency>
+    <NullReference occurrences="1">
+      <code>$argsArray</code>
+    </NullReference>
     <UndefinedClass occurrences="1">
       <code>File</code>
     </UndefinedClass>

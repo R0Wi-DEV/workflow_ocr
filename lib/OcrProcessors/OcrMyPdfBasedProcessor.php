@@ -53,7 +53,7 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 	/** @var LoggerInterface */
 	private $logger;
 
-	protected function __construct(ICommand $command, LoggerInterface $logger) {
+	public function __construct(ICommand $command, LoggerInterface $logger) {
 		$this->command = $command;
 		$this->logger = $logger;
 	}
