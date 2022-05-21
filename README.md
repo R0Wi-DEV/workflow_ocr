@@ -66,6 +66,9 @@ apt-get install tesseract-ocr-eng
 
 # German
 apt-get install tesseract-ocr-deu
+
+# Chinese - Simplified
+apt-get install tesseract-ocr-chi-sim
 ```
 
 ## Usage
