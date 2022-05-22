@@ -30,6 +30,7 @@ use OCA\WorkflowOcr\BackgroundJobs\ProcessFileJob;
 use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
 use OCA\WorkflowOcr\Exception\OcrProcessorNotFoundException;
 use OCA\WorkflowOcr\Helper\IProcessingFileAccessor;
+use OCA\WorkflowOcr\OcrProcessors\OcrProcessorResult;
 use OCA\WorkflowOcr\Service\IOcrService;
 use OCA\WorkflowOcr\Wrapper\IFilesystem;
 use OCA\WorkflowOcr\Wrapper\IView;
@@ -191,7 +192,7 @@ class ProcessFileJobTest extends TestCase {
 	/**
 	 * @dataProvider dataProvider_ValidArguments
 	 */
-	public function testCallsInitFilesystem(array $arguments, string $user, string $rootFolderPath) {
+	public function testCallsInitFilesystem(array $arguments, string $user, string $rootFolderPath, string $originalFileExtension, string $expectedOcrFilename) {
 		$this->processFileJob->setArgument($arguments);
 		$this->filesystem->expects($this->once())
 			->method('init')
@@ -203,7 +204,7 @@ class ProcessFileJobTest extends TestCase {
 	/**
 	 * @dataProvider dataProvider_ValidArguments
 	 */
-	public function testCallsGetOnRootFolder(array $arguments, string $user, string $rootFolderPath) {
+	public function testCallsGetOnRootFolder(array $arguments, string $user, string $rootFolderPath, string $originalFileExtension, string $expectedOcrFilename) {
 		$this->processFileJob->setArgument($arguments);
 		$this->rootFolder->expects($this->once())
 			->method('get')
@@ -215,7 +216,7 @@ class ProcessFileJobTest extends TestCase {
 	/**
 	 * @dataProvider dataProvider_ValidArguments
 	 */
-	public function testCallsOcr_IfIsFile(array $arguments, string $user, string $rootFolderPath) {
+	public function testCallsOcr_IfIsFile(array $arguments, string $user, string $rootFolderPath, string $originalFileExtension, string $expectedOcrFilename) {
 		$this->processFileJob->setArgument($arguments);
 	   
 		$mimeType = 'application/pdf';
@@ -227,7 +228,7 @@ class ProcessFileJobTest extends TestCase {
 
 		$this->ocrService->expects($this->once())
 			->method('ocrFile')
-			->with($mimeType, $content);
+			->with($fileMock);
 
 		$this->processFileJob->execute($this->jobList);
 	}
@@ -235,29 +236,29 @@ class ProcessFileJobTest extends TestCase {
 	/**
 	 * @dataProvider dataProvider_ValidArguments
 	 */
-	public function testCreatesNewFileVersion(array $arguments, string $user, string $rootFolderPath) {
+	public function testCreatesNewFileVersion(array $arguments, string $user, string $rootFolderPath, string $originalFileExtension, string $expectedOcrFilename) {
 		$this->processFileJob->setArgument($arguments);
 		$mimeType = 'application/pdf';
 		$content = 'someFileContent';
 		$ocrContent = 'someOcrProcessedFile';
+		$ocrResult = new OcrProcessorResult($ocrContent, "pdf"); // Extend this cases if we add new OCR processors
 		$filePath = $arguments['filePath'];
 		$dirPath = dirname($filePath);
-		$filename = basename($filePath);
 
-		$fileMock = $this->createValidFileMock($mimeType, $content);
+		$fileMock = $this->createValidFileMock($mimeType, $content, $originalFileExtension);
 		$this->rootFolder->method('get')
 			->with($arguments['filePath'])
 			->willReturn($fileMock);
 
 		$this->ocrService->expects($this->once())
 			->method('ocrFile')
-			->willReturn($ocrContent);
+			->willReturn($ocrResult);
 
 		/** @var MockObject|IView */
 		$viewMock = $this->createMock(IView::class);
 		$viewMock->expects($this->once())
 			->method('file_put_contents')
-			->with($filename, $ocrContent);
+			->with($expectedOcrFilename, $ocrContent);
 		$this->viewFactory->expects($this->once())
 			->method('create')
 			->with($dirPath)
@@ -350,14 +351,12 @@ class ProcessFileJobTest extends TestCase {
 	/**
 	 * @dataProvider dataProvider_ValidArguments
 	 */
-	public function testCallsProcessingFileAccessor(array $arguments, string $user, string $rootFolderPath) {
+	public function testCallsProcessingFileAccessor(array $arguments, string $user, string $rootFolderPath, string $originalFileExtension, string $expectedOcrFilename) {
 		$this->processFileJob->setArgument($arguments);
 		$mimeType = 'application/pdf';
 		$content = 'someFileContent';
 		$ocrContent = 'someOcrProcessedFile';
-		$filePath = $arguments['filePath'];
-		$dirPath = dirname($filePath);
-		$filename = basename($filePath);
+		$ocrResult = new OcrProcessorResult($ocrContent, "pdf"); // Extend this cases if we add new OCR processors
 
 		$fileMock = $this->createValidFileMock($mimeType, $content);
 		$this->rootFolder->method('get')
@@ -366,7 +365,7 @@ class ProcessFileJobTest extends TestCase {
 
 		$this->ocrService->expects($this->once())
 			->method('ocrFile')
-			->willReturn($ocrContent);
+			->willReturn($ocrResult);
 
 		$viewMock = $this->createMock(IView::class);
 		$this->viewFactory->expects($this->once())
@@ -406,8 +405,8 @@ class ProcessFileJobTest extends TestCase {
 
 	public function dataProvider_ValidArguments() {
 		$arr = [
-			[['filePath' => '/admin/files/somefile.pdf', 'settings' => '{}'], 'admin', '/admin/files'],
-			[['filePath' => '/myuser/files/subfolder/someotherfile.docx', 'settings' => '{}'], 'myuser', '/myuser/files']
+			[['filePath' => '/admin/files/somefile.pdf', 'uid' => 'admin', 'settings' => '{}'], 'admin', '/admin/files', 'pdf', 'somefile.pdf'],
+			[['filePath' => '/myuser/files/subfolder/someotherfile.jpg', 'uid' => 'myuser', 'settings' => '{}'], 'myuser', '/myuser/files', 'jpg', 'someotherfile.jpg.pdf']
 		];
 		return $arr;
 	}
@@ -437,7 +436,7 @@ class ProcessFileJobTest extends TestCase {
 	/**
 	 * @return File|MockObject
 	 */
-	private function createValidFileMock(string $mimeType = 'application/pdf', string $content = 'someFileContent') {
+	private function createValidFileMock(string $mimeType = 'application/pdf', string $content = 'someFileContent', string $fileExtension = "pdf") {
 		/** @var MockObject|File */
 		$fileMock = $this->createMock(File::class);
 		$fileMock->method('getType')
@@ -448,6 +447,8 @@ class ProcessFileJobTest extends TestCase {
 			->willReturn($content);
 		$fileMock->method('getId')
 			->willReturn(42);
+		$fileMock->method('getExtension')
+			->willReturn($fileExtension);
 		return $fileMock;
 	}
 }

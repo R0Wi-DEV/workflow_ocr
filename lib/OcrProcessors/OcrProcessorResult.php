@@ -23,5 +23,25 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\OcrProcessors;
 
-class PdfOcrProcessor extends OcrMyPdfBasedProcessor {
+/**
+ * Represents a file which was processed via OCR.
+ */
+class OcrProcessorResult {
+	/** @var string */
+	private $fileContent;
+	/** @var string */
+	private $fileExtension;
+
+	public function __construct(string $fileContent, string $fileExtension) {
+		$this->fileContent = $fileContent;
+		$this->fileExtension = $fileExtension;
+	}
+
+	public function getFileContent(): string {
+		return $this->fileContent;
+	}
+
+	public function getFileExtension(): string {
+		return $this->fileExtension;
+	}
 }

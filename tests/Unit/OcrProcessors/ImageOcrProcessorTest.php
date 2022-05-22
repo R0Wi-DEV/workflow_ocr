@@ -1,0 +1,62 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @copyright Copyright (c) 2022 Robin Windey <ro.windey@gmail.com>
+ *
+ *  @license GNU AGPL version 3 or any later version
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+namespace OCA\WorkflowOcr\Tests\Unit\OcrProcessors;
+
+use OCA\WorkflowOcr\Model\GlobalSettings;
+use OCA\WorkflowOcr\Model\WorkflowSettings;
+use OCA\WorkflowOcr\OcrProcessors\ImageOcrProcessor;
+use OCA\WorkflowOcr\Wrapper\ICommand;
+use OCP\Files\File;
+use PHPUnit\Framework\MockObject\MockObject;
+use Psr\Log\LoggerInterface;
+use Test\TestCase;
+
+class ImageOcrProcessorTest extends TestCase {
+	public function testOcrFileSetsImageDpi() {
+		/** @var ICommand|MockObject $command */
+		$command = $this->createMock(ICommand::class);
+		/** @var LoggerInterface|MockObject $logger */
+		$logger = $this->createMock(LoggerInterface::class);
+		/** @var File|MockObject $file */
+		$file = $this->createMock(File::class);
+
+		$processor = new ImageOcrProcessor($command, $logger);
+
+		$file->expects($this->once())
+			->method('getContent')
+			->willReturn('content');
+		$command->expects($this->once())
+			->method('setCommand')
+			->with($this->stringContains('--image-dpi 300'))
+			->willReturnSelf();
+		$command->expects($this->once())
+			->method('execute')
+			->willReturn(true);
+		$command->expects($this->once())
+			->method('getOutput')
+			->willReturn('output');
+
+		$processor->ocrFile($file, new WorkflowSettings(), new GlobalSettings());
+	}
+}
