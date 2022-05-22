@@ -29,4 +29,11 @@ interface IOcrProcessorFactory {
 	 * @return IOcrProcessor|null
 	 */
 	public function create(string $mimeType) : IOcrProcessor;
+
+	/**
+	 * Returns true, if an OCR processor for the given mimetype
+	 * can be constructed.
+	 * @return bool
+	 */
+	public function canCreate(string $mimeType) : bool;
 }

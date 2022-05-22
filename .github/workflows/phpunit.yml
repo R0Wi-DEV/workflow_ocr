@@ -11,7 +11,7 @@ env:
   APP_NAME: workflow_ocr
 
 jobs:
-  php:
+  sqlite:
     runs-on: ubuntu-20.04
 
     strategy:
@@ -37,17 +37,18 @@ jobs:
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+      
       - name: Checkout app
         uses: actions/checkout@v2
         with:
           path: apps/${{ env.APP_NAME }}
-
+      
       - name: Set up php ${{ matrix.php-versions }}
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
           tools: phpunit
-          extensions: mbstring, iconv, fileinfo, intl, sqlite, pdo_sqlite, gd, zip
+          extensions: mbstring, iconv, fileinfo, intl, sqlite, pdo_sqlite, gd, zip, imagick
           coverage: none
 
       - name: Set up PHPUnit
@@ -64,11 +65,7 @@ jobs:
           php -S localhost:8080 &
       - name: PHPUnit
         working-directory: apps/${{ env.APP_NAME }}
-        run: ./vendor/phpunit/phpunit/phpunit -c phpunit.xml
-
-      - name: PHPUnit integration
-        working-directory: apps/${{ env.APP_NAME }}
-        run: ./vendor/phpunit/phpunit/phpunit -c phpunit.integration.xml
+        run: make test
 
   mysql:
     runs-on: ubuntu-20.04
@@ -105,6 +102,7 @@ jobs:
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+
       - name: Checkout app
         uses: actions/checkout@v2
         with:
@@ -115,7 +113,7 @@ jobs:
         with:
           php-version: ${{ matrix.php-versions }}
           tools: phpunit
-          extensions: mbstring, iconv, fileinfo, intl, mysql, pdo_mysql, gd, zip
+          extensions: mbstring, iconv, fileinfo, intl, mysql, pdo_mysql, gd, zip, imagick
           coverage: none
 
       - name: Set up PHPUnit
@@ -132,11 +130,7 @@ jobs:
           php -S localhost:8080 &
       - name: PHPUnit
         working-directory: apps/${{ env.APP_NAME }}
-        run: ./vendor/phpunit/phpunit/phpunit -c phpunit.xml
-
-      - name: PHPUnit integration
-        working-directory: apps/${{ env.APP_NAME }}
-        run: ./vendor/phpunit/phpunit/phpunit -c phpunit.integration.xml
+        run: make test
 
   pgsql:
     runs-on: ubuntu-20.04
@@ -175,6 +169,7 @@ jobs:
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+
       - name: Checkout app
         uses: actions/checkout@v2
         with:
@@ -185,7 +180,7 @@ jobs:
         with:
           php-version: ${{ matrix.php-versions }}
           tools: phpunit
-          extensions: mbstring, iconv, fileinfo, intl, pgsql, pdo_pgsql, gd, zip
+          extensions: mbstring, iconv, fileinfo, intl, pgsql, pdo_pgsql, gd, zip, imagick
           coverage: none
 
       - name: Set up PHPUnit
@@ -202,8 +197,4 @@ jobs:
           php -S localhost:8080 &
       - name: PHPUnit
         working-directory: apps/${{ env.APP_NAME }}
-        run: ./vendor/phpunit/phpunit/phpunit -c phpunit.xml
-
-      - name: PHPUnit integration
-        working-directory: apps/${{ env.APP_NAME }}
-        run: ./vendor/phpunit/phpunit/phpunit -c phpunit.integration.xml
+        run: make test

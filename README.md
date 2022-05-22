@@ -25,6 +25,7 @@
 - [How it works](#how-it-works)
   - [General](#general)
   - [PDF](#pdf)
+  - [Images](#images)
 - [Development](#development)
   - [Dev setup](#dev-setup)
   - [Debugging](#debugging)
@@ -52,13 +53,15 @@ Since the actual processing of the files is done asynchronously via Nextcloud's 
 ### Backend
 > :warning: Since `v1.20.1` you'll have to install `OCRmyPDF`.
 
-In the backend [`OCRmyPDF`](https://github.com/jbarlow83/OCRmyPDF) is used for processing PDF files. Make sure you have this commandline tool installed. Make sure you have the appropriate version (see below, Used libraries').  
+In the backend [`OCRmyPDF`](https://github.com/jbarlow83/OCRmyPDF) is used for processing PDF files. Make sure you have this commandline tool installed. Make sure you have the appropriate version (see below, Used libraries').
 
 ```bash
 apt-get install ocrmypdf
 ``` 
 
-Also if you want to use specific language settings please install the corresponding `tesseract` packages.
+The `ocrmypdf` CLI can also convert single image files (`jpg`/`png`) to PDF before processing it via OCR. This mode is also supported by this app. You can read more about it in the [official docs](https://ocrmypdf.readthedocs.io/en/latest/cookbook.html#option-use-ocrmypdf-single-images-only).
+
+Also if you want to use specific **language settings** please install the corresponding `tesseract` packages.
 
 ```bash
 # English
@@ -159,7 +162,11 @@ To **test** if your file gets processed properly you can do the following steps:
 ### PDF
 For processing PDF files, the external command line tool [`OCRmyPDF`](https://github.com/jbarlow83/OCRmyPDF) is used. The tool is invoked with the [`--redo-ocr`](https://ocrmypdf.readthedocs.io/en/latest/advanced.html#when-ocr-is-skipped) parameter so that it will perform a detailed text analysis. The detailed analysis masks out visible text and sends the image of each page to the OCR processor. After processing, additional text is inserted as OCR, whereas existing text in a mixed file document (images embedded into text pages) is not disrupted.
 
+### Images
+For processing single images (currently `jpg` and `png` are supported), `ocrmypdf` converts the image to a PDF. The converted PDF file will then be OCR processed and saved as a new file with the original filename and the extension `.pdf` (for example `myImage.jpg` will be saved to `myImage.jpg.pdf`). The original image fill will remain untouched.
+
 ## Development
+
 ### Dev setup
 Tools and packages you need for development:
 * `make`
