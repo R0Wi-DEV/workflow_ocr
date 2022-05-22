@@ -1,57 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.22.0@fc2c6ab4d5fa5d644d8617089f012f3bb84b8703">
-  <file src="lib/AppInfo/Application.php">
-    <UndefinedClass occurrences="2">
-      <code>App</code>
-      <code>IBootstrap</code>
-    </UndefinedClass>
-  </file>
+<files psalm-version="4.23.0@f1fe6ff483bf325c803df9f510d09a03fd796f88">
   <file src="lib/BackgroundJobs/ProcessFileJob.php">
+    <MissingDependency occurrences="3">
+      <code>$this-&gt;rootFolder</code>
+      <code>IRootFolder</code>
+      <code>IRootFolder</code>
+    </MissingDependency>
     <UndefinedClass occurrences="1">
-      <code>\OCP\BackgroundJob\QueuedJob</code>
-    </UndefinedClass>
-  </file>
-  <file src="lib/Controller/GlobalSettingsController.php">
-    <UndefinedClass occurrences="1">
-      <code>Controller</code>
-    </UndefinedClass>
-  </file>
-  <file src="lib/Listener/RegisterFlowOperationsListener.php">
-    <UndefinedClass occurrences="1">
-      <code>IEventListener</code>
-    </UndefinedClass>
-  </file>
-  <file src="lib/OcrProcessors/OcrProcessorFactory.php">
-    <UndefinedClass occurrences="1">
-      <code>IRegistrationContext</code>
+      <code>NoUserException</code>
     </UndefinedClass>
   </file>
   <file src="lib/Operation.php">
+    <MissingDependency occurrences="3">
+      <code>$this-&gt;rootFolder</code>
+      <code>IRootFolder</code>
+      <code>IRootFolder</code>
+    </MissingDependency>
+    <NullReference occurrences="1">
+      <code>$argsArray</code>
+    </NullReference>
     <UndefinedClass occurrences="1">
-      <code>ISpecificOperation</code>
+      <code>File</code>
     </UndefinedClass>
   </file>
   <file src="lib/Service/GlobalSettingsService.php">
-    <MissingDependency occurrences="2">
-      <code>Application</code>
-      <code>Application</code>
-    </MissingDependency>
     <ParamNameMismatch occurrences="1">
       <code>$settings</code>
     </ParamNameMismatch>
-    <UndefinedClass occurrences="1">
-      <code>IConfig</code>
-    </UndefinedClass>
-    <UndefinedDocblockClass occurrences="3">
-      <code>$this-&gt;config</code>
-      <code>$this-&gt;config</code>
-      <code>IConfig</code>
-    </UndefinedDocblockClass>
-  </file>
-  <file src="lib/Settings/GlobalSettings.php">
-    <UndefinedClass occurrences="1">
-      <code>ISettings</code>
-    </UndefinedClass>
   </file>
   <file src="lib/Wrapper/Filesystem.php">
     <UndefinedClass occurrences="1">
