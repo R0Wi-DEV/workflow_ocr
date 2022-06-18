@@ -335,9 +335,10 @@ public static function registerOcrProcessors(IRegistrationContext $context) : vo
 That's all. If you now create a new workflow based on your added mimetype, your implementation should be triggered by the app. The return value of `ocrFile(string $fileContent, WorkflowSettings $settings, GlobalSettings $globalSettings)` will be interpreted as the file content of the scanned file. This one is used to create a new file version in Nextcloud.
 
 ## Limitations
-* **Currently only pdf documents (`application/pdf`) can be used as input.** Other mimetypes are currently ignored but might be added in the future.
-* Pdf metadata (like author, comments, ...) is not available in the converted output pdf document.
-* Currently files are only processed based on workflow-events so there is no batch-mechanism for applying OCR to already existing files. This is a feature which might be added in the future.
+* **Currently only pdf documents (`application/pdf`) and single images (`image/jpeg` and `image/png`) can be used as input.** Other mimetypes are currently ignored but might be added in the future.
+* All input file types currently produce a single `pdf` output file. Currently there is no other output file format supported.
+* Pdf metadata (like author, comments, ...) might not be available in the converted output pdf document. This is limited by the capabilities of `ocrmypdf` (see https://github.com/ocrmypdf/OCRmyPDF/issues/327).
+* Currently files are only processed based on workflow-events so there is no batch-mechanism for applying OCR to already existing files. This is a feature which might be added in the future. For applying OCR to a single file, which already exist, one could use the ["tag assigned"](#trigger-ocr-on-tag-assigning) workflow trigger.
 * If you encounter any problems with the OCR processing, you can always restore the original file via Nextcloud's version history.
   <p align="center">
     <img width="75%" src="doc/img/file_versions.jpg" alt="File versions">
