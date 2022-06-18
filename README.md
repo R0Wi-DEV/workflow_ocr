@@ -126,7 +126,13 @@ Currently the following settings are available per workflow:
 Name | Description
 --- | ---
 Languages | The languages to be used for OCR processing. The languages can be choosen from a dropdown list. For PDF files this setting corresponds to the `-l` parameter of `ocrmypdf`. **Please note** that you'll have to install the appropriate languages like described in the [`ocrmypdf` documentation](https://ocrmypdf.readthedocs.io/en/latest/languages.html).
-Remove background | If the switch is set, the OCR processor will try to remove the background of the document before processing and instead set a white background. For PDF files this setting corresponds to the [`--remove-background`](https://ocrmypdf.readthedocs.io/en/latest/cookbook.html?highlight=remove-background#image-processing) parameter of `ocrmypdf`. **Please note** that without setting this option, the [`--redo-ocr`](https://ocrmypdf.readthedocs.io/en/latest/errors.html?highlight=redo-ocr#page-already-has-text) option will be set, which is **not** compatible to the mentioned `--remove-background`-parameter. So if you set this switch to "on", make sure your PDF documents do not already contain text, otherwise you might find errors in your NC logs and OCR is not possible.
+Remove background | If the switch is set, the OCR processor will try to remove the background of the document before processing and instead set a white background. For PDF files this setting corresponds to the [`--remove-background`](https://ocrmypdf.readthedocs.io/en/latest/cookbook.html?highlight=remove-background#image-processing) parameter of `ocrmypdf`. 
+<!--
+
+  Uncomment this section if we implemented the --redo-ocr/--skip-text option as a workflow setting
+
+**Please note** that without setting this option, the [`--redo-ocr`](https://ocrmypdf.readthedocs.io/en/latest/errors.html?highlight=redo-ocr#page-already-has-text) option will be set, which is **not** compatible to the mentioned `--remove-background`-parameter. So if you set this switch to "on", make sure your PDF documents do not already contain text, otherwise you might find errors in your NC logs and OCR is not possible.
+-->
 
 #### Global settings
 As a Nextcloud administrator you're able to configure global settings which apply to all configured OCR-workflows on the current system.
@@ -160,7 +166,7 @@ To **test** if your file gets processed properly you can do the following steps:
 </p>
 
 ### PDF
-For processing PDF files, the external command line tool [`OCRmyPDF`](https://github.com/jbarlow83/OCRmyPDF) is used. The tool is invoked with the [`--redo-ocr`](https://ocrmypdf.readthedocs.io/en/latest/advanced.html#when-ocr-is-skipped) parameter so that it will perform a detailed text analysis. The detailed analysis masks out visible text and sends the image of each page to the OCR processor. After processing, additional text is inserted as OCR, whereas existing text in a mixed file document (images embedded into text pages) is not disrupted.
+For processing PDF files, the external command line tool [`OCRmyPDF`](https://github.com/jbarlow83/OCRmyPDF) is used. The tool is always invoked with the [`--skip-text`](https://ocrmypdf.readthedocs.io/en/latest/advanced.html#when-ocr-is-skipped) parameter so that it will skip pages which already contain text. Please note that with that parameter set, it's currently not possible to analize pages with mixed content (see https://github.com/R0Wi/workflow_ocr/issues/113 for furhter information).
 
 ### Images
 For processing single images (currently `jpg` and `png` are supported), `ocrmypdf` converts the image to a PDF. The converted PDF file will then be OCR processed and saved as a new file with the original filename and the extension `.pdf` (for example `myImage.jpg` will be saved to `myImage.jpg.pdf`). The original image fill will remain untouched.
