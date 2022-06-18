@@ -179,7 +179,7 @@ class PdfOcrProcessorTest extends TestCase {
 	public function testLanguageSettingsAreSetCorrectly() {
 		$this->command->expects($this->once())
 			->method('setCommand')
-			->with('ocrmypdf -q -l deu+eng --redo-ocr - - | cat');
+			->with('ocrmypdf -q --skip-text -l deu+eng - - | cat');
 		$this->command->expects($this->once())
 			->method('execute')
 			->willReturn(true);
@@ -194,7 +194,7 @@ class PdfOcrProcessorTest extends TestCase {
 	public function testInvalidLanguagesAreFiltered() {
 		$this->command->expects($this->once())
 			->method('setCommand')
-			->with('ocrmypdf -q -l deu+eng --redo-ocr - - | cat');
+			->with('ocrmypdf -q --skip-text -l deu+eng - - | cat');
 		$this->command->expects($this->once())
 			->method('execute')
 			->willReturn(true);
@@ -209,7 +209,7 @@ class PdfOcrProcessorTest extends TestCase {
 	public function testRemoveBackgroundFlagIsSetCorrectly() {
 		$this->command->expects($this->once())
 			->method('setCommand')
-			->with('ocrmypdf -q --remove-background - - | cat');
+			->with('ocrmypdf -q --skip-text --remove-background - - | cat');
 		$this->command->expects($this->once())
 			->method('execute')
 			->willReturn(true);
@@ -224,7 +224,7 @@ class PdfOcrProcessorTest extends TestCase {
 	public function testProcessorCountIsNotSetIfGlobalSettingsDoesNotContainProcessorCount() {
 		$this->command->expects($this->once())
 		->method('setCommand')
-		->with('ocrmypdf -q --redo-ocr - - | cat');
+		->with('ocrmypdf -q --skip-text - - | cat');
 		$this->command->expects($this->once())
 			->method('execute')
 			->willReturn(true);
@@ -239,7 +239,7 @@ class PdfOcrProcessorTest extends TestCase {
 	public function testProcessorCountIsSetCorrectlyFromGobalSettings() {
 		$this->command->expects($this->once())
 		->method('setCommand')
-		->with('ocrmypdf -q --redo-ocr -j 42 - - | cat');
+		->with('ocrmypdf -q --skip-text -j 42 - - | cat');
 		$this->command->expects($this->once())
 			->method('execute')
 			->willReturn(true);
