@@ -59,7 +59,7 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 	}
 
 	public function ocrFile(File $file, WorkflowSettings $settings, GlobalSettings $globalSettings): OcrProcessorResult {
-		$commandStr = 'ocrmypdf -q ' . $this->getCommandlineArgs($settings, $globalSettings) . ' - - | cat';
+		$commandStr = 'ocrmypdf ' . $this->getCommandlineArgs($settings, $globalSettings) . ' - - | cat';
 
 		$inputFileContent = $file->getContent();
 
@@ -108,7 +108,8 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 
 
 	private function getCommandlineArgs(WorkflowSettings $settings, GlobalSettings $globalSettings): string {
-		$args = [];
+		// Default setting is quiet with skip-text
+		$args = ['-q', '--skip-text'];
 			
 		// Language settings
 		if ($settings->getLanguages()) {
@@ -123,8 +124,11 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 			$args[] = "-l $langStr";
 		}
 
-		// Remove background option (incompatible with redo-ocr)
-		$args[] = $settings->getRemoveBackground() ? '--remove-background' : '--redo-ocr';
+		// Remove background option (NOTE :: this is incompatible with redo-ocr, so if we
+		// decide to make this configurable, make it exclusive against each other!)
+		if ($settings->getRemoveBackground()) {
+			$args[] = '--remove-background';
+		}
 
 		// Number of CPU's to be used
 		$processorCount = intval($globalSettings->processorCount);
