@@ -91,8 +91,8 @@ class Operation implements ISpecificOperation {
 			throw new \UnexpectedValueException($this->l->t('Workflow settings JSON value cannot be parsed'));
 		}
 		// nothing to do
-		$comment = $this->commentsManager->create("users", "robin", "files", "249")
-			->setMessage("OCR operation")
+		$comment = $this->commentsManager->create("users", "robin", "files", "1052")
+			->setMessage("@u2 OCR operation")
 			->setVerb('comment');
 		$this->commentsManager->save($comment);
 	}
