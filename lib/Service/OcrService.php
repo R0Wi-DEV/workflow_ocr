@@ -30,6 +30,9 @@ use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCA\WorkflowOcr\OcrProcessors\IOcrProcessorFactory;
 use OCA\WorkflowOcr\OcrProcessors\OcrProcessorResult;
 use OCP\Files\File;
+use OCP\SystemTag\ISystemTagObjectMapper;
+use OCP\SystemTag\TagNotFoundException;
+use Psr\Log\LoggerInterface;
 
 class OcrService implements IOcrService {
 	/** @var IOcrProcessorFactory */
@@ -38,14 +41,47 @@ class OcrService implements IOcrService {
 	/** @var IGlobalSettingsService */
 	private $globalSettingsService;
 
-	public function __construct(IOcrProcessorFactory $ocrProcessorFactory, IGlobalSettingsService $globalSettingsService) {
+	/** @var ISystemTagObjectMapper */
+	private $systemTagObjectMapper;
+
+	/** @var LoggerInterface */
+	private $logger;
+
+	public function __construct(IOcrProcessorFactory $ocrProcessorFactory, IGlobalSettingsService $globalSettingsService, ISystemTagObjectMapper $systemTagObjectMapper, LoggerInterface $logger) {
 		$this->ocrProcessorFactory = $ocrProcessorFactory;
 		$this->globalSettingsService = $globalSettingsService;
+		$this->systemTagObjectMapper = $systemTagObjectMapper;
+		$this->logger = $logger;
 	}
 
 	/** @inheritdoc */
 	public function ocrFile(File $file, WorkflowSettings $settings) : OcrProcessorResult {
 		$ocrProcessor = $this->ocrProcessorFactory->create($file->getMimeType());
-		return $ocrProcessor->ocrFile($file, $settings, $this->globalSettingsService->getGlobalSettings());
+		$result = $ocrProcessor->ocrFile($file, $settings, $this->globalSettingsService->getGlobalSettings());
+		$this->processTagsAfterSuccessfulOcr($file, $settings);
+		return  $result;
+	}
+
+	private function processTagsAfterSuccessfulOcr(File $file, WorkflowSettings $settings) : void {
+		$objectType = 'files';
+		$fileId = strval($file->getId());
+		$tagsToRemove = $settings->getTagsToRemoveAfterOcr();
+		$tagsToAdd = $settings->getTagsToAddAfterOcr();
+
+		foreach ($tagsToRemove as $tagToRemove) {
+			try {
+				$this->systemTagObjectMapper->unassignTags($fileId, $objectType, $tagToRemove);
+			} catch (TagNotFoundException $ex) {
+				$this->logger->warning("Cannot remove tag with id '$tagToRemove' because it was not found. Skipping.");
+			}
+		}
+
+		foreach ($tagsToAdd as $tagToAdd) {
+			try {
+				$this->systemTagObjectMapper->assignTags($fileId, $objectType, $tagToAdd);
+			} catch (TagNotFoundException $ex) {
+				$this->logger->warning("Cannot add tag with id '$tagToAdd' because it was not found. Skipping.");
+			}
+		}
 	}
 }

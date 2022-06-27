@@ -183,16 +183,16 @@ appstore:
 	../$(app_name) \
 
 .PHONY: test
-test: composer
+php-test: composer
 	$(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.xml
 	$(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.integration.xml
 
-.PHONY: unittest
-unittest: composer
+.PHONY: php-unittest
+php-unittest: composer
 	$(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.xml
 
-.PHONY: integrationtest
-integrationtest: composer
+.PHONY: php-integrationtest
+php-integrationtest: composer
 	$(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.integration.xml
 
 .PHONY: coverage-php
@@ -223,3 +223,6 @@ lint-fix: composer npm-install
 .PHONY: js-test
 js-test:
 	npm run test:unit
+
+.PHONY: test
+test: php-test js-test
