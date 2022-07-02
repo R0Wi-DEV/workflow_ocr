@@ -101,9 +101,10 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 	 * Can be overwritten in subclasses to provide additional parameters, which will be appended to ocrmypdf commandline.
 	 * @param WorkflowSettings $settings
 	 * @param GlobalSettings $globalSettings
+	 * @return array of strings
 	 */
-	protected function getAdditionalCommandlineArgs(WorkflowSettings $settings, GlobalSettings $globalSettings): string {
-		return '';
+	protected function getAdditionalCommandlineArgs(WorkflowSettings $settings, GlobalSettings $globalSettings): array {
+		return [];
 	}
 
 
@@ -136,6 +137,8 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 			$args[] = '-j ' . $processorCount;
 		}
 
-		return implode(' ', $args) . $this->getAdditionalCommandlineArgs($settings, $globalSettings);
+		$resultArgs = array_merge($args, $this->getAdditionalCommandlineArgs($settings, $globalSettings));
+		
+		return implode(' ', $resultArgs);
 	}
 }
