@@ -8,7 +8,7 @@
 	The processing is done via workflow-engine and can therefore easily be customized.
 	Please note that you'll have to install the OcrMyPDF CLI on your Nextcloud server to
 	process PDF files. More installation instructions can be found in the docs https://github.com/R0Wi/workflow_ocr/blob/master/README.md.</description>
-	<version>1.23.4</version>
+	<version>1.23.5</version>
 	<licence>agpl</licence>
 	<author mail="ro.windey@gmail.com">Robin Windey</author>
 	<namespace>WorkflowOcr</namespace>
