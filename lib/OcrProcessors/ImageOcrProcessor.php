@@ -27,7 +27,7 @@ use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCA\WorkflowOcr\Model\GlobalSettings;
 
 class ImageOcrProcessor extends OcrMyPdfBasedProcessor {
-	protected function getAdditionalCommandlineArgs(WorkflowSettings $settings, GlobalSettings $globalSettings): string {
-		return '--image-dpi 300';
+	protected function getAdditionalCommandlineArgs(WorkflowSettings $settings, GlobalSettings $globalSettings): array {
+		return ['--image-dpi 300'];
 	}
 }
