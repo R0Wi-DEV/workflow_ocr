@@ -48,7 +48,7 @@ class ImageOcrProcessorTest extends TestCase {
 			->willReturn('content');
 		$command->expects($this->once())
 			->method('setCommand')
-			->with($this->stringContains('--image-dpi 300'))
+			->with($this->stringContains(' --image-dpi 300 '))
 			->willReturnSelf();
 		$command->expects($this->once())
 			->method('execute')
