@@ -44,7 +44,8 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 		'es' => 'spa',
 		'pt' => 'por',
 		'ru' => 'rus',
-		'chi' => 'chi_sim'
+		'chi' => 'chi_sim',
+		'est' => 'est'
 	];
 
 	/** @var ICommand */
@@ -111,7 +112,7 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 	private function getCommandlineArgs(WorkflowSettings $settings, GlobalSettings $globalSettings): string {
 		// Default setting is quiet with skip-text
 		$args = ['-q', '--skip-text'];
-			
+
 		// Language settings
 		if ($settings->getLanguages()) {
 			$langStr = Chain::create($settings->getLanguages())
@@ -138,7 +139,7 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 		}
 
 		$resultArgs = array_merge($args, $this->getAdditionalCommandlineArgs($settings, $globalSettings));
-		
+
 		return implode(' ', $resultArgs);
 	}
 }
