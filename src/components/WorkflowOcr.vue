@@ -53,6 +53,7 @@ const availableLanguages = [
 	{ label: 'Portuguese', langCode: 'pt' },
 	{ label: 'Russian', langCode: 'ru' },
 	{ label: 'Chinese - Simplified', langCode: 'chi' },
+	{ label: 'Estonian', langCode: 'est' },
 ]
 
 export default {
