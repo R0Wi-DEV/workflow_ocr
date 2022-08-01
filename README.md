@@ -10,30 +10,32 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 ## Table of contents
 
-- [Setup](#setup)
-  - [App installation](#app-installation)
-  - [Nextcloud background jobs](#nextcloud-background-jobs)
-  - [Backend](#backend)
-- [Usage](#usage)
-  - [Useful triggers](#useful-triggers)
-    - [Trigger OCR if file was created or updated](#trigger-ocr-if-file-was-created-or-updated)
-    - [Trigger OCR on tag assigning](#trigger-ocr-on-tag-assigning)
-  - [Settings](#settings)
-    - [Per workflow settings](#per-workflow-settings)
-    - [Global settings](#global-settings)
-  - [Testing your configuration](#testing-your-configuration)
-- [How it works](#how-it-works)
-  - [General](#general)
-  - [PDF](#pdf)
-  - [Images](#images)
-- [Development](#development)
-  - [Dev setup](#dev-setup)
-  - [Debugging](#debugging)
-  - [`docker`-based setup](#docker-based-setup)
-  - [Executing tests](#executing-tests)
-  - [Adding a new `OcrProcessor`](#adding-a-new-ocrprocessor)
-- [Limitations](#limitations)
-- [Used libraries & components](#used-libraries--components)
+- [Nextcloud Workflow OCR app](#nextcloud-workflow-ocr-app)
+  - [Table of contents](#table-of-contents)
+  - [Setup](#setup)
+    - [App installation](#app-installation)
+    - [Nextcloud background jobs](#nextcloud-background-jobs)
+    - [Backend](#backend)
+  - [Usage](#usage)
+    - [Useful triggers](#useful-triggers)
+      - [Trigger OCR if file was created or updated](#trigger-ocr-if-file-was-created-or-updated)
+      - [Trigger OCR on tag assigning](#trigger-ocr-on-tag-assigning)
+    - [Settings](#settings)
+      - [Per workflow settings](#per-workflow-settings)
+      - [Global settings](#global-settings)
+    - [Testing your configuration](#testing-your-configuration)
+  - [How it works](#how-it-works)
+    - [General](#general)
+    - [PDF](#pdf)
+    - [Images](#images)
+  - [Development](#development)
+    - [Dev setup](#dev-setup)
+    - [Debugging](#debugging)
+    - [`docker`-based setup](#docker-based-setup)
+    - [Executing tests](#executing-tests)
+    - [Adding a new `OcrProcessor`](#adding-a-new-ocrprocessor)
+  - [Limitations](#limitations)
+  - [Used libraries & components](#used-libraries--components)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -61,7 +63,7 @@ apt-get install ocrmypdf
 
 The `ocrmypdf` CLI can also convert single image files (`jpg`/`png`) to PDF before processing it via OCR. This mode is also supported by this app. You can read more about it in the [official docs](https://ocrmypdf.readthedocs.io/en/latest/cookbook.html#option-use-ocrmypdf-single-images-only).
 
-Also if you want to use specific **language settings** please install the corresponding `tesseract` packages.
+Also if you want to use specific **language settings** please [install the corresponding `tesseract` packages](https://ocrmypdf.readthedocs.io/en/latest/languages.html).
 
 ```bash
 # English
