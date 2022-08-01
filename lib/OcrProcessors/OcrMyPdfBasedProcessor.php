@@ -45,7 +45,8 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 		'pt' => 'por',
 		'ru' => 'rus',
 		'chi' => 'chi_sim',
-		'est' => 'est'
+		'est' => 'est',
+		'slk' => 'slk'
 	];
 
 	/** @var ICommand */

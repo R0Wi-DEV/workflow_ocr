@@ -15,9 +15,9 @@ describe('Init tests', () => {
 })
 
 describe('Language settings tests', () => {
-	test('Should have 9 languages available', () => {
+	test('Should have 10 languages available', () => {
 		const wrapper = mount(WorkflowOcr)
-		expect(wrapper.vm.availableLanguages.length).toBe(9)
+		expect(wrapper.vm.availableLanguages.length).toBe(10)
 	})
 
 	test('Should select one language', () => {
