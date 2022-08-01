@@ -61,7 +61,7 @@ apt-get install ocrmypdf
 
 The `ocrmypdf` CLI can also convert single image files (`jpg`/`png`) to PDF before processing it via OCR. This mode is also supported by this app. You can read more about it in the [official docs](https://ocrmypdf.readthedocs.io/en/latest/cookbook.html#option-use-ocrmypdf-single-images-only).
 
-Also if you want to use specific **language settings** please install the corresponding `tesseract` packages.
+Also if you want to use specific **language settings** please [install the corresponding `tesseract` packages](https://ocrmypdf.readthedocs.io/en/latest/languages.html).
 
 ```bash
 # English
