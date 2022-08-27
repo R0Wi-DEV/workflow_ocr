@@ -29,7 +29,9 @@ use OCA\WorkflowOcr\Model\GlobalSettings;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCA\WorkflowOcr\Wrapper\ICommand;
 use OCP\Files\File;
+use OCP\ITempManager;
 use Psr\Log\LoggerInterface;
+use function file_get_contents;
 
 abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 	/** @var array
@@ -55,9 +57,13 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 	/** @var LoggerInterface */
 	private $logger;
 
-	public function __construct(ICommand $command, LoggerInterface $logger) {
+	/** @var string */
+    private $recognizedTextFile;
+
+	public function __construct(ICommand $command, LoggerInterface $logger, ITempManager $tempManager) {
 		$this->command = $command;
 		$this->logger = $logger;
+		$this->recognizedTextFile = $tempManager->getTemporaryFile('sidecar');
 	}
 
 	public function ocrFile(File $file, WorkflowSettings $settings, GlobalSettings $globalSettings): OcrProcessorResult {
@@ -94,9 +100,13 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 			throw new OcrNotPossibleException('OCRmyPDF did not produce any output');
 		}
 
+		if (!$this->recognizedTextFile || !$recognizedText = file_get_contents($this->recognizedTextFile) ) {
+			$recognizedText = '';
+		}
+        
 		$this->logger->debug("OCR processing was successful");
 
-		return new OcrProcessorResult($ocrFileContent, "pdf");
+		return new OcrProcessorResult($ocrFileContent, "pdf", $recognizedText);
 	}
 
 	/**
@@ -137,6 +147,11 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 		$processorCount = intval($globalSettings->processorCount);
 		if ($processorCount > 0) {
 			$args[] = '-j ' . $processorCount;
+		}
+
+        // Save recognized text in tempfile
+        if ($this->recognizedTextFile) {
+			$args[] = '--sidecar ' . $this->recognizedTextFile;
 		}
 
 		$resultArgs = array_merge($args, $this->getAdditionalCommandlineArgs($settings, $globalSettings));
