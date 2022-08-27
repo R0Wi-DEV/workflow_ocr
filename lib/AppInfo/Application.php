@@ -32,6 +32,8 @@ use OCA\WorkflowOcr\Helper\ProcessingFileAccessor;
 use OCA\WorkflowOcr\Listener\RegisterFlowOperationsListener;
 use OCA\WorkflowOcr\OcrProcessors\IOcrProcessorFactory;
 use OCA\WorkflowOcr\OcrProcessors\OcrProcessorFactory;
+use OCA\WorkflowOcr\Service\IEventService;
+use OCA\WorkflowOcr\Service\EventService;
 use OCA\WorkflowOcr\Service\GlobalSettingsService;
 use OCA\WorkflowOcr\Service\IGlobalSettingsService;
 use OCA\WorkflowOcr\Service\IOcrService;
@@ -68,6 +70,7 @@ class Application extends App implements IBootstrap {
 		$context->registerServiceAlias(IViewFactory::class, ViewFactory::class);
 		$context->registerServiceAlias(IFilesystem::class, Filesystem::class);
 		$context->registerServiceAlias(IGlobalSettingsService::class, GlobalSettingsService::class);
+		$context->registerServiceAlias(IEventService::class, EventService::class);
 
 		// BUG #43
 		$context->registerService(ICommand::class, function () {
