@@ -184,7 +184,6 @@ class ProcessFileJob extends \OCP\BackgroundJob\QueuedJob {
 			return;
 		}
 
-		$this->eventService->textRecognized($ocrFile);
 
 		$fileContent = $ocrFile->getFileContent();
 		$nodeId = $node->getId();
@@ -193,8 +192,10 @@ class ProcessFileJob extends \OCP\BackgroundJob\QueuedJob {
 
 		if ($originalFileExtension === $newFileExtension) {
 			$this->createNewFileVersion($filePath, $fileContent, $nodeId);
+			$this->eventService->textRecognized($ocrFile, $node);
 		} else {
 			$this->createNewFileVersion($filePath.".pdf", $fileContent, $nodeId);
+			$this->eventService->textRecognized($ocrFile, $node);
 		}
 	}
 

@@ -28,7 +28,7 @@ namespace OCA\WorkflowOcr\Service;
 
 
 use OCA\WorkflowOcr\OcrProcessors\OcrProcessorResult;
-
+use OCP\Files\File;
 
 interface IEventService {
     /**
@@ -37,5 +37,5 @@ interface IEventService {
      * @param OcrProcessorResult $result 	The processed ocr result
      *
      */
-    public function textRecognized(OcrProcessorResult $result);
+    public function textRecognized(OcrProcessorResult $result, File $node);
 }

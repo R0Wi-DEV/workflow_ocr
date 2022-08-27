@@ -25,6 +25,7 @@ namespace OCA\WorkflowOcr\Events;
 
 use OCP\EventDispatcher\Event;
 use OCA\WorkflowOcr\OcrProcessors\OcrProcessorResult;
+use OCP\Files\File;
 
 /**
  * Class TextRecognizedEvent
@@ -37,16 +38,20 @@ class TextRecognizedEvent extends Event {
     /** @var OcrProcessorResult */
     protected $result;
 
+    /** @var File */
+    protected $file;
+
 
     /**
      * TextRecognizedEvent constructor.
      *
      * @param OcrProcessorResult $result
      */
-    public function __construct(OcrProcessorResult $result) {
+    public function __construct(OcrProcessorResult $result, File $file) {
         parent::__construct();
         
         $this->result = $result;
+        $this->file = $file;
     }
 
     /**
@@ -55,4 +60,12 @@ class TextRecognizedEvent extends Event {
     public function getResult(): OcrProcessorResult {
         return $this->result;
     }
+
+    /**
+     * @return File $file
+     */
+    public function getFile(): File {
+        return $this->file;
+    }
+
 }

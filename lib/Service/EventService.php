@@ -28,6 +28,7 @@ namespace OCA\WorkflowOcr\Service;
 use OCP\EventDispatcher\IEventDispatcher;
 use OCA\WorkflowOcr\OcrProcessors\OcrProcessorResult;
 use OCA\WorkflowOcr\Events\TextRecognizedEvent;
+use OCP\Files\File;
 
 class EventService implements IEventService {
     /** @var IEventDispatcher */
@@ -37,8 +38,8 @@ class EventService implements IEventService {
         $this->eventDispatcher = $eventDispatcher;
     }
 
-    public function textRecognized(OcrProcessorResult $result) {
-        $event = new TextRecognizedEvent($result);
+    public function textRecognized(OcrProcessorResult $result, File $node) {
+        $event = new TextRecognizedEvent($result, $node);
 
         // ensure backwards-compability
         if (method_exists($this->eventDispatcher, 'dispatchTyped')) {
