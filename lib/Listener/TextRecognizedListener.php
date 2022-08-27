@@ -5,9 +5,7 @@ declare(strict_types=1);
 /**
  * @copyright Copyright (c) 2020 Robin Windey <ro.windey@gmail.com>
  *
- * @author g-schmitz <gschmitz@email.com>
- *
- * @license GNU AGPL version 3 or any later version
+ *  @license GNU AGPL version 3 or any later version
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,31 +19,32 @@ declare(strict_types=1);
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  */
-namespace OCA\WorkflowOcr\Service;
 
-use OCP\EventDispatcher\IEventDispatcher;
-use OCA\WorkflowOcr\OcrProcessors\OcrProcessorResult;
+namespace OCA\WorkflowOcr\Listener;
+
 use OCA\WorkflowOcr\Events\TextRecognizedEvent;
-use OCP\Files\File;
+use OCP\EventDispatcher\Event;
+use OCP\EventDispatcher\IEventListener;
+use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 
-class EventService implements IEventService {
-	/** @var IEventDispatcher */
-	private $eventDispatcher;
+class TextRecognizedListener implements IEventListener {
 
-	public function __construct(IEventDispatcher $eventDispatcher) {
-		$this->eventDispatcher = $eventDispatcher;
+	/** @var ContainerInterface */
+	private $container;
+	/** @var LoggerInterface */
+	private $logger;
+
+	public function __construct(ContainerInterface $container, LoggerInterface $logger) {
+		$this->container = $container;
+		$this->logger = $logger;
 	}
 
-	public function textRecognized(OcrProcessorResult $result, File $node) {
-		$event = new TextRecognizedEvent($result, $node);
-
-		// ensure backwards-compability
-		if (method_exists($this->eventDispatcher, 'dispatchTyped')) {
-			$this->eventDispatcher->dispatchTyped($event);
-		} else {
-			$this->eventDispatcher->dispatch(TextRecognizedEvent::class, $event);
+	public function handle(Event $event): void {
+		if (!$event instanceof TextRecognizedEvent) {
+			return;
 		}
+		file_put_contents('/var/www/html/ocr.log', print_r(['step' => 'handling TextRecognizedEvent','filePath' => $event->getFile()->getPath()], true), FILE_APPEND);
 	}
 }

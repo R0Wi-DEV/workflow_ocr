@@ -58,8 +58,8 @@ class ProcessFileJob extends \OCP\BackgroundJob\QueuedJob {
 	private $rootFolder;
 	/** @var IOcrService */
 	private $ocrService;
-    /** @var IEventService */
-    private $eventService;
+	/** @var IEventService */
+	private $eventService;
 	/** @var IViewFactory */
 	private $viewFactory;
 	/** @var IFilesystem */
@@ -75,7 +75,7 @@ class ProcessFileJob extends \OCP\BackgroundJob\QueuedJob {
 		LoggerInterface $logger,
 		IRootFolder $rootFolder,
 		IOcrService $ocrService,
-        IEventService $eventService,
+		IEventService $eventService,
 		IViewFactory $viewFactory,
 		IFilesystem $filesystem,
 		IUserManager $userManager,

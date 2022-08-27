@@ -35,37 +35,36 @@ use OCP\Files\File;
 class TextRecognizedEvent extends Event {
 
 
-    /** @var OcrProcessorResult */
-    protected $result;
+	/** @var OcrProcessorResult */
+	protected $result;
 
-    /** @var File */
-    protected $file;
+	/** @var File */
+	protected $file;
 
 
-    /**
-     * TextRecognizedEvent constructor.
-     *
-     * @param OcrProcessorResult $result
-     */
-    public function __construct(OcrProcessorResult $result, File $file) {
-        parent::__construct();
-        
-        $this->result = $result;
-        $this->file = $file;
-    }
+	/**
+	 * TextRecognizedEvent constructor.
+	 *
+	 * @param OcrProcessorResult $result
+	 */
+	public function __construct(OcrProcessorResult $result, File $file) {
+		parent::__construct();
+		
+		$this->result = $result;
+		$this->file = $file;
+	}
 
-    /**
-     * @return OcrProcessorResult $result
-     */
-    public function getResult(): OcrProcessorResult {
-        return $this->result;
-    }
+	/**
+	 * @return OcrProcessorResult $result
+	 */
+	public function getResult(): OcrProcessorResult {
+		return $this->result;
+	}
 
-    /**
-     * @return File $file
-     */
-    public function getFile(): File {
-        return $this->file;
-    }
-
+	/**
+	 * @return File $file
+	 */
+	public function getFile(): File {
+		return $this->file;
+	}
 }

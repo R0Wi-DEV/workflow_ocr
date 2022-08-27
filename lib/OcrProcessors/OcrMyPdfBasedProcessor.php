@@ -58,7 +58,7 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 	private $logger;
 
 	/** @var string */
-    private $recognizedTextFile;
+	private $recognizedTextFile;
 
 	public function __construct(ICommand $command, LoggerInterface $logger, ITempManager $tempManager) {
 		$this->command = $command;
@@ -100,10 +100,10 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 			throw new OcrNotPossibleException('OCRmyPDF did not produce any output');
 		}
 
-		if (!$this->recognizedTextFile || !$recognizedText = file_get_contents($this->recognizedTextFile) ) {
+		if (!$this->recognizedTextFile || !$recognizedText = file_get_contents($this->recognizedTextFile)) {
 			$recognizedText = '';
 		}
-        
+		
 		$this->logger->debug("OCR processing was successful");
 
 		return new OcrProcessorResult($ocrFileContent, "pdf", $recognizedText);
@@ -149,8 +149,8 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 			$args[] = '-j ' . $processorCount;
 		}
 
-        // Save recognized text in tempfile
-        if ($this->recognizedTextFile) {
+		// Save recognized text in tempfile
+		if ($this->recognizedTextFile) {
 			$args[] = '--sidecar ' . $this->recognizedTextFile;
 		}
 

@@ -26,16 +26,15 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\Service;
 
-
 use OCA\WorkflowOcr\OcrProcessors\OcrProcessorResult;
 use OCP\Files\File;
 
 interface IEventService {
-    /**
-     * Emits events
-     *
-     * @param OcrProcessorResult $result 	The processed ocr result
-     *
-     */
-    public function textRecognized(OcrProcessorResult $result, File $node);
+	/**
+	 * Emits events
+	 *
+	 * @param OcrProcessorResult $result 	The processed ocr result
+	 *
+	 */
+	public function textRecognized(OcrProcessorResult $result, File $node);
 }
