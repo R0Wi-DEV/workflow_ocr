@@ -30,6 +30,7 @@ use OCA\WorkflowOcr\Wrapper\ICommand;
 use OCP\Files\File;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
+use OCP\ITempManager;
 use Test\TestCase;
 
 class ImageOcrProcessorTest extends TestCase {
@@ -40,8 +41,10 @@ class ImageOcrProcessorTest extends TestCase {
 		$logger = $this->createMock(LoggerInterface::class);
 		/** @var File|MockObject $file */
 		$file = $this->createMock(File::class);
+		/** @var ITempManager|MockObject $tempManager */
+		$tempManager = $this->createMock(ITempManager::class);
 
-		$processor = new ImageOcrProcessor($command, $logger);
+		$processor = new ImageOcrProcessor($command, $logger, $tempManager);
 
 		$file->expects($this->once())
 			->method('getContent')

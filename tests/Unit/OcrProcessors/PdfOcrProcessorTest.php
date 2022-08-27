@@ -29,6 +29,7 @@ use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCA\WorkflowOcr\OcrProcessors\PdfOcrProcessor;
 use OCA\WorkflowOcr\Wrapper\ICommand;
 use OCP\Files\File;
+use OCP\ITempManager;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -47,6 +48,8 @@ class PdfOcrProcessorTest extends TestCase {
 	private $command;
 	/** @var LoggerInterface|MockObject */
 	private $logger;
+	/** @var ITempManager|MockObject */
+	private $tempManager;
 	/** @var WorkflowSettings */
 	private $defaultSettings;
 	/** @var GlobalSettings */
@@ -57,6 +60,7 @@ class PdfOcrProcessorTest extends TestCase {
 
 		$this->command = $this->createMock(ICommand::class);
 		$this->logger = $this->createMock(LoggerInterface::class);
+		$this->tempManager = $this->createMock(ITempManager::class);
 		$this->defaultSettings = new WorkflowSettings();
 		$this->defaultGlobalSettings = new GlobalSettings();
 		$this->fileBefore = $this->createMock(File::class);
@@ -87,7 +91,7 @@ class PdfOcrProcessorTest extends TestCase {
 			->method('execute')
 			->willReturn(true);
 		
-		$processor = new PdfOcrProcessor($this->command, $this->logger);
+		$processor = new PdfOcrProcessor($this->command, $this->logger, $this->tempManager);
 		$result = $processor->ocrFile($this->fileBefore, $this->defaultSettings, $this->defaultGlobalSettings);
 		
 		$this->assertEquals(self::FILE_CONTENT_AFTER, $result->getFileContent());
@@ -107,7 +111,7 @@ class PdfOcrProcessorTest extends TestCase {
 		$this->command->expects($this->once())
 			->method('getExitCode');
 
-		$processor = new PdfOcrProcessor($this->command, $this->logger);
+		$processor = new PdfOcrProcessor($this->command, $this->logger, $this->tempManager);
 		$thrown = false;
 
 		try {
@@ -146,7 +150,7 @@ class PdfOcrProcessorTest extends TestCase {
 							$paramsArray['errorOutput'] === 'getErrorOutput';
 				}));
 
-		$processor = new PdfOcrProcessor($this->command, $this->logger);
+		$processor = new PdfOcrProcessor($this->command, $this->logger, $this->tempManager);
 		$processor->ocrFile($this->fileBefore, $this->defaultSettings, $this->defaultGlobalSettings);
 	}
 
@@ -163,7 +167,7 @@ class PdfOcrProcessorTest extends TestCase {
 		$this->ocrMyPdfOutput = "";
 	
 		$thrown = false;
-		$processor = new PdfOcrProcessor($this->command, $this->logger);
+		$processor = new PdfOcrProcessor($this->command, $this->logger, $this->tempManager);
 
 		try {
 			$processor->ocrFile($this->fileBefore, $this->defaultSettings, $this->defaultGlobalSettings);
@@ -187,7 +191,7 @@ class PdfOcrProcessorTest extends TestCase {
 			->method('getOutput')
 			->willReturn('someOcrContent');
 
-		$processor = new PdfOcrProcessor($this->command, $this->logger);
+		$processor = new PdfOcrProcessor($this->command, $this->logger, $this->tempManager);
 		$processor->ocrFile($this->fileBefore, new WorkflowSettings('{"languages": ["de", "en"] }'), $this->defaultGlobalSettings);
 	}
 
@@ -202,7 +206,7 @@ class PdfOcrProcessorTest extends TestCase {
 			->method('getOutput')
 			->willReturn('someOcrContent');
 
-		$processor = new PdfOcrProcessor($this->command, $this->logger);
+		$processor = new PdfOcrProcessor($this->command, $this->logger, $this->tempManager);
 		$processor->ocrFile($this->fileBefore, new WorkflowSettings('{"languages": ["de", "invalid", "en"] }'), $this->defaultGlobalSettings);
 	}
 
@@ -217,7 +221,7 @@ class PdfOcrProcessorTest extends TestCase {
 			->method('getOutput')
 			->willReturn('someOcrContent');
 
-		$processor = new PdfOcrProcessor($this->command, $this->logger);
+		$processor = new PdfOcrProcessor($this->command, $this->logger, $this->tempManager);
 		$processor->ocrFile($this->fileBefore, new WorkflowSettings('{"removeBackground": true }'), $this->defaultGlobalSettings);
 	}
 
@@ -232,7 +236,7 @@ class PdfOcrProcessorTest extends TestCase {
 			->method('getOutput')
 			->willReturn('someOcrContent');
 
-		$processor = new PdfOcrProcessor($this->command, $this->logger);
+		$processor = new PdfOcrProcessor($this->command, $this->logger, $this->tempManager);
 		$processor->ocrFile($this->fileBefore, $this->defaultSettings, $this->defaultGlobalSettings);
 	}
 
@@ -249,7 +253,7 @@ class PdfOcrProcessorTest extends TestCase {
 
 		$this->defaultGlobalSettings->processorCount = 42;
 
-		$processor = new PdfOcrProcessor($this->command, $this->logger);
+		$processor = new PdfOcrProcessor($this->command, $this->logger, $this->tempManager);
 		$processor->ocrFile($this->fileBefore, $this->defaultSettings, $this->defaultGlobalSettings);
 	}
 }
