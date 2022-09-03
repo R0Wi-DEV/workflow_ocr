@@ -102,8 +102,9 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 
 		if (!$this->recognizedTextFile || !$recognizedText = file_get_contents($this->recognizedTextFile)) {
 			$recognizedText = '';
+			$this->logger->warning('Temporary sidecar file at \'{path}\' could not be created or was empty', ['path' => $this->recognizedTextFile]);
 		}
-		
+
 		$this->logger->debug("OCR processing was successful");
 
 		return new OcrProcessorResult($ocrFileContent, "pdf", $recognizedText);
