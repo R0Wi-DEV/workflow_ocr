@@ -241,7 +241,7 @@ class ProcessFileJobTest extends TestCase {
 	/**
 	 * @dataProvider dataProvider_ValidArguments
 	 */
-	public function testCreatesNewFileVersion(array $arguments, string $user, string $rootFolderPath, string $originalFileExtension, string $expectedOcrFilename) {
+	public function testCreatesNewFileVersionAndEmitsTextRecognizedEvent(array $arguments, string $user, string $rootFolderPath, string $originalFileExtension, string $expectedOcrFilename) {
 		$this->processFileJob->setArgument($arguments);
 		$mimeType = 'application/pdf';
 		$content = 'someFileContent';
@@ -268,6 +268,10 @@ class ProcessFileJobTest extends TestCase {
 			->method('create')
 			->with($dirPath)
 			->willReturn($viewMock);
+
+		$this->eventService->expects($this->once())
+			->method('textRecognized')
+			->with($ocrResult, $fileMock);
 
 		$this->processFileJob->execute($this->jobList);
 	}
