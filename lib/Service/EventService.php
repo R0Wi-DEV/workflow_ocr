@@ -40,12 +40,6 @@ class EventService implements IEventService {
 
 	public function textRecognized(OcrProcessorResult $result, File $node) {
 		$event = new TextRecognizedEvent($result, $node);
-
-		// ensure backwards-compability
-		if (method_exists($this->eventDispatcher, 'dispatchTyped')) {
-			$this->eventDispatcher->dispatchTyped($event);
-		} else {
-			$this->eventDispatcher->dispatch(TextRecognizedEvent::class, $event);
-		}
+		$this->eventDispatcher->dispatchTyped($event);
 	}
 }
