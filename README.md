@@ -6,36 +6,36 @@
 [![Generic badge](https://img.shields.io/github/v/release/R0Wi/workflow_ocr)](https://github.com/R0Wi/workflow_ocr/releases)
 [![Generic badge](https://img.shields.io/badge/Nextcloud-24-orange)](https://github.com/nextcloud/server)
 
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 ## Table of contents
 
-- [Setup](#setup)
-  - [App installation](#app-installation)
-  - [Nextcloud background jobs](#nextcloud-background-jobs)
-  - [Backend](#backend)
-- [Usage](#usage)
-  - [Useful triggers](#useful-triggers)
-    - [Trigger OCR if file was created or updated](#trigger-ocr-if-file-was-created-or-updated)
-    - [Trigger OCR on tag assigning](#trigger-ocr-on-tag-assigning)
-  - [Settings](#settings)
-    - [Per workflow settings](#per-workflow-settings)
-    - [Global settings](#global-settings)
-  - [Testing your configuration](#testing-your-configuration)
-- [How it works](#how-it-works)
-  - [General](#general)
-  - [PDF](#pdf)
-  - [Images](#images)
-- [Development](#development)
-  - [Dev setup](#dev-setup)
-  - [Debugging](#debugging)
-  - [`docker`-based setup](#docker-based-setup)
-  - [Executing tests](#executing-tests)
-  - [Adding a new `OcrProcessor`](#adding-a-new-ocrprocessor)
-- [Limitations](#limitations)
-- [Used libraries & components](#used-libraries--components)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+- [Nextcloud Workflow OCR app](#nextcloud-workflow-ocr-app)
+  - [Table of contents](#table-of-contents)
+  - [Setup](#setup)
+    - [App installation](#app-installation)
+    - [Nextcloud background jobs](#nextcloud-background-jobs)
+    - [Backend](#backend)
+  - [Usage](#usage)
+    - [Useful triggers](#useful-triggers)
+      - [Trigger OCR if file was created or updated](#trigger-ocr-if-file-was-created-or-updated)
+      - [Trigger OCR on tag assigning](#trigger-ocr-on-tag-assigning)
+    - [Settings](#settings)
+      - [Per workflow settings](#per-workflow-settings)
+      - [Global settings](#global-settings)
+    - [Testing your configuration](#testing-your-configuration)
+  - [How it works](#how-it-works)
+    - [General](#general)
+    - [PDF](#pdf)
+    - [Images](#images)
+  - [Development](#development)
+    - [Dev setup](#dev-setup)
+    - [Debugging](#debugging)
+    - [`docker`-based setup](#docker-based-setup)
+    - [Executing tests](#executing-tests)
+    - [Adding a new `OcrProcessor`](#adding-a-new-ocrprocessor)
+    - [Events emitted by the app](#events-emitted-by-the-app)
+      - [`TextRecognizedEvent`](#textrecognizedevent)
+  - [Limitations](#limitations)
+  - [Used libraries & components](#used-libraries--components)
 
 ## Setup
 ### App installation
@@ -333,6 +333,43 @@ public static function registerOcrProcessors(IRegistrationContext $context) : vo
 ```
 
 That's all. If you now create a new workflow based on your added mimetype, your implementation should be triggered by the app. The return value of `ocrFile(string $fileContent, WorkflowSettings $settings, GlobalSettings $globalSettings)` will be interpreted as the file content of the scanned file. This one is used to create a new file version in Nextcloud.
+
+### Events emitted by the app
+
+The app currently emits the following events from `lib/Events`. You can use these hooks to extend the app's functionality inside your own app.
+Use the following sample code to implement  a listener for the events:
+
+```php
+use OCA\WorkflowOcr\Events\TextRecognizedEvent;
+use OCP\EventDispatcher\Event;
+use OCP\EventDispatcher\IEventListener;
+
+class TextRecognizedListener implements IEventListener {
+	public function handle(Event $event): void {
+		if (!$event instanceof TextRecognizedEvent) {
+			return;
+		}
+		// Do something with the event ...
+	}
+}
+```
+
+Your implementation should then be registered in your app's `Application.php`:
+
+```php
+public function register(IRegistrationContext $context): void {
+		$context->registerEventListener(TextRecognizedEvent::class, TextRecognizedListener::class);
+}
+```
+
+#### `TextRecognizedEvent`
+
+This event will be emitted when a OCR process has finished successfully. It contains the following information:
+
+| Method | Type | Description |
+|--------|-------|------------|
+| `getResult()` | `OCA\WorkflowOcr\OcrProcessors\OcrProcessorResult` |  Holds information about the OCR processed file content. |
+| `getFile()`   | `OCP\Files\File` | The NC file node where the OCR processed file was stored to. | 
 
 ## Limitations
 * **Currently only pdf documents (`application/pdf`) and single images (`image/jpeg` and `image/png`) can be used as input.** Other mimetypes are currently ignored but might be added in the future.
