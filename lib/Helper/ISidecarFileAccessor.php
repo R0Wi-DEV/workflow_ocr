@@ -27,8 +27,10 @@ interface ISidecarFileAccessor {
 	/**
 	 * 	Creates a new temporary sidecar file for OCR text content.
 	 *  If a file was already created, the path to the existing file is returned.
+	 * 
+	 * @return string|bool Path to the sidecar file or false if the file could not be created
 	 */
-	public function getOrCreateSidecarFile(): string|bool;
+	public function getOrCreateSidecarFile();
 
 	/**
 	 * 	Gets the content of the created sidecar file. File has to be created

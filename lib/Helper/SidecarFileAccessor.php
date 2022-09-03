@@ -45,7 +45,7 @@ class SidecarFileAccessor implements ISidecarFileAccessor {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getOrCreateSidecarFile(): string|bool {
+	public function getOrCreateSidecarFile() {
 		if ($this->sidecarFilePath === null) {
 			$this->sidecarFilePath = $this->tempManager->getTemporaryFile('sidecar');
 			if (!$this->sidecarFilePath) {
