@@ -61,7 +61,6 @@ class OcrServiceTest extends TestCase {
 		$this->systemTagObjectMapper = $this->createMock(ISystemTagObjectMapper::class);
 		$this->logger = $this->createMock(LoggerInterface::class);
 		$this->fileInput = $this->createMock(File::class);
-		
 		$this->ocrService = new OcrService($this->ocrProcessorFactory, $this->globalSettingsService, $this->systemTagObjectMapper, $this->logger);
 	}
 
