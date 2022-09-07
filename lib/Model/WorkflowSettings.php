@@ -36,6 +36,12 @@ class WorkflowSettings {
 	/** @var bool */
 	private $removeBackground = false;
 
+	/** @var array string */
+	private $tagsToRemoveAfterOcr = [];
+
+	/** @var array string */
+	private $tagsToAddAfterOcr = [];
+
 	/**
 	 * @param string $json The serialized JSON string used in frontend as input for the Vue component
 	 */
@@ -55,6 +61,20 @@ class WorkflowSettings {
 	 */
 	public function getRemoveBackground(): bool {
 		return $this->removeBackground;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getTagsToRemoveAfterOcr(): array {
+		return $this->tagsToRemoveAfterOcr;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getTagsToAddAfterOcr(): array {
+		return $this->tagsToAddAfterOcr;
 	}
 
 	/**
@@ -88,6 +108,12 @@ class WorkflowSettings {
 		}
 		if (array_key_exists('removeBackground', $data) && is_bool($data['removeBackground'])) {
 			$this->removeBackground = $data['removeBackground'];
+		}
+		if (array_key_exists('tagsToRemoveAfterOcr', $data) && is_array($data['tagsToRemoveAfterOcr'])) {
+			$this->tagsToRemoveAfterOcr = $data['tagsToRemoveAfterOcr'];
+		}
+		if (array_key_exists('tagsToAddAfterOcr', $data) && is_array($data['tagsToAddAfterOcr'])) {
+			$this->tagsToAddAfterOcr = $data['tagsToAddAfterOcr'];
 		}
 	}
 }
