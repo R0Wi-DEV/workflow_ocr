@@ -22,8 +22,7 @@
 
 <template>
 	<div>
-		<SettingsSection
-			title="Workflow OCR"
+		<SettingsSection title="Workflow OCR"
 			:description="description"
 			doc-url="https://github.com/R0Wi/workflow_ocr/blob/master/README.md#global-settings">
 			<div class="div-table-row">
