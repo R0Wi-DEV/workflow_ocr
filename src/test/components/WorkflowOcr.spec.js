@@ -1,6 +1,8 @@
 import { mount } from '@vue/test-utils'
 import WorkflowOcr from '../../components/WorkflowOcr.vue'
+import SettingsItem from '../../components/SettingsItem.vue'
 import Multiselect from '@nextcloud/vue/dist/Components/Multiselect'
+import MultiselectTags from '@nextcloud/vue/dist/Components/MultiselectTags'
 import CheckboxRadioSwitch from '@nextcloud/vue/dist/Components/CheckboxRadioSwitch'
 
 beforeEach(() => {
@@ -69,7 +71,7 @@ describe('Language settings tests', () => {
 		})
 
 		// Simulate user input
-		const multiselect = wrapper.findComponent(Multiselect)
+		const multiselect = wrapper.findAllComponents(SettingsItem).at(0).findComponent(Multiselect)
 		multiselect.vm.$emit('input', [
 			{ label: 'German', langCode: 'de' },
 			{ label: 'English', langCode: 'en' },
@@ -78,6 +80,54 @@ describe('Language settings tests', () => {
 		const inputEvent = wrapper.emitted().input
 		expect(inputEvent).toBeTruthy()
 		expect(inputEvent[0][0]).toBe('{"languages":["de","en"],"removeBackground":true}')
+	})
+})
+
+describe('Add/remove tags tests', () => {
+	test('Values assignTagsAfterOcr/removeTagsAfterOcr tags are set to empty array if no value was choosen', () => {
+		const wrapper = mount(WorkflowOcr)
+		expect(wrapper.vm.tagsToAddAfterOcr).toEqual([])
+		expect(wrapper.vm.tagsToRemoveAfterOcr).toEqual([])
+	})
+
+	test('User input for assignTagsAfterOcr is applied correctly on empty component', async () => {
+		const wrapper = mount(WorkflowOcr, {
+			propsData: {
+				value: '{ "languages": [ "de" ], "removeBackground": true }',
+			},
+		})
+
+		const settingsItems = wrapper.findAllComponents(SettingsItem)
+		const assignTagsItem = settingsItems.at(1).findComponent(MultiselectTags)
+
+		// Simulate user input
+		assignTagsItem.vm.$emit('input', [1, 2])
+
+		await wrapper.vm.$nextTick()
+
+		const inputEvent = wrapper.emitted().input
+		expect(inputEvent).toBeTruthy()
+		expect(inputEvent[0][0]).toBe('{"languages":["de"],"removeBackground":true,"tagsToAddAfterOcr":[1,2]}')
+	})
+
+	test('User input for removeTagsAfterOcr is applied correctly on empty component', async () => {
+		const wrapper = mount(WorkflowOcr, {
+			propsData: {
+				value: '{ "languages": [ "de" ], "removeBackground": true }',
+			},
+		})
+
+		const settingsItems = wrapper.findAllComponents(SettingsItem)
+		const removeTagsItem = settingsItems.at(2).findComponent(MultiselectTags)
+
+		// Simulate user input
+		removeTagsItem.vm.$emit('input', [1, 2])
+
+		await wrapper.vm.$nextTick()
+
+		const inputEvent = wrapper.emitted().input
+		expect(inputEvent).toBeTruthy()
+		expect(inputEvent[0][0]).toBe('{"languages":["de"],"removeBackground":true,"tagsToRemoveAfterOcr":[1,2]}')
 	})
 })
 

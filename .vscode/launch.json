@@ -4,7 +4,6 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-
         {
             "name": "Listen for XDebug",
             "type": "php",
@@ -53,6 +52,16 @@
               "${file}"
             ],
             "port": 9229
-        }
+        },
+		{
+			"type": "chrome",
+			"request": "launch",
+			"name": "vuejs: chrome",
+			"url": "http://localhost/nextcloud/index.php/settings/admin/workflow",
+			"webRoot": "${workspaceFolder}/src",
+			"sourceMapPathOverrides": {
+			  "webpack:///workflow_ocr/src/*": "${webRoot}/*"
+			}
+		},
     ]
 }

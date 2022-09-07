@@ -22,16 +22,31 @@
 
 <template>
 	<div>
-		<Multiselect
-			v-model="selectedLanguages"
-			track-by="langCode"
-			label="label"
-			:tag-width="80"
-			:placeholder="placeholder"
-			:multiple="true"
-			:options="availableLanguages" />
-		<CheckboxRadioSwitch
-			:checked.sync="removeBackground"
+		<SettingsItem label="OCR language"
+			info-text="The language(s) to be used for OCR processing">
+			<Multiselect v-model="selectedLanguages"
+				track-by="langCode"
+				label="label"
+				:tag-width="80"
+				:placeholder="selectedLanguagesPlaceholder"
+				:multiple="true"
+				:options="availableLanguages" />
+		</SettingsItem>
+		<SettingsItem label="Assign tags after OCR"
+			info-text="These tags will be assigned to the file after OCR processing has finished">
+			<MultiselectTags v-model="tagsToAddAfterOcr"
+				:multiple="true">
+				{{ tagsToAddAfterOcr }}
+			</MultiselectTags>
+		</SettingsItem>
+		<SettingsItem label="Remove tags after OCR"
+			info-text="These tags will be removed from the file after OCR processing has finished">
+			<MultiselectTags v-model="tagsToRemoveAfterOcr"
+				:multiple="true">
+				{{ tagsToRemoveAfterOcr }}
+			</MultiselectTags>
+		</SettingsItem>
+		<CheckboxRadioSwitch :checked.sync="removeBackground"
 			type="switch">
 			{{ translate('Remove background') }}
 		</CheckboxRadioSwitch>
@@ -41,7 +56,9 @@
 <script>
 
 import { appId } from '../constants'
+import SettingsItem from './SettingsItem'
 import Multiselect from '@nextcloud/vue/dist/Components/Multiselect'
+import MultiselectTags from '@nextcloud/vue/dist/Components/MultiselectTags'
 import CheckboxRadioSwitch from '@nextcloud/vue/dist/Components/CheckboxRadioSwitch'
 
 const availableLanguages = [
@@ -60,7 +77,9 @@ export default {
 	name: 'WorkflowOcr',
 	components: {
 		Multiselect: Multiselect,
+		MultiselectTags: MultiselectTags,
 		CheckboxRadioSwitch: CheckboxRadioSwitch,
+		SettingsItem: SettingsItem,
 	},
 	props: {
 		// Will be set by the parent (serialized JSON value)
@@ -93,6 +112,28 @@ export default {
 				this.$emit('input', JSON.stringify(model))
 			},
 		},
+		tagsToAddAfterOcr: {
+			get: function() {
+				const model = this.getModel()
+				return model.tagsToAddAfterOcr ?? []
+			},
+			set: function(tagIdArray) {
+				const model = this.getModel()
+				model.tagsToAddAfterOcr = tagIdArray
+				this.$emit('input', JSON.stringify(model))
+			},
+		},
+		tagsToRemoveAfterOcr: {
+			get: function() {
+				const model = this.getModel()
+				return model.tagsToRemoveAfterOcr ?? []
+			},
+			set: function(tagIdArray) {
+				const model = this.getModel()
+				model.tagsToRemoveAfterOcr = tagIdArray
+				this.$emit('input', JSON.stringify(model))
+			},
+		},
 		removeBackground: {
 			get: function() {
 				const model = this.getModel()
@@ -104,7 +145,7 @@ export default {
 				this.$emit('input', JSON.stringify(model))
 			},
 		},
-		placeholder: function() {
+		selectedLanguagesPlaceholder: function() {
 			return this.translate('Select language(s)')
 		},
 	},
@@ -114,6 +155,8 @@ export default {
 			 * Model structure which is captured by NC parent as JSON string:
 			 * {
 			 *   languages: [ 'de', 'en' ],
+			 *   assignTagsAfterOcr: [1, 2, 3],
+			 *   removeTagsAfterOcr: [42, 43],
 			 *   removeBackground: true,
 			 * }
 			 */

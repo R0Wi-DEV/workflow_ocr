@@ -17,6 +17,7 @@ module.exports = {
     transformIgnorePatterns: [
       "node_modules\/(?!(vue-material-design-icons)\/)",
       //"node_modules/(?!@babel)"
-    ]
+    ],
+    setupFilesAfterEnv: ['<rootDir>/src/test/setup-jest.js']
   }
   

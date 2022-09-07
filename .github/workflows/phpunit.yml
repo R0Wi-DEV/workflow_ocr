@@ -65,7 +65,7 @@ jobs:
           php -S localhost:8080 &
       - name: PHPUnit
         working-directory: apps/${{ env.APP_NAME }}
-        run: make test
+        run: make php-test
 
   mysql:
     runs-on: ubuntu-20.04
@@ -130,7 +130,7 @@ jobs:
           php -S localhost:8080 &
       - name: PHPUnit
         working-directory: apps/${{ env.APP_NAME }}
-        run: make test
+        run: make php-test
 
   pgsql:
     runs-on: ubuntu-20.04
@@ -197,4 +197,4 @@ jobs:
           php -S localhost:8080 &
       - name: PHPUnit
         working-directory: apps/${{ env.APP_NAME }}
-        run: make test
+        run: make php-test
