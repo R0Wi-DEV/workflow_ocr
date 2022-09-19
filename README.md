@@ -368,8 +368,10 @@ This event will be emitted when a OCR process has finished successfully. It cont
 
 | Method | Type | Description |
 |--------|-------|------------|
-| `getResult()` | `OCA\WorkflowOcr\OcrProcessors\OcrProcessorResult` |  Holds information about the OCR processed file content. |
-| `getFile()`   | `OCP\Files\File` | The NC file node where the OCR processed file was stored to. | 
+| `getRecognizedText()` | `string` | Contains the text which was recognized by the OCR process. |
+| `getFile()`   | `OCP\Files\File` | The NC file node where the OCR processed file was stored to. |
+
+> **Note:** this event will be emitted even if the OCR content was empty.
 
 ## Limitations
 * **Currently only pdf documents (`application/pdf`) and single images (`image/jpeg` and `image/png`) can be used as input.** Other mimetypes are currently ignored but might be added in the future.
