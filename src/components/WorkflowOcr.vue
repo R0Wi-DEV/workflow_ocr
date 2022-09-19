@@ -55,24 +55,12 @@
 
 <script>
 
-import { appId } from '../constants'
+import { appId, tesseractLanguageMapping } from '../constants.js'
+import { getInstalledLanguages } from '../service/ocrBackendInfoService'
 import SettingsItem from './SettingsItem'
 import Multiselect from '@nextcloud/vue/dist/Components/Multiselect'
 import MultiselectTags from '@nextcloud/vue/dist/Components/MultiselectTags'
 import CheckboxRadioSwitch from '@nextcloud/vue/dist/Components/CheckboxRadioSwitch'
-
-const availableLanguages = [
-	{ label: 'German', langCode: 'de' },
-	{ label: 'English', langCode: 'en' },
-	{ label: 'French', langCode: 'fr' },
-	{ label: 'Italian', langCode: 'it' },
-	{ label: 'Spanish', langCode: 'es' },
-	{ label: 'Portuguese', langCode: 'pt' },
-	{ label: 'Russian', langCode: 'ru' },
-	{ label: 'Chinese - Simplified', langCode: 'chi' },
-	{ label: 'Estonian', langCode: 'est' },
-	{ label: 'Slovak', langCode: 'slk ' },
-]
 
 export default {
 	name: 'WorkflowOcr',
@@ -89,22 +77,19 @@ export default {
 			default: '',
 		},
 	},
-	data: () => ({
-		availableLanguages: availableLanguages,
-	}),
+	data: function() {
+		return {
+			availableLanguages: [],
+		}
+	},
 	computed: {
 		selectedLanguages: {
 			get: function() {
 				const model = this.getModel()
 				return model.languages
-					? model.languages.map(langCode => {
-						const entry = availableLanguages.find(lang => lang.langCode === langCode)
-						if (!entry) {
-							return null
-						}
-						entry.label = this.translate(entry.label)
-						return entry
-					}).filter(entry => entry !== null)
+					? model.languages
+						.map(langCode => tesseractLanguageMapping.find(lang => lang.langCode === langCode))
+						.filter(entry => !!entry)
 					: []
 			},
 			set: function(langArray) {
@@ -149,6 +134,10 @@ export default {
 		selectedLanguagesPlaceholder: function() {
 			return this.translate('Select language(s)')
 		},
+	},
+	beforeMount: async function() {
+		const installedLanguagesCodes = await getInstalledLanguages()
+		this.availableLanguages = tesseractLanguageMapping.filter(lang => installedLanguagesCodes.includes(lang.langCode))
 	},
 	methods: {
 		getModel: function() {

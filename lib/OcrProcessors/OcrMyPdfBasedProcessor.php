@@ -33,22 +33,6 @@ use OCP\Files\File;
 use Psr\Log\LoggerInterface;
 
 abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
-	/** @var array
-	 * Mapping for VUE frontend lang settings.
-	 * See also https://github.com/tesseract-ocr/tesseract/blob/main/doc/tesseract.1.asc#languages
-	 */
-	private static $langMapping = [
-		'de' => 'deu',
-		'en' => 'eng',
-		'fr' => 'fra',
-		'it' => 'ita',
-		'es' => 'spa',
-		'pt' => 'por',
-		'ru' => 'rus',
-		'chi' => 'chi_sim',
-		'est' => 'est',
-		'slk' => 'slk'
-	];
 
 	/** @var ICommand */
 	private $command;
@@ -127,14 +111,7 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 
 		// Language settings
 		if ($settings->getLanguages()) {
-			$langStr = Chain::create($settings->getLanguages())
-				->map(function ($langCode) {
-					return self::$langMapping[(string)$langCode] ?? null;
-				})
-				->filter(function ($l) {
-					return $l !== null;
-				})
-				->join('+');
+			$langStr = Chain::create($settings->getLanguages())->join('+');
 			$args[] = "-l $langStr";
 		}
 

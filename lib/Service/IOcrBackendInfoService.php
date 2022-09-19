@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * @copyright Copyright (c) 2021 Robin Windey <ro.windey@gmail.com>
+ * @copyright Copyright (c) 2022 Robin Windey <ro.windey@gmail.com>
  *
  * @author Robin Windey <ro.windey@gmail.com>
  *
@@ -24,11 +24,15 @@ declare(strict_types=1);
  *
  */
 
+namespace OCA\WorkflowOcr\Service;
 
-return [
-	'routes' => [
-		['name' => 'GlobalSettings#getGlobalSettings', 'url' => '/globalSettings', 'verb' => 'GET'],
-		['name' => 'GlobalSettings#setGlobalSettings', 'url' => '/globalSettings', 'verb' => 'PUT'],
-		['name' => 'OcrBackendInfo#getInstalledLanguages', 'url' => '/ocrBackendInfo/installedLangs', 'verb' => 'GET']
-	]
-];
+interface IOcrBackendInfoService {
+
+	/**
+	 * Returns all languages that are supported by the OCR backend.
+	 * Languages will be returned as an array of language-code-strings,
+	 * currently defined at https://github.com/tesseract-ocr/tesseract/blob/main/doc/tesseract.1.asc#languages.
+	 * @return array string[]
+	 */
+	public function getInstalledLanguages() : array;
+}

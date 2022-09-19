@@ -24,7 +24,7 @@
 import { generateUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'
 
-const relativeUrl = '/apps/workflow_ocr/globalsettings'
+const relativeUrl = '/apps/workflow_ocr/globalSettings'
 
 /**
  * Create a new appointment config in the backend

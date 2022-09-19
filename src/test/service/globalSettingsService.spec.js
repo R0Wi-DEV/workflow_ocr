@@ -19,7 +19,7 @@ test('getGlobalSettings returns correct data from server', async () => {
 
 	expect(result.processorCount).toBe(42)
 	expect(axios.get).toHaveBeenCalledTimes(1)
-	expect(axios.get).toHaveBeenCalledWith('/apps/workflow_ocr/globalsettings')
+	expect(axios.get).toHaveBeenCalledWith('/apps/workflow_ocr/globalSettings')
 })
 
 test('setGlobalSettings sends correct data to server', async () => {
@@ -32,5 +32,5 @@ test('setGlobalSettings sends correct data to server', async () => {
 
 	expect(result.processorCount).toBe('42')
 	expect(axios.put).toHaveBeenCalledTimes(1)
-	expect(axios.put).toHaveBeenCalledWith('/apps/workflow_ocr/globalsettings', { globalSettings: request })
+	expect(axios.put).toHaveBeenCalledWith('/apps/workflow_ocr/globalSettings', { globalSettings: request })
 })
