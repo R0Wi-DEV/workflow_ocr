@@ -403,6 +403,38 @@ class ProcessFileJobTest extends TestCase {
 		$this->assertEquals(1, $calledWithNull);
 	}
 
+	/**
+	 * @dataProvider dataProvider_ValidArguments
+	 */
+	public function testDoesNotCreateNewFileVersionIfOcrContentWasEmpty(array $arguments, string $user, string $rootFolderPath, string $originalFileExtension, string $expectedOcrFilename) {
+		$this->processFileJob->setArgument($arguments);
+		$mimeType = 'application/pdf';
+		$content = 'someFileContent';
+		$ocrContent = '';
+		$ocrResult = new OcrProcessorResult($ocrContent, "pdf", $ocrContent);
+
+		$fileMock = $this->createValidFileMock($mimeType, $content);
+		$this->rootFolder->method('get')
+			->willReturn($fileMock);
+
+		$this->ocrService->expects($this->once())
+			->method('ocrFile')
+			->willReturn($ocrResult);
+
+		$viewMock = $this->createMock(IView::class);
+		$this->viewFactory->expects($this->never())
+			->method('create')
+			->willReturn($viewMock);
+
+		$this->processingFileAccessor->expects($this->never())
+			->method('setCurrentlyProcessedFileId');
+
+		$this->eventService->expects($this->once())
+			->method('textRecognized');
+
+		$this->processFileJob->execute($this->jobList);
+	}
+
 	public function dataProvider_InvalidArguments() {
 		$arr = [
 			[null, 1],
