@@ -33,29 +33,29 @@ use PHPUnit\Framework\TestCase;
 
 class EventServiceTest extends TestCase {
 
-    /** @var IEventDispatcher|MockObject */
-    private $eventDispatcher;
+	/** @var IEventDispatcher|MockObject */
+	private $eventDispatcher;
 
-    /** @var EventService */
-    private $service;
+	/** @var EventService */
+	private $service;
 
-    public function setUp() : void {
-        $this->eventDispatcher = $this->createMock(IEventDispatcher::class);
-        $this->service = new EventService($this->eventDispatcher);
-        parent::setUp();
-    }
+	public function setUp() : void {
+		$this->eventDispatcher = $this->createMock(IEventDispatcher::class);
+		$this->service = new EventService($this->eventDispatcher);
+		parent::setUp();
+	}
 
-    public function testTextRecognizedDispatchesEvent() {
-        /** @var File|MockObject */
-        $file = $this->createMock(File::class);
-        $recognizedText = 'recognizedText';
-        $ocrResult = new OcrProcessorResult('content', 'pdf', $recognizedText);
-        $this->eventDispatcher->expects($this->once())
-            ->method('dispatchTyped')
-            ->with($this->callback(function (TextRecognizedEvent $event) use ($recognizedText, $file) {
-                return $event->getRecognizedText() === $recognizedText && $event->getFile() === $file;
-            }));
+	public function testTextRecognizedDispatchesEvent() {
+		/** @var File|MockObject */
+		$file = $this->createMock(File::class);
+		$recognizedText = 'recognizedText';
+		$ocrResult = new OcrProcessorResult('content', 'pdf', $recognizedText);
+		$this->eventDispatcher->expects($this->once())
+			->method('dispatchTyped')
+			->with($this->callback(function (TextRecognizedEvent $event) use ($recognizedText, $file) {
+				return $event->getRecognizedText() === $recognizedText && $event->getFile() === $file;
+			}));
 
-        $this->service->textRecognized($ocrResult, $file);
-    }
+		$this->service->textRecognized($ocrResult, $file);
+	}
 }

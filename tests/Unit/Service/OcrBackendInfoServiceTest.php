@@ -104,8 +104,14 @@ class OcrBackendInfoServiceTest extends TestCase {
 		$logged = false;
 		$this->logger->expects($this->once())
 			->method('warning')
-			->willReturnCallback(function ($message) use ($stdErr, $errorOutput, &$logged) {
-				$logged = strpos($message, $stdErr) !== false || strpos($message, $errorOutput) !== false;
+			->willReturnCallback(function ($message, $paramsArr) use ($stdErr, $errorOutput, &$logged) {
+				$this->assertEquals('Tesseract list languages succeeded with warning(s): {stdErr}, {errorOutput}', $message);
+				if (!empty($stdErr)) {
+					$logged = $paramsArr['stdErr'] === $stdErr;
+				}
+				if (!empty($errorOutput)) {
+					$logged = $paramsArr['errorOutput'] === $errorOutput;
+				}
 			});
 
 		$this->service->getInstalledLanguages();
