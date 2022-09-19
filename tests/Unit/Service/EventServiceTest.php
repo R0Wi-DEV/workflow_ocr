@@ -48,11 +48,12 @@ class EventServiceTest extends TestCase {
     public function testTextRecognizedDispatchesEvent() {
         /** @var File|MockObject */
         $file = $this->createMock(File::class);
-        $ocrResult = new OcrProcessorResult('content', 'pdf', 'recognizedText');
+        $recognizedText = 'recognizedText';
+        $ocrResult = new OcrProcessorResult('content', 'pdf', $recognizedText);
         $this->eventDispatcher->expects($this->once())
             ->method('dispatchTyped')
-            ->with($this->callback(function (TextRecognizedEvent $event) use ($ocrResult, $file) {
-                return $event->getResult() === $ocrResult && $event->getFile() === $file;
+            ->with($this->callback(function (TextRecognizedEvent $event) use ($recognizedText, $file) {
+                return $event->getRecognizedText() === $recognizedText && $event->getFile() === $file;
             }));
 
         $this->service->textRecognized($ocrResult, $file);

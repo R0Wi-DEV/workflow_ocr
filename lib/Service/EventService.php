@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * @copyright Copyright (c) 2020 Robin Windey <ro.windey@gmail.com>
+ * @copyright Copyright (c) 2022 Robin Windey <ro.windey@gmail.com>
  *
  * @author g-schmitz <gschmitz@email.com>
  *
@@ -39,7 +39,7 @@ class EventService implements IEventService {
 	}
 
 	public function textRecognized(OcrProcessorResult $result, File $node) {
-		$event = new TextRecognizedEvent($result, $node);
+		$event = new TextRecognizedEvent($result->getRecognizedText(), $node);
 		$this->eventDispatcher->dispatchTyped($event);
 	}
 }
