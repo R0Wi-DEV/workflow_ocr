@@ -4,7 +4,7 @@
 [![codecov](https://codecov.io/gh/R0Wi/workflow_ocr/branch/master/graph/badge.svg)](https://codecov.io/gh/R0Wi/workflow_ocr)
 ![Lint](https://github.com/R0Wi/workflow_ocr/workflows/Lint/badge.svg)
 [![Generic badge](https://img.shields.io/github/v/release/R0Wi/workflow_ocr)](https://github.com/R0Wi/workflow_ocr/releases)
-[![Generic badge](https://img.shields.io/badge/Nextcloud-24-orange)](https://github.com/nextcloud/server)
+[![Generic badge](https://img.shields.io/badge/Nextcloud-25-orange)](https://github.com/nextcloud/server)
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
