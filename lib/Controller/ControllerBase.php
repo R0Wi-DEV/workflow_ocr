@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * @copyright Copyright (c) 2021 Robin Windey <ro.windey@gmail.com>
+ * @copyright Copyright (c) 2022 Robin Windey <ro.windey@gmail.com>
  *
  * @author Robin Windey <ro.windey@gmail.com>
  *
@@ -24,11 +24,18 @@ declare(strict_types=1);
  *
  */
 
+namespace OCA\WorkflowOcr\Controller;
 
-return [
-	'routes' => [
-		['name' => 'GlobalSettings#getGlobalSettings', 'url' => '/globalSettings', 'verb' => 'GET'],
-		['name' => 'GlobalSettings#setGlobalSettings', 'url' => '/globalSettings', 'verb' => 'PUT'],
-		['name' => 'OcrBackendInfo#getInstalledLanguages', 'url' => '/ocrBackendInfo/installedLangs', 'verb' => 'GET']
-	]
-];
+use OCP\AppFramework\Controller;
+use OCP\AppFramework\Http\JSONResponse;
+
+abstract class ControllerBase extends Controller {
+	protected function tryExecute(callable $function) : JSONResponse {
+		try {
+			$result = $function();
+			return new JSONResponse($result);
+		} catch (\Throwable $e) {
+			return new JSONResponse(['error' => $e->getMessage()], 500);
+		}
+	}
+}

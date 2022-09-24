@@ -192,22 +192,7 @@ class PdfOcrProcessorTest extends TestCase {
 			->willReturn('someOcrContent');
 
 		$processor = new PdfOcrProcessor($this->command, $this->logger, $this->sidecarFileAccessor);
-		$processor->ocrFile($this->fileBefore, new WorkflowSettings('{"languages": ["de", "en"] }'), $this->defaultGlobalSettings);
-	}
-
-	public function testInvalidLanguagesAreFiltered() {
-		$this->command->expects($this->once())
-			->method('setCommand')
-			->with('ocrmypdf -q --skip-text -l deu+eng - - | cat');
-		$this->command->expects($this->once())
-			->method('execute')
-			->willReturn(true);
-		$this->command->expects($this->once())
-			->method('getOutput')
-			->willReturn('someOcrContent');
-
-		$processor = new PdfOcrProcessor($this->command, $this->logger, $this->sidecarFileAccessor);
-		$processor->ocrFile($this->fileBefore, new WorkflowSettings('{"languages": ["de", "invalid", "en"] }'), $this->defaultGlobalSettings);
+		$processor->ocrFile($this->fileBefore, new WorkflowSettings('{"languages": ["deu", "eng"] }'), $this->defaultGlobalSettings);
 	}
 
 	public function testRemoveBackgroundFlagIsSetCorrectly() {
@@ -227,8 +212,8 @@ class PdfOcrProcessorTest extends TestCase {
 
 	public function testProcessorCountIsNotSetIfGlobalSettingsDoesNotContainProcessorCount() {
 		$this->command->expects($this->once())
-		->method('setCommand')
-		->with('ocrmypdf -q --skip-text - - | cat');
+			->method('setCommand')
+			->with('ocrmypdf -q --skip-text - - | cat');
 		$this->command->expects($this->once())
 			->method('execute')
 			->willReturn(true);
@@ -242,8 +227,8 @@ class PdfOcrProcessorTest extends TestCase {
 
 	public function testProcessorCountIsSetCorrectlyFromGobalSettings() {
 		$this->command->expects($this->once())
-		->method('setCommand')
-		->with('ocrmypdf -q --skip-text -j 42 - - | cat');
+			->method('setCommand')
+			->with('ocrmypdf -q --skip-text -j 42 - - | cat');
 		$this->command->expects($this->once())
 			->method('execute')
 			->willReturn(true);
@@ -314,8 +299,6 @@ class PdfOcrProcessorTest extends TestCase {
 			->willReturn('/tmp/sidecar.txt');
 
 		$processor = new PdfOcrProcessor($this->command, $this->logger, $this->sidecarFileAccessor);
-		$result = $processor->ocrFile($this->fileBefore, $this->defaultSettings, $this->defaultGlobalSettings);
-
-		$this->assertEquals('someOcrContent', $result->getRecognizedText());
+		$processor->ocrFile($this->fileBefore, $this->defaultSettings, $this->defaultGlobalSettings);
 	}
 }

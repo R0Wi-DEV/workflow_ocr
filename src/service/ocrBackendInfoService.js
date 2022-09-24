@@ -1,13 +1,9 @@
-<?php
-
-declare(strict_types=1);
-
 /**
- * @copyright Copyright (c) 2021 Robin Windey <ro.windey@gmail.com>
+ * @copyright Copyright (c) 2022 Robin Windey <ro.windey@gmail.com>
  *
  * @author Robin Windey <ro.windey@gmail.com>
  *
- * @license GNU AGPL version 3 or any later version
+ * @license AGPL-3.0-or-later
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,11 +20,18 @@ declare(strict_types=1);
  *
  */
 
+import { generateUrl } from '@nextcloud/router'
+import axios from '@nextcloud/axios'
 
-return [
-	'routes' => [
-		['name' => 'GlobalSettings#getGlobalSettings', 'url' => '/globalSettings', 'verb' => 'GET'],
-		['name' => 'GlobalSettings#setGlobalSettings', 'url' => '/globalSettings', 'verb' => 'PUT'],
-		['name' => 'OcrBackendInfo#getInstalledLanguages', 'url' => '/ocrBackendInfo/installedLangs', 'verb' => 'GET']
-	]
-];
+const relativeUrl = '/apps/workflow_ocr/ocrBackendInfo'
+
+/**
+ * Get all installed OCR languages from the backend system
+ *
+ * @return {Promise} Installes languages as array of strings containing the language codes
+ */
+export async function getInstalledLanguages() {
+	const url = generateUrl(relativeUrl + '/installedLangs')
+	const axiosResponse = await axios.get(url)
+	return axiosResponse.data
+}
