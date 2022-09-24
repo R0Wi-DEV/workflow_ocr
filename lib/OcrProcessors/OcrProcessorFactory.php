@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace OCA\WorkflowOcr\OcrProcessors;
 
 use OCA\WorkflowOcr\Exception\OcrProcessorNotFoundException;
+use OCA\WorkflowOcr\Helper\ISidecarFileAccessor;
 use OCA\WorkflowOcr\Wrapper\ICommand;
 use OCP\AppFramework\Bootstrap\IRegistrationContext;
 use Psr\Container\ContainerInterface;
@@ -52,10 +53,10 @@ class OcrProcessorFactory implements IOcrProcessorFactory {
 		*	under the hood.
 		*/
 		$context->registerService(PdfOcrProcessor::class, function (ContainerInterface $c) {
-			return new PdfOcrProcessor($c->get(ICommand::class), $c->get(LoggerInterface::class));
+			return new PdfOcrProcessor($c->get(ICommand::class), $c->get(LoggerInterface::class), $c->get(ISidecarFileAccessor::class));
 		}, false);
 		$context->registerService(ImageOcrProcessor::class, function (ContainerInterface $c) {
-			return new ImageOcrProcessor($c->get(ICommand::class), $c->get(LoggerInterface::class));
+			return new ImageOcrProcessor($c->get(ICommand::class), $c->get(LoggerInterface::class), $c->get(ISidecarFileAccessor::class));
 		}, false);
 	}
 

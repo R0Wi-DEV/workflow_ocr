@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\Tests\Unit\OcrProcessors;
 
+use OCA\WorkflowOcr\Helper\ISidecarFileAccessor;
 use OCA\WorkflowOcr\Model\GlobalSettings;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCA\WorkflowOcr\OcrProcessors\ImageOcrProcessor;
@@ -40,8 +41,10 @@ class ImageOcrProcessorTest extends TestCase {
 		$logger = $this->createMock(LoggerInterface::class);
 		/** @var File|MockObject $file */
 		$file = $this->createMock(File::class);
+		/** @var ISidecarFileAccessor|MockObject $fileReader */
+		$sidecarFileAccessor = $this->createMock(ISidecarFileAccessor::class);
 
-		$processor = new ImageOcrProcessor($command, $logger);
+		$processor = new ImageOcrProcessor($command, $logger, $sidecarFileAccessor);
 
 		$file->expects($this->once())
 			->method('getContent')

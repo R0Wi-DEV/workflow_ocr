@@ -5,7 +5,9 @@ declare(strict_types=1);
 /**
  * @copyright Copyright (c) 2020 Robin Windey <ro.windey@gmail.com>
  *
- *  @license GNU AGPL version 3 or any later version
+ * @author g-schmitz <gschmitz@email.com>
+ *
+ * @license GNU AGPL version 3 or any later version
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -19,37 +21,20 @@ declare(strict_types=1);
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
  */
 
-namespace OCA\WorkflowOcr\OcrProcessors;
+namespace OCA\WorkflowOcr\Service;
 
-/**
- * Represents a file which was processed via OCR.
- */
-class OcrProcessorResult {
-	/** @var string */
-	private $fileContent;
-	/** @var string */
-	private $fileExtension;
-	/** @var string */
-	private $recognizedText;
+use OCA\WorkflowOcr\OcrProcessors\OcrProcessorResult;
+use OCP\Files\File;
 
-
-	public function __construct(string $fileContent, string $fileExtension, string $recognizedText) {
-		$this->fileContent = $fileContent;
-		$this->fileExtension = $fileExtension;
-		$this->recognizedText = $recognizedText;
-	}
-
-	public function getFileContent(): string {
-		return $this->fileContent;
-	}
-
-	public function getFileExtension(): string {
-		return $this->fileExtension;
-	}
-
-	public function getRecognizedText(): string {
-		return $this->recognizedText;
-	}
+interface IEventService {
+	/**
+	 * Emits events
+	 *
+	 * @param OcrProcessorResult $result 	The processed ocr result
+	 *
+	 */
+	public function textRecognized(OcrProcessorResult $result, File $node);
 }
