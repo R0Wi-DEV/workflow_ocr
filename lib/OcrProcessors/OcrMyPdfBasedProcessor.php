@@ -25,6 +25,7 @@ namespace OCA\WorkflowOcr\OcrProcessors;
 
 use Cocur\Chain\Chain;
 use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
+use OCA\WorkflowOcr\Helper\ISidecarFileAccessor;
 use OCA\WorkflowOcr\Model\GlobalSettings;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCA\WorkflowOcr\Wrapper\ICommand;
@@ -32,21 +33,6 @@ use OCP\Files\File;
 use Psr\Log\LoggerInterface;
 
 abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
-	/** @var array
-	 * Mapping for VUE frontend lang settings.
-	 * See also https://github.com/tesseract-ocr/tesseract/blob/main/doc/tesseract.1.asc#languages
-	 */
-	private static $langMapping = [
-		'de' => 'deu',
-		'en' => 'eng',
-		'fr' => 'fra',
-		'it' => 'ita',
-		'es' => 'spa',
-		'pt' => 'por',
-		'ru' => 'rus',
-		'chi' => 'chi_sim',
-		'est' => 'est'
-	];
 
 	/** @var ICommand */
 	private $command;
@@ -54,9 +40,13 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 	/** @var LoggerInterface */
 	private $logger;
 
-	public function __construct(ICommand $command, LoggerInterface $logger) {
+	/** @var ISidecarFileAccessor */
+	private $sidecarFileAccessor;
+
+	public function __construct(ICommand $command, LoggerInterface $logger, ISidecarFileAccessor $sidecarFileAccessor) {
 		$this->command = $command;
 		$this->logger = $logger;
+		$this->sidecarFileAccessor = $sidecarFileAccessor;
 	}
 
 	public function ocrFile(File $file, WorkflowSettings $settings, GlobalSettings $globalSettings): OcrProcessorResult {
@@ -93,9 +83,15 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 			throw new OcrNotPossibleException('OCRmyPDF did not produce any output');
 		}
 
+		$recognizedText = $this->sidecarFileAccessor->getSidecarFileContent();
+
+		if (!$recognizedText) {
+			$this->logger->info('Temporary sidecar file at \'{path}\' was empty', ['path' => $this->sidecarFileAccessor->getOrCreateSidecarFile()]);
+		}
+
 		$this->logger->debug("OCR processing was successful");
 
-		return new OcrProcessorResult($ocrFileContent, "pdf");
+		return new OcrProcessorResult($ocrFileContent, "pdf", $recognizedText);
 	}
 
 	/**
@@ -115,14 +111,7 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 
 		// Language settings
 		if ($settings->getLanguages()) {
-			$langStr = Chain::create($settings->getLanguages())
-				->map(function ($langCode) {
-					return self::$langMapping[(string)$langCode] ?? null;
-				})
-				->filter(function ($l) {
-					return $l !== null;
-				})
-				->join('+');
+			$langStr = Chain::create($settings->getLanguages())->join('+');
 			$args[] = "-l $langStr";
 		}
 
@@ -136,6 +125,12 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 		$processorCount = intval($globalSettings->processorCount);
 		if ($processorCount > 0) {
 			$args[] = '-j ' . $processorCount;
+		}
+
+		// Save recognized text in tempfile
+		$sidecarFilePath = $this->sidecarFileAccessor->getOrCreateSidecarFile();
+		if ($sidecarFilePath) {
+			$args[] = '--sidecar ' . $sidecarFilePath;
 		}
 
 		$resultArgs = array_merge($args, $this->getAdditionalCommandlineArgs($settings, $globalSettings));

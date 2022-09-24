@@ -28,14 +28,13 @@ namespace OCA\WorkflowOcr\Controller;
 
 use OCA\WorkflowOcr\Model\GlobalSettings;
 use OCA\WorkflowOcr\Service\IGlobalSettingsService;
-use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\JSONResponse;
 use OCP\IRequest;
 
 /**
  * This is the backend API controller for the Admin.vue component.
  */
-class GlobalSettingsController extends Controller {
+class GlobalSettingsController extends ControllerBase {
 	/** @var IGlobalSettingsService */
 	private $globalSettingsService;
 
@@ -65,14 +64,5 @@ class GlobalSettingsController extends Controller {
 			$this->globalSettingsService->setGlobalSettings($globalSettingsObject);
 			return $this->globalSettingsService->getGlobalSettings();
 		});
-	}
-
-	private function tryExecute(callable $function) : JSONResponse {
-		try {
-			$result = $function();
-			return new JSONResponse($result);
-		} catch (\Throwable $e) {
-			return new JSONResponse(['error' => $e->getMessage()], 500);
-		}
 	}
 }

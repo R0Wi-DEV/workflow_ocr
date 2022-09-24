@@ -28,13 +28,19 @@ declare(strict_types=1);
 namespace OCA\WorkflowOcr\AppInfo;
 
 use OCA\WorkflowOcr\Helper\IProcessingFileAccessor;
+use OCA\WorkflowOcr\Helper\ISidecarFileAccessor;
 use OCA\WorkflowOcr\Helper\ProcessingFileAccessor;
+use OCA\WorkflowOcr\Helper\SidecarFileAccessor;
 use OCA\WorkflowOcr\Listener\RegisterFlowOperationsListener;
 use OCA\WorkflowOcr\OcrProcessors\IOcrProcessorFactory;
 use OCA\WorkflowOcr\OcrProcessors\OcrProcessorFactory;
+use OCA\WorkflowOcr\Service\IEventService;
+use OCA\WorkflowOcr\Service\EventService;
 use OCA\WorkflowOcr\Service\GlobalSettingsService;
 use OCA\WorkflowOcr\Service\IGlobalSettingsService;
+use OCA\WorkflowOcr\Service\IOcrBackendInfoService;
 use OCA\WorkflowOcr\Service\IOcrService;
+use OCA\WorkflowOcr\Service\OcrBackendInfoService;
 use OCA\WorkflowOcr\Service\OcrService;
 use OCA\WorkflowOcr\Wrapper\CommandWrapper;
 use OCA\WorkflowOcr\Wrapper\Filesystem;
@@ -46,7 +52,10 @@ use OCP\AppFramework\App;
 use OCP\AppFramework\Bootstrap\IBootContext;
 use OCP\AppFramework\Bootstrap\IBootstrap;
 use OCP\AppFramework\Bootstrap\IRegistrationContext;
+use OCP\ITempManager;
 use OCP\WorkflowEngine\Events\RegisterOperationsEvent;
+use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 
 class Application extends App implements IBootstrap {
 	public const COMPOSER_DIR = __DIR__ . '/../../vendor/';
@@ -68,10 +77,15 @@ class Application extends App implements IBootstrap {
 		$context->registerServiceAlias(IViewFactory::class, ViewFactory::class);
 		$context->registerServiceAlias(IFilesystem::class, Filesystem::class);
 		$context->registerServiceAlias(IGlobalSettingsService::class, GlobalSettingsService::class);
+		$context->registerServiceAlias(IEventService::class, EventService::class);
+		$context->registerServiceAlias(IOcrBackendInfoService::class, OcrBackendInfoService::class);
 
 		// BUG #43
 		$context->registerService(ICommand::class, function () {
 			return new CommandWrapper();
+		}, false);
+		$context->registerService(ISidecarFileAccessor::class, function (ContainerInterface $c) {
+			return new SidecarFileAccessor($c->get(ITempManager::class), $c->get(LoggerInterface::class));
 		}, false);
 
 		$context->registerService(IProcessingFileAccessor::class, function () {

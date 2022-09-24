@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * @copyright Copyright (c) 2020 Robin Windey <ro.windey@gmail.com>
+ * @copyright Copyright (c) 2022 Robin Windey <ro.windey@gmail.com>
  *
  *  @license GNU AGPL version 3 or any later version
  *
@@ -21,35 +21,47 @@ declare(strict_types=1);
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OCA\WorkflowOcr\OcrProcessors;
+namespace OCA\WorkflowOcr\Events;
+
+use OCP\EventDispatcher\Event;
+use OCP\Files\File;
 
 /**
- * Represents a file which was processed via OCR.
+ * Class TextRecognizedEvent
+ *
+ * @package OCA\WorkflowOcr\Events
  */
-class OcrProcessorResult {
-	/** @var string */
-	private $fileContent;
-	/** @var string */
-	private $fileExtension;
+class TextRecognizedEvent extends Event {
+
+
 	/** @var string */
 	private $recognizedText;
 
+	/** @var File */
+	private $file;
 
-	public function __construct(string $fileContent, string $fileExtension, string $recognizedText) {
-		$this->fileContent = $fileContent;
-		$this->fileExtension = $fileExtension;
+
+	/**
+	 * TextRecognizedEvent constructor.
+	 */
+	public function __construct(string $recognizedText, File $file) {
+		parent::__construct();
+		
 		$this->recognizedText = $recognizedText;
+		$this->file = $file;
 	}
 
-	public function getFileContent(): string {
-		return $this->fileContent;
-	}
-
-	public function getFileExtension(): string {
-		return $this->fileExtension;
-	}
-
+	/**
+	 * @return string $recognizedText
+	 */
 	public function getRecognizedText(): string {
 		return $this->recognizedText;
+	}
+
+	/**
+	 * @return File $file
+	 */
+	public function getFile(): File {
+		return $this->file;
 	}
 }

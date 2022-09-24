@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 /**
- * @copyright Copyright (c) 2021 Robin Windey <ro.windey@gmail.com>
+ * @copyright Copyright (c) 2022 Robin Windey <ro.windey@gmail.com>
  *
- * @author Robin Windey <ro.windey@gmail.com>
+ * @author g-schmitz <gschmitz@email.com>
  *
  * @license GNU AGPL version 3 or any later version
  *
@@ -23,12 +23,23 @@ declare(strict_types=1);
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+namespace OCA\WorkflowOcr\Service;
 
+use OCP\EventDispatcher\IEventDispatcher;
+use OCA\WorkflowOcr\OcrProcessors\OcrProcessorResult;
+use OCA\WorkflowOcr\Events\TextRecognizedEvent;
+use OCP\Files\File;
 
-return [
-	'routes' => [
-		['name' => 'GlobalSettings#getGlobalSettings', 'url' => '/globalSettings', 'verb' => 'GET'],
-		['name' => 'GlobalSettings#setGlobalSettings', 'url' => '/globalSettings', 'verb' => 'PUT'],
-		['name' => 'OcrBackendInfo#getInstalledLanguages', 'url' => '/ocrBackendInfo/installedLangs', 'verb' => 'GET']
-	]
-];
+class EventService implements IEventService {
+	/** @var IEventDispatcher */
+	private $eventDispatcher;
+
+	public function __construct(IEventDispatcher $eventDispatcher) {
+		$this->eventDispatcher = $eventDispatcher;
+	}
+
+	public function textRecognized(OcrProcessorResult $result, File $node) {
+		$event = new TextRecognizedEvent($result->getRecognizedText(), $node);
+		$this->eventDispatcher->dispatchTyped($event);
+	}
+}

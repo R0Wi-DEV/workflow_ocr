@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 /**
- * @copyright Copyright (c) 2021 Robin Windey <ro.windey@gmail.com>
+ * @copyright Copyright (c) 2020 Robin Windey <ro.windey@gmail.com>
  *
- * @author Robin Windey <ro.windey@gmail.com>
+ * @author g-schmitz <gschmitz@email.com>
  *
  * @license GNU AGPL version 3 or any later version
  *
@@ -24,11 +24,17 @@ declare(strict_types=1);
  *
  */
 
+namespace OCA\WorkflowOcr\Service;
 
-return [
-	'routes' => [
-		['name' => 'GlobalSettings#getGlobalSettings', 'url' => '/globalSettings', 'verb' => 'GET'],
-		['name' => 'GlobalSettings#setGlobalSettings', 'url' => '/globalSettings', 'verb' => 'PUT'],
-		['name' => 'OcrBackendInfo#getInstalledLanguages', 'url' => '/ocrBackendInfo/installedLangs', 'verb' => 'GET']
-	]
-];
+use OCA\WorkflowOcr\OcrProcessors\OcrProcessorResult;
+use OCP\Files\File;
+
+interface IEventService {
+	/**
+	 * Emits events
+	 *
+	 * @param OcrProcessorResult $result 	The processed ocr result
+	 *
+	 */
+	public function textRecognized(OcrProcessorResult $result, File $node);
+}

@@ -1,74 +1,96 @@
 import { mount } from '@vue/test-utils'
+import { getInstalledLanguages } from '../../service/ocrBackendInfoService'
 import WorkflowOcr from '../../components/WorkflowOcr.vue'
 import SettingsItem from '../../components/SettingsItem.vue'
 import Multiselect from '@nextcloud/vue/dist/Components/Multiselect'
 import MultiselectTags from '@nextcloud/vue/dist/Components/MultiselectTags'
 import CheckboxRadioSwitch from '@nextcloud/vue/dist/Components/CheckboxRadioSwitch'
 
+let installedLanguages = []
+
+jest.mock('../../service/ocrBackendInfoService')
+
 beforeEach(() => {
 	global.t = jest.fn()
+	jest.resetAllMocks()
+	getInstalledLanguages.mockImplementation(() => installedLanguages)
 })
 
 describe('Init tests', () => {
 	test('Component value shall be empty if user does not make any settings', () => {
 		const wrapper = mount(WorkflowOcr)
 		expect(wrapper.vm.value).toEqual('')
+		expect(getInstalledLanguages).toHaveBeenCalledTimes(1)
 	})
 })
 
 describe('Language settings tests', () => {
-	test('Should have 9 languages available', () => {
+	test('Should have 3 languages available', async () => {
+		installedLanguages = ['deu', 'eng', 'fra']
 		const wrapper = mount(WorkflowOcr)
-		expect(wrapper.vm.availableLanguages.length).toBe(9)
+		await new Promise(process.nextTick)
+		expect(wrapper.vm.availableLanguages.length).toBe(3)
 	})
 
-	test('Should select one language', () => {
+	test('Should select one language', async () => {
+		installedLanguages = ['deu', 'eng', 'fra']
 		const wrapper = mount(WorkflowOcr, {
 			propsData: {
-				value: '{ "languages": [ "de" ], "removeBackground": true }',
+				value: '{ "languages": [ "deu" ], "removeBackground": true }',
 			},
 		})
+		await new Promise(process.nextTick)
 		expect(wrapper.vm.selectedLanguages.length).toBe(1)
 	})
 
-	test('Should select no language when value not set', () => {
+	test('Should select no language when value not set', async () => {
+		installedLanguages = ['deu', 'eng', 'fra']
 		const wrapper = mount(WorkflowOcr)
+		await new Promise(process.nextTick)
 		expect(wrapper.vm.selectedLanguages.length).toBe(0)
 	})
 
-	test('Should select no language when value set to null', () => {
+	test('Should select no language when value set to null', async () => {
+		installedLanguages = ['deu', 'eng', 'fra']
 		const wrapper = mount(WorkflowOcr, {
 			propsData: {
 				value: null,
 			},
 		})
+		await new Promise(process.nextTick)
 		expect(wrapper.vm.selectedLanguages.length).toBe(0)
 	})
 
-	test('Should not select any language if language code not found', () => {
+	test('Should not select any language if language code not found', async () => {
+		installedLanguages = ['deu', 'eng', 'fra']
 		const wrapper = mount(WorkflowOcr, {
 			propsData: {
 				value: '{ "languages": [ "nonExistend" ], "removeBackground": true }',
 			},
 		})
+		await new Promise(process.nextTick)
 		expect(wrapper.vm.selectedLanguages.length).toBe(0)
 	})
 
-	test('Should return empty array if value is null', () => {
+	test('Should return empty array if value is null', async () => {
+		installedLanguages = ['deu', 'eng', 'fra']
 		const wrapper = mount(WorkflowOcr, {
 			propsData: {
 				value: '{ "languages": null }',
 			},
 		})
+		await new Promise(process.nextTick)
 		expect(wrapper.vm.selectedLanguages).toEqual([])
 	})
 
-	test('Should add new language if user selects additional language', () => {
+	test('Should add new language if user selects additional language', async () => {
+		installedLanguages = ['deu', 'eng', 'fra']
 		const wrapper = mount(WorkflowOcr, {
 			propsData: {
 				value: '{ "languages": [ "de" ], "removeBackground": true }',
 			},
 		})
+		await new Promise(process.nextTick)
 
 		// Simulate user input
 		const multiselect = wrapper.findAllComponents(SettingsItem).at(0).findComponent(Multiselect)

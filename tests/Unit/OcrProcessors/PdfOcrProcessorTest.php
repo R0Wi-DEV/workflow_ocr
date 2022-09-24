@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace OCA\WorkflowOcr\Tests\Unit\OcrProcessors;
 
 use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
+use OCA\WorkflowOcr\Helper\ISidecarFileAccessor;
 use OCA\WorkflowOcr\Model\GlobalSettings;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCA\WorkflowOcr\OcrProcessors\PdfOcrProcessor;
@@ -47,6 +48,8 @@ class PdfOcrProcessorTest extends TestCase {
 	private $command;
 	/** @var LoggerInterface|MockObject */
 	private $logger;
+	/** @var ISidecarFileAccessor|MockObject */
+	private $sidecarFileAccessor;
 	/** @var WorkflowSettings */
 	private $defaultSettings;
 	/** @var GlobalSettings */
@@ -57,6 +60,7 @@ class PdfOcrProcessorTest extends TestCase {
 
 		$this->command = $this->createMock(ICommand::class);
 		$this->logger = $this->createMock(LoggerInterface::class);
+		$this->sidecarFileAccessor = $this->createMock(ISidecarFileAccessor::class);
 		$this->defaultSettings = new WorkflowSettings();
 		$this->defaultGlobalSettings = new GlobalSettings();
 		$this->fileBefore = $this->createMock(File::class);
@@ -86,10 +90,10 @@ class PdfOcrProcessorTest extends TestCase {
 		$this->command->expects($this->once())
 			->method('execute')
 			->willReturn(true);
-		
-		$processor = new PdfOcrProcessor($this->command, $this->logger);
+
+		$processor = new PdfOcrProcessor($this->command, $this->logger, $this->sidecarFileAccessor);
 		$result = $processor->ocrFile($this->fileBefore, $this->defaultSettings, $this->defaultGlobalSettings);
-		
+
 		$this->assertEquals(self::FILE_CONTENT_AFTER, $result->getFileContent());
 	}
 
@@ -107,7 +111,7 @@ class PdfOcrProcessorTest extends TestCase {
 		$this->command->expects($this->once())
 			->method('getExitCode');
 
-		$processor = new PdfOcrProcessor($this->command, $this->logger);
+		$processor = new PdfOcrProcessor($this->command, $this->logger, $this->sidecarFileAccessor);
 		$thrown = false;
 
 		try {
@@ -116,7 +120,7 @@ class PdfOcrProcessorTest extends TestCase {
 			$thrown = true;
 			$this->assertInstanceOf(OcrNotPossibleException::class, $t);
 		}
-		
+
 		$this->assertTrue($thrown);
 	}
 
@@ -146,7 +150,7 @@ class PdfOcrProcessorTest extends TestCase {
 							$paramsArray['errorOutput'] === 'getErrorOutput';
 				}));
 
-		$processor = new PdfOcrProcessor($this->command, $this->logger);
+		$processor = new PdfOcrProcessor($this->command, $this->logger, $this->sidecarFileAccessor);
 		$processor->ocrFile($this->fileBefore, $this->defaultSettings, $this->defaultGlobalSettings);
 	}
 
@@ -161,9 +165,9 @@ class PdfOcrProcessorTest extends TestCase {
 			->method('getStdErr')
 			->willReturn('stdErr');
 		$this->ocrMyPdfOutput = "";
-	
+
 		$thrown = false;
-		$processor = new PdfOcrProcessor($this->command, $this->logger);
+		$processor = new PdfOcrProcessor($this->command, $this->logger, $this->sidecarFileAccessor);
 
 		try {
 			$processor->ocrFile($this->fileBefore, $this->defaultSettings, $this->defaultGlobalSettings);
@@ -172,7 +176,7 @@ class PdfOcrProcessorTest extends TestCase {
 			$this->assertInstanceOf(OcrNotPossibleException::class, $t);
 			$this->assertEquals('OCRmyPDF did not produce any output', $t->getMessage());
 		}
-		
+
 		$this->assertTrue($thrown);
 	}
 
@@ -187,23 +191,8 @@ class PdfOcrProcessorTest extends TestCase {
 			->method('getOutput')
 			->willReturn('someOcrContent');
 
-		$processor = new PdfOcrProcessor($this->command, $this->logger);
-		$processor->ocrFile($this->fileBefore, new WorkflowSettings('{"languages": ["de", "en"] }'), $this->defaultGlobalSettings);
-	}
-
-	public function testInvalidLanguagesAreFiltered() {
-		$this->command->expects($this->once())
-			->method('setCommand')
-			->with('ocrmypdf -q --skip-text -l deu+eng - - | cat');
-		$this->command->expects($this->once())
-			->method('execute')
-			->willReturn(true);
-		$this->command->expects($this->once())
-			->method('getOutput')
-			->willReturn('someOcrContent');
-
-		$processor = new PdfOcrProcessor($this->command, $this->logger);
-		$processor->ocrFile($this->fileBefore, new WorkflowSettings('{"languages": ["de", "invalid", "en"] }'), $this->defaultGlobalSettings);
+		$processor = new PdfOcrProcessor($this->command, $this->logger, $this->sidecarFileAccessor);
+		$processor->ocrFile($this->fileBefore, new WorkflowSettings('{"languages": ["deu", "eng"] }'), $this->defaultGlobalSettings);
 	}
 
 	public function testRemoveBackgroundFlagIsSetCorrectly() {
@@ -217,14 +206,14 @@ class PdfOcrProcessorTest extends TestCase {
 			->method('getOutput')
 			->willReturn('someOcrContent');
 
-		$processor = new PdfOcrProcessor($this->command, $this->logger);
+		$processor = new PdfOcrProcessor($this->command, $this->logger, $this->sidecarFileAccessor);
 		$processor->ocrFile($this->fileBefore, new WorkflowSettings('{"removeBackground": true }'), $this->defaultGlobalSettings);
 	}
 
 	public function testProcessorCountIsNotSetIfGlobalSettingsDoesNotContainProcessorCount() {
 		$this->command->expects($this->once())
-		->method('setCommand')
-		->with('ocrmypdf -q --skip-text - - | cat');
+			->method('setCommand')
+			->with('ocrmypdf -q --skip-text - - | cat');
 		$this->command->expects($this->once())
 			->method('execute')
 			->willReturn(true);
@@ -232,14 +221,14 @@ class PdfOcrProcessorTest extends TestCase {
 			->method('getOutput')
 			->willReturn('someOcrContent');
 
-		$processor = new PdfOcrProcessor($this->command, $this->logger);
+		$processor = new PdfOcrProcessor($this->command, $this->logger, $this->sidecarFileAccessor);
 		$processor->ocrFile($this->fileBefore, $this->defaultSettings, $this->defaultGlobalSettings);
 	}
 
 	public function testProcessorCountIsSetCorrectlyFromGobalSettings() {
 		$this->command->expects($this->once())
-		->method('setCommand')
-		->with('ocrmypdf -q --skip-text -j 42 - - | cat');
+			->method('setCommand')
+			->with('ocrmypdf -q --skip-text -j 42 - - | cat');
 		$this->command->expects($this->once())
 			->method('execute')
 			->willReturn(true);
@@ -249,7 +238,67 @@ class PdfOcrProcessorTest extends TestCase {
 
 		$this->defaultGlobalSettings->processorCount = 42;
 
-		$processor = new PdfOcrProcessor($this->command, $this->logger);
+		$processor = new PdfOcrProcessor($this->command, $this->logger, $this->sidecarFileAccessor);
+		$processor->ocrFile($this->fileBefore, $this->defaultSettings, $this->defaultGlobalSettings);
+	}
+
+	public function testLogsInfoIfSidecarFileContentWasEmpty() {
+		$this->command->expects($this->once())
+			->method('execute')
+			->willReturn(true);
+		$this->command->expects($this->once())
+			->method('getOutput')
+			->willReturn('someOcrContent');
+		$this->sidecarFileAccessor->expects($this->once())
+			->method('getSidecarFileContent')
+			->willReturn('');
+
+		$this->logger->expects($this->once())
+			->method('info')
+			->with($this->callback(function ($message) {
+				return strpos($message, 'Temporary sidecar file at') !== false && strpos($message, 'was empty') !== false;
+			}));
+
+		$processor = new PdfOcrProcessor($this->command, $this->logger, $this->sidecarFileAccessor);
+		$processor->ocrFile($this->fileBefore, $this->defaultSettings, $this->defaultGlobalSettings);
+	}
+
+	public function testDoesNotLogInfoIfSidecarFileContentWasNotEmpty() {
+		$this->command->expects($this->once())
+			->method('execute')
+			->willReturn(true);
+		$this->command->expects($this->once())
+			->method('getOutput')
+			->willReturn('someOcrContent');
+		$this->sidecarFileAccessor->expects($this->once())
+			->method('getSidecarFileContent')
+			->willReturn('someOcrContent');
+
+		$this->logger->expects($this->never())
+			->method('info');
+
+		$processor = new PdfOcrProcessor($this->command, $this->logger, $this->sidecarFileAccessor);
+		$processor->ocrFile($this->fileBefore, $this->defaultSettings, $this->defaultGlobalSettings);
+	}
+
+	public function testAppliesSidecarParameterIfSidecarFileCanBeCreated() {
+		$this->command->expects($this->once())
+			->method('setCommand')
+			->with('ocrmypdf -q --skip-text --sidecar /tmp/sidecar.txt - - | cat');
+		$this->command->expects($this->once())
+			->method('execute')
+			->willReturn(true);
+		$this->command->expects($this->once())
+			->method('getOutput')
+			->willReturn('someOcrContent');
+		$this->sidecarFileAccessor->expects($this->once())
+			->method('getSidecarFileContent')
+			->willReturn('someOcrContent');
+		$this->sidecarFileAccessor->expects($this->once())
+			->method('getOrCreateSidecarFile')
+			->willReturn('/tmp/sidecar.txt');
+
+		$processor = new PdfOcrProcessor($this->command, $this->logger, $this->sidecarFileAccessor);
 		$processor->ocrFile($this->fileBefore, $this->defaultSettings, $this->defaultGlobalSettings);
 	}
 }
