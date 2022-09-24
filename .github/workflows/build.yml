@@ -1,6 +1,7 @@
 name: Build artifact
 
 on:
+  pull_request:
   workflow_dispatch:
 
 env:
@@ -36,5 +37,5 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v1
         with:
-          name: ${{ env.APP_NAME }}.tar.gz 
-          path: ${{ env.APP_NAME }}/build/artifacts/appstore/${{ env.APP_NAME }}.tar.gz      
+          name: ${{ env.APP_NAME }}.tar.gz
+          path: ${{ env.APP_NAME }}/build/artifacts/appstore/${{ env.APP_NAME }}.tar.gz

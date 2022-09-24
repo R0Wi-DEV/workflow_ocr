@@ -180,6 +180,7 @@ appstore:
 	--exclude="../$(app_name)/*.json" \
 	--exclude="../$(app_name)/*.lock" \
 	--exclude="../$(app_name)/*.cov" \
+	--exclude="../$(app_name)/psalm.xml" \
 	../$(app_name) \
 
 .PHONY: test
