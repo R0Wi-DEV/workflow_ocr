@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\Tests\Unit\Service;
 
+use OCA\WorkflowOcr\Exception\CommandException;
 use OCA\WorkflowOcr\Service\OcrBackendInfoService;
 use OCA\WorkflowOcr\Wrapper\ICommand;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -78,7 +79,7 @@ class OcrBackendInfoServiceTest extends TestCase {
 		$this->command->expects($this->never())
 			->method('getOutput');
 
-		$this->expectException(\Exception::class);
+		$this->expectException(CommandException::class);
 		$this->service->getInstalledLanguages();
 	}
 
@@ -136,7 +137,7 @@ class OcrBackendInfoServiceTest extends TestCase {
 			->method('getError')
 			->willReturn('');
 
-		$this->expectException(\Exception::class);
+		$this->expectException(CommandException::class);
 		$this->service->getInstalledLanguages();
 	}
 

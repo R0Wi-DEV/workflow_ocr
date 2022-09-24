@@ -27,7 +27,7 @@ declare(strict_types=1);
 namespace OCA\WorkflowOcr\Service;
 
 use Cocur\Chain\Chain;
-use Exception;
+use OCA\WorkflowOcr\Exception\CommandException;
 use OCA\WorkflowOcr\Wrapper\ICommand;
 use Psr\Log\LoggerInterface;
 
@@ -53,7 +53,7 @@ class OcrBackendInfoService implements IOcrBackendInfoService {
 		$exitCode = $this->command->getExitCode();
 
 		if (!$success) {
-			throw new Exception('The command ' . $commandStr .' exited abnormally with exit-code ' . $exitCode . '. Message: ' . $errorOutput . ' ' . $stdErr);
+			throw new CommandException('Exited abnormally with exit-code ' . $exitCode . '. Message: ' . $errorOutput . ' ' . $stdErr, $commandStr);
 		}
 
 		if ($stdErr !== '' || $errorOutput !== '') {
@@ -66,7 +66,7 @@ class OcrBackendInfoService implements IOcrBackendInfoService {
 		$installedLangsStr = $this->command->getOutput();
 
 		if (!$installedLangsStr) {
-			throw new Exception('The command ' . $commandStr .' did not produce any output');
+			throw new CommandException('No output produced', $commandStr);
 		}
 
 		$lines = explode("\n", $installedLangsStr);
