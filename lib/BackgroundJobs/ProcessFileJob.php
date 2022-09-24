@@ -35,6 +35,7 @@ use OCA\WorkflowOcr\Exception\OcrProcessorNotFoundException;
 use OCA\WorkflowOcr\Helper\IProcessingFileAccessor;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCA\WorkflowOcr\Service\IOcrService;
+use OCA\WorkflowOcr\Service\IEventService;
 use OCA\WorkflowOcr\Wrapper\IFilesystem;
 use OCA\WorkflowOcr\Wrapper\IViewFactory;
 use OCP\AppFramework\Utility\ITimeFactory;
@@ -57,6 +58,8 @@ class ProcessFileJob extends \OCP\BackgroundJob\QueuedJob {
 	private $rootFolder;
 	/** @var IOcrService */
 	private $ocrService;
+	/** @var IEventService */
+	private $eventService;
 	/** @var IViewFactory */
 	private $viewFactory;
 	/** @var IFilesystem */
@@ -72,6 +75,7 @@ class ProcessFileJob extends \OCP\BackgroundJob\QueuedJob {
 		LoggerInterface $logger,
 		IRootFolder $rootFolder,
 		IOcrService $ocrService,
+		IEventService $eventService,
 		IViewFactory $viewFactory,
 		IFilesystem $filesystem,
 		IUserManager $userManager,
@@ -82,6 +86,7 @@ class ProcessFileJob extends \OCP\BackgroundJob\QueuedJob {
 		$this->logger = $logger;
 		$this->rootFolder = $rootFolder;
 		$this->ocrService = $ocrService;
+		$this->eventService = $eventService;
 		$this->viewFactory = $viewFactory;
 		$this->filesystem = $filesystem;
 		$this->userManager = $userManager;
@@ -179,6 +184,7 @@ class ProcessFileJob extends \OCP\BackgroundJob\QueuedJob {
 			return;
 		}
 
+
 		$fileContent = $ocrFile->getFileContent();
 		$nodeId = $node->getId();
 		$originalFileExtension = $node->getExtension();
@@ -186,8 +192,10 @@ class ProcessFileJob extends \OCP\BackgroundJob\QueuedJob {
 
 		if ($originalFileExtension === $newFileExtension) {
 			$this->createNewFileVersion($filePath, $fileContent, $nodeId);
+			$this->eventService->textRecognized($ocrFile, $node);
 		} else {
 			$this->createNewFileVersion($filePath.".pdf", $fileContent, $nodeId);
+			$this->eventService->textRecognized($ocrFile, $node);
 		}
 	}
 

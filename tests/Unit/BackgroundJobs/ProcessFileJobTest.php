@@ -32,6 +32,7 @@ use OCA\WorkflowOcr\Exception\OcrProcessorNotFoundException;
 use OCA\WorkflowOcr\Helper\IProcessingFileAccessor;
 use OCA\WorkflowOcr\OcrProcessors\OcrProcessorResult;
 use OCA\WorkflowOcr\Service\IOcrService;
+use OCA\WorkflowOcr\Service\IEventService;
 use OCA\WorkflowOcr\Wrapper\IFilesystem;
 use OCA\WorkflowOcr\Wrapper\IView;
 use OCA\WorkflowOcr\Wrapper\IViewFactory;
@@ -60,6 +61,8 @@ class ProcessFileJobTest extends TestCase {
 	private $rootFolder;
 	/** @var IOcrService|MockObject */
 	private $ocrService;
+	/** @var IEventService|MockObject */
+	private $eventService;
 	/** @var IViewFactory|MockObject */
 	private $viewFactory;
 	/** @var IFilesystem|MockObject */
@@ -83,6 +86,7 @@ class ProcessFileJobTest extends TestCase {
 		$this->logger = $this->createMock(LoggerInterface::class);
 		$this->rootFolder = $this->createMock(IRootFolder::class);
 		$this->ocrService = $this->createMock(IOcrService::class);
+		$this->eventService = $this->createMock(IEventService::class);
 		$this->viewFactory = $this->createMock(IViewFactory::class);
 		$this->filesystem = $this->createMock(IFilesystem::class);
 		$this->userSession = $this->createMock(IUserSession::class);
@@ -102,6 +106,7 @@ class ProcessFileJobTest extends TestCase {
 			$this->logger,
 			$this->rootFolder,
 			$this->ocrService,
+			$this->eventService,
 			$this->viewFactory,
 			$this->filesystem,
 			$this->userManager,
@@ -236,12 +241,12 @@ class ProcessFileJobTest extends TestCase {
 	/**
 	 * @dataProvider dataProvider_ValidArguments
 	 */
-	public function testCreatesNewFileVersion(array $arguments, string $user, string $rootFolderPath, string $originalFileExtension, string $expectedOcrFilename) {
+	public function testCreatesNewFileVersionAndEmitsTextRecognizedEvent(array $arguments, string $user, string $rootFolderPath, string $originalFileExtension, string $expectedOcrFilename) {
 		$this->processFileJob->setArgument($arguments);
 		$mimeType = 'application/pdf';
 		$content = 'someFileContent';
 		$ocrContent = 'someOcrProcessedFile';
-		$ocrResult = new OcrProcessorResult($ocrContent, "pdf"); // Extend this cases if we add new OCR processors
+		$ocrResult = new OcrProcessorResult($ocrContent, "pdf", $ocrContent); // Extend this cases if we add new OCR processors
 		$filePath = $arguments['filePath'];
 		$dirPath = dirname($filePath);
 
@@ -263,6 +268,10 @@ class ProcessFileJobTest extends TestCase {
 			->method('create')
 			->with($dirPath)
 			->willReturn($viewMock);
+
+		$this->eventService->expects($this->once())
+			->method('textRecognized')
+			->with($ocrResult, $fileMock);
 
 		$this->processFileJob->execute($this->jobList);
 	}
@@ -334,6 +343,7 @@ class ProcessFileJobTest extends TestCase {
 			$this->logger,
 			$this->rootFolder,
 			$this->ocrService,
+			$this->eventService,
 			$this->viewFactory,
 			$this->filesystem,
 			$userManager,
@@ -356,7 +366,7 @@ class ProcessFileJobTest extends TestCase {
 		$mimeType = 'application/pdf';
 		$content = 'someFileContent';
 		$ocrContent = 'someOcrProcessedFile';
-		$ocrResult = new OcrProcessorResult($ocrContent, "pdf"); // Extend this cases if we add new OCR processors
+		$ocrResult = new OcrProcessorResult($ocrContent, "pdf", $ocrContent); // Extend this cases if we add new OCR processors
 
 		$fileMock = $this->createValidFileMock($mimeType, $content);
 		$this->rootFolder->method('get')

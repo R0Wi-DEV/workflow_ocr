@@ -25,6 +25,7 @@ namespace OCA\WorkflowOcr\OcrProcessors;
 
 use Cocur\Chain\Chain;
 use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
+use OCA\WorkflowOcr\Helper\ISidecarFileAccessor;
 use OCA\WorkflowOcr\Model\GlobalSettings;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCA\WorkflowOcr\Wrapper\ICommand;
@@ -54,9 +55,13 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 	/** @var LoggerInterface */
 	private $logger;
 
-	public function __construct(ICommand $command, LoggerInterface $logger) {
+	/** @var ISidecarFileAccessor */
+	private $sidecarFileAccessor;
+
+	public function __construct(ICommand $command, LoggerInterface $logger, ISidecarFileAccessor $sidecarFileAccessor) {
 		$this->command = $command;
 		$this->logger = $logger;
+		$this->sidecarFileAccessor = $sidecarFileAccessor;
 	}
 
 	public function ocrFile(File $file, WorkflowSettings $settings, GlobalSettings $globalSettings): OcrProcessorResult {
@@ -93,9 +98,15 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 			throw new OcrNotPossibleException('OCRmyPDF did not produce any output');
 		}
 
+		$recognizedText = $this->sidecarFileAccessor->getSidecarFileContent();
+
+		if (!$recognizedText) {
+			$this->logger->info('Temporary sidecar file at \'{path}\' was empty', ['path' => $this->sidecarFileAccessor->getOrCreateSidecarFile()]);
+		}
+
 		$this->logger->debug("OCR processing was successful");
 
-		return new OcrProcessorResult($ocrFileContent, "pdf");
+		return new OcrProcessorResult($ocrFileContent, "pdf", $recognizedText);
 	}
 
 	/**
@@ -136,6 +147,12 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 		$processorCount = intval($globalSettings->processorCount);
 		if ($processorCount > 0) {
 			$args[] = '-j ' . $processorCount;
+		}
+
+		// Save recognized text in tempfile
+		$sidecarFilePath = $this->sidecarFileAccessor->getOrCreateSidecarFile();
+		if ($sidecarFilePath) {
+			$args[] = '--sidecar ' . $sidecarFilePath;
 		}
 
 		$resultArgs = array_merge($args, $this->getAdditionalCommandlineArgs($settings, $globalSettings));
