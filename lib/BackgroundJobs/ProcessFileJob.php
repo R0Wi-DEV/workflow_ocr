@@ -184,19 +184,21 @@ class ProcessFileJob extends \OCP\BackgroundJob\QueuedJob {
 			return;
 		}
 
-
 		$fileContent = $ocrFile->getFileContent();
 		$nodeId = $node->getId();
 		$originalFileExtension = $node->getExtension();
 		$newFileExtension = $ocrFile->getFileExtension();
 
-		if ($originalFileExtension === $newFileExtension) {
-			$this->createNewFileVersion($filePath, $fileContent, $nodeId);
-			$this->eventService->textRecognized($ocrFile, $node);
-		} else {
-			$this->createNewFileVersion($filePath.".pdf", $fileContent, $nodeId);
-			$this->eventService->textRecognized($ocrFile, $node);
+		// Only create a new file version if the file OCR result was not empty #130
+		if ($ocrFile->getRecognizedText() !== '') {
+			$newFilePath = $originalFileExtension === $newFileExtension ?
+				$filePath :
+				$filePath . ".pdf";
+
+			$this->createNewFileVersion($newFilePath, $fileContent, $nodeId);
 		}
+
+		$this->eventService->textRecognized($ocrFile, $node);
 	}
 
 	private function getNode(string $filePath) : ?Node {
