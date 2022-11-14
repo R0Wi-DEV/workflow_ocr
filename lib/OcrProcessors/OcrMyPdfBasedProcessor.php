@@ -33,6 +33,11 @@ use OCP\Files\File;
 use Psr\Log\LoggerInterface;
 
 abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
+	private static $ocrModes = [
+		WorkflowSettings::OCR_MODE_SKIP_TEXT => '--skip-text',
+		WorkflowSettings::OCR_MODE_REDO_OCR => '--redo-ocr',
+		WorkflowSettings::OCR_MODE_FORCE_OCR => '--force-ocr'
+	];
 
 	/** @var ICommand */
 	private $command;
@@ -106,8 +111,11 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 
 
 	private function getCommandlineArgs(WorkflowSettings $settings, GlobalSettings $globalSettings): string {
-		// Default setting is quiet with skip-text
-		$args = ['-q', '--skip-text'];
+		// Default setting is quiet
+		$args = ['-q'];
+
+		// OCR mode ('--skip-text', '--redo-ocr' or '--force-ocr')
+		$args[] = self::$ocrModes[$settings->getOcrMode()];
 
 		// Language settings
 		if ($settings->getLanguages()) {
@@ -115,10 +123,14 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 			$args[] = "-l $langStr";
 		}
 
-		// Remove background option (NOTE :: this is incompatible with redo-ocr, so if we
-		// decide to make this configurable, make it exclusive against each other!)
+		// Remove background option (NOTE :: this is incompatible with redo-ocr, so
+		// we have to make it exclusive against each other!)
 		if ($settings->getRemoveBackground()) {
-			$args[] = '--remove-background';
+			if ($settings->getOcrMode() === WorkflowSettings::OCR_MODE_REDO_OCR) {
+				$this->logger->warning('--remove-background is incompatible with --redo-ocr, ignoring');
+			} else {
+				$args[] = '--remove-background';
+			}
 		}
 
 		// Number of CPU's to be used

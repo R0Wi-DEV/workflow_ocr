@@ -175,7 +175,7 @@ describe('Remove background tests', () => {
 			},
 		})
 
-		const radioSwitch = wrapper.findComponent(CheckboxRadioSwitch)
+		const radioSwitch = wrapper.findComponent({ ref: 'removeBackgroundSwitch' })
 
 		expect(radioSwitch.vm.checked).toBe(true)
 
@@ -185,5 +185,73 @@ describe('Remove background tests', () => {
 		const inputEvent = wrapper.emitted().input
 		expect(inputEvent).toBeTruthy()
 		expect(inputEvent[0][0]).toBe('{"languages":["de"],"removeBackground":false}')
+	})
+})
+
+describe('OCR mode tests', () => {
+	test('Default OCR mode is 0 (skip-text)', () => {
+		const wrapper = mount(WorkflowOcr)
+		expect(wrapper.vm.ocrMode).toBe("0")
+	})
+
+	test.each([0, 1, 2])(`Should set OCR mode to %i`, (mode) => {
+		const wrapper = mount(WorkflowOcr)
+		const radioButton = wrapper.findComponent({ ref: `ocrMode${mode}` })
+
+		// Simulate user click on radiobutton
+		radioButton.vm.$emit('update:checked', mode)
+
+		const inputEvent = wrapper.emitted().input
+		expect(inputEvent).toBeTruthy()
+		expect(inputEvent[0][0]).toContain(`"ocrMode":${mode}`)
+	})
+
+	test('Setting OCR mode to --redo-ocr (1) should set removeBackground to false and disable the control', async() => {
+		const wrapper = mount(WorkflowOcr, {
+			propsData: {
+				value: '{ "languages": [ "de" ], "removeBackground": true, "ocrMode": 0 }',
+			},
+		})
+
+		const radioButton = wrapper.findComponent({ ref: 'ocrMode1' })
+
+		// Simulate user click on radiobutton 'Redo OCR'
+		radioButton.vm.$emit('update:checked', 1)
+
+		await wrapper.vm.$nextTick()
+
+		const inputEvent = wrapper.emitted().input
+		expect(inputEvent).toBeTruthy()
+		expect(inputEvent[0][0]).toContain('"ocrMode":1')
+		expect(inputEvent[0][0]).toContain('"removeBackground":false')
+
+		const removeBackgroundSwitch = wrapper.findComponent({ ref: 'removeBackgroundSwitch' })
+		expect(removeBackgroundSwitch.vm.disabled).toBe(true)
+	})
+
+	test.each([0, 2])(`Should enable remove background switch when setting OCR mode from 1 (--redo-ocr) to %i`, async(mode) => {
+		const wrapper = mount(WorkflowOcr, {
+			propsData: {
+				value: '{ "removeBackground": false, "ocrMode": 1 }',
+			},
+		})
+
+		await wrapper.vm.$nextTick()
+		const removeBackgroundSwitchPre = wrapper.findComponent({ ref: 'removeBackgroundSwitch' })
+		expect(removeBackgroundSwitchPre.vm.disabled).toBe(true)
+
+		const radioButton = wrapper.findComponent({ ref: `ocrMode${mode}` })
+
+		// Simulate user click on radiobutton
+		radioButton.vm.$emit('update:checked', mode)
+
+		await wrapper.vm.$nextTick()
+
+		const inputEvent = wrapper.emitted().input
+		expect(inputEvent).toBeTruthy()
+		expect(inputEvent[0][0]).toContain(`"ocrMode":${mode}`)
+
+		const removeBackgroundSwitchPost = wrapper.findComponent({ ref: 'removeBackgroundSwitch' })
+		expect(removeBackgroundSwitchPost.vm.disabled).toBe(false)
 	})
 })
