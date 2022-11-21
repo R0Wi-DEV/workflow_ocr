@@ -301,4 +301,62 @@ class PdfOcrProcessorTest extends TestCase {
 		$processor = new PdfOcrProcessor($this->command, $this->logger, $this->sidecarFileAccessor);
 		$processor->ocrFile($this->fileBefore, $this->defaultSettings, $this->defaultGlobalSettings);
 	}
+
+	/**
+	 * @dataProvider dataProvider_testAppliesOcrModeParameter
+	 */
+	public function testAppliesOcrModeParameter(int $simulatedOcrMode, string $expectedOcrMyPdfFlag) {
+		$this->command->expects($this->once())
+			->method('setCommand')
+			->with('ocrmypdf -q ' . $expectedOcrMyPdfFlag . ' --sidecar /tmp/sidecar.txt - - | cat');
+		$this->command->expects($this->once())
+			->method('execute')
+			->willReturn(true);
+		$this->command->expects($this->once())
+			->method('getOutput')
+			->willReturn('someOcrContent');
+		$this->sidecarFileAccessor->expects($this->once())
+			->method('getSidecarFileContent')
+			->willReturn('someOcrContent');
+		$this->sidecarFileAccessor->expects($this->once())
+			->method('getOrCreateSidecarFile')
+			->willReturn('/tmp/sidecar.txt');
+
+		$processor = new PdfOcrProcessor($this->command, $this->logger, $this->sidecarFileAccessor);
+		$processor->ocrFile($this->fileBefore, new WorkflowSettings('{"ocrMode": ' . $simulatedOcrMode . '}'), $this->defaultGlobalSettings);
+	}
+
+	public function testRemoveBackgroundIsNotAppliedIfOcrModeIsRedoOcr() {
+		$this->command->expects($this->once())
+			->method('setCommand')
+			->with('ocrmypdf -q --redo-ocr --sidecar /tmp/sidecar.txt - - | cat');
+		$this->command->expects($this->once())
+			->method('execute')
+			->willReturn(true);
+		$this->command->expects($this->once())
+			->method('getOutput')
+			->willReturn('someOcrContent');
+		$this->sidecarFileAccessor->expects($this->once())
+			->method('getSidecarFileContent')
+			->willReturn('someOcrContent');
+		$this->sidecarFileAccessor->expects($this->once())
+			->method('getOrCreateSidecarFile')
+			->willReturn('/tmp/sidecar.txt');
+		$this->logger->expects($this->once())
+			->method('warning')
+			->with($this->callback(function ($message) {
+				return strpos($message, '--remove-background is incompatible with --redo-ocr') !== false;
+			}));
+
+		$processor = new PdfOcrProcessor($this->command, $this->logger, $this->sidecarFileAccessor);
+		$processor->ocrFile($this->fileBefore, new WorkflowSettings('{"ocrMode": ' . WorkflowSettings::OCR_MODE_REDO_OCR .', "removeBackground": true}'), $this->defaultGlobalSettings);
+	}
+
+	public function dataProvider_testAppliesOcrModeParameter() {
+		return [
+			[WorkflowSettings::OCR_MODE_SKIP_TEXT, '--skip-text'],
+			[WorkflowSettings::OCR_MODE_REDO_OCR, '--redo-ocr'],
+			[WorkflowSettings::OCR_MODE_FORCE_OCR, '--force-ocr'],
+		];
+	}
 }
