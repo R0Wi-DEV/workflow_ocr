@@ -9,33 +9,33 @@
 ## Table of contents
 
 - [Nextcloud Workflow OCR app](#nextcloud-workflow-ocr-app)
-  - [Table of contents](#table-of-contents)
-  - [Setup](#setup)
-    - [App installation](#app-installation)
-    - [Nextcloud background jobs](#nextcloud-background-jobs)
-    - [Backend](#backend)
-  - [Usage](#usage)
-    - [Useful triggers](#useful-triggers)
-      - [Trigger OCR if file was created or updated](#trigger-ocr-if-file-was-created-or-updated)
-      - [Trigger OCR on tag assigning](#trigger-ocr-on-tag-assigning)
-    - [Settings](#settings)
-      - [Per workflow settings](#per-workflow-settings)
-      - [Global settings](#global-settings)
-    - [Testing your configuration](#testing-your-configuration)
-  - [How it works](#how-it-works)
-    - [General](#general)
-    - [PDF](#pdf)
-    - [Images](#images)
-  - [Development](#development)
-    - [Dev setup](#dev-setup)
-    - [Debugging](#debugging)
-    - [`docker`-based setup](#docker-based-setup)
-    - [Executing tests](#executing-tests)
-    - [Adding a new `OcrProcessor`](#adding-a-new-ocrprocessor)
-    - [Events emitted by the app](#events-emitted-by-the-app)
-      - [`TextRecognizedEvent`](#textrecognizedevent)
-  - [Limitations](#limitations)
-  - [Used libraries & components](#used-libraries--components)
+	- [Table of contents](#table-of-contents)
+	- [Setup](#setup)
+		- [App installation](#app-installation)
+		- [Nextcloud background jobs](#nextcloud-background-jobs)
+		- [Backend](#backend)
+	- [Usage](#usage)
+		- [Useful triggers](#useful-triggers)
+			- [Trigger OCR if file was created or updated](#trigger-ocr-if-file-was-created-or-updated)
+			- [Trigger OCR on tag assigning](#trigger-ocr-on-tag-assigning)
+		- [Settings](#settings)
+			- [Per workflow settings](#per-workflow-settings)
+			- [Global settings](#global-settings)
+		- [Testing your configuration](#testing-your-configuration)
+	- [How it works](#how-it-works)
+		- [General](#general)
+		- [PDF](#pdf)
+		- [Images](#images)
+	- [Development](#development)
+		- [Dev setup](#dev-setup)
+		- [Debugging](#debugging)
+		- [`docker`-based setup](#docker-based-setup)
+		- [Executing tests](#executing-tests)
+		- [Adding a new `OcrProcessor`](#adding-a-new-ocrprocessor)
+		- [Events emitted by the app](#events-emitted-by-the-app)
+			- [`TextRecognizedEvent`](#textrecognizedevent)
+	- [Limitations](#limitations)
+	- [Used libraries & components](#used-libraries--components)
 
 ## Setup
 ### App installation
@@ -118,21 +118,21 @@ After that you should be able to add a file to the OCR processing queue by assig
 Anyone who can create new workflows (admin or regular user) can configure settings for the OCR processing for a specific workflow. These settings are only applied to the specific workflow and do not affect other workflows.
 
 <p align="center">
-  <img width="75%" src="doc/img/per_workflow_settings.png" alt="Per workflow settings">
+  <img width="75%" src="doc/img/per_workflow_settings.jpg" alt="Per workflow settings">
 </p>
 
 Currently the following settings are available per workflow:
 
 Name | Description
 --- | ---
-Languages | The languages to be used for OCR processing. The languages can be choosen from a dropdown list. For PDF files this setting corresponds to the `-l` parameter of `ocrmypdf`. **Please note** that you'll have to install the appropriate languages like described in the [`ocrmypdf` documentation](https://ocrmypdf.readthedocs.io/en/latest/languages.html).
-Remove background | If the switch is set, the OCR processor will try to remove the background of the document before processing and instead set a white background. For PDF files this setting corresponds to the [`--remove-background`](https://ocrmypdf.readthedocs.io/en/latest/cookbook.html?highlight=remove-background#image-processing) parameter of `ocrmypdf`. 
-<!--
+OCR language | The languages to be used for OCR processing. The languages can be choosen from a dropdown list. For PDF files this setting corresponds to the `-l` parameter of `ocrmypdf`. **Please note** that you'll have to install the appropriate languages like described in the [`ocrmypdf` documentation](https://ocrmypdf.readthedocs.io/en/latest/languages.html).
+Assign tags after OCR | These tags will be assigned to the file after it has been successfully processed. |
+Remove tags after OCR | These tags will be removed from the file after it has been successfully processed. If the file does not have the tag, it will just be skipped. |
+OCR mode | Controls the way files are processed, which already have OCR content. For PDF files this setting corresponds to the `--skip-text`, `--redo-ocr` and `--force-ocr` parameters of `ocrmypdf`. See [official docs](https://ocrmypdf.readthedocs.io/en/latest/advanced.html#when-ocr-is-skipped) for additional information.<br>**Skip text:** skip pages completely that already contain text. Such a page will not be touched and just be copied to the final output.<br>**Redo OCR:** perform a detailed text analysis to split up pages into areas with and without text.<br>**Force OCR:** all pages will be rasterized to images and OCR will be performed on every page. |
+Remove background\* | If the switch is set, the OCR processor will try to remove the background of the document before processing and instead set a white background. For PDF files this setting corresponds to the [`--remove-background`](https://ocrmypdf.readthedocs.io/en/latest/cookbook.html?highlight=remove-background#image-processing) parameter of `ocrmypdf`. 
 
-  Uncomment this section if we implemented the --redo-ocr/--skip-text option as a workflow setting
 
-**Please note** that without setting this option, the [`--redo-ocr`](https://ocrmypdf.readthedocs.io/en/latest/errors.html?highlight=redo-ocr#page-already-has-text) option will be set, which is **not** compatible to the mentioned `--remove-background`-parameter. So if you set this switch to "on", make sure your PDF documents do not already contain text, otherwise you might find errors in your NC logs and OCR is not possible.
--->
+\* *For `ocrmypdf` the parameter `--remove-background` is [incompatible with `--redo-ocr`](https://github.com/ocrmypdf/OCRmyPDF/blob/110c75cba25121dcca7e2b91644206cce29e8430/src/ocrmypdf/_validation.py#L104).*
 
 #### Global settings
 As a Nextcloud administrator you're able to configure global settings which apply to all configured OCR-workflows on the current system.

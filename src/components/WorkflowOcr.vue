@@ -46,10 +46,42 @@
 				{{ tagsToRemoveAfterOcr }}
 			</MultiselectTags>
 		</SettingsItem>
-		<CheckboxRadioSwitch :checked.sync="removeBackground"
-			type="switch">
-			{{ translate('Remove background') }}
-		</CheckboxRadioSwitch>
+		<SettingsItem label="OCR mode"
+			info-text="Apply this mode if file already has OCR content">
+			<div>
+				<CheckboxRadioSwitch ref="ocrMode0"
+					:checked.sync="ocrMode"
+					type="radio"
+					name="ocr_mode_radio"
+					value="0">
+					{{ translate('Skip text') }}
+				</CheckboxRadioSwitch>
+				<CheckboxRadioSwitch ref="ocrMode1"
+					:checked.sync="ocrMode"
+					type="radio"
+					name="ocr_mode_radio"
+					value="1">
+					{{ translate('Redo OCR') }}
+				</CheckboxRadioSwitch>
+				<CheckboxRadioSwitch ref="ocrMode2"
+					:checked.sync="ocrMode"
+					type="radio"
+					name="ocr_mode_radio"
+					value="2">
+					{{ translate('Force OCR') }}
+				</CheckboxRadioSwitch>
+			</div>
+		</SettingsItem>
+		<SettingsItem label="Other settings">
+			<div>
+				<CheckboxRadioSwitch ref="removeBackgroundSwitch"
+					:disabled="removeBackgroundDisabled"
+					:checked.sync="removeBackground"
+					type="switch">
+					{{ translate('Remove background') }}
+				</CheckboxRadioSwitch>
+			</div>
+		</SettingsItem>
 	</div>
 </template>
 
@@ -80,77 +112,93 @@ export default {
 	data: function() {
 		return {
 			availableLanguages: [],
-		}
-	},
-	computed: {
-		selectedLanguages: {
-			get: function() {
-				const model = this.getModel()
-				return model.languages
-					? model.languages
-						.map(langCode => tesseractLanguageMapping.find(lang => lang.langCode === langCode))
-						.filter(entry => !!entry)
-					: []
-			},
-			set: function(langArray) {
-				const model = this.getModel()
-				model.languages = langArray.map(lang => lang.langCode).filter(lang => lang !== null)
-				this.$emit('input', JSON.stringify(model))
-			},
-		},
-		tagsToAddAfterOcr: {
-			get: function() {
-				const model = this.getModel()
-				return model.tagsToAddAfterOcr ?? []
-			},
-			set: function(tagIdArray) {
-				const model = this.getModel()
-				model.tagsToAddAfterOcr = tagIdArray
-				this.$emit('input', JSON.stringify(model))
-			},
-		},
-		tagsToRemoveAfterOcr: {
-			get: function() {
-				const model = this.getModel()
-				return model.tagsToRemoveAfterOcr ?? []
-			},
-			set: function(tagIdArray) {
-				const model = this.getModel()
-				model.tagsToRemoveAfterOcr = tagIdArray
-				this.$emit('input', JSON.stringify(model))
-			},
-		},
-		removeBackground: {
-			get: function() {
-				const model = this.getModel()
-				return !!model.removeBackground
-			},
-			set: function(checked) {
-				const model = this.getModel()
-				model.removeBackground = !!checked
-				this.$emit('input', JSON.stringify(model))
-			},
-		},
-		selectedLanguagesPlaceholder: function() {
-			return this.translate('Select language(s)')
-		},
-	},
-	beforeMount: async function() {
-		const installedLanguagesCodes = await getInstalledLanguages()
-		this.availableLanguages = tesseractLanguageMapping.filter(lang => installedLanguagesCodes.includes(lang.langCode))
-	},
-	methods: {
-		getModel: function() {
 			/*
+			 * This is our JS data object model as single source of truth.
 			 * Model structure which is captured by NC parent as JSON string:
 			 * {
 			 *   languages: [ 'de', 'en' ],
 			 *   assignTagsAfterOcr: [1, 2, 3],
 			 *   removeTagsAfterOcr: [42, 43],
 			 *   removeBackground: true,
+			 *   ocrMode: 0,
 			 * }
+			 * It's initially set after component creation by 'created'-hook.
 			 */
-			return this.value ? JSON.parse(this.value) : {}
+			model: {},
+		}
+	},
+	computed: {
+		selectedLanguages: {
+			get: function() {
+				return this.model.languages
+					? this.model.languages
+						.map(langCode => tesseractLanguageMapping.find(lang => lang.langCode === langCode))
+						.filter(entry => !!entry)
+					: []
+			},
+			set: function(langArray) {
+				this.$set(this.model, 'languages', langArray.map(lang => lang.langCode).filter(lang => lang !== null))
+				this.modelChanged()
+			},
+		},
+		tagsToAddAfterOcr: {
+			get: function() {
+				return this.model.tagsToAddAfterOcr ?? []
+			},
+			set: function(tagIdArray) {
+				this.$set(this.model, 'tagsToAddAfterOcr', tagIdArray)
+				this.modelChanged()
+			},
+		},
+		tagsToRemoveAfterOcr: {
+			get: function() {
+				return this.model.tagsToRemoveAfterOcr ?? []
+			},
+			set: function(tagIdArray) {
+				this.$set(this.model, 'tagsToRemoveAfterOcr', tagIdArray)
+				this.modelChanged()
+			},
+		},
+		removeBackground: {
+			get: function() {
+				return !!this.model.removeBackground
+			},
+			set: function(checked) {
+				this.$set(this.model, 'removeBackground', !!checked)
+				this.modelChanged()
+			},
+		},
+		ocrMode: {
+			get: function() {
+				return '' + (this.model.ocrMode ?? 0)
+			},
+			set: function(mode) {
+				this.$set(this.model, 'ocrMode', parseInt(mode))
+				// --redo-ocr is incompatible with --remove-background
+				if (this.model.ocrMode === 1) {
+					this.$set(this.model, 'removeBackground', false)
+				}
+				this.modelChanged()
+			},
+		},
+		selectedLanguagesPlaceholder: function() {
+			return this.translate('Select language(s)')
+		},
+		removeBackgroundDisabled: function() {
+			return this.model.ocrMode === 1
+		},
+	},
+	beforeMount: async function() {
+		const installedLanguagesCodes = await getInstalledLanguages()
+		this.availableLanguages = tesseractLanguageMapping.filter(lang => installedLanguagesCodes.includes(lang.langCode))
+	},
+	created: function() {
+		// Set the initial model by applying the JSON value set by parent after initial mount
+		this.model = this.value ? JSON.parse(this.value) : {}
+	},
+	methods: {
+		modelChanged: function() {
+			this.$emit('input', JSON.stringify(this.model))
 		},
 		translate: function(str) {
 			return t(appId, str)

@@ -11,12 +11,6 @@
             "port": 9003
         },
         {
-            "name": "Listen for XDebug (CLI)",
-            "type": "php",
-            "request": "launch",
-            "port": 9003
-        },
-        {
             "name": "Run cron.php",
             "type": "php",
             "request": "launch",

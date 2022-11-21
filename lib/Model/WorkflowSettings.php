@@ -29,12 +29,18 @@ namespace OCA\WorkflowOcr\Model;
 use InvalidArgumentException;
 
 class WorkflowSettings {
+	public const OCR_MODE_SKIP_TEXT = 0;
+	public const OCR_MODE_REDO_OCR = 1;
+	public const OCR_MODE_FORCE_OCR = 2;
 
 	/** @var array */
 	private $languages = [];
 
 	/** @var bool */
 	private $removeBackground = false;
+
+	/** @var int */
+	private $ocrMode = self::OCR_MODE_SKIP_TEXT;
 
 	/** @var array string */
 	private $tagsToRemoveAfterOcr = [];
@@ -61,6 +67,13 @@ class WorkflowSettings {
 	 */
 	public function getRemoveBackground(): bool {
 		return $this->removeBackground;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getOcrMode(): int {
+		return $this->ocrMode;
 	}
 
 	/**
@@ -108,6 +121,9 @@ class WorkflowSettings {
 		}
 		if (array_key_exists('removeBackground', $data) && is_bool($data['removeBackground'])) {
 			$this->removeBackground = $data['removeBackground'];
+		}
+		if (array_key_exists('ocrMode', $data) && is_int($data['ocrMode'])) {
+			$this->ocrMode = $data['ocrMode'];
 		}
 		if (array_key_exists('tagsToRemoveAfterOcr', $data) && is_array($data['tagsToRemoveAfterOcr'])) {
 			$this->tagsToRemoveAfterOcr = $data['tagsToRemoveAfterOcr'];
