@@ -4,7 +4,6 @@ import WorkflowOcr from '../../components/WorkflowOcr.vue'
 import SettingsItem from '../../components/SettingsItem.vue'
 import Multiselect from '@nextcloud/vue/dist/Components/Multiselect'
 import MultiselectTags from '@nextcloud/vue/dist/Components/MultiselectTags'
-import CheckboxRadioSwitch from '@nextcloud/vue/dist/Components/CheckboxRadioSwitch'
 
 let installedLanguages = []
 

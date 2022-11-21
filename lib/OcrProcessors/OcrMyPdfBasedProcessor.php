@@ -33,7 +33,7 @@ use OCP\Files\File;
 use Psr\Log\LoggerInterface;
 
 abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
-	private static $ocrModes = [
+	private static $ocrModeToCmdParameterMapping = [
 		WorkflowSettings::OCR_MODE_SKIP_TEXT => '--skip-text',
 		WorkflowSettings::OCR_MODE_REDO_OCR => '--redo-ocr',
 		WorkflowSettings::OCR_MODE_FORCE_OCR => '--force-ocr'
@@ -115,7 +115,7 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 		$args = ['-q'];
 
 		// OCR mode ('--skip-text', '--redo-ocr' or '--force-ocr')
-		$args[] = self::$ocrModes[$settings->getOcrMode()];
+		$args[] = self::$ocrModeToCmdParameterMapping[$settings->getOcrMode()];
 
 		// Language settings
 		if ($settings->getLanguages()) {
