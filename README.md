@@ -6,6 +6,8 @@
 [![Generic badge](https://img.shields.io/github/v/release/R0Wi/workflow_ocr)](https://github.com/R0Wi/workflow_ocr/releases)
 [![Generic badge](https://img.shields.io/badge/Nextcloud-25-orange)](https://github.com/nextcloud/server)
 
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/R0Wi)
+
 ## Table of contents
 
 - [Nextcloud Workflow OCR app](#nextcloud-workflow-ocr-app)
