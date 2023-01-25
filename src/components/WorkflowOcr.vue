@@ -70,6 +70,13 @@
 					value="2">
 					{{ translate('Force OCR') }}
 				</CheckboxRadioSwitch>
+				<CheckboxRadioSwitch ref="ocrMode3"
+					:checked.sync="ocrMode"
+					type="radio"
+					name="ocr_mode_radio"
+					value="3">
+					{{ translate('Skip file completely') }}
+				</CheckboxRadioSwitch>
 			</div>
 		</SettingsItem>
 		<SettingsItem label="Other settings">

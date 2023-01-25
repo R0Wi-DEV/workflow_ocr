@@ -36,7 +36,8 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 	private static $ocrModeToCmdParameterMapping = [
 		WorkflowSettings::OCR_MODE_SKIP_TEXT => '--skip-text',
 		WorkflowSettings::OCR_MODE_REDO_OCR => '--redo-ocr',
-		WorkflowSettings::OCR_MODE_FORCE_OCR => '--force-ocr'
+		WorkflowSettings::OCR_MODE_FORCE_OCR => '--force-ocr',
+		WorkflowSettings::OCR_MODE_SKIP_FILE => '' // This is the ocrmypdf default behaviour
 	];
 
 	/** @var ICommand */
@@ -114,7 +115,7 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 		// Default setting is quiet
 		$args = ['-q'];
 
-		// OCR mode ('--skip-text', '--redo-ocr' or '--force-ocr')
+		// OCR mode ('--skip-text', '--redo-ocr', '--force-ocr' or empty)
 		$args[] = self::$ocrModeToCmdParameterMapping[$settings->getOcrMode()];
 
 		// Language settings

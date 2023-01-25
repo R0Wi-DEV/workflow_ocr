@@ -32,6 +32,7 @@ class WorkflowSettings {
 	public const OCR_MODE_SKIP_TEXT = 0;
 	public const OCR_MODE_REDO_OCR = 1;
 	public const OCR_MODE_FORCE_OCR = 2;
+	public const OCR_MODE_SKIP_FILE = 3;
 
 	/** @var array */
 	private $languages = [];
