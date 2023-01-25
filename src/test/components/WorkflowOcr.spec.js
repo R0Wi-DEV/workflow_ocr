@@ -228,7 +228,7 @@ describe('OCR mode tests', () => {
 		expect(removeBackgroundSwitch.vm.disabled).toBe(true)
 	})
 
-	test.each([0, 2])(`Should enable remove background switch when setting OCR mode from 1 (--redo-ocr) to %i`, async(mode) => {
+	test.each([0, 2, 3])(`Should enable remove background switch when setting OCR mode from 1 (--redo-ocr) to %i`, async(mode) => {
 		const wrapper = mount(WorkflowOcr, {
 			propsData: {
 				value: '{ "removeBackground": false, "ocrMode": 1 }',

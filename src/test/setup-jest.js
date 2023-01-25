@@ -1,26 +1,31 @@
-import {} from 'regenerator-runtime/runtime'
+/**
+ * @copyright Copyright (c) 2020 Raimund Schlüßler <raimund.schluessler@mailbox.org>
+ *
+ * @author Raimund Schlüßler <raimund.schluessler@mailbox.org>
+ *
+ * @license GNU AGPL version 3 or any later version
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 
-const oc = {
-	getLanguage: function() {
-		return 'en-GB'
-	},
+import OC from './OC.js'
+// eslint-disable-next-line node/no-unpublished-import
+import 'regenerator-runtime/runtime'
 
-	getLocale: function() {
-		return 'en_GB'
-	},
+global.OC = OC
 
-	isUserAdmin: function() {
-		return true
-	},
-
-	Util: {
-		naturalSortCompare: function(_a, _b) {
-			return 0
-		},
-	},
-}
-
-global.OC = oc
-
-global.TRANSLATIONS = []
+global.PRODUCTION = false
 global.SCOPE_VERSION = 1
+global.TRANSLATIONS = []
