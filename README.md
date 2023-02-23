@@ -11,33 +11,36 @@
 ## Table of contents
 
 - [Nextcloud Workflow OCR app](#nextcloud-workflow-ocr-app)
-	- [Table of contents](#table-of-contents)
-	- [Setup](#setup)
-		- [App installation](#app-installation)
-		- [Nextcloud background jobs](#nextcloud-background-jobs)
-		- [Backend](#backend)
-	- [Usage](#usage)
-		- [Useful triggers](#useful-triggers)
-			- [Trigger OCR if file was created or updated](#trigger-ocr-if-file-was-created-or-updated)
-			- [Trigger OCR on tag assigning](#trigger-ocr-on-tag-assigning)
-		- [Settings](#settings)
-			- [Per workflow settings](#per-workflow-settings)
-			- [Global settings](#global-settings)
-		- [Testing your configuration](#testing-your-configuration)
-	- [How it works](#how-it-works)
-		- [General](#general)
-		- [PDF](#pdf)
-		- [Images](#images)
-	- [Development](#development)
-		- [Dev setup](#dev-setup)
-		- [Debugging](#debugging)
-		- [`docker`-based setup](#docker-based-setup)
-		- [Executing tests](#executing-tests)
-		- [Adding a new `OcrProcessor`](#adding-a-new-ocrprocessor)
-		- [Events emitted by the app](#events-emitted-by-the-app)
-			- [`TextRecognizedEvent`](#textrecognizedevent)
-	- [Limitations](#limitations)
-	- [Used libraries & components](#used-libraries--components)
+  - [Table of contents](#table-of-contents)
+  - [Setup](#setup)
+    - [App installation](#app-installation)
+    - [Nextcloud background jobs](#nextcloud-background-jobs)
+    - [Backend](#backend)
+  - [Usage](#usage)
+    - [Useful triggers](#useful-triggers)
+      - [Trigger OCR if file was created or updated](#trigger-ocr-if-file-was-created-or-updated)
+      - [Trigger OCR on tag assigning](#trigger-ocr-on-tag-assigning)
+    - [Settings](#settings)
+      - [Per workflow settings](#per-workflow-settings)
+      - [Global settings](#global-settings)
+    - [Testing your configuration](#testing-your-configuration)
+  - [How it works](#how-it-works)
+    - [General](#general)
+    - [PDF](#pdf)
+    - [Images](#images)
+  - [Troubleshooting](#troubleshooting)
+    - [Generic troubleshooting guide](#generic-troubleshooting-guide)
+    - [The Nextcloud Workflowengine](#the-nextcloud-workflowengine)
+  - [Development](#development)
+    - [Dev setup](#dev-setup)
+    - [Debugging](#debugging)
+    - [`docker`-based setup](#docker-based-setup)
+    - [Executing tests](#executing-tests)
+    - [Adding a new `OcrProcessor`](#adding-a-new-ocrprocessor)
+    - [Events emitted by the app](#events-emitted-by-the-app)
+      - [`TextRecognizedEvent`](#textrecognizedevent)
+  - [Limitations](#limitations)
+  - [Used libraries \& components](#used-libraries--components)
 
 ## Setup
 ### App installation
@@ -172,6 +175,31 @@ For processing PDF files, the external command line tool [`OCRmyPDF`](https://gi
 
 ### Images
 For processing single images (currently `jpg` and `png` are supported), `ocrmypdf` converts the image to a PDF. The converted PDF file will then be OCR processed and saved as a new file with the original filename and the extension `.pdf` (for example `myImage.jpg` will be saved to `myImage.jpg.pdf`). The original image fill will remain untouched.
+
+## Troubleshooting
+
+### Generic troubleshooting guide
+
+Since this app does it's main work asynchronously, controlled by the NC cron, the troubleshooting gets slightly more complicated. That's why we suggest to follow this guide if you're facing any issues:
+
+1. Create your OCR workflow with triggers and conditions to your taste
+2. Temporarily decrease the servers [loglevel](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/logging_configuration.html#log-level) to `0`
+3. Try to trigger the workflow according to the conditions you've set (for example by uploading a new PDF file or setting a new tag)
+4. Check your Database table `oc_jobs`. This should contain a new job for the OCR processing like this: `| OCA\WorkflowOcr\BackgroundJobs\ProcessFileJob | {"filePath":"some.pdf","settings":"{\"languages\":[\"eng\"]}"}`. If that's not the case, you can stop here. You're facing a condition issue. `nextcloud.log` might help you to find out why your workflow was not added to the queue
+5. If you can see a new job for the OCR process, run the [cron.php](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/background_jobs_configuration.html#cron) once manually (for example by running `sudo -u www-data php -f /var/www/nextcloud/cron.php`)
+6. Inspect your `nextcloud.log` file (for example by using the [logreader](https://github.com/nextcloud/logreader)). You should be able to see various outputs, pointing you to the right direction (for example output of the `ocrmypdf` process)
+
+### The Nextcloud Workflowengine
+
+This app is build on top of the [Nextcloud Workflowengine](https://nextcloud.com/de/workflow/) which makes it quite flexible and customizable. But this comes with the tradeoff that some missbehaviours might be related to the app itself and some others have their origin in the Workflowengine. As a rule of thumb, everything related to the lefhandside triggers and conditions secions comes from the NC Workflowengine, while the settings on the righthandside are OCR app specific:
+
+  <p align="center">
+    <img src="doc/img/workflowengine_delimitation.jpg" width="75%" alt="NC Workflowengine">
+  </p>
+
+Please bare that in mind when troubleshooting issues. Of course please still feel free to open new issues here, but it could be that we might need to redirect you to the [official NC Server project](https://github.com/nextcloud/server).
+
+You can check Workflowengine related issues by trying to reproduce the same behaviour with different [workflow based apps](https://apps.nextcloud.com/categories/workflow). If they behave the same in terms of triggers and conditions, the issue is most likely related to the NC Workflowengine itself and cannot be fixed here.
 
 ## Development
 
