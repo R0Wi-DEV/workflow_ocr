@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: Create a report to help us to improve the Nextcloud Workflow OCR app
 title: ''
 labels: bug
 assignees: R0Wi
