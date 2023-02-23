@@ -43,6 +43,7 @@ class OcrBackendInfoController extends ControllerBase {
 	}
 
 	/**
+	 * @NoAdminRequired
 	 * @return JSONResponse
 	 */
 	public function getInstalledLanguages() : JSONResponse {
