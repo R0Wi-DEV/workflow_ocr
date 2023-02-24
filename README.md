@@ -180,14 +180,14 @@ For processing single images (currently `jpg` and `png` are supported), `ocrmypd
 
 ### Generic troubleshooting guide
 
-Since this app does it's main work asynchronously, controlled by the NC cron, the troubleshooting gets slightly more complicated. That's why we suggest to follow this guide if you're facing any issues:
+Since this app does its main work asynchronously, controlled by the NC cron, the troubleshooting gets slightly more complicated. That's why we suggest to follow this guide if you're facing any issues:
 
 1. Create your OCR workflow with triggers and conditions to your taste
 2. Temporarily decrease the servers [loglevel](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/logging_configuration.html#log-level) to `0`
 3. Try to trigger the workflow according to the conditions you've set (for example by uploading a new PDF file or setting a new tag)
-4. Check your Database table `oc_jobs`. This should contain a new job for the OCR processing like this: `| OCA\WorkflowOcr\BackgroundJobs\ProcessFileJob | {"filePath":"some.pdf","settings":"{\"languages\":[\"eng\"]}"}`. If that's not the case, you can stop here. You're facing a condition issue. `nextcloud.log` might help you to find out why your workflow was not added to the queue
+4. Check your Database table `oc_jobs`. This should contain a new job for the OCR processing like this: `| OCA\WorkflowOcr\BackgroundJobs\ProcessFileJob | {"filePath":"some.pdf","settings":"{\"languages\":[\"eng\"]}"}`. If that's not the case, you can stop here. You're facing a condition issue. The `nextcloud.log` file content might help you to find out why your workflow was not added to the queue
 5. If you can see a new job for the OCR process, run the [cron.php](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/background_jobs_configuration.html#cron) once manually (for example by running `sudo -u www-data php -f /var/www/nextcloud/cron.php`)
-6. Inspect your `nextcloud.log` file (for example by using the [logreader](https://github.com/nextcloud/logreader)). You should be able to see various outputs, pointing you to the right direction (for example output of the `ocrmypdf` process)
+6. Inspect your `nextcloud.log` file (e.g. by using the [logreader](https://github.com/nextcloud/logreader)). You should be able to see various outputs, pointing you to the right direction (for example you should be able to see the output of the `ocrmypdf` process)
 
 ### The Nextcloud Workflowengine
 
@@ -197,10 +197,9 @@ This app is build on top of the [Nextcloud Workflowengine](https://nextcloud.com
     <img src="doc/img/workflowengine_delimitation.jpg" width="75%" alt="NC Workflowengine">
   </p>
 
-Please bare that in mind when troubleshooting issues. Of course please still feel free to open new issues here, but it could be that we might need to redirect you to the [official NC Server project](https://github.com/nextcloud/server).
+Please keep that in mind when troubleshooting issues. Of course, feel free to open new issues here, but we might need to redirect you to the [official NC Server project](https://github.com/nextcloud/server).
 
-You can check Workflowengine related issues by trying to reproduce the same behaviour with different [workflow based apps](https://apps.nextcloud.com/categories/workflow). If they behave the same in terms of triggers and conditions, the issue is most likely related to the NC Workflowengine itself and cannot be fixed here.
-
+You can check issues related to the Workflowengine by trying to reproduce the same behaviour with different [workflow-based apps](https://apps.nextcloud.com/categories/workflow). If they behave in the same way in terms of triggers and conditions, the issue is most likely related to the NC Workflowengine itself and cannot be fixed here.
 ## Development
 
 ### Dev setup
