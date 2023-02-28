@@ -1,2 +1,4 @@
 # compiled vue templates
 js/
+# php libs
+vendor/
