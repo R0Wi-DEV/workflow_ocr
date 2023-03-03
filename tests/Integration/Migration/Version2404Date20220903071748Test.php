@@ -36,7 +36,6 @@ use Test\TestCase;
  * @group DB
  */
 class Version2404Date20220903071748Test extends TestCase {
-
 	/** @var ContainerInterface */
 	private $container;
 

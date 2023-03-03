@@ -32,7 +32,6 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class EventServiceTest extends TestCase {
-
 	/** @var IEventDispatcher|MockObject */
 	private $eventDispatcher;
 

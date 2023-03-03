@@ -31,7 +31,6 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class OcrBackendInfoControllerTest extends TestCase {
-
 	/** @var IOcrBackendInfoService|MockObject */
 	private $ocrBackendInfoService;
 

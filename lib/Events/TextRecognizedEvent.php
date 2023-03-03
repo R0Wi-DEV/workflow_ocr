@@ -32,8 +32,6 @@ use OCP\Files\File;
  * @package OCA\WorkflowOcr\Events
  */
 class TextRecognizedEvent extends Event {
-
-
 	/** @var string */
 	private $recognizedText;
 

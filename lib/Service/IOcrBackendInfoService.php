@@ -29,7 +29,6 @@ namespace OCA\WorkflowOcr\Service;
 use OCA\WorkflowOcr\Exception\CommandException;
 
 interface IOcrBackendInfoService {
-
 	/**
 	 * Returns all languages that are supported by the OCR backend.
 	 * Languages will be returned as an array of language-code-strings,

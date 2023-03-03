@@ -39,7 +39,6 @@ use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 
 class RegisterFlowOperationsListenerTest extends TestCase {
-	
 	/** @var ContainerInterface|MockObject */
 	private $container;
 	

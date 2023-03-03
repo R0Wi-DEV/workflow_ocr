@@ -46,7 +46,6 @@ use Psr\Log\LoggerInterface;
 use UnexpectedValueException;
 
 class OperationTest extends TestCase {
-
 	/** @var IJobList|MockObject */
 	private $jobList;
 	/** @var IL10N|MockObject */
