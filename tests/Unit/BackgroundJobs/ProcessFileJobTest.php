@@ -32,6 +32,7 @@ use OCA\WorkflowOcr\Exception\OcrProcessorNotFoundException;
 use OCA\WorkflowOcr\Helper\IProcessingFileAccessor;
 use OCA\WorkflowOcr\OcrProcessors\OcrProcessorResult;
 use OCA\WorkflowOcr\Service\IEventService;
+use OCA\WorkflowOcr\Service\INotificationService;
 use OCA\WorkflowOcr\Service\IOcrService;
 use OCA\WorkflowOcr\Wrapper\IFilesystem;
 use OCA\WorkflowOcr\Wrapper\IView;
@@ -74,6 +75,8 @@ class ProcessFileJobTest extends TestCase {
 	private $user;
 	/** @var IProcessingFileAccessor|MockObject */
 	private $processingFileAccessor;
+	/** @var INotificationService|MockObject */
+	private $notificationService;
 	/** @var JobList */
 	private $jobList;
 	/** @var ProcessFileJob */
@@ -90,6 +93,7 @@ class ProcessFileJobTest extends TestCase {
 		$this->filesystem = $this->createMock(IFilesystem::class);
 		$this->userSession = $this->createMock(IUserSession::class);
 		$this->processingFileAccessor = $this->createMock(IProcessingFileAccessor::class);
+		$this->notificationService = $this->createMock(INotificationService::class);
 		
 		/** @var MockObject|IUserManager */
 		$userManager = $this->createMock(IUserManager::class);
@@ -111,6 +115,7 @@ class ProcessFileJobTest extends TestCase {
 			$this->userManager,
 			$this->userSession,
 			$this->processingFileAccessor,
+			$this->notificationService,
 			$this->createMock(ITimeFactory::class)
 		);
 		$this->processFileJob->setId(111);
@@ -171,7 +176,7 @@ class ProcessFileJobTest extends TestCase {
 			->method('setUser')
 			->withConsecutive([$this->user], [null]);
 
-		$this->processFileJob->execute($this->jobList);
+		$this->processFileJob->start($this->jobList);
 	}
 	
 	/**
@@ -191,7 +196,7 @@ class ProcessFileJobTest extends TestCase {
 		$this->logger->expects($this->exactly($invalidCount))
 			->method('warning');
 
-		$this->processFileJob->execute($this->jobList);
+		$this->processFileJob->start($this->jobList);
 	}
 
 	/**
@@ -203,7 +208,7 @@ class ProcessFileJobTest extends TestCase {
 			->method('init')
 			->with($user, $rootFolderPath);
 		
-		$this->processFileJob->execute($this->jobList);
+		$this->processFileJob->start($this->jobList);
 	}
 
 	/**
@@ -215,7 +220,7 @@ class ProcessFileJobTest extends TestCase {
 			->method('get')
 			->with($arguments['filePath']);
 		
-		$this->processFileJob->execute($this->jobList);
+		$this->processFileJob->start($this->jobList);
 	}
 
 	/**
@@ -235,7 +240,7 @@ class ProcessFileJobTest extends TestCase {
 			->method('ocrFile')
 			->with($fileMock);
 
-		$this->processFileJob->execute($this->jobList);
+		$this->processFileJob->start($this->jobList);
 	}
 
 	/**
@@ -273,7 +278,7 @@ class ProcessFileJobTest extends TestCase {
 			->method('textRecognized')
 			->with($ocrResult, $fileMock);
 
-		$this->processFileJob->execute($this->jobList);
+		$this->processFileJob->start($this->jobList);
 	}
 
 	public function testNotFoundLogsWarning_AndDoesNothingAfterwards() {
@@ -286,7 +291,7 @@ class ProcessFileJobTest extends TestCase {
 		$this->ocrService->expects($this->never())
 			->method('ocrFile');
 
-		$this->processFileJob->execute($this->jobList);
+		$this->processFileJob->start($this->jobList);
 	}
 
 	/**
@@ -300,7 +305,7 @@ class ProcessFileJobTest extends TestCase {
 		$this->ocrService->expects($this->never())
 			->method('ocrFile');
 
-		$this->processFileJob->execute($this->jobList);
+		$this->processFileJob->start($this->jobList);
 	}
 
 	/**
@@ -321,7 +326,7 @@ class ProcessFileJobTest extends TestCase {
 		$this->viewFactory->expects($this->never())
 			->method('create');
 
-		$this->processFileJob->execute($this->jobList);
+		$this->processFileJob->start($this->jobList);
 	}
 
 	public function testThrowsNoUserException_OnNonExistingUser() {
@@ -349,13 +354,14 @@ class ProcessFileJobTest extends TestCase {
 			$userManager,
 			$this->userSession,
 			$this->processingFileAccessor,
+			$this->notificationService,
 			$this->createMock(ITimeFactory::class)
 		);
 		$processFileJob->setId(111);
 		$arguments = ['filePath' => '/nonexistinguser/files/someInvalidStuff', 'settings' => '{}'];
 		$processFileJob->setArgument($arguments);
 
-		$processFileJob->execute($this->jobList);
+		$processFileJob->start($this->jobList);
 	}
 
 	/**
@@ -397,7 +403,7 @@ class ProcessFileJobTest extends TestCase {
 				return true;
 			}));
 
-		$this->processFileJob->execute($this->jobList);
+		$this->processFileJob->start($this->jobList);
 
 		$this->assertEquals(1, $calledWith42);
 		$this->assertEquals(1, $calledWithNull);
@@ -432,7 +438,30 @@ class ProcessFileJobTest extends TestCase {
 		$this->eventService->expects($this->once())
 			->method('textRecognized');
 
-		$this->processFileJob->execute($this->jobList);
+		$this->processFileJob->start($this->jobList);
+	}
+
+	public function testLogsNonOcrExceptionsFromOcrService() {
+		$this->processFileJob->setArgument(['filePath' => '/admin/files/somefile.pdf', 'settings' => '{}']);
+		$mimeType = 'application/pdf';
+		$content = 'someFileContent';
+		$exception = new \Exception('someException');
+
+		$fileMock = $this->createValidFileMock($mimeType, $content);
+		$this->rootFolder->method('get')
+			->willReturn($fileMock);
+
+		$this->ocrService->expects($this->once())
+			->method('ocrFile')
+			->willThrowException($exception);
+
+		$this->logger->expects($this->once())
+			->method('error');
+
+		$this->viewFactory->expects($this->never())
+			->method('create');
+
+		$this->processFileJob->start($this->jobList);
 	}
 
 	public function dataProvider_InvalidArguments() {

@@ -32,14 +32,17 @@ use OCA\WorkflowOcr\Helper\ISidecarFileAccessor;
 use OCA\WorkflowOcr\Helper\ProcessingFileAccessor;
 use OCA\WorkflowOcr\Helper\SidecarFileAccessor;
 use OCA\WorkflowOcr\Listener\RegisterFlowOperationsListener;
+use OCA\WorkflowOcr\Notification\Notifier;
 use OCA\WorkflowOcr\OcrProcessors\IOcrProcessorFactory;
 use OCA\WorkflowOcr\OcrProcessors\OcrProcessorFactory;
 use OCA\WorkflowOcr\Service\EventService;
 use OCA\WorkflowOcr\Service\GlobalSettingsService;
 use OCA\WorkflowOcr\Service\IEventService;
 use OCA\WorkflowOcr\Service\IGlobalSettingsService;
+use OCA\WorkflowOcr\Service\INotificationService;
 use OCA\WorkflowOcr\Service\IOcrBackendInfoService;
 use OCA\WorkflowOcr\Service\IOcrService;
+use OCA\WorkflowOcr\Service\NotificationService;
 use OCA\WorkflowOcr\Service\OcrBackendInfoService;
 use OCA\WorkflowOcr\Service\OcrService;
 use OCA\WorkflowOcr\Wrapper\CommandWrapper;
@@ -78,6 +81,7 @@ class Application extends App implements IBootstrap {
 		$context->registerServiceAlias(IGlobalSettingsService::class, GlobalSettingsService::class);
 		$context->registerServiceAlias(IEventService::class, EventService::class);
 		$context->registerServiceAlias(IOcrBackendInfoService::class, OcrBackendInfoService::class);
+		$context->registerServiceAlias(INotificationService::class, NotificationService::class);
 
 		// BUG #43
 		$context->registerService(ICommand::class, function () {
@@ -94,6 +98,7 @@ class Application extends App implements IBootstrap {
 		OcrProcessorFactory::registerOcrProcessors($context);
 
 		$context->registerEventListener(RegisterOperationsEvent::class, RegisterFlowOperationsListener::class);
+		$context->registerNotifierService(Notifier::class);
 	}
 
 	/**

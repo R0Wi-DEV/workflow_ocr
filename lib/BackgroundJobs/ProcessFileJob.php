@@ -33,6 +33,7 @@ use OCA\WorkflowOcr\Exception\OcrProcessorNotFoundException;
 use OCA\WorkflowOcr\Helper\IProcessingFileAccessor;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCA\WorkflowOcr\Service\IEventService;
+use OCA\WorkflowOcr\Service\INotificationService;
 use OCA\WorkflowOcr\Service\IOcrService;
 use OCA\WorkflowOcr\Wrapper\IFilesystem;
 use OCA\WorkflowOcr\Wrapper\IViewFactory;
@@ -69,6 +70,8 @@ class ProcessFileJob extends \OCP\BackgroundJob\QueuedJob {
 	private $userSession;
 	/** @var IProcessingFileAccessor */
 	private $processingFileAccessor;
+	/** @var INotificationService */
+	private $notificationService;
 	
 	public function __construct(
 		LoggerInterface $logger,
@@ -80,6 +83,7 @@ class ProcessFileJob extends \OCP\BackgroundJob\QueuedJob {
 		IUserManager $userManager,
 		IUserSession $userSession,
 		IProcessingFileAccessor $processingFileAccessor,
+		INotificationService $notificationService,
 		ITimeFactory $timeFactory) {
 		parent::__construct($timeFactory);
 		$this->logger = $logger;
@@ -91,6 +95,7 @@ class ProcessFileJob extends \OCP\BackgroundJob\QueuedJob {
 		$this->userManager = $userManager;
 		$this->userSession = $userSession;
 		$this->processingFileAccessor = $processingFileAccessor;
+		$this->notificationService = $notificationService;
 	}
 	
 	/**
@@ -101,14 +106,16 @@ class ProcessFileJob extends \OCP\BackgroundJob\QueuedJob {
 		
 		[$success, $filePath, $uid, $settings] = $this->tryParseArguments($argument);
 		if (!$success) {
+			$this->notificationService->createErrorNotification($uid, 'Failed to parse arguments inside the OCR process. Please have a look at your servers logfile for more details.');
 			return;
 		}
 
 		try {
 			$this->initUserEnvironment($uid);
-			$this->processFile($filePath, $settings);
+			$this->processFile($filePath, $settings, $uid);
 		} catch (\Throwable $ex) {
 			$this->logger->error($ex->getMessage(), ['exception' => $ex]);
+			$this->notificationService->createErrorNotification($uid, 'An error occured while executing the OCR process. Please have a look at your servers logfile for more details.');
 		} finally {
 			$this->shutdownUserEnvironment();
 		}
@@ -165,26 +172,35 @@ class ProcessFileJob extends \OCP\BackgroundJob\QueuedJob {
 	/**
 	 * @param string $filePath  The file to be processed
 	 * @param WorkflowSettings $settings The settings to be used for processing
+	 * @param string $userId The user who triggered the processing
 	 */
-	private function processFile(string $filePath, WorkflowSettings $settings) : void {
-		$node = $this->getNode($filePath);
+	private function processFile(string $filePath, WorkflowSettings $settings, string $userId) : void {
+		$node = $this->getNode($filePath, $userId);
 
 		if ($node === null) {
 			return;
 		}
 
+		$nodeId = $node->getId();
+
 		try {
 			$ocrFile = $this->ocrService->ocrFile($node, $settings);
-		} catch (OcrNotPossibleException $ocrNpEx) {
-			$this->logger->error('OCR for file ' . $node->getPath() . ' not possible. Message: ' . $ocrNpEx->getMessage());
-			return;
-		} catch (OcrProcessorNotFoundException $ocrNfEx) {
-			$this->logger->error('OCR processor not found for mimetype ' . $node->getMimeType());
+		} catch(\Throwable $throwable) {
+			if ($throwable instanceof(OcrNotPossibleException::class)) {
+				$msg = 'OCR for file ' . $node->getPath() . ' not possible. Message: ' . $throwable->getMessage();
+			} elseif ($throwable instanceof(OcrProcessorNotFoundException::class)) {
+				$msg = 'OCR processor not found for mimetype ' . $node->getMimeType();
+			} else {
+				throw $throwable;
+			}
+
+			$this->logger->error($msg);
+			$this->notificationService->createErrorNotification($userId, $msg, $nodeId);
+			
 			return;
 		}
 
 		$fileContent = $ocrFile->getFileContent();
-		$nodeId = $node->getId();
 		$originalFileExtension = $node->getExtension();
 		$newFileExtension = $ocrFile->getFileExtension();
 
@@ -200,17 +216,21 @@ class ProcessFileJob extends \OCP\BackgroundJob\QueuedJob {
 		$this->eventService->textRecognized($ocrFile, $node);
 	}
 
-	private function getNode(string $filePath) : ?Node {
+	private function getNode(string $filePath, string $userId) : ?Node {
 		try {
 			/** @var File */
 			$node = $this->rootFolder->get($filePath);
 		} catch (NotFoundException $nfEx) {
-			$this->logger->warning('Could not process file \'' . $filePath . '\'. File was not found');
+			$msg = 'Could not process file \'' . $filePath . '\'. File was not found';
+			$this->logger->warning($msg);
+			$this->notificationService->createErrorNotification($userId, $msg);
 			return null;
 		}
 
 		if (!$node instanceof Node || $node->getType() !== FileInfo::TYPE_FILE) {
-			$this->logger->warning('Skipping process for \'' . $filePath . '\'. It is not a file');
+			$msg = 'Skipping process for \'' . $filePath . '\'. It is not a file';
+			$this->logger->warning($msg);
+			$this->notificationService->createErrorNotification($userId, $msg);
 			return null;
 		}
 
@@ -218,17 +238,17 @@ class ProcessFileJob extends \OCP\BackgroundJob\QueuedJob {
 	}
 
 	/**
-	 * * @param string $uid 	The owners userId of the file to be processed
+	 * * @param string $userId 	The owners userId of the file to be processed
 	 */
-	private function initUserEnvironment(string $uid) : void {
+	private function initUserEnvironment(string $userId) : void {
 		/** @var IUser */
-		$user = $this->userManager->get($uid);
+		$user = $this->userManager->get($userId);
 		if (!$user) {
-			throw new NoUserException("User with uid '$uid' was not found");
+			throw new NoUserException("User with uid '$userId' was not found");
 		}
 
 		$this->userSession->setUser($user);
-		$this->filesystem->init($uid, '/' . $uid . '/files');
+		$this->filesystem->init($userId, '/' . $userId . '/files');
 	}
 
 	private function shutdownUserEnvironment() : void {
