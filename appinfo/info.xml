@@ -3,7 +3,7 @@
 	  xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
 	<id>workflow_ocr</id>
 	<name>Workflow OCR</name>
-	<summary>Serverside OCR processing via workflow-engine</summary>
+	<summary>Server side OCR processing via workflow engine</summary>
 	<description>This app makes it possible to process various files via OCR algorithms.
 	The processing is done via workflow-engine and can therefore easily be customized.
 	Please note that you'll have to install the OcrMyPDF CLI on your Nextcloud server to
