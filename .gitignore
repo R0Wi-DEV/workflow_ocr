@@ -10,3 +10,4 @@ node_modules
 js
 coverage
 .php-cs-fixer.cache 
+.vscode/settings.json
