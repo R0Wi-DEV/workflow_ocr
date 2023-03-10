@@ -5,6 +5,7 @@ OC.L10N.register(
     "OCR file" : "OCR soubor",
     "OCR processing via workflow" : "Zpracování OCR pomocí pracovního postupu",
     "Workflow OCR" : "Pracovní postup OCR",
+    "Server side OCR processing via workflow engine" : "Zpracování OCR na straně serveru prostřednictvím workflow-engine",
     "Serverside OCR processing via workflow-engine" : "Zpracování OCR na straně serveru prostřednictvím workflow-engine"
 },
 "nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n <= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;");
