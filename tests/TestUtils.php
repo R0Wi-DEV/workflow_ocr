@@ -21,7 +21,6 @@ use OCP\IUserSession;
 use Psr\Container\ContainerInterface;
 
 class TestUtils {
-
 	/** @var ContainerInterface */
 	private $container;
 

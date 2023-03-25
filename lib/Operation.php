@@ -46,7 +46,6 @@ use OCP\SystemTag\MapperEvent;
 use Psr\Log\LoggerInterface;
 
 class Operation implements ISpecificOperation {
-
 	/** @var IJobList */
 	private $jobList;
 	/** @var IL10N */
@@ -133,8 +132,8 @@ class Operation implements ISpecificOperation {
 		}
 
 		$this->logger->warning('Not processing event {eventname} because the event type {eventtype} is not supported.',
-				['eventname' => $eventName],
-				['eventtype' => get_class($event)]);
+			['eventname' => $eventName],
+			['eventtype' => get_class($event)]);
 
 		return false;
 	}
@@ -156,7 +155,7 @@ class Operation implements ISpecificOperation {
 	private function tryGetFileFromMapperEvent(string $eventName, MapperEvent $event, ?Node & $node) : bool {
 		if ($event->getObjectType() !== 'files') {
 			$this->logger->warning('Do not process MapperEvent of type {type}',
-			['type' => $event->getObjectType()]);
+				['type' => $event->getObjectType()]);
 			return false;
 		}
 
@@ -203,7 +202,7 @@ class Operation implements ISpecificOperation {
 		[,, $folder,] = explode('/', $filePath, 4);
 		if ($folder !== 'files') {
 			$this->logger->debug('Not processing event because path \'{path}\' seems to be invalid.',
-					['path' => $filePath]);
+				['path' => $filePath]);
 			return false;
 		}
 
@@ -219,7 +218,7 @@ class Operation implements ISpecificOperation {
 		// Check if the event was triggered by OCR rewrite of the file
 		if ($node->getId() === $this->processingFileAccessor->getCurrentlyProcessedFileId()) {
 			$this->logger->debug('Not processing event because file with path \'{path}\' was written by OCR process.',
-			['path' => $node->getPath()]);
+				['path' => $node->getPath()]);
 			return true;
 		}
 

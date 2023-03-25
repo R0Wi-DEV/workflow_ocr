@@ -30,7 +30,6 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
 class SidecarFileAccessorTest extends TestCase {
-
 	/** @var ITempManager|MockObject */
 	private $tempManager;
 

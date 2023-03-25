@@ -26,8 +26,8 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\Wrapper;
 
- class ViewFactory implements IViewFactory {
- 	public function create(string $directoryPath) : IView {
- 		return new ViewWrapper($directoryPath);
- 	}
- }
+class ViewFactory implements IViewFactory {
+	public function create(string $directoryPath) : IView {
+		return new ViewWrapper($directoryPath);
+	}
+}

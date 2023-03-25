@@ -27,7 +27,6 @@ use OCP\ITempManager;
 use Psr\Log\LoggerInterface;
 
 class SidecarFileAccessor implements ISidecarFileAccessor {
-
 	/** @var ITempManager */
 	private $tempManager;
 

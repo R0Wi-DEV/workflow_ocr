@@ -20,7 +20,7 @@ jobs:
       matrix:
         php-versions: ['8.0']
         databases: ['sqlite']
-        server-versions: ['stable25']
+        server-versions: ['stable26']
 
     name: php${{ matrix.php-versions }}-${{ matrix.databases }}-COVERAGE
 
@@ -84,9 +84,14 @@ jobs:
         working-directory: apps/${{ env.APP_NAME }}
         run: make coverage-all
 
-      - name: Upload coverage to Codecov
+      - name: Fix code coverage paths
         working-directory: ./apps/${{ env.APP_NAME }}/coverage
-        run: |
-          curl -Os https://uploader.codecov.io/latest/linux/codecov 
-          chmod +x codecov
-          ./codecov -t ${{ secrets.CODECOV_TOKEN }} -Z
+        run: sed -i 's@'$GITHUB_WORKSPACE'@/github/workspace/@g' php-coverage.xml
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        with:
+          projectBaseDir: ./apps/${{ env.APP_NAME }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

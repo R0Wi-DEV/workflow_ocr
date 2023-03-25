@@ -9,6 +9,7 @@ module.exports = {
     coverageReporters: [
       "text-summary",
       "json",
+      "lcov",
       "html"
     ],
     testMatch: [

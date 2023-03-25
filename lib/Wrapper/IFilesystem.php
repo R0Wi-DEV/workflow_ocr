@@ -27,7 +27,6 @@ declare(strict_types=1);
 namespace OCA\WorkflowOcr\Wrapper;
 
 interface IFilesystem {
-
 	/**
 	 * Init mountpoints for given user with given root
 	 * @param $user Username

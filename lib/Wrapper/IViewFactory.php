@@ -27,7 +27,6 @@ declare(strict_types=1);
 namespace OCA\WorkflowOcr\Wrapper;
 
 interface IViewFactory {
-
 	/**
 	 * Creates a new view wrapper for the given directory
 	 * @param $directoryPath The path of the directory for which the view shall be created

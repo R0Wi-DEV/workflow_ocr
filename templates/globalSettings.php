@@ -26,7 +26,7 @@
 
 	// Add GlobalSettings.vue component
 	script(Application::APP_NAME, Application::APP_NAME . '-globalSettings');
-?>
+	?>
 
 <!-- Vue mountpoint -->
 <div id="workflow_ocr_globalsettings"></div>

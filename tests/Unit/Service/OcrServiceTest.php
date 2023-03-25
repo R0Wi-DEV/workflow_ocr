@@ -36,7 +36,6 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
 class OcrServiceTest extends TestCase {
-	
 	/** @var IOcrProcessorFactory|MockObject */
 	private $ocrProcessorFactory;
 	/** @var IOcrProcessor|MockObject */

@@ -51,7 +51,6 @@ use Psr\Log\LoggerInterface;
  * a OCR on a single file.
  */
 class ProcessFileJob extends \OCP\BackgroundJob\QueuedJob {
-
 	/** @var LoggerInterface */
 	protected $logger;
 	/** @var IRootFolder */

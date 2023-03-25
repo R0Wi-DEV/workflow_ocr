@@ -38,8 +38,8 @@ class GlobalSettingsController extends ControllerBase {
 	/** @var IGlobalSettingsService */
 	private $globalSettingsService;
 
-	public function __construct($AppName, IRequest $request, IGlobalSettingsService $globalSettingsService) {
-		parent::__construct($AppName, $request);
+	public function __construct($appName, IRequest $request, IGlobalSettingsService $globalSettingsService) {
+		parent::__construct($appName, $request);
 		$this->globalSettingsService = $globalSettingsService;
 	}
 

@@ -28,7 +28,6 @@ use OCA\WorkflowOcr\Model\WorkflowSettings;
 use Test\TestCase;
 
 class WorkflowSettingsTest extends TestCase {
-
 	/**
 	 * @dataProvider dataProvider_testConstruction
 	 */

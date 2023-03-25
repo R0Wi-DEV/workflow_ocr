@@ -54,7 +54,6 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 
 class ProcessFileJobTest extends TestCase {
-
 	/** @var LoggerInterface|MockObject */
 	private $logger;
 	/** @var IRootFolder|MockObject */

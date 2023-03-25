@@ -37,8 +37,8 @@ class OcrBackendInfoController extends ControllerBase {
 	/** @var IOcrBackendInfoService */
 	private $ocrBackendInfoService;
 
-	public function __construct($AppName, IRequest $request, IOcrBackendInfoService $ocrBackendInfoService) {
-		parent::__construct($AppName, $request);
+	public function __construct($appName, IRequest $request, IOcrBackendInfoService $ocrBackendInfoService) {
+		parent::__construct($appName, $request);
 		$this->ocrBackendInfoService = $ocrBackendInfoService;
 	}
 

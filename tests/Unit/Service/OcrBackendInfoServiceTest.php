@@ -31,7 +31,6 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
 class OcrBackendInfoServiceTest extends TestCase {
-
 	/** @var ICommand|MockObject */
 	private $command;
 
