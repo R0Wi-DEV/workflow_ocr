@@ -12,8 +12,10 @@ A clear and concise description of what the bug is.
 
 **System**
 
-- App version: <VERSION>
-- Nextcloud version: <VERSION>
+- App version: [VERSION]
+- Nextcloud version: [VERSION]
+- PHP version: [VERSION]
+- Environment: [Docker/native Apache/native PHP FPM/...]
 
 **To Reproduce**
 Steps to reproduce the behavior:
