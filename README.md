@@ -1,7 +1,8 @@
 
 # Nextcloud Workflow OCR app
 ![PHPUnit](https://github.com/R0Wi/workflow_ocr/workflows/PHPUnit/badge.svg)
-[![codecov](https://codecov.io/gh/R0Wi/workflow_ocr/branch/master/graph/badge.svg)](https://codecov.io/gh/R0Wi/workflow_ocr)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=R0Wi_workflow_ocr&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=R0Wi_workflow_ocr)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=R0Wi_workflow_ocr&metric=coverage)](https://sonarcloud.io/summary/new_code?id=R0Wi_workflow_ocr)
 ![Lint](https://github.com/R0Wi/workflow_ocr/workflows/Lint/badge.svg)
 [![Generic badge](https://img.shields.io/github/v/release/R0Wi/workflow_ocr)](https://github.com/R0Wi/workflow_ocr/releases)
 [![Generic badge](https://img.shields.io/badge/Nextcloud-26-orange)](https://github.com/nextcloud/server)
