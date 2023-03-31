@@ -170,7 +170,7 @@ class Operation implements ISpecificOperation {
 		}
 
 		$files = $this->rootFolder->getById($fileId);
-		if (count($files) <= 0 || !($files[0] instanceof \OCP\Files\File)) {
+		if (empty($files) || !($files[0] instanceof \OCP\Files\File)) {
 			$this->logger->warning(
 				'Not processing event {eventname} because node with id  \'{fileid}\' could not be found or is not a file.',
 				['eventname' => $eventName],
