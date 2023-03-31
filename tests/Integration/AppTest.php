@@ -14,6 +14,7 @@
 namespace OCA\WorkflowOcr\Tests\Integration;
 
 use OC\AppFramework\Bootstrap\Coordinator;
+use OC_App;
 use OCA\WorkflowOcr\AppInfo\Application;
 use OCA\WorkflowOcr\Operation;
 use OCP\App\IAppManager;
@@ -51,6 +52,17 @@ class AppTest extends TestCase {
 		$this->runBootstrapRegistrations($lazy);
 		$operation = $this->container->get(Operation::class);
 		$this->assertInstanceOf(Operation::class, $operation);
+	}
+
+	public function testAppWorksWithNcAutoloader() {
+		// We do the same here as Nextcloud in
+		// OC\AppFramework\Bootstrap\Coordinator->registerApps
+		$path = $this->appManager->getAppPath(Application::APP_NAME);
+		OC_App::registerAutoloading(Application::APP_NAME, $path);
+
+		// 'Command' is one of the dependencies included by autoload.php
+		$commandClassExists = class_exists('mikehaertl\shellcommand\Command');
+		$this->assertTrue($commandClassExists);
 	}
 
 	public function trueFalseProvider() {
