@@ -58,7 +58,6 @@ use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 
 class Application extends App implements IBootstrap {
-	public const COMPOSER_DIR = __DIR__ . '/../../vendor/';
 	public const APP_NAME = "workflow_ocr";
 
 	/**
@@ -101,14 +100,5 @@ class Application extends App implements IBootstrap {
 	 * @inheritdoc
 	 */
 	public function boot(IBootContext $context): void {
-		$this->requireAutoload();
-	}
-
-	private function requireAutoload(): void {
-		if (is_dir(self::COMPOSER_DIR) && file_exists(self::COMPOSER_DIR . 'autoload.php')) {
-			require_once self::COMPOSER_DIR . 'autoload.php';
-		} else {
-			throw new \Exception('Cannot include autoload. Did you run install dependencies using composer?');
-		}
 	}
 }
