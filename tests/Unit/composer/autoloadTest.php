@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * @copyright Copyright (c) 2020 Robin Windey <ro.windey@gmail.com>
+ * @copyright Copyright (c) 2023 Robin Windey <ro.windey@gmail.com>
  *
  *  @license GNU AGPL version 3 or any later version
  *
@@ -21,22 +21,22 @@ declare(strict_types=1);
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OCA\WorkflowOcr\Tests\Unit\AppInfo;
+namespace OCA\WorkflowOcr\Tests\Unit\composer;
 
 use OCA\WorkflowOcr\AppInfo\Application;
-use OCP\AppFramework\Bootstrap\IBootContext;
-use PHPUnit\Framework\MockObject\MockObject;
+use OCP\App\IAppManager;
+use OCP\AppFramework\App;
 use PHPUnit\Framework\TestCase;
 
-class ApplicationTest extends TestCase {
-	public function testBootDoesNothingOnBootContext() {
-		/** @var IBootContext|MockObject */
-		$bootContext = $this->createMock(IBootContext::class);
-		$bootContext->expects($this->never())
-			->method($this->anything());
-
-		$app = new Application();
-
-		$app->boot($bootContext);
+class composerTest extends TestCase {
+	public function testAutoloaderFileCanBeLoaded() {
+		$app = new App(Application::APP_NAME);
+		$container = $app->getContainer();
+		/**@var IAppManager */
+		$appManager = $container->get(IAppManager::class);
+		$path = $appManager->getAppPath(Application::APP_NAME);
+		$autoloaderFile = $path . '/composer/autoload.php';
+		$this->assertTrue(file_exists($autoloaderFile));
+		require $autoloaderFile;
 	}
 }

@@ -53,6 +53,13 @@ class AppTest extends TestCase {
 		$this->assertInstanceOf(Operation::class, $operation);
 	}
 
+	public function testAppWorksWithNcAutoloader() {
+		// We assume that the app is already loaded by our test bootstrapping.
+		// 'Command' is one of the dependencies included by autoload.php
+		$commandClassExists = class_exists('mikehaertl\shellcommand\Command');
+		$this->assertTrue($commandClassExists);
+	}
+
 	public function trueFalseProvider() {
 		return [
 			[true],
