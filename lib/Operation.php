@@ -26,23 +26,23 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr;
 
-use OCA\WorkflowOcr\AppInfo\Application;
 use OCA\WorkflowEngine\Entity\File;
-use OCP\BackgroundJob\IJobList;
-use OCP\EventDispatcher\Event;
-use OCP\EventDispatcher\GenericEvent;
-use OCP\IL10N;
-use OCP\WorkflowEngine\IManager;
-use OCP\WorkflowEngine\IRuleMatcher;
-use OCP\WorkflowEngine\ISpecificOperation;
+use OCA\WorkflowOcr\AppInfo\Application;
 use OCA\WorkflowOcr\BackgroundJobs\ProcessFileJob;
 use OCA\WorkflowOcr\Helper\IProcessingFileAccessor;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
+use OCP\BackgroundJob\IJobList;
+use OCP\EventDispatcher\Event;
+use OCP\EventDispatcher\GenericEvent;
 use OCP\Files\FileInfo;
 use OCP\Files\IRootFolder;
 use OCP\Files\Node;
+use OCP\IL10N;
 use OCP\IURLGenerator;
 use OCP\SystemTag\MapperEvent;
+use OCP\WorkflowEngine\IManager;
+use OCP\WorkflowEngine\IRuleMatcher;
+use OCP\WorkflowEngine\ISpecificOperation;
 use Psr\Log\LoggerInterface;
 
 class Operation implements ISpecificOperation {

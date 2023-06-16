@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\OcrProcessors;
 
-use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCA\WorkflowOcr\Model\GlobalSettings;
+use OCA\WorkflowOcr\Model\WorkflowSettings;
 
 class ImageOcrProcessor extends OcrMyPdfBasedProcessor {
 	protected function getAdditionalCommandlineArgs(WorkflowSettings $settings, GlobalSettings $globalSettings): array {

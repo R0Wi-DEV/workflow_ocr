@@ -26,23 +26,23 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\BackgroundJobs;
 
-use OC\User\NoUserException;
-use OCP\Files\IRootFolder;
-use OCP\Files\NotFoundException;
 use \OCP\Files\File;
+use OC\User\NoUserException;
 use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
 use OCA\WorkflowOcr\Exception\OcrProcessorNotFoundException;
 use OCA\WorkflowOcr\Helper\IProcessingFileAccessor;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
-use OCA\WorkflowOcr\Service\IOcrService;
 use OCA\WorkflowOcr\Service\IEventService;
+use OCA\WorkflowOcr\Service\IOcrService;
 use OCA\WorkflowOcr\Wrapper\IFilesystem;
 use OCA\WorkflowOcr\Wrapper\IViewFactory;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\Files\FileInfo;
+use OCP\Files\IRootFolder;
 use OCP\Files\Node;
-use OCP\IUserManager;
+use OCP\Files\NotFoundException;
 use OCP\IUser;
+use OCP\IUserManager;
 use OCP\IUserSession;
 use Psr\Log\LoggerInterface;
 

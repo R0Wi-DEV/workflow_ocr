@@ -31,8 +31,8 @@ use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
 use OCA\WorkflowOcr\Exception\OcrProcessorNotFoundException;
 use OCA\WorkflowOcr\Helper\IProcessingFileAccessor;
 use OCA\WorkflowOcr\OcrProcessors\OcrProcessorResult;
-use OCA\WorkflowOcr\Service\IOcrService;
 use OCA\WorkflowOcr\Service\IEventService;
+use OCA\WorkflowOcr\Service\IOcrService;
 use OCA\WorkflowOcr\Wrapper\IFilesystem;
 use OCA\WorkflowOcr\Wrapper\IView;
 use OCA\WorkflowOcr\Wrapper\IViewFactory;
@@ -49,8 +49,8 @@ use OCP\IDBConnection;
 use OCP\IUser;
 use OCP\IUserManager;
 use OCP\IUserSession;
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
 class ProcessFileJobTest extends TestCase {
