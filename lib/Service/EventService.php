@@ -25,9 +25,9 @@ declare(strict_types=1);
  */
 namespace OCA\WorkflowOcr\Service;
 
-use OCP\EventDispatcher\IEventDispatcher;
-use OCA\WorkflowOcr\OcrProcessors\OcrProcessorResult;
 use OCA\WorkflowOcr\Events\TextRecognizedEvent;
+use OCA\WorkflowOcr\OcrProcessors\OcrProcessorResult;
+use OCP\EventDispatcher\IEventDispatcher;
 use OCP\Files\File;
 
 class EventService implements IEventService {
