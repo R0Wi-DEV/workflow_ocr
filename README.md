@@ -5,7 +5,7 @@
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=R0Wi_workflow_ocr&metric=coverage)](https://sonarcloud.io/summary/new_code?id=R0Wi_workflow_ocr)
 ![Lint](https://github.com/R0Wi/workflow_ocr/workflows/Lint/badge.svg)
 [![Generic badge](https://img.shields.io/github/v/release/R0Wi/workflow_ocr)](https://github.com/R0Wi/workflow_ocr/releases)
-[![Generic badge](https://img.shields.io/badge/Nextcloud-26-orange)](https://github.com/nextcloud/server)
+[![Generic badge](https://img.shields.io/badge/Nextcloud-27-orange)](https://github.com/nextcloud/server)
 
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/R0Wi)
 
@@ -236,7 +236,7 @@ port `9003`. Depending on your system a possible configuration could
 look like this:
 
 ```ini
-; /etc/php/8.0/cli/php.ini
+; /etc/php/8.1/cli/php.ini
 ; ...
 [Xdebug]
 zend_extension=/usr/lib/php/20190902/xdebug.so
@@ -247,7 +247,7 @@ xdebug.remote_autostart=1
 ```
 
 ```ini
-; /etc/php/8.0/apache2/php.ini
+; /etc/php/8.1/apache2/php.ini
 ; ...
 [Xdebug]
 zend_extension=/usr/lib/php/20190902/xdebug.so
@@ -302,7 +302,7 @@ services:
     networks:
       - web_dev
 ```
-`IMAGE` could be set to `IMAGE=thecodingmachine/php:8.0-v4-apache-node14` and the content of `Dockerfile` might
+`IMAGE` could be set to `IMAGE=thecodingmachine/php:8.1-v4-apache-node14` and the content of `Dockerfile` might
 look like this:
 
 ```dockerfile
