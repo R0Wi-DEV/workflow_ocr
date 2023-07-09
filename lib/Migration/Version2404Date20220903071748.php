@@ -89,6 +89,9 @@ class Version2404Date20220903071748 extends SimpleMigrationStep {
 				$workflowSettings = json_decode($row['operation'], true);
 				$foundMapping = false;
 				$newLangArr = [];
+				if (!array_key_exists('languages', $workflowSettings)) {
+					continue;
+				}
 				$languagesArr = $workflowSettings['languages'];
 
 				// Check if we need to migrate the languages code.

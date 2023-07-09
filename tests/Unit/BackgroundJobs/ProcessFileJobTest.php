@@ -144,7 +144,8 @@ class ProcessFileJobTest extends TestCase {
 		$this->jobList = new JobList(
 			$connectionMock,
 			$configMock,
-			$timeFactoryMock
+			$timeFactoryMock,
+			$this->logger
 		);
 
 		$this->processFileJob->setArgument([
