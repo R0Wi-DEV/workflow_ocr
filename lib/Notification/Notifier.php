@@ -84,21 +84,21 @@ class Notifier implements INotifier {
 		$notification->setIcon($this->urlGenerator->imagePath(Application::APP_NAME, 'app-dark.svg'));
 		$l = $this->l10nFactory->get(Application::APP_NAME, $languageCode);
 
-		switch ($notification->getSubject()) {
-			case 'ocr_error':
-				$message = $notification->getSubjectParameters()['message'];
-				$notification
-					->setParsedSubject($l->t('Workflow OCR error'))
-					->setParsedMessage($message);
-				// Only add file info if we have one ...
-				if ($notification->getObjectType() === 'file' && $notification->getObjectId()) {
-					$richParams = $this->getRichParamForFile($notification);
-					$notification->setRichSubject($l->t('Workflow OCR error for file {file}'), $richParams);
-				}
-				return $notification;
-			default:
-				throw new \InvalidArgumentException();
+		// Currently we only support sending notifications for ocr_error
+		if ($notification->getSubject() !== 'ocr_error') {
+			throw new \InvalidArgumentException();
 		}
+
+		$message = $notification->getSubjectParameters()['message'];
+		$notification
+			->setParsedSubject($l->t('Workflow OCR error'))
+			->setParsedMessage($message);
+		// Only add file info if we have one ...
+		if ($notification->getObjectType() === 'file' && $notification->getObjectId()) {
+			$richParams = $this->getRichParamForFile($notification);
+			$notification->setRichSubject($l->t('Workflow OCR error for file {file}'), $richParams);
+		}
+		return $notification;
 	}
 
 	private function getRichParamForFile(INotification $notification) : array {
@@ -114,7 +114,7 @@ class Notifier implements INotifier {
 			throw new AlreadyProcessedException();
 		}
 
-		$richParams = [
+		return [
 			'file' => [
 				'type' => 'file',
 				'id' => $file->getId(),
@@ -123,7 +123,5 @@ class Notifier implements INotifier {
 				'link' => $this->urlGenerator->linkToRouteAbsolute('files.viewcontroller.showFile', ['fileid' => $notification->getObjectId()])
 			]
 		];
-
-		return $richParams;
 	}
 }

@@ -25,6 +25,7 @@
       - [Per workflow settings](#per-workflow-settings)
       - [Global settings](#global-settings)
     - [Testing your configuration](#testing-your-configuration)
+    - [Get feedback via Notifications](#get-feedback-via-notifications)
   - [How it works](#how-it-works)
     - [General](#general)
     - [PDF](#pdf)
@@ -164,6 +165,15 @@ To **test** if your file gets processed properly you can do the following steps:
   <p align="center">
     <img width="75%" src="doc/img/file_versions.jpg" alt="File versions">
   </p>
+
+### Get feedback via Notifications
+
+The Workflow OCR app supports sending notifications to the user in case anything went wrong during the [asynchronous OCR processing](#how-it-works). To enable this feature, you have to install and enable the [`Notifications`](https://github.com/nextcloud/notifications) app in your Nextcloud instance.
+
+<p align="center">
+  <img width="30%" src="doc/img/notifications.png" alt="Notifications">
+</p>
+
 
 ## How it works
 ### General

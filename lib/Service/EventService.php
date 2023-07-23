@@ -38,6 +38,9 @@ class EventService implements IEventService {
 		$this->eventDispatcher = $eventDispatcher;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function textRecognized(OcrProcessorResult $result, File $node) {
 		$event = new TextRecognizedEvent($result->getRecognizedText(), $node);
 		$this->eventDispatcher->dispatchTyped($event);
