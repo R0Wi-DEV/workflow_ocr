@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 /**
- * @copyright Copyright (c) 2022 Robin Windey <ro.windey@gmail.com>
+ * @copyright Copyright (c) 2023 Robin Windey <ro.windey@gmail.com>
  *
- * @author g-schmitz <gschmitz@email.com>
+ * @author Robin Windey <ro.windey@gmail.com>
  *
  * @license GNU AGPL version 3 or any later version
  *
@@ -23,26 +23,16 @@ declare(strict_types=1);
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
 namespace OCA\WorkflowOcr\Service;
 
-use OCA\WorkflowOcr\Events\TextRecognizedEvent;
-use OCA\WorkflowOcr\OcrProcessors\OcrProcessorResult;
-use OCP\EventDispatcher\IEventDispatcher;
-use OCP\Files\File;
-
-class EventService implements IEventService {
-	/** @var IEventDispatcher */
-	private $eventDispatcher;
-
-	public function __construct(IEventDispatcher $eventDispatcher) {
-		$this->eventDispatcher = $eventDispatcher;
-	}
+interface INotificationService {
 
 	/**
-	 * @return void
+	 * Create a new notification for the given user if the OCR process of the given file failed.
+	 * @param string $userId The user ID of the user that should receive the notification.
+	 * @param string $message The error message that should be displayed in the notification.
+	 * @param int $fileId Optional file ID of the file that failed to OCR. If given, user can jump to the file via link.
 	 */
-	public function textRecognized(OcrProcessorResult $result, File $node) {
-		$event = new TextRecognizedEvent($result->getRecognizedText(), $node);
-		$this->eventDispatcher->dispatchTyped($event);
-	}
+	public function createErrorNotification(?string $userId, string $message, int $fileId = null);
 }
