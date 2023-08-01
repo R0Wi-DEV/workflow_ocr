@@ -2,6 +2,8 @@ OC.L10N.register(
     "workflow_ocr",
     {
     "Workflow OCR" : "Workflow OCR",
+    "Workflow OCR error" : "Workflow OCR грешка",
+    "Workflow OCR error for file {file}" : "Workflow OCR грешка за фајл {file}",
     "Workflow settings JSON value cannot be parsed" : "Не може да се парсира JSON вредност Workflow подешавања",
     "OCR file" : "OCR фајл",
     "OCR processing via workflow" : "OCR обрада помоћу workflow",
