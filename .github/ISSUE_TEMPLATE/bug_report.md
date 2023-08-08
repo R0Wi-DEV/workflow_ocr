@@ -8,6 +8,7 @@ assignees: R0Wi
 ---
 
 **Describe the bug**
+
 A clear and concise description of what the bug is.
 
 **System**
@@ -16,8 +17,11 @@ A clear and concise description of what the bug is.
 - Nextcloud version: [VERSION]
 - PHP version: [VERSION]
 - Environment: [Docker/native Apache/native PHP FPM/...]
+- `ocrmypdf` version: [VERSION] 
+<!-- You can check this by executing 'ocrmypdf --version' on your backend -->
 
-**To Reproduce**
+**How to reproduce**
+
 Steps to reproduce the behavior:
 1. Go to '...'
 2. Click on '....'
@@ -25,6 +29,7 @@ Steps to reproduce the behavior:
 4. See error
 
 **Screenshots**
+
 If applicable, add screenshots to help explain your problem.
 
 **Server log**
@@ -36,6 +41,7 @@ Paste relevant server log lines here. Make sure to trim sensitive information.
 ```
 
 **Browser log**
+
 If you're observing Browser errors, please paste your developer tools logs here. 
 
 Help for Chrome: https://developer.chrome.com/docs/devtools/console/#view
@@ -46,4 +52,5 @@ Paste your developer tools logs here.
 ```
 
 **Additional context**
+
 Add any other context about the problem here.
