@@ -81,37 +81,56 @@ class Notifier implements INotifier {
 			throw new \InvalidArgumentException();
 		}
 
-		$notification->setIcon($this->urlGenerator->imagePath(Application::APP_NAME, 'app-dark.svg'));
+		// Currently we only support sending notifications for ocr_error
+		$subject = $notification->getSubject();
+		if ($subject !== 'ocr_error') {
+			$this->logger->warning('Unsupported notification subject {subject}', ['subject' => $subject]);
+			// Note:: AlreadyProcessedException has be be thrown before any call to $notification->set...
+			// otherwise notification won't be removed from the database
+			throw new AlreadyProcessedException();
+		}
+
 		$l = $this->l10nFactory->get(Application::APP_NAME, $languageCode);
 
-		// Currently we only support sending notifications for ocr_error
-		if ($notification->getSubject() !== 'ocr_error') {
-			throw new \InvalidArgumentException();
+		// Only add file info if we have some ...
+		$richParams = false;
+		if ($notification->getObjectType() === 'file' &&
+			($fileId = $notification->getObjectId()) &&
+			($uid = $notification->getUser())){
+				$richParams = $this->tryGetRichParamForFile($uid, intval($fileId));
+				if ($richParams !== false) {
+					$notification->setRichSubject($l->t('Workflow OCR error for file {file}'), $richParams);
+				}
+		}
+		
+		// Fallback to generic error message without file link
+		if ($richParams === false) {
+			$notification->setParsedSubject($l->t('Workflow OCR error'));
 		}
 
 		$message = $notification->getSubjectParameters()['message'];
 		$notification
-			->setParsedSubject($l->t('Workflow OCR error'))
-			->setParsedMessage($message);
-		// Only add file info if we have one ...
-		if ($notification->getObjectType() === 'file' && $notification->getObjectId()) {
-			$richParams = $this->getRichParamForFile($notification);
-			$notification->setRichSubject($l->t('Workflow OCR error for file {file}'), $richParams);
-		}
+			->setParsedMessage($message)
+			->setIcon($this->urlGenerator->imagePath(Application::APP_NAME, 'app-dark.svg'));
+
 		return $notification;
 	}
 
-	private function getRichParamForFile(INotification $notification) : array {
+	private function tryGetRichParamForFile(string $uid, int $fileId) : array | bool {
 		try {
-			$userFolder = $this->rootFolder->getUserFolder($notification->getUser());
+			$userFolder = $this->rootFolder->getUserFolder($uid);
 			/** @var File[] */
-			$files = $userFolder->getById($notification->getObjectId());
+			$files = $userFolder->getById($fileId);
 			/** @var File $file */
 			$file = array_shift($files);
+			if ($file === null) {
+				$this->logger->warning('Could not find file with id {fileId} for user {uid}', ['fileId' => $fileId, 'uid' => $uid]);
+				return false;
+			}
 			$relativePath = $userFolder->getRelativePath($file->getPath());
 		} catch (\Throwable $th) {
 			$this->logger->error($th->getMessage(), ['exception' => $th]);
-			throw new AlreadyProcessedException();
+			return false;
 		}
 
 		return [
@@ -120,7 +139,7 @@ class Notifier implements INotifier {
 				'id' => $file->getId(),
 				'name' => $file->getName(),
 				'path' => $relativePath,
-				'link' => $this->urlGenerator->linkToRouteAbsolute('files.viewcontroller.showFile', ['fileid' => $notification->getObjectId()])
+				'link' => $this->urlGenerator->linkToRouteAbsolute('files.viewcontroller.showFile', ['fileid' => $fileId])
 			]
 		];
 	}
