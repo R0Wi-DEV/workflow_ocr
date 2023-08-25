@@ -183,7 +183,7 @@ appstore:
 	--exclude="../$(app_name)/psalm.xml" \
 	../$(app_name) \
 
-.PHONY: test
+.PHONY: php-test
 php-test: composer
 	$(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.xml
 	$(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.integration.xml
@@ -222,7 +222,7 @@ lint-fix: composer npm-install
 	npm run lint:fix
 
 .PHONY: js-test
-js-test:
+js-test: npm-install
 	npm run test:unit
 
 .PHONY: test

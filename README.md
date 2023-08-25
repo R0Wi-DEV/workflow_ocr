@@ -5,7 +5,7 @@
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=R0Wi_workflow_ocr&metric=coverage)](https://sonarcloud.io/summary/new_code?id=R0Wi_workflow_ocr)
 ![Lint](https://github.com/R0Wi/workflow_ocr/workflows/Lint/badge.svg)
 [![Generic badge](https://img.shields.io/github/v/release/R0Wi/workflow_ocr)](https://github.com/R0Wi/workflow_ocr/releases)
-[![Generic badge](https://img.shields.io/badge/Nextcloud-27-orange)](https://github.com/nextcloud/server)
+[![Generic badge](https://img.shields.io/badge/Nextcloud-28-orange)](https://github.com/nextcloud/server)
 
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/R0Wi)
 
