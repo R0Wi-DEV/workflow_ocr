@@ -72,7 +72,7 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 		$exitCode = $this->command->getExitCode();
 
 		if (!$success) {
-			throw new OcrNotPossibleException('OCRmyPDF exited abnormally with exit-code ' . $exitCode . '. Message: ' . $errorOutput . ' ' . $stdErr);
+			throw new OcrNotPossibleException('OCRmyPDF exited abnormally with exit-code ' . $exitCode . ' for file ' . $file->getPath() . '. Message: ' . $errorOutput . ' ' . $stdErr);
 		}
 
 		if ($stdErr !== '' || $errorOutput !== '') {
@@ -86,7 +86,7 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 		$ocrFileContent = $this->command->getOutput();
 
 		if (!$ocrFileContent) {
-			throw new OcrNotPossibleException('OCRmyPDF did not produce any output');
+			throw new OcrNotPossibleException('OCRmyPDF did not produce any output for file ' . $file->getPath());
 		}
 
 		$recognizedText = $this->sidecarFileAccessor->getSidecarFileContent();

@@ -28,8 +28,6 @@ namespace OCA\WorkflowOcr\BackgroundJobs;
 
 use \OCP\Files\File;
 use OC\User\NoUserException;
-use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
-use OCA\WorkflowOcr\Exception\OcrProcessorNotFoundException;
 use OCA\WorkflowOcr\Helper\IProcessingFileAccessor;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCA\WorkflowOcr\Service\IEventService;
@@ -103,19 +101,14 @@ class ProcessFileJob extends \OCP\BackgroundJob\QueuedJob {
 	 */
 	protected function run($argument) : void {
 		$this->logger->debug('STARTED -- Run ' . self::class . ' job. Argument: {argument}.', ['argument' => $argument]);
-		
-		[$success, $filePath, $uid, $settings] = $this->tryParseArguments($argument);
-		if (!$success) {
-			$this->notificationService->createErrorNotification($uid, 'Failed to parse arguments inside the OCR process. Please have a look at your servers logfile for more details.');
-			return;
-		}
 
 		try {
+			[$fileId, $uid, $settings] = $this->parseArguments($argument);
 			$this->initUserEnvironment($uid);
-			$this->processFile($filePath, $settings, $uid);
+			$this->processFile($fileId, $settings);
 		} catch (\Throwable $ex) {
 			$this->logger->error($ex->getMessage(), ['exception' => $ex]);
-			$this->notificationService->createErrorNotification($uid, 'An error occured while executing the OCR process. Please have a look at your servers logfile for more details.');
+			$this->notificationService->createErrorNotification($uid, 'An error occured while executing the OCR process ('.$ex->getMessage().'). Please have a look at your servers logfile for more details.');
 		} finally {
 			$this->shutdownUserEnvironment();
 		}
@@ -126,80 +119,33 @@ class ProcessFileJob extends \OCP\BackgroundJob\QueuedJob {
 	/**
 	 * @param mixed $argument
 	 */
-	private function tryParseArguments($argument) : array {
+	private function parseArguments($argument) : array {
 		if (!is_array($argument)) {
-			$this->logger->warning('Argument is no array in ' . self::class . ' method \'tryParseArguments\'.');
-			return [
-				false
-			];
+			throw new \InvalidArgumentException('Argument is no array in ' . self::class . ' method \'tryParseArguments\'.');
 		}
 
-		$filePath = null;
-		$uid = null;
-		$filePathKey = 'filePath';
-		if (array_key_exists($filePathKey, $argument)) {
-			$filePath = $argument[$filePathKey];
-			// '', admin, 'files', 'path/to/file.pdf'
-			$splitted = explode('/', $filePath, 4);
-			if (count($splitted) < 4) {
-				$this->logger->warning('File path "' . $filePath . '" is not valid in ' . self::class . ' method \'tryParseArguments\'.');
-				return [
-					false
-				];
-			}
-			$uid = $splitted[1];
-		} else {
-			$this->logVariableKeyNotSet($filePathKey, 'tryParseArguments');
-		}
-
-		$settings = null;
-		$settingsKey = 'settings';
-		if (array_key_exists($settingsKey, $argument)) {
-			$jsonSettings = $argument[$settingsKey];
-			$settings = new WorkflowSettings($jsonSettings);
-		} else {
-			$this->logVariableKeyNotSet($settingsKey, 'tryParseArguments');
-		}
+		$jsonSettings = $argument['settings'];
+		$settings = new WorkflowSettings($jsonSettings);
+		$uid = $argument['uid'];
+		$fileId = intval($argument['fileId']);
 
 		return [
-			$filePath !== null && $uid !== null && $settings !== null,
-			$filePath,
+			$fileId,
 			$uid,
 			$settings
 		];
 	}
 
 	/**
-	 * @param string $filePath  The file to be processed
+	 * @param int $fileId  The id of the file to be processed
 	 * @param WorkflowSettings $settings The settings to be used for processing
-	 * @param string $userId The user who triggered the processing
 	 */
-	private function processFile(string $filePath, WorkflowSettings $settings, string $userId) : void {
-		$node = $this->getNode($filePath, $userId);
+	private function processFile(int $fileId, WorkflowSettings $settings) : void {
+		$node = $this->getNode($fileId);
 
-		if ($node === null) {
-			return;
-		}
+		$ocrFile = $this->ocrService->ocrFile($node, $settings);
 
-		$nodeId = $node->getId();
-
-		try {
-			$ocrFile = $this->ocrService->ocrFile($node, $settings);
-		} catch(\Throwable $throwable) {
-			if ($throwable instanceof(OcrNotPossibleException::class)) {
-				$msg = 'OCR for file ' . $node->getPath() . ' not possible. Message: ' . $throwable->getMessage();
-			} elseif ($throwable instanceof(OcrProcessorNotFoundException::class)) {
-				$msg = 'OCR processor not found for mimetype ' . $node->getMimeType();
-			} else {
-				throw $throwable;
-			}
-
-			$this->logger->error($msg);
-			$this->notificationService->createErrorNotification($userId, $msg, $nodeId);
-			
-			return;
-		}
-
+		$filePath = $node->getPath();
 		$fileContent = $ocrFile->getFileContent();
 		$originalFileExtension = $node->getExtension();
 		$newFileExtension = $ocrFile->getFileExtension();
@@ -210,28 +156,23 @@ class ProcessFileJob extends \OCP\BackgroundJob\QueuedJob {
 				$filePath :
 				$filePath . ".pdf";
 
-			$this->createNewFileVersion($newFilePath, $fileContent, $nodeId);
+			$this->createNewFileVersion($newFilePath, $fileContent, $fileId);
 		}
 
 		$this->eventService->textRecognized($ocrFile, $node);
 	}
 
-	private function getNode(string $filePath, string $userId) : ?Node {
-		try {
-			/** @var File */
-			$node = $this->rootFolder->get($filePath);
-		} catch (NotFoundException $nfEx) {
-			$msg = 'Could not process file \'' . $filePath . '\'. File was not found';
-			$this->logger->warning($msg);
-			$this->notificationService->createErrorNotification($userId, $msg);
-			return null;
+	private function getNode(int $fileId) : ?Node {
+		/** @var File[] */
+		$nodeArr = $this->rootFolder->getById($fileId);
+		if (count($nodeArr) === 0) {
+			throw new NotFoundException('Could not process file with id \'' . $fileId . '\'. File was not found');
 		}
+		
+		$node = array_shift($nodeArr);
 
 		if (!$node instanceof Node || $node->getType() !== FileInfo::TYPE_FILE) {
-			$msg = 'Skipping process for \'' . $filePath . '\'. It is not a file';
-			$this->logger->warning($msg);
-			$this->notificationService->createErrorNotification($userId, $msg);
-			return null;
+			throw new \InvalidArgumentException('Skipping process for file with id \'' . $fileId . '\'. It is not a file');
 		}
 
 		return $node;
@@ -276,9 +217,5 @@ class ProcessFileJob extends \OCP\BackgroundJob\QueuedJob {
 		} finally {
 			$this->processingFileAccessor->setCurrentlyProcessedFileId(null);
 		}
-	}
-
-	private function logVariableKeyNotSet(string $key, string $method) : void {
-		$this->logger->warning("Variable '" . $key . "' not set in " . self::class . " method '" . $method . "'.");
 	}
 }

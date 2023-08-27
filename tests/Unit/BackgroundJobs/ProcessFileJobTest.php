@@ -44,7 +44,6 @@ use OCP\Files\File;
 use OCP\Files\FileInfo;
 use OCP\Files\IRootFolder;
 use OCP\Files\Node;
-use OCP\Files\NotFoundException;
 use OCP\IConfig;
 use OCP\IDBConnection;
 use OCP\IUser;
@@ -81,12 +80,13 @@ class ProcessFileJobTest extends TestCase {
 	private $jobList;
 	/** @var ProcessFileJob */
 	private $processFileJob;
+	/** @var File[] */
+	private $rootFolderGetById42ReturnValue;
 
 	public function setUp() : void {
 		parent::setUp();
 
 		$this->logger = $this->createMock(LoggerInterface::class);
-		$this->rootFolder = $this->createMock(IRootFolder::class);
 		$this->ocrService = $this->createMock(IOcrService::class);
 		$this->eventService = $this->createMock(IEventService::class);
 		$this->viewFactory = $this->createMock(IViewFactory::class);
@@ -95,6 +95,16 @@ class ProcessFileJobTest extends TestCase {
 		$this->processingFileAccessor = $this->createMock(IProcessingFileAccessor::class);
 		$this->notificationService = $this->createMock(INotificationService::class);
 		
+		/** @var MockObject|IRootFolder */
+		$this->rootFolder = $this->createMock(IRootFolder::class);
+		$this->rootFolderGetById42ReturnValue = [$this->createValidFileMock()];
+		$this->rootFolder->expects($this->any())
+			->method('getById')
+			->with(42)
+			->willReturnCallback(function () {
+				return $this->rootFolderGetById42ReturnValue;
+			});
+
 		/** @var MockObject|IUserManager */
 		$userManager = $this->createMock(IUserManager::class);
 		$user = $this->createMock(IUser::class);
@@ -154,8 +164,8 @@ class ProcessFileJobTest extends TestCase {
 		);
 
 		$this->processFileJob->setArgument([
-			'filePath' => '/admin/files/somefile.pdf',
-			'uid' => 'someuser',
+			'fileId' => 42,
+			'uid' => 'admin',
 			'settings' => '{}'
 		]);
 	}
@@ -182,7 +192,7 @@ class ProcessFileJobTest extends TestCase {
 	/**
 	 * @dataProvider dataProvider_InvalidArguments
 	 */
-	public function testDoesNothingOnInvalidArguments($argument, $invalidCount) {
+	public function testLogsErrorAndDoesNothingOnInvalidArguments($argument, $errorMessagePart) {
 		$this->processFileJob->setArgument($argument);
 		$this->filesystem->expects($this->never())
 			->method('init')
@@ -193,8 +203,11 @@ class ProcessFileJobTest extends TestCase {
 		$this->viewFactory->expects($this->never())
 			->method('create')
 			->withAnyParameters();
-		$this->logger->expects($this->exactly($invalidCount))
-			->method('warning');
+		$this->logger->expects($this->once())
+			->method('error')
+			->with($this->stringContains($errorMessagePart), $this->callback(function ($loggerArgs) {
+				return is_array($loggerArgs) && ($loggerArgs['exception'] instanceof \Exception);
+			}));
 
 		$this->processFileJob->start($this->jobList);
 	}
@@ -217,8 +230,8 @@ class ProcessFileJobTest extends TestCase {
 	public function testCallsGetOnRootFolder(array $arguments, string $user, string $rootFolderPath, string $originalFileExtension, string $expectedOcrFilename) {
 		$this->processFileJob->setArgument($arguments);
 		$this->rootFolder->expects($this->once())
-			->method('get')
-			->with($arguments['filePath']);
+			->method('getById')
+			->with(42);
 		
 		$this->processFileJob->start($this->jobList);
 	}
@@ -232,9 +245,7 @@ class ProcessFileJobTest extends TestCase {
 		$mimeType = 'application/pdf';
 		$content = 'someFileContent';
 		$fileMock = $this->createValidFileMock($mimeType, $content);
-		$this->rootFolder->method('get')
-			->with($arguments['filePath'])
-			->willReturn($fileMock);
+		$this->rootFolderGetById42ReturnValue = [$fileMock];
 
 		$this->ocrService->expects($this->once())
 			->method('ocrFile')
@@ -246,19 +257,15 @@ class ProcessFileJobTest extends TestCase {
 	/**
 	 * @dataProvider dataProvider_ValidArguments
 	 */
-	public function testCreatesNewFileVersionAndEmitsTextRecognizedEvent(array $arguments, string $user, string $rootFolderPath, string $originalFileExtension, string $expectedOcrFilename) {
+	public function testCreatesNewFileVersionAndEmitsTextRecognizedEvent(array $arguments, string $user, string $rootFolderPath, string $originalFileName, string $expectedOcrFilename) {
 		$this->processFileJob->setArgument($arguments);
 		$mimeType = 'application/pdf';
 		$content = 'someFileContent';
 		$ocrContent = 'someOcrProcessedFile';
 		$ocrResult = new OcrProcessorResult($ocrContent, "pdf", $ocrContent); // Extend this cases if we add new OCR processors
-		$filePath = $arguments['filePath'];
-		$dirPath = dirname($filePath);
-
-		$fileMock = $this->createValidFileMock($mimeType, $content, $originalFileExtension);
-		$this->rootFolder->method('get')
-			->with($arguments['filePath'])
-			->willReturn($fileMock);
+		$originalFileMock = $this->createValidFileMock($mimeType, $content, $rootFolderPath, $originalFileName);
+		
+		$this->rootFolderGetById42ReturnValue = [$originalFileMock];
 
 		$this->ocrService->expects($this->once())
 			->method('ocrFile')
@@ -271,23 +278,24 @@ class ProcessFileJobTest extends TestCase {
 			->with($expectedOcrFilename, $ocrContent);
 		$this->viewFactory->expects($this->once())
 			->method('create')
-			->with($dirPath)
+			->with($rootFolderPath)
 			->willReturn($viewMock);
 
 		$this->eventService->expects($this->once())
 			->method('textRecognized')
-			->with($ocrResult, $fileMock);
+			->with($ocrResult, $originalFileMock);
 
 		$this->processFileJob->start($this->jobList);
 	}
 
-	public function testNotFoundLogsWarning_AndDoesNothingAfterwards() {
-		$this->rootFolder->expects($this->once())
-			->method('get')
-			->willThrowException(new NotFoundException());
+	public function testNotFoundLogsErrorAndSendsNotification_AndDoesNothingAfterwards() {
+		$this->rootFolderGetById42ReturnValue = [];
 		$this->logger->expects($this->once())
-			->method('warning')
+			->method('error')
 			->with($this->stringContains('not found'));
+		$this->notificationService->expects($this->once())
+			->method('createErrorNotification')
+			->with($this->stringContains('An error occured while executing the OCR process (') && $this->stringContains('File was not found'));
 		$this->ocrService->expects($this->never())
 			->method('ocrFile');
 
@@ -298,9 +306,7 @@ class ProcessFileJobTest extends TestCase {
 	 * @dataProvider dataProvider_InvalidNodes
 	 */
 	public function testDoesNotCallOcr_OnNonFile($invalidNode) {
-		$this->rootFolder->method('get')
-			->with('/admin/files/somefile.pdf')
-			->willReturn($invalidNode);
+		$this->rootFolderGetById42ReturnValue = [$invalidNode];
 
 		$this->ocrService->expects($this->never())
 			->method('ocrFile');
@@ -358,7 +364,7 @@ class ProcessFileJobTest extends TestCase {
 			$this->createMock(ITimeFactory::class)
 		);
 		$processFileJob->setId(111);
-		$arguments = ['filePath' => '/nonexistinguser/files/someInvalidStuff', 'settings' => '{}'];
+		$arguments = ['fileId' => 42, 'uid' => 'nonexistinguser', 'settings' => '{}'];
 		$processFileJob->setArgument($arguments);
 
 		$processFileJob->start($this->jobList);
@@ -374,10 +380,7 @@ class ProcessFileJobTest extends TestCase {
 		$ocrContent = 'someOcrProcessedFile';
 		$ocrResult = new OcrProcessorResult($ocrContent, "pdf", $ocrContent); // Extend this cases if we add new OCR processors
 
-		$fileMock = $this->createValidFileMock($mimeType, $content);
-		$this->rootFolder->method('get')
-			->with($arguments['filePath'])
-			->willReturn($fileMock);
+		$this->rootFolderGetById42ReturnValue = [$this->createValidFileMock($mimeType, $content)];
 
 		$this->ocrService->expects($this->once())
 			->method('ocrFile')
@@ -388,14 +391,16 @@ class ProcessFileJobTest extends TestCase {
 			->method('create')
 			->willReturn($viewMock);
 
-		$calledWith42 = 0;
+		$calledWithFileId42 = 0;
 		$calledWithNull = 0;
+		$withIdCalledFirst = false;
 
 		$this->processingFileAccessor->expects($this->exactly(2))
 			->method('setCurrentlyProcessedFileId')
-			->with($this->callback(function ($id) use (&$calledWith42, &$calledWithNull) {
+			->with($this->callback(function ($id) use (&$calledWithFileId42, &$calledWithNull, &$withIdCalledFirst) {
 				if ($id === 42) {
-					$calledWith42++;
+					$calledWithFileId42++;
+					$withIdCalledFirst = $calledWithNull === 0;
 				} elseif ($id === null) {
 					$calledWithNull++;
 				}
@@ -405,8 +410,9 @@ class ProcessFileJobTest extends TestCase {
 
 		$this->processFileJob->start($this->jobList);
 
-		$this->assertEquals(1, $calledWith42);
+		$this->assertEquals(1, $calledWithFileId42);
 		$this->assertEquals(1, $calledWithNull);
+		$this->assertTrue($withIdCalledFirst);
 	}
 
 	/**
@@ -418,10 +424,12 @@ class ProcessFileJobTest extends TestCase {
 		$content = 'someFileContent';
 		$ocrContent = '';
 		$ocrResult = new OcrProcessorResult($ocrContent, "pdf", $ocrContent);
+		$fileId = $arguments['fileId'];
 
-		$fileMock = $this->createValidFileMock($mimeType, $content);
-		$this->rootFolder->method('get')
-			->willReturn($fileMock);
+		$this->rootFolder->expects($this->once())
+			->method('getById')
+			->with($fileId)
+			->willReturn([$this->createValidFileMock($mimeType, $content)]);
 
 		$this->ocrService->expects($this->once())
 			->method('ocrFile')
@@ -442,7 +450,6 @@ class ProcessFileJobTest extends TestCase {
 	}
 
 	public function testLogsNonOcrExceptionsFromOcrService() {
-		$this->processFileJob->setArgument(['filePath' => '/admin/files/somefile.pdf', 'settings' => '{}']);
 		$mimeType = 'application/pdf';
 		$content = 'someFileContent';
 		$exception = new \Exception('someException');
@@ -466,18 +473,16 @@ class ProcessFileJobTest extends TestCase {
 
 	public function dataProvider_InvalidArguments() {
 		$arr = [
-			[null, 1],
-			[['mykey' => 'myvalue'], 2],
-			[['someotherkey' => 'someothervalue', 'k2' => 'v2'], 2],
-			[['filePath' => 'someInvalidPath'], 1]
+			[null, "Argument is no array"],
+			[['mykey' => 'myvalue'], "Undefined array key"]
 		];
 		return $arr;
 	}
 
 	public function dataProvider_ValidArguments() {
 		$arr = [
-			[['filePath' => '/admin/files/somefile.pdf', 'uid' => 'admin', 'settings' => '{}'], 'admin', '/admin/files', 'pdf', 'somefile.pdf'],
-			[['filePath' => '/myuser/files/subfolder/someotherfile.jpg', 'uid' => 'myuser', 'settings' => '{}'], 'myuser', '/myuser/files', 'jpg', 'someotherfile.jpg.pdf']
+			[['fileId' => 42, 'uid' => 'admin', 'settings' => '{}'], 'admin', '/admin/files', 'somefile.pdf', 'somefile.pdf'],
+			[['fileId' => 42, 'uid' => 'myuser', 'settings' => '{}'], 'myuser', '/myuser/files', 'someotherfile.jpg', 'someotherfile.jpg.pdf']
 		];
 		return $arr;
 	}
@@ -500,14 +505,14 @@ class ProcessFileJobTest extends TestCase {
 	public function dataProvider_OcrExceptions() {
 		return [
 			[new OcrNotPossibleException('Ocr not possible')],
-			[new OcrProcessorNotFoundException()]
+			[new OcrProcessorNotFoundException('audio/mpeg')]
 		];
 	}
 
 	/**
 	 * @return File|MockObject
 	 */
-	private function createValidFileMock(string $mimeType = 'application/pdf', string $content = 'someFileContent', string $fileExtension = "pdf") {
+	private function createValidFileMock(string $mimeType = 'application/pdf', string $content = 'someFileContent', string $rootFolderPath = '/admin/files', string $fileName = 'somefile.pdf') {
 		/** @var MockObject|File */
 		$fileMock = $this->createMock(File::class);
 		$fileMock->method('getType')
@@ -518,8 +523,11 @@ class ProcessFileJobTest extends TestCase {
 			->willReturn($content);
 		$fileMock->method('getId')
 			->willReturn(42);
+		$fileMock->method('getPath')
+			->willReturn("$rootFolderPath/$fileName");
+		#get extension from filename
 		$fileMock->method('getExtension')
-			->willReturn($fileExtension);
+			->willReturn(pathinfo($fileName, PATHINFO_EXTENSION));
 		return $fileMock;
 	}
 }
