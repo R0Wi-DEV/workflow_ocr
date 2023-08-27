@@ -107,7 +107,7 @@ class Operation implements ISpecificOperation {
 		if (!($match = $this->getMatch($ruleMatcher)) ||
 			!$this->tryGetFile($eventName, $event, $node) ||
 			$this->eventTriggeredByOcrProcess($node) ||
-			!$this->tryGetJobArgs($node, $match, $argsArray)) {
+			!$this->tryGetJobArgs($node, $match['operation'], $argsArray)) {
 			return;
 		}
 	
@@ -192,14 +192,14 @@ class Operation implements ISpecificOperation {
 
 	/**
 	 * @param Node $node
-	 * @param array $match
+	 * @param string $operation
 	 * @param array $argsArray
 	 */
-	private function tryGetJobArgs(Node $node, $match, & $argsArray) : bool {
+	private function tryGetJobArgs(Node $node, $operation, & $argsArray) : bool {
 		// Check path has valid structure
 		$filePath = $node->getPath();
 		// '', admin, 'files', 'path/to/file.pdf'
-		[,, $folder,] = explode('/', $filePath, 4);
+		[, $user, $folder,] = explode('/', $filePath, 4);
 		if ($folder !== 'files') {
 			$this->logger->debug('Not processing event because path \'{path}\' seems to be invalid.',
 				['path' => $filePath]);
@@ -207,8 +207,9 @@ class Operation implements ISpecificOperation {
 		}
 
 		$argsArray = [
-			'filePath' => $filePath,
-			'settings' => $match['operation']
+			'uid' => $user,
+			'fileId' => $node->getId(),
+			'settings' => $operation
 		];
 
 		return true;

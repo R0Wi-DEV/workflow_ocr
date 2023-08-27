@@ -165,6 +165,9 @@ class PdfOcrProcessorTest extends TestCase {
 			->method('getStdErr')
 			->willReturn('stdErr');
 		$this->ocrMyPdfOutput = "";
+		$this->fileBefore->expects($this->once())
+			->method('getPath')
+			->willReturn('/admin/files/somefile.pdf');
 
 		$thrown = false;
 		$processor = new PdfOcrProcessor($this->command, $this->logger, $this->sidecarFileAccessor);
@@ -174,7 +177,7 @@ class PdfOcrProcessorTest extends TestCase {
 		} catch (\Throwable $t) {
 			$thrown = true;
 			$this->assertInstanceOf(OcrNotPossibleException::class, $t);
-			$this->assertEquals('OCRmyPDF did not produce any output', $t->getMessage());
+			$this->assertEquals('OCRmyPDF did not produce any output for file /admin/files/somefile.pdf', $t->getMessage());
 		}
 
 		$this->assertTrue($thrown);
