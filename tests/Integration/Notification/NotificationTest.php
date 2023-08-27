@@ -151,7 +151,7 @@ class NotificationTest extends TestCase {
 
 		$this->processFileJob->setId(111);
 		$this->processFileJob->setArgument([
-			'filePath' => '/admin/files/somefile.pdf',
+			'fileId' => 42,
 			'uid' => 'someuser',
 			'settings' => '{}'
 		]);
@@ -159,9 +159,9 @@ class NotificationTest extends TestCase {
 
 	public function testBackgroundJobCreatesErrorNotificationIfOcrFailed() {
 		$fileMock = $this->createValidFileMock();
-		$this->rootFolder->method('get')
-			->with('/admin/files/somefile.pdf')
-			->willReturn($fileMock);
+		$this->rootFolder->method('getById')
+			->with(42)
+			->willReturn([$fileMock]);
 
 		$this->ocrService->expects($this->once())
 			->method('ocrFile')
@@ -177,7 +177,7 @@ class NotificationTest extends TestCase {
 		$notification = $notifications[0];
 		$this->assertEquals('workflow_ocr', $notification->getApp());
 		$this->assertEquals('ocr_error', $notification->getSubject());
-		$this->assertEquals('OCR for file /admin/files/somefile.pdf not possible. Message: Some error', $notification->getSubjectParameters()['message']);
+		$this->assertEquals('An error occured while executing the OCR process (Some error). Please have a look at your servers logfile for more details.', $notification->getSubjectParameters()['message']);
 	}
 
 	/**

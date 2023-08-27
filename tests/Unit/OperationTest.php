@@ -210,10 +210,11 @@ class OperationTest extends TestCase {
 
 	public function testAddWithCorrectFilePathAndUser() {
 		$filePath = "/admin/files/path/to/file.pdf";
+		$fileId = 42;
 		$uid = 'admin';
 		$this->jobList->expects($this->once())
 			->method('add')
-			->with(ProcessFileJob::class, ['filePath' => $filePath, 'settings' => self::SETTINGS]);
+			->with(ProcessFileJob::class, ['fileId' => $fileId, 'uid' => $uid, 'settings' => self::SETTINGS]);
 
 		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
 
@@ -231,7 +232,7 @@ class OperationTest extends TestCase {
 		$fileMock->method('getOwner')
 			->willReturn($userMock);
 		$fileMock->method('getId')
-			->willReturn(42);
+			->willReturn($fileId);
 		$event = new GenericEvent($fileMock);
 		$eventName = '\OCP\Files::postCreate';
 
@@ -403,7 +404,7 @@ class OperationTest extends TestCase {
 
 		$this->jobList->expects($this->once())
 			->method('add')
-			->with(ProcessFileJob::class, ['filePath' => $filePath, 'settings' => self::SETTINGS]);
+			->with(ProcessFileJob::class, ['fileId' => $fileId, 'uid' => $uid, 'settings' => self::SETTINGS]);
 
 		/** @var MockObject|IUser */
 		$userMock = $this->createMock(IUser::class);
