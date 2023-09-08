@@ -96,11 +96,11 @@ class Notifier implements INotifier {
 		$richParams = false;
 		if ($notification->getObjectType() === 'file' &&
 			($fileId = $notification->getObjectId()) &&
-			($uid = $notification->getUser())){
-				$richParams = $this->tryGetRichParamForFile($uid, intval($fileId));
-				if ($richParams !== false) {
-					$notification->setRichSubject($l->t('Workflow OCR error for file {file}'), $richParams);
-				}
+			($uid = $notification->getUser())) {
+			$richParams = $this->tryGetRichParamForFile($uid, intval($fileId));
+			if ($richParams !== false) {
+				$notification->setRichSubject($l->t('Workflow OCR error for file {file}'), $richParams);
+			}
 		}
 		
 		// Fallback to generic error message without file link

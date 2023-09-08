@@ -215,7 +215,54 @@ class NotifierTest extends TestCase {
 		$this->assertEquals('<translated> Workflow OCR error', $preparedNotification->getParsedSubject());
 	}
 
-	public function testSendsFallbackNotificationWithoutFileInfoIfFileCannotBeRead() {
+	public function testSendsFallbackNotificationWithoutFileInfoIfFileNotFoundWasThrown() {
+		/** @var IValidator|MockObject */
+		$validator = $this->createMock(IValidator::class);
+		/** @var IL10N|MockObject */
+		$l10n = $this->createMock(IL10N::class);
+		$l10n->expects($this->once())
+			->method('t')
+			->with('Workflow OCR error')
+			->willReturn('<translated> Workflow OCR error');
+		$this->l10nFactory->expects($this->once())
+			->method('get')
+			->with('workflow_ocr')
+			->willReturn($l10n);
+
+		$notification = new Notification($validator);
+		$notification->setUser('user');
+		$notification->setApp('workflow_ocr');
+		$notification->setSubject('ocr_error', ['message' => 'mymessage']);
+		$notification->setObject('file', '123');
+
+		/** @var Folder|MockObject */
+		$userFolder = $this->createMock(Folder::class);
+		$ex = new \OCP\Files\NotFoundException('nope ... sorry');
+		$userFolder->expects($this->once())
+			->method('getById')
+			->with('123')
+			->willThrowException($ex); // This is what we want to test ...
+		$userFolder->expects($this->never())
+			->method('getRelativePath');
+		$this->rootFolder->expects($this->once())
+			->method('getUserFolder')
+			->with('user')
+			->willReturn($userFolder);
+		$this->urlGenerator->expects($this->once())
+			->method('imagePath')
+			->with('workflow_ocr', 'app-dark.svg')
+			->willReturn('http://localhost/index.php/apps/workflow_ocr/app-dark.svg');
+		$this->logger->expects($this->once())
+			->method('error')
+			->with('nope ... sorry', ['exception' => $ex]);
+
+		$notification = $this->notifier->prepare($notification, 'en');
+
+		$this->assertEmpty($notification->getRichSubject());
+		$this->assertEquals('<translated> Workflow OCR error', $notification->getParsedSubject());
+	}
+
+	public function testSendsFallbackNotificationWithoutFileInfoIfReturnedFileArrayWasEmpty() {
 		/** @var IValidator|MockObject */
 		$validator = $this->createMock(IValidator::class);
 		/** @var IL10N|MockObject */
@@ -240,7 +287,7 @@ class NotifierTest extends TestCase {
 		$userFolder->expects($this->once())
 			->method('getById')
 			->with('123')
-			->willThrowException(new \OCP\Files\NotFoundException());
+			->willReturn([]); // This is what we want to test ...
 		$userFolder->expects($this->never())
 			->method('getRelativePath');
 		$this->rootFolder->expects($this->once())
@@ -251,6 +298,9 @@ class NotifierTest extends TestCase {
 			->method('imagePath')
 			->with('workflow_ocr', 'app-dark.svg')
 			->willReturn('http://localhost/index.php/apps/workflow_ocr/app-dark.svg');
+		$this->logger->expects($this->once())
+			->method('warning')
+			->with('Could not find file with id {fileId} for user {uid}', ['fileId' => '123', 'uid' => 'user']);
 
 		$notification = $this->notifier->prepare($notification, 'en');
 
