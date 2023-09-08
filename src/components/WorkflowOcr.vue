@@ -22,8 +22,8 @@
 
 <template>
 	<div>
-		<SettingsItem label="OCR language"
-			info-text="The language(s) to be used for OCR processing">
+		<SettingsItem :label="translate('OCR language')"
+			:info-text="translate('The language(s) to be used for OCR processing')">
 			<Multiselect v-model="selectedLanguages"
 				track-by="langCode"
 				label="label"
@@ -32,22 +32,22 @@
 				:multiple="true"
 				:options="availableLanguages" />
 		</SettingsItem>
-		<SettingsItem label="Assign tags after OCR"
-			info-text="These tags will be assigned to the file after OCR processing has finished">
+		<SettingsItem :label="translate('Assign tags after OCR')"
+			:info-text="translate('These tags will be assigned to the file after OCR processing has finished')">
 			<MultiselectTags v-model="tagsToAddAfterOcr"
 				:multiple="true">
 				{{ tagsToAddAfterOcr }}
 			</MultiselectTags>
 		</SettingsItem>
-		<SettingsItem label="Remove tags after OCR"
-			info-text="These tags will be removed from the file after OCR processing has finished">
+		<SettingsItem :label="translate('Remove tags after OCR')"
+			:info-text="translate('These tags will be removed from the file after OCR processing has finished')">
 			<MultiselectTags v-model="tagsToRemoveAfterOcr"
 				:multiple="true">
 				{{ tagsToRemoveAfterOcr }}
 			</MultiselectTags>
 		</SettingsItem>
-		<SettingsItem label="OCR mode"
-			info-text="Apply this mode if file already has OCR content">
+		<SettingsItem :label="translate('OCR mode')"
+			:info-text="translate('Apply this mode if file already has OCR content')">
 			<div>
 				<CheckboxRadioSwitch ref="ocrMode0"
 					:checked.sync="ocrMode"
@@ -79,7 +79,7 @@
 				</CheckboxRadioSwitch>
 			</div>
 		</SettingsItem>
-		<SettingsItem label="Other settings">
+		<SettingsItem :label="translate('Other settings')">
 			<div>
 				<CheckboxRadioSwitch ref="removeBackgroundSwitch"
 					:disabled="removeBackgroundDisabled"
