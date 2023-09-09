@@ -2,8 +2,8 @@ OC.L10N.register(
     "workflow_ocr",
     {
     "Workflow OCR" : "التدفق الإجرائي لتحويل صورة الكتابة إلى نص",
-    "Workflow OCR error" : "خطأ في التدفق الإجرائي لتحويل الصورة لنص",
     "Workflow OCR error for file {file}" : "خطأ في التدفق الإجرائي لتحويل الصورة لنص في الملف {file}",
+    "Workflow OCR error" : "خطأ في التدفق الإجرائي لتحويل الصورة لنص",
     "Workflow settings JSON value cannot be parsed" : "لم يمكن تحليل قيمة جاسون في التدفق الإجرائي",
     "OCR file" : "ملف تحويل صورة الكتابة إلى نص",
     "OCR processing via workflow" : "معالجة تحويل صورة الكتابة إلى نص عبر التدفق الإجرائي",
