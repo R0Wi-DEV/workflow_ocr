@@ -78,6 +78,9 @@ class Version2702Date20230908170345 extends SimpleMigrationStep {
 		 *  notifications). Therefore, such a notification will be processed
 		 *  over and over again.
 		 */
+		if (!$this->db->tableExists('notifications')) {
+			return;
+		}
 		$builder = $this->db->getQueryBuilder();
 		$builder->delete('notifications')
 			->where($builder->expr()->eq('app', $builder->createNamedParameter(Application::APP_NAME)))
