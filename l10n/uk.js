@@ -2,6 +2,9 @@ OC.L10N.register(
     "workflow_ocr",
     {
     "Workflow OCR" : "Процес оптичного розпізнавання тексту",
+    "Workflow OCR error for file {file}" : "Помилка під час виконання процесу оптичного розпізнавання файлу {file}",
+    "Workflow OCR error" : "Помилка під час виконання процесу оптичного розпізнавання",
+    "Workflow settings JSON value cannot be parsed" : "Не вдалося обробити значеня JSCON налаштування процесу",
     "OCR file" : "Файл оптичного розпізнавання",
     "OCR processing via workflow" : "Оптичне розпізнавання тексту через процес",
     "Server side OCR processing via workflow engine" : "Оптичне розпізнавання на стороні сервера через налаштовані процеси"
