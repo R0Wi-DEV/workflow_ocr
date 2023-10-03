@@ -27,19 +27,19 @@ declare(strict_types=1);
 namespace OCA\WorkflowOcr\Service;
 
 use OCA\WorkflowOcr\Model\WorkflowSettings;
-use OCA\WorkflowOcr\OcrProcessors\OcrProcessorResult;
-use OCP\Files\File;
 
 interface IOcrService {
 	/**
-	 * Processes OCR on the given file
+	 * Processes OCR on the given file. Creates a new file version and emits appropriate events.
 	 *
-	 * @param string $mimeType        		The mimetype of the file to be processed
-	 * @param string $fileContent     		The file to be processed
+	 * @param int $fileId     				The id if the file to be processed
+	 * @param string $uid 					The id of the user who has access to this file
 	 * @param WorkflowSettings $settings 	The settings to be used for processing
 	 *
 	 * @throws \OCA\WorkflowOcr\Exception\OcrNotPossibleException
 	 * @throws \OCA\WorkflowOcr\Exception\OcrProcessorNotFoundException
+	 * @throws \OCA\WorkflowOcr\Exception\OcrResultEmptyException
+	 * @throws \InvalidArgumentException
 	 */
-	public function ocrFile(File $file, WorkflowSettings $settings) : OcrProcessorResult;
+	public function runOcrProcess(int $fileId, string $uid, WorkflowSettings $settings) : void;
 }
