@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace OCA\WorkflowOcr\Tests\Unit\OcrProcessors;
 
 use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
+use OCA\WorkflowOcr\Exception\OcrResultEmptyException;
 use OCA\WorkflowOcr\Helper\ISidecarFileAccessor;
 use OCA\WorkflowOcr\Model\GlobalSettings;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
@@ -176,7 +177,7 @@ class PdfOcrProcessorTest extends TestCase {
 			$processor->ocrFile($this->fileBefore, $this->defaultSettings, $this->defaultGlobalSettings);
 		} catch (\Throwable $t) {
 			$thrown = true;
-			$this->assertInstanceOf(OcrNotPossibleException::class, $t);
+			$this->assertInstanceOf(OcrResultEmptyException::class, $t);
 			$this->assertEquals('OCRmyPDF did not produce any output for file /admin/files/somefile.pdf', $t->getMessage());
 		}
 
