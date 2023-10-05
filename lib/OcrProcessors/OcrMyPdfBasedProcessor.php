@@ -25,6 +25,7 @@ namespace OCA\WorkflowOcr\OcrProcessors;
 
 use Cocur\Chain\Chain;
 use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
+use OCA\WorkflowOcr\Exception\OcrResultEmptyException;
 use OCA\WorkflowOcr\Helper\ISidecarFileAccessor;
 use OCA\WorkflowOcr\Model\GlobalSettings;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
@@ -86,7 +87,7 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 		$ocrFileContent = $this->command->getOutput();
 
 		if (!$ocrFileContent) {
-			throw new OcrNotPossibleException('OCRmyPDF did not produce any output for file ' . $file->getPath());
+			throw new OcrResultEmptyException('OCRmyPDF did not produce any output for file ' . $file->getPath());
 		}
 
 		$recognizedText = $this->sidecarFileAccessor->getSidecarFileContent();

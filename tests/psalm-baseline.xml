@@ -1,15 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <files psalm-version="4.30.0@d0bc6e25d89f649e4f36a534f330f8bb4643dd69">
-  <file src="lib/BackgroundJobs/ProcessFileJob.php">
-    <MissingDependency occurrences="3">
-      <code>$this-&gt;rootFolder</code>
-      <code>IRootFolder</code>
-      <code>IRootFolder</code>
-    </MissingDependency>
-    <UndefinedClass occurrences="1">
-      <code>NoUserException</code>
-    </UndefinedClass>
-  </file>
   <file src="lib/Notification/Notifier.php">
     <MissingDependency occurrences="3">
       <code>$this-&gt;rootFolder</code>
@@ -34,6 +24,16 @@
     <ParamNameMismatch occurrences="1">
       <code>$settings</code>
     </ParamNameMismatch>
+  </file>
+  <file src="lib/Service/OcrService.php">
+    <MissingDependency occurrences="3">
+      <code>$this-&gt;rootFolder</code>
+      <code>IRootFolder</code>
+      <code>IRootFolder</code>
+    </MissingDependency>
+    <UndefinedClass occurrences="1">
+      <code>NoUserException</code>
+    </UndefinedClass>
   </file>
   <file src="lib/Wrapper/Filesystem.php">
     <UndefinedClass occurrences="1">
