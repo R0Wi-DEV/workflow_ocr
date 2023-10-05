@@ -23,51 +23,23 @@ namespace OCA\WorkflowOcr\Tests\Integration\Notification;
 use OC\BackgroundJob\JobList;
 use OCA\WorkflowOcr\BackgroundJobs\ProcessFileJob;
 use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
-use OCA\WorkflowOcr\Helper\IProcessingFileAccessor;
-use OCA\WorkflowOcr\Service\IEventService;
 use OCA\WorkflowOcr\Service\INotificationService;
 use OCA\WorkflowOcr\Service\IOcrService;
 use OCA\WorkflowOcr\Service\NotificationService;
-use OCA\WorkflowOcr\Wrapper\IFilesystem;
-use OCA\WorkflowOcr\Wrapper\IViewFactory;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\DB\QueryBuilder\IExpressionBuilder;
 use OCP\DB\QueryBuilder\IQueryBuilder;
-use OCP\Files\File;
-use OCP\Files\FileInfo;
-use OCP\Files\IRootFolder;
 use OCP\IConfig;
 use OCP\IDBConnection;
-use OCP\IUser;
-use OCP\IUserManager;
-use OCP\IUserSession;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
 class NotificationTest extends TestCase {
-	/** @var AppFake */
-	private $appFake;
 	/** @var LoggerInterface|MockObject */
 	private $logger;
-	/** @var IRootFolder|MockObject */
-	private $rootFolder;
 	/** @var IOcrService|MockObject */
 	private $ocrService;
-	/** @var IEventService|MockObject */
-	private $eventService;
-	/** @var IViewFactory|MockObject */
-	private $viewFactory;
-	/** @var IFilesystem|MockObject */
-	private $filesystem;
-	/** @var IUserSession|MockObject */
-	private $userSession;
-	/** @var IUserManager|MockObject */
-	private $userManager;
-	/** @var IUser|MockObject */
-	private $user;
-	/** @var IProcessingFileAccessor|MockObject */
-	private $processingFileAccessor;
 	/** @var INotificationService|MockObject */
 	private $notificationService;
 	/** @var JobList */
@@ -84,34 +56,11 @@ class NotificationTest extends TestCase {
 		$this->notificationService = new NotificationService(\OC::$server->get(\OCP\Notification\IManager::class));
 
 		$this->logger = $this->createMock(LoggerInterface::class);
-		$this->rootFolder = $this->createMock(IRootFolder::class);
 		$this->ocrService = $this->createMock(IOcrService::class);
-		$this->eventService = $this->createMock(IEventService::class);
-		$this->viewFactory = $this->createMock(IViewFactory::class);
-		$this->filesystem = $this->createMock(IFilesystem::class);
-		$this->userSession = $this->createMock(IUserSession::class);
-		$this->processingFileAccessor = $this->createMock(IProcessingFileAccessor::class);
 		
-		/** @var MockObject|IUserManager */
-		$userManager = $this->createMock(IUserManager::class);
-		$user = $this->createMock(IUser::class);
-		$userManager->method('get')
-			->withAnyParameters()
-			->willReturn($user);
-
-		$this->userManager = $userManager;
-		$this->user = $user;
-
 		$this->processFileJob = new ProcessFileJob(
 			$this->logger,
-			$this->rootFolder,
 			$this->ocrService,
-			$this->eventService,
-			$this->viewFactory,
-			$this->filesystem,
-			$this->userManager,
-			$this->userSession,
-			$this->processingFileAccessor,
 			$this->notificationService,
 			$this->createMock(ITimeFactory::class)
 		);
@@ -158,13 +107,8 @@ class NotificationTest extends TestCase {
 	}
 
 	public function testBackgroundJobCreatesErrorNotificationIfOcrFailed() {
-		$fileMock = $this->createValidFileMock();
-		$this->rootFolder->method('getById')
-			->with(42)
-			->willReturn([$fileMock]);
-
 		$this->ocrService->expects($this->once())
-			->method('ocrFile')
+			->method('runOcrProcess')
 			->withAnyParameters()
 			->willThrowException(new OcrNotPossibleException('Some error'));
 		$appFake = \OC::$server->get(AppFake::class);
@@ -178,26 +122,5 @@ class NotificationTest extends TestCase {
 		$this->assertEquals('workflow_ocr', $notification->getApp());
 		$this->assertEquals('ocr_error', $notification->getSubject());
 		$this->assertEquals('An error occured while executing the OCR process (Some error). Please have a look at your servers logfile for more details.', $notification->getSubjectParameters()['message']);
-	}
-
-	/**
-	 * @return File|MockObject
-	 */
-	private function createValidFileMock(string $mimeType = 'application/pdf', string $content = 'someFileContent', string $fileExtension = "pdf", string $path = "/admin/files/somefile.pdf") {
-		/** @var MockObject|File */
-		$fileMock = $this->createMock(File::class);
-		$fileMock->method('getType')
-			->willReturn(FileInfo::TYPE_FILE);
-		$fileMock->method('getMimeType')
-			->willReturn($mimeType);
-		$fileMock->method('getContent')
-			->willReturn($content);
-		$fileMock->method('getId')
-			->willReturn(42);
-		$fileMock->method('getExtension')
-			->willReturn($fileExtension);
-		$fileMock->method('getPath')
-			->willReturn($path);
-		return $fileMock;
 	}
 }
