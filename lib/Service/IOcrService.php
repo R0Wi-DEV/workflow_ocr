@@ -32,7 +32,7 @@ interface IOcrService {
 	/**
 	 * Processes OCR on the given file. Creates a new file version and emits appropriate events.
 	 *
-	 * @param int $fileId     				The id if the file to be processed
+	 * @param int $fileId					The id if the file to be processed
 	 * @param string $uid 					The id of the user who has access to this file
 	 * @param WorkflowSettings $settings 	The settings to be used for processing
 	 *

@@ -564,12 +564,4 @@ class OcrServiceTest extends TestCase {
 			->willReturn(pathinfo($fileName, PATHINFO_EXTENSION));
 		return $fileMock;
 	}
-
-	// public function dataProvider_ValidArguments() {
-	// 	$arr = [
-	// 		[['fileId' => 42, 'uid' => 'admin', 'settings' => '{}'], 'admin', '/admin/files', 'somefile.pdf', 'somefile.pdf'],
-	// 		[['fileId' => 42, 'uid' => 'myuser', 'settings' => '{}'], 'myuser', '/myuser/files', 'someotherfile.jpg', 'someotherfile.jpg.pdf']
-	// 	];
-	// 	return $arr;
-	// }
 }
