@@ -22,7 +22,7 @@
 
 <template>
 	<div>
-		<SettingsSection title="Workflow OCR"
+		<NcSettingsSection name="Workflow OCR"
 			:description="description"
 			doc-url="https://github.com/R0Wi/workflow_ocr/blob/master/README.md#global-settings">
 			<div class="div-table-row">
@@ -38,20 +38,20 @@
 						@input="save">
 				</div>
 			</div>
-		</SettingsSection>
+		</NcSettingsSection>
 	</div>
 </template>
 
 <script>
 
-import { appId } from '../constants'
-import SettingsSection from '@nextcloud/vue/dist/Components/SettingsSection'
-import { getGlobalSettings, setGlobalSettings } from '../service/globalSettingsService'
+import { appId } from '../constants.js'
+import { NcSettingsSection } from '@nextcloud/vue'
+import { getGlobalSettings, setGlobalSettings } from '../service/globalSettingsService.js'
 
 export default {
 	name: 'GlobalSettings',
 	components: {
-		SettingsSection: SettingsSection,
+		NcSettingsSection: NcSettingsSection,
 	},
 	data: () => ({
 		settings: {},
