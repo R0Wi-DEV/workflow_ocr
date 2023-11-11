@@ -21,7 +21,6 @@
  */
 
 import OC from './OC.js'
-// eslint-disable-next-line node/no-unpublished-import
 import 'regenerator-runtime/runtime'
 
 global.OC = OC

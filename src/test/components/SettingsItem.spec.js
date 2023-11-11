@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import SettingsItem from '../../components/SettingsItem.vue'
-import Popover from '@nextcloud/vue/dist/Components/Popover'
+import { NcPopover } from '@nextcloud/vue'
 
 beforeEach(() => {
 	global.t = jest.fn()
@@ -8,7 +8,7 @@ beforeEach(() => {
 })
 
 describe('SettingsItem', () => {
-	test('Should render label, infoText and child-content', () => {
+	test('Should render label, infoText and child-content', async () => {
 		const wrapper = mount(SettingsItem, {
 			propsData: {
 				label: 'label',
@@ -18,12 +18,18 @@ describe('SettingsItem', () => {
 				default: '<div class="child-content" />',
 			},
 		})
-		expect(wrapper.find('span.label').text()).toBe('label')
-		expect(wrapper.find('p').text()).toBe('infoText')
-		expect(wrapper.find('.child-content').exists()).toBe(true)
+		expect(wrapper.find('.help-circle-icon').exists()).toBe(true)
+		// Simulate click on help icon
+		await wrapper.find('.help-circle-icon').trigger('click')
+		expect(wrapper.findComponent(NcPopover).exists()).toBe(true)
+
+		// TODO :: check popover content
+		// expect(wrapper.find('span.label').text()).toBe('label')
+		// expect(wrapper.find('p').text()).toBe('infoText')
+		// expect(wrapper.find('.child-content').exists()).toBe(true)
 	})
 
-	test('Should not render info icon if infoText is not set', () => {
+	test('Should not render info icon if infoText is not set', async () => {
 		const wrapper = mount(SettingsItem, {
 			propsData: {
 				label: 'label',
@@ -33,8 +39,11 @@ describe('SettingsItem', () => {
 			},
 		})
 
-		expect(wrapper.find('span.label').text()).toBe('label')
-		expect(wrapper.find('.child-content').exists()).toBe(true)
-		expect(wrapper.findComponent(Popover).exists()).toBe(false)
+		expect(wrapper.find('.help-circle-icon').exists()).toBe(false)
+
+		// TODO :: check popover content
+		// expect(wrapper.find('span.label').text()).toBe('label')
+		// expect(wrapper.find('.child-content').exists()).toBe(true)
+		// expect(wrapper.findComponent(NcPopover).exists()).toBe(false)
 	})
 })

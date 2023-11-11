@@ -24,16 +24,16 @@
 	<div class="div-table-row outer">
 		<div class="div-table-col div-table-col-left">
 			<span class="leftcol label">{{ label }}
-				<Popover v-if="hasInfoText"
+				<NcPopover v-if="hasInfoText"
 					trigger="hover focus">
 					<template #trigger>
-						<HelpCircle class="info"
+						<HelpCircleIcon class="info"
 							:size="20"
 							decorative
 							title="" />
 					</template>
 					<p>{{ infoText }}</p>
-				</Popover>
+				</NcPopover>
 			</span>
 			<br>
 		</div>
@@ -45,14 +45,14 @@
 
 <script>
 
-import HelpCircle from 'vue-material-design-icons/HelpCircle'
-import Popover from '@nextcloud/vue/dist/Components/Popover'
+import { NcPopover } from '@nextcloud/vue'
+import HelpCircleIcon from 'vue-material-design-icons/HelpCircle.vue'
 
 export default {
 	name: 'SettingsItem',
 	components: {
-		HelpCircle: HelpCircle,
-		Popover: Popover,
+		NcPopover: NcPopover,
+		HelpCircleIcon: HelpCircleIcon,
 	},
 	props: {
 		label: {
