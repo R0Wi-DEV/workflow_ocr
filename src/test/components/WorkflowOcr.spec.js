@@ -1,16 +1,17 @@
 import { mount } from '@vue/test-utils'
-import { getInstalledLanguages } from '../../service/ocrBackendInfoService'
+import { getInstalledLanguages } from '../../service/ocrBackendInfoService.js'
 import WorkflowOcr from '../../components/WorkflowOcr.vue'
 import SettingsItem from '../../components/SettingsItem.vue'
-import Multiselect from '@nextcloud/vue/dist/Components/Multiselect'
-import MultiselectTags from '@nextcloud/vue/dist/Components/MultiselectTags'
+import { NcSelect, NcSelectTags } from '@nextcloud/vue'
 
 let installedLanguages = []
 
 jest.mock('../../service/ocrBackendInfoService')
 
 beforeEach(() => {
-	global.t = jest.fn()
+	const mockT = jest.fn()
+	mockT.mockReturnValue('translated')
+	global.t = mockT
 	jest.resetAllMocks()
 	getInstalledLanguages.mockImplementation(() => installedLanguages)
 })
@@ -92,7 +93,7 @@ describe('Language settings tests', () => {
 		await new Promise(process.nextTick)
 
 		// Simulate user input
-		const multiselect = wrapper.findAllComponents(SettingsItem).at(0).findComponent(Multiselect)
+		const multiselect = wrapper.findAllComponents(SettingsItem).at(0).findComponent(NcSelect)
 		multiselect.vm.$emit('input', [
 			{ label: 'German', langCode: 'de' },
 			{ label: 'English', langCode: 'en' },
@@ -119,7 +120,7 @@ describe('Add/remove tags tests', () => {
 		})
 
 		const settingsItems = wrapper.findAllComponents(SettingsItem)
-		const assignTagsItem = settingsItems.at(1).findComponent(MultiselectTags)
+		const assignTagsItem = settingsItems.at(1).findComponent(NcSelectTags)
 
 		// Simulate user input
 		assignTagsItem.vm.$emit('input', [1, 2])
@@ -139,7 +140,7 @@ describe('Add/remove tags tests', () => {
 		})
 
 		const settingsItems = wrapper.findAllComponents(SettingsItem)
-		const removeTagsItem = settingsItems.at(2).findComponent(MultiselectTags)
+		const removeTagsItem = settingsItems.at(2).findComponent(NcSelectTags)
 
 		// Simulate user input
 		removeTagsItem.vm.$emit('input', [1, 2])
@@ -190,10 +191,10 @@ describe('Remove background tests', () => {
 describe('OCR mode tests', () => {
 	test('Default OCR mode is 0 (skip-text)', () => {
 		const wrapper = mount(WorkflowOcr)
-		expect(wrapper.vm.ocrMode).toBe("0")
+		expect(wrapper.vm.ocrMode).toBe('0')
 	})
 
-	test.each([0, 1, 2])(`Should set OCR mode to %i`, (mode) => {
+	test.each([0, 1, 2])('Should set OCR mode to %i', (mode) => {
 		const wrapper = mount(WorkflowOcr)
 		const radioButton = wrapper.findComponent({ ref: `ocrMode${mode}` })
 
@@ -205,7 +206,7 @@ describe('OCR mode tests', () => {
 		expect(inputEvent[0][0]).toContain(`"ocrMode":${mode}`)
 	})
 
-	test('Setting OCR mode to --redo-ocr (1) should set removeBackground to false and disable the control', async() => {
+	test('Setting OCR mode to --redo-ocr (1) should set removeBackground to false and disable the control', async () => {
 		const wrapper = mount(WorkflowOcr, {
 			propsData: {
 				value: '{ "languages": [ "de" ], "removeBackground": true, "ocrMode": 0 }',
@@ -228,7 +229,7 @@ describe('OCR mode tests', () => {
 		expect(removeBackgroundSwitch.vm.disabled).toBe(true)
 	})
 
-	test.each([0, 2, 3])(`Should enable remove background switch when setting OCR mode from 1 (--redo-ocr) to %i`, async(mode) => {
+	test.each([0, 2, 3])('Should enable remove background switch when setting OCR mode from 1 (--redo-ocr) to %i', async (mode) => {
 		const wrapper = mount(WorkflowOcr, {
 			propsData: {
 				value: '{ "removeBackground": false, "ocrMode": 1 }',

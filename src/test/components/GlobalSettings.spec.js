@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import { getGlobalSettings, setGlobalSettings } from '../../service/globalSettingsService'
+import { getGlobalSettings, setGlobalSettings } from '../../service/globalSettingsService.js'
 import GlobalSettings from '../../components/GlobalSettings.vue'
 
 jest.mock('../../service/globalSettingsService')

@@ -1,5 +1,5 @@
 import axios from '@nextcloud/axios'
-import { getInstalledLanguages } from '../../service/ocrBackendInfoService'
+import { getInstalledLanguages } from '../../service/ocrBackendInfoService.js'
 
 jest.mock('@nextcloud/axios')
 jest.mock('@nextcloud/router', () => ({
