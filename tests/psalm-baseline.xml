@@ -1,51 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.30.0@d0bc6e25d89f649e4f36a534f330f8bb4643dd69">
+<files psalm-version="5.15.0@5c774aca4746caf3d239d9c8cadb9f882ca29352">
   <file src="lib/Notification/Notifier.php">
-    <MissingDependency occurrences="3">
-      <code>$this-&gt;rootFolder</code>
+    <MissingDependency>
+      <code><![CDATA[$this->rootFolder]]></code>
       <code>IRootFolder</code>
       <code>IRootFolder</code>
     </MissingDependency>
   </file>
   <file src="lib/Operation.php">
-    <MissingDependency occurrences="3">
-      <code>$this-&gt;rootFolder</code>
+    <MissingDependency>
+      <code><![CDATA[$this->rootFolder]]></code>
       <code>IRootFolder</code>
       <code>IRootFolder</code>
     </MissingDependency>
-    <NullReference occurrences="1">
+    <NullReference>
       <code>$argsArray</code>
     </NullReference>
-    <UndefinedClass occurrences="1">
+    <UndefinedClass>
       <code>File</code>
     </UndefinedClass>
   </file>
   <file src="lib/Service/GlobalSettingsService.php">
-    <ParamNameMismatch occurrences="1">
+    <ParamNameMismatch>
       <code>$settings</code>
     </ParamNameMismatch>
+    <UndefinedConstant>
+      <code>ReflectionProperty::IS_PUBLIC</code>
+    </UndefinedConstant>
   </file>
   <file src="lib/Service/OcrService.php">
-    <MissingDependency occurrences="3">
-      <code>$this-&gt;rootFolder</code>
+    <MissingDependency>
+      <code><![CDATA[$this->rootFolder]]></code>
       <code>IRootFolder</code>
       <code>IRootFolder</code>
     </MissingDependency>
-    <UndefinedClass occurrences="1">
+    <UndefinedClass>
       <code>NoUserException</code>
     </UndefinedClass>
   </file>
   <file src="lib/Wrapper/Filesystem.php">
-    <UndefinedClass occurrences="1">
+    <UndefinedClass>
       <code>\OC\Files\Filesystem</code>
     </UndefinedClass>
   </file>
   <file src="lib/Wrapper/ViewWrapper.php">
-    <UndefinedClass occurrences="1">
+    <UndefinedClass>
       <code>View</code>
     </UndefinedClass>
-    <UndefinedDocblockClass occurrences="2">
-      <code>$this-&gt;wrappedView</code>
+    <UndefinedDocblockClass>
+      <code><![CDATA[$this->wrappedView]]></code>
       <code>View</code>
     </UndefinedDocblockClass>
   </file>
