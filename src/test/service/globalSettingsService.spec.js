@@ -1,5 +1,5 @@
 import axios from '@nextcloud/axios'
-import { getGlobalSettings, setGlobalSettings } from '../../service/globalSettingsService'
+import { getGlobalSettings, setGlobalSettings } from '../../service/globalSettingsService.js'
 
 jest.mock('@nextcloud/axios')
 jest.mock('@nextcloud/router', () => ({

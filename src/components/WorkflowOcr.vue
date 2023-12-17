@@ -24,7 +24,7 @@
 	<div>
 		<SettingsItem :label="translate('OCR language')"
 			:info-text="translate('The language(s) to be used for OCR processing')">
-			<Multiselect v-model="selectedLanguages"
+			<NcSelect v-model="selectedLanguages"
 				track-by="langCode"
 				label="label"
 				:tag-width="80"
@@ -34,59 +34,59 @@
 		</SettingsItem>
 		<SettingsItem :label="translate('Assign tags after OCR')"
 			:info-text="translate('These tags will be assigned to the file after OCR processing has finished')">
-			<MultiselectTags v-model="tagsToAddAfterOcr"
+			<NcSelectTags v-model="tagsToAddAfterOcr"
 				:multiple="true">
 				{{ tagsToAddAfterOcr }}
-			</MultiselectTags>
+			</NcSelectTags>
 		</SettingsItem>
 		<SettingsItem :label="translate('Remove tags after OCR')"
 			:info-text="translate('These tags will be removed from the file after OCR processing has finished')">
-			<MultiselectTags v-model="tagsToRemoveAfterOcr"
+			<NcSelectTags v-model="tagsToRemoveAfterOcr"
 				:multiple="true">
 				{{ tagsToRemoveAfterOcr }}
-			</MultiselectTags>
+			</NcSelectTags>
 		</SettingsItem>
 		<SettingsItem :label="translate('OCR mode')"
 			:info-text="translate('Apply this mode if file already has OCR content')">
 			<div>
-				<CheckboxRadioSwitch ref="ocrMode0"
+				<NcCheckboxRadioSwitch ref="ocrMode0"
 					:checked.sync="ocrMode"
 					type="radio"
 					name="ocr_mode_radio"
 					value="0">
 					{{ translate('Skip text') }}
-				</CheckboxRadioSwitch>
-				<CheckboxRadioSwitch ref="ocrMode1"
+				</NcCheckboxRadioSwitch>
+				<NcCheckboxRadioSwitch ref="ocrMode1"
 					:checked.sync="ocrMode"
 					type="radio"
 					name="ocr_mode_radio"
 					value="1">
 					{{ translate('Redo OCR') }}
-				</CheckboxRadioSwitch>
-				<CheckboxRadioSwitch ref="ocrMode2"
+				</NcCheckboxRadioSwitch>
+				<NcCheckboxRadioSwitch ref="ocrMode2"
 					:checked.sync="ocrMode"
 					type="radio"
 					name="ocr_mode_radio"
 					value="2">
 					{{ translate('Force OCR') }}
-				</CheckboxRadioSwitch>
-				<CheckboxRadioSwitch ref="ocrMode3"
+				</NcCheckboxRadioSwitch>
+				<NcCheckboxRadioSwitch ref="ocrMode3"
 					:checked.sync="ocrMode"
 					type="radio"
 					name="ocr_mode_radio"
 					value="3">
 					{{ translate('Skip file completely') }}
-				</CheckboxRadioSwitch>
+				</NcCheckboxRadioSwitch>
 			</div>
 		</SettingsItem>
 		<SettingsItem :label="translate('Other settings')">
 			<div>
-				<CheckboxRadioSwitch ref="removeBackgroundSwitch"
+				<NcCheckboxRadioSwitch ref="removeBackgroundSwitch"
 					:disabled="removeBackgroundDisabled"
 					:checked.sync="removeBackground"
 					type="switch">
 					{{ translate('Remove background') }}
-				</CheckboxRadioSwitch>
+				</NcCheckboxRadioSwitch>
 			</div>
 		</SettingsItem>
 	</div>
@@ -95,18 +95,16 @@
 <script>
 
 import { appId, tesseractLanguageMapping } from '../constants.js'
-import { getInstalledLanguages } from '../service/ocrBackendInfoService'
-import SettingsItem from './SettingsItem'
-import Multiselect from '@nextcloud/vue/dist/Components/Multiselect'
-import MultiselectTags from '@nextcloud/vue/dist/Components/MultiselectTags'
-import CheckboxRadioSwitch from '@nextcloud/vue/dist/Components/CheckboxRadioSwitch'
+import { getInstalledLanguages } from '../service/ocrBackendInfoService.js'
+import SettingsItem from './SettingsItem.vue'
+import { NcSelect, NcSelectTags, NcCheckboxRadioSwitch } from '@nextcloud/vue'
 
 export default {
 	name: 'WorkflowOcr',
 	components: {
-		Multiselect: Multiselect,
-		MultiselectTags: MultiselectTags,
-		CheckboxRadioSwitch: CheckboxRadioSwitch,
+		NcSelect: NcSelect,
+		NcSelectTags: NcSelectTags,
+		NcCheckboxRadioSwitch: NcCheckboxRadioSwitch,
 		SettingsItem: SettingsItem,
 	},
 	props: {
@@ -215,7 +213,7 @@ export default {
 </script>
 
 <style scoped>
-	.multiselect {
+	.NcMultiselect {
 		width: 100%;
 		max-width: 300px;
 		margin: auto;
