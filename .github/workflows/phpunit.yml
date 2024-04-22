@@ -18,9 +18,9 @@ jobs:
       # do not stop on another job's failure
       fail-fast: false
       matrix:
-        php-versions: ['8.1']
+        php-versions: ['8.2']
         databases: ['sqlite']
-        server-versions: ['master']
+        server-versions: ['stable29']
 
     name: php${{ matrix.php-versions }}-${{ matrix.databases }}
 
@@ -37,12 +37,12 @@ jobs:
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
-      
+
       - name: Checkout app
         uses: actions/checkout@v4
         with:
           path: apps/${{ env.APP_NAME }}
-      
+
       - name: Set up php ${{ matrix.php-versions }}
         uses: shivammathur/setup-php@v2
         with:
@@ -76,7 +76,7 @@ jobs:
       matrix:
         php-versions: ['8.1', '8.2', '8.3']
         databases: ['mysql']
-        server-versions: ['master']
+        server-versions: ['stable29']
 
     name: php${{ matrix.php-versions }}-${{ matrix.databases }}
 
@@ -139,9 +139,9 @@ jobs:
       # do not stop on another job's failure
       fail-fast: false
       matrix:
-        php-versions: ['8.1']
+        php-versions: ['8.2']
         databases: ['pgsql']
-        server-versions: ['master']
+        server-versions: ['stable29']
 
     name: php${{ matrix.php-versions }}-${{ matrix.databases }}
 
