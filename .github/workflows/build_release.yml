@@ -9,7 +9,7 @@ env:
 
 jobs:
   build_and_publish:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -30,7 +30,7 @@ jobs:
 
       - name: Set up npm ${{ steps.versions.outputs.npmVersion }}
         run: npm i -g npm@"${{ steps.versions.outputs.npmVersion }}"
-          
+
       - name: Run build
         run: cd ${{ env.APP_NAME }} && make appstore
 
@@ -40,7 +40,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ env.APP_NAME }}/build/artifacts/appstore/${{ env.APP_NAME }}.tar.gz
-          asset_name: ${{ env.APP_NAME }}.tar.gz 
+          asset_name: ${{ env.APP_NAME }}.tar.gz
           tag: ${{ github.ref }}
           overwrite: true
 

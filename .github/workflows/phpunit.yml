@@ -12,13 +12,13 @@ env:
 
 jobs:
   sqlite:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     strategy:
       # do not stop on another job's failure
       fail-fast: false
       matrix:
-        php-versions: ['8.1']
+        php-versions: ['8.3']
         databases: ['sqlite']
         server-versions: ['master']
 
@@ -37,12 +37,12 @@ jobs:
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
-      
+
       - name: Checkout app
         uses: actions/checkout@v4
         with:
           path: apps/${{ env.APP_NAME }}
-      
+
       - name: Set up php ${{ matrix.php-versions }}
         uses: shivammathur/setup-php@v2
         with:
@@ -68,13 +68,13 @@ jobs:
         run: make php-test
 
   mysql:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     strategy:
       # do not stop on another job's failure
       fail-fast: false
       matrix:
-        php-versions: ['8.1', '8.2', '8.3']
+        php-versions: ['8.2', '8.3']
         databases: ['mysql']
         server-versions: ['master']
 
@@ -133,13 +133,13 @@ jobs:
         run: make php-test
 
   pgsql:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     strategy:
       # do not stop on another job's failure
       fail-fast: false
       matrix:
-        php-versions: ['8.1']
+        php-versions: ['8.3']
         databases: ['pgsql']
         server-versions: ['master']
 
