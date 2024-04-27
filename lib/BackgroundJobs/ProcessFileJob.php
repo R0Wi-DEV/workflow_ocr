@@ -26,11 +26,11 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\BackgroundJobs;
 
-use \OCP\Files\File;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCA\WorkflowOcr\Service\INotificationService;
 use OCA\WorkflowOcr\Service\IOcrService;
 use OCP\AppFramework\Utility\ITimeFactory;
+use OCP\Files\File;
 use Psr\Log\LoggerInterface;
 
 /**
