@@ -28,6 +28,6 @@
 	<screenshot>https://github.com/R0Wi/workflow_ocr/blob/eb2d65e9610406bbab22c4c8dda1cea015b5c791/doc/img/usage_1.jpg?raw=true</screenshot>
 	<dependencies>
 		<nextcloud min-version="28" max-version="28"/>
-		<php min-version="8.0" max-version="8.2"/>
+		<php min-version="8.0" max-version="8.3"/>
 	</dependencies>
 </info>
