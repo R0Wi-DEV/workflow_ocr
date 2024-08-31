@@ -76,7 +76,7 @@ class NotificationServiceTest extends TestCase {
 			->method('notify')
 			->with($this->notification);
 
-		$this->service->createErrorNotification("user1", "testnotification", 123);
+		$this->service->createErrorNotification('user1', 'testnotification', 123);
 	}
 
 	public function testCreateErrorNotificationWithoutFileId() {
@@ -105,7 +105,7 @@ class NotificationServiceTest extends TestCase {
 			->method('notify')
 			->with($this->notification);
 
-		$this->service->createErrorNotification("user1", "testnotification");
+		$this->service->createErrorNotification('user1', 'testnotification');
 	}
 
 	public function testCreateErrorNotificationDoesNothingIfUserIdIsNotSet() {
@@ -124,6 +124,6 @@ class NotificationServiceTest extends TestCase {
 		$this->notification->expects($this->never())
 			->method('setObject');
 
-		$this->service->createErrorNotification(null, "testnotification", 123);
+		$this->service->createErrorNotification(null, 'testnotification', 123);
 	}
 }

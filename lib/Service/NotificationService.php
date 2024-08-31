@@ -44,7 +44,7 @@ class NotificationService implements INotificationService {
 	/**
 	 * @return void
 	 */
-	public function createErrorNotification(?string $userId, string $message, int $fileId = null) {
+	public function createErrorNotification(?string $userId, string $message, ?int $fileId = null) {
 		// We don't create unbound notifications
 		if (!$userId) {
 			return;

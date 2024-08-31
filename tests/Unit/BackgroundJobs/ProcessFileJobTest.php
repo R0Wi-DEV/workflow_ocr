@@ -183,8 +183,8 @@ class ProcessFileJobTest extends TestCase {
 
 	public function dataProvider_InvalidArguments() {
 		$arr = [
-			[null, "Argument is no array"],
-			[['mykey' => 'myvalue'], "Undefined array key"]
+			[null, 'Argument is no array'],
+			[['mykey' => 'myvalue'], 'Undefined array key']
 		];
 		return $arr;
 	}

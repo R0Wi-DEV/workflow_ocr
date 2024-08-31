@@ -26,7 +26,7 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\Wrapper;
 
-use \OC\Files\View;
+use OC\Files\View;
 
 class ViewWrapper implements IView {
 	/** @var View */

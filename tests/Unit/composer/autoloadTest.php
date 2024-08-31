@@ -32,7 +32,7 @@ class composerTest extends TestCase {
 	public function testAutoloaderFileCanBeLoaded() {
 		$app = new App(Application::APP_NAME);
 		$container = $app->getContainer();
-		/**@var IAppManager */
+		/** @var IAppManager */
 		$appManager = $container->get(IAppManager::class);
 		$path = $appManager->getAppPath(Application::APP_NAME);
 		$autoloaderFile = $path . '/composer/autoload.php';
