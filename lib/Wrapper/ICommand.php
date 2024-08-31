@@ -29,19 +29,19 @@ namespace OCA\WorkflowOcr\Wrapper;
 interface ICommand {
 	/**
 	 * @param string $command the command or full command string to execute,
-	 * like 'gzip' or 'gzip -d'.  You can still call addArg() to add more
-	 * arguments to the command. If $escapeCommand was set to true, the command
-	 * gets escaped with escapeshellcmd().
+	 *                        like 'gzip' or 'gzip -d'.  You can still call addArg() to add more
+	 *                        arguments to the command. If $escapeCommand was set to true, the command
+	 *                        gets escaped with escapeshellcmd().
 	 * @return ICommand for method chaining
 	 */
 	public function setCommand(string $command) : ICommand;
 	
 	/**
 	 * @param string $stdIn If set, the string will be piped to the
-	 * command via standard input. This enables the same functionality as
-	 * piping on the command line. It can also be a resource like a file
-	 * handle or a stream in which case its content will be piped into the
-	 * command like an input redirection.
+	 *                      command via standard input. This enables the same functionality as
+	 *                      piping on the command line. It can also be a resource like a file
+	 *                      handle or a stream in which case its content will be piped into the
+	 *                      command like an input redirection.
 	 * @return ICommand for method chaining
 	 */
 	public function setStdIn(string $stdIn) : ICommand;
@@ -50,7 +50,7 @@ interface ICommand {
 	 * Execute the command
 	 *
 	 * @return bool whether execution was successful. If `false`, error details
-	 * can be obtained from getError(), getStdErr() and getExitCode().
+	 *              can be obtained from getError(), getStdErr() and getExitCode().
 	 */
 	public function execute() : bool;
 	
@@ -63,7 +63,7 @@ interface ICommand {
 	/**
 	 * @param bool $trim whether to `trim()` the return value. The default is `true`.
 	 * @return string the error message, either stderr or an internal message.
-	 * Empty string if none.
+	 *                Empty string if none.
 	 */
 	public function getError(bool $trim = true) : string;
 	 

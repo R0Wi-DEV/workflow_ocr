@@ -34,5 +34,5 @@ interface INotificationService {
 	 * @param string $message The error message that should be displayed in the notification.
 	 * @param int $fileId Optional file ID of the file that failed to OCR. If given, user can jump to the file via link.
 	 */
-	public function createErrorNotification(?string $userId, string $message, int $fileId = null);
+	public function createErrorNotification(?string $userId, string $message, ?int $fileId = null);
 }

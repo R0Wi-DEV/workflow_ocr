@@ -57,7 +57,7 @@ class OcrServiceTest extends TestCase {
 	private $ocrProcessorFactory;
 	/** @var IOcrProcessor|MockObject */
 	private $ocrProcessor;
-	/** @var IGlobalSettingsService|MockObject*/
+	/** @var IGlobalSettingsService|MockObject */
 	private $globalSettingsService;
 	/** @var ISystemTagObjectMapper|MockObject */
 	private $systemTagObjectMapper;
@@ -170,7 +170,7 @@ class OcrServiceTest extends TestCase {
 	public function testCallsSystemTagObjectManager_WithCorrectArguments() {
 		$mime = 'application/pdf';
 		$content = 'someFileContent';
-		$settings = new WorkflowSettings("{\"tagsToRemoveAfterOcr\": [1,2], \"tagsToAddAfterOcr\": [3,4]}");
+		$settings = new WorkflowSettings('{"tagsToRemoveAfterOcr": [1,2], "tagsToAddAfterOcr": [3,4]}');
 		$globalSettings = new GlobalSettings();
 
 		$this->fileInput->method('getMimeType')
@@ -193,13 +193,13 @@ class OcrServiceTest extends TestCase {
 		// unassignTags(string $objId, string $objectType, $tagIds);
 		$this->systemTagObjectMapper->expects($this->exactly(2))
 			->method('unassignTags')
-			->withConsecutive(["42", "files", 1], ["42", "files", 2]);
+			->withConsecutive(['42', 'files', 1], ['42', 'files', 2]);
 
 		// Check call for function:
 		// assignTags(string $objId, string $objectType, $tagIds);
 		$this->systemTagObjectMapper->expects($this->exactly(2))
 			->method('assignTags')
-			->withConsecutive(["42", "files", 3], ["42", "files", 4]);
+			->withConsecutive(['42', 'files', 3], ['42', 'files', 4]);
 
 		$this->ocrService->runOcrProcess(42, 'usr', $settings);
 	}
@@ -207,7 +207,7 @@ class OcrServiceTest extends TestCase {
 	public function testCatchesTagNotFoundException() {
 		$mime = 'application/pdf';
 		$content = 'someFileContent';
-		$settings = new WorkflowSettings("{\"tagsToRemoveAfterOcr\": [1], \"tagsToAddAfterOcr\": [2]}");
+		$settings = new WorkflowSettings('{"tagsToRemoveAfterOcr": [1], "tagsToAddAfterOcr": [2]}');
 		$globalSettings = new GlobalSettings();
 
 		$this->fileInput->method('getMimeType')
@@ -311,7 +311,7 @@ class OcrServiceTest extends TestCase {
 		$mimeType = 'application/pdf';
 		$content = 'someFileContent';
 		$ocrContent = 'someOcrProcessedFile';
-		$ocrResult = new OcrProcessorResult($ocrContent, "pdf", $ocrContent); // Extend this cases if we add new OCR processors
+		$ocrResult = new OcrProcessorResult($ocrContent, 'pdf', $ocrContent); // Extend this cases if we add new OCR processors
 		$originalFileMock = $this->createValidFileMock($mimeType, $content, $rootFolderPath, $originalFilename);
 		
 		$this->rootFolderGetById42ReturnValue = [$originalFileMock];
@@ -398,7 +398,7 @@ class OcrServiceTest extends TestCase {
 		$mimeType = 'application/pdf';
 		$content = 'someFileContent';
 		$ocrContent = 'someOcrProcessedFile';
-		$ocrResult = new OcrProcessorResult($ocrContent, "pdf", $ocrContent); // Extend this cases if we add new OCR processors
+		$ocrResult = new OcrProcessorResult($ocrContent, 'pdf', $ocrContent); // Extend this cases if we add new OCR processors
 
 		$this->rootFolderGetById42ReturnValue = [$this->createValidFileMock($mimeType, $content)];
 
@@ -441,7 +441,7 @@ class OcrServiceTest extends TestCase {
 		$mimeType = 'application/pdf';
 		$content = 'someFileContent';
 		$ocrContent = '';
-		$ocrResult = new OcrProcessorResult($ocrContent, "pdf", $ocrContent);
+		$ocrResult = new OcrProcessorResult($ocrContent, 'pdf', $ocrContent);
 		$fileId = 42;
 
 		$this->rootFolder->expects($this->once())

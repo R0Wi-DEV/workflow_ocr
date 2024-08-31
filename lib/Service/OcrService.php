@@ -115,7 +115,7 @@ class OcrService implements IOcrService {
 			
 			try {
 				$result = $ocrProcessor->ocrFile($file, $settings, $globalSettings);
-			} catch(OcrResultEmptyException $ex) {
+			} catch (OcrResultEmptyException $ex) {
 				// #232: it's okay to have an empty result if the file was skipped due to OCR mode
 				if ($settings->getOcrMode() === WorkflowSettings::OCR_MODE_SKIP_FILE) {
 					$this->logger->debug('Skipping empty OCR result for file with id {fileId} because OCR mode is set to \'skip file\'', ['fileId' => $fileId]);
@@ -135,7 +135,7 @@ class OcrService implements IOcrService {
 			if ($result->getRecognizedText() !== '') {
 				$newFilePath = $originalFileExtension === $newFileExtension ?
 					$filePath :
-					$filePath . ".pdf";
+					$filePath . '.pdf';
 
 				$this->createNewFileVersion($newFilePath, $fileContent, $fileId);
 			}
@@ -204,9 +204,9 @@ class OcrService implements IOcrService {
 	}
 
 	/**
-	 * @param string $filePath		The filepath of the file to write
-	 * @param string $ocrContent	The new filecontent (which was OCR processed)
-	 * @param int $fileId		The id of the file to write. Used for locking.
+	 * @param string $filePath The filepath of the file to write
+	 * @param string $ocrContent The new filecontent (which was OCR processed)
+	 * @param int $fileId The id of the file to write. Used for locking.
 	 */
 	private function createNewFileVersion(string $filePath, string $ocrContent, int $fileId) : void {
 		$dirPath = dirname($filePath);
