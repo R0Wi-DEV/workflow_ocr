@@ -4,6 +4,7 @@ OC.L10N.register(
     "Workflow OCR" : "Рабочий процесс",
     "Workflow OCR error for file {file}" : "Ошибка распознавания рабочего процесса для файла {file}",
     "Workflow OCR error" : "Ошибка распознавания рабочего процесса",
+    "Workflow settings JSON value cannot be parsed" : "Значение JSON настроек рабочего процесса не может быть проанализировано",
     "OCR file" : "Файл рабочего процесса",
     "OCR processing via workflow" : "Обработка через рабочий процесс"
 },
