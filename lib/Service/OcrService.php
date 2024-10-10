@@ -27,6 +27,7 @@ declare(strict_types=1);
 namespace OCA\WorkflowOcr\Service;
 
 use OC\User\NoUserException;
+use OCA\Files_Versions\Versions\IVersionManager;
 use OCA\WorkflowOcr\Exception\OcrResultEmptyException;
 use OCA\WorkflowOcr\Helper\IProcessingFileAccessor;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
@@ -51,6 +52,9 @@ class OcrService implements IOcrService {
 
 	/** @var IGlobalSettingsService */
 	private $globalSettingsService;
+
+	/** @var IVersionManager */
+        private $versionManager;
 
 	/** @var ISystemTagObjectMapper */
 	private $systemTagObjectMapper;
@@ -82,6 +86,7 @@ class OcrService implements IOcrService {
 	public function __construct(
 		IOcrProcessorFactory $ocrProcessorFactory,
 		IGlobalSettingsService $globalSettingsService,
+		IVersionManager $versionManager,
 		ISystemTagObjectMapper $systemTagObjectMapper,
 		IUserManager $userManager,
 		IFilesystem $filesystem,
@@ -93,6 +98,7 @@ class OcrService implements IOcrService {
 		LoggerInterface $logger) {
 		$this->ocrProcessorFactory = $ocrProcessorFactory;
 		$this->globalSettingsService = $globalSettingsService;
+		$this->versionManager = $versionManager;
 		$this->systemTagObjectMapper = $systemTagObjectMapper;
 		$this->userManager = $userManager;
 		$this->filesystem = $filesystem;
@@ -133,6 +139,20 @@ class OcrService implements IOcrService {
 
 			// Only create a new file version if the file OCR result was not empty #130
 			if ($result->getRecognizedText() !== '') {
+				$fileMTime = $file->getMTime();
+				$user = $this->userManager->get($uid);
+                                $versions = $this->versionManager->getVersionsForFile($user, $file);
+				
+				foreach ($versions as $version) {
+					$versionTimestamp = $version->getTimestamp();
+					$versionLabel = $version->getMetadataValue('label');
+					
+					if ($fileMTime === $versionTimestamp && ($versionLabel === null || $versionLabel === '')) {
+                                        	// Add label to current file version to prevent its expiry
+						$this->versionManager->setMetadataValue($file, $version->getRevisionId(), 'label', 'PreOCR');
+					}
+                                }
+
 				$newFilePath = $originalFileExtension === $newFileExtension ?
 					$filePath :
 					$filePath . '.pdf';
