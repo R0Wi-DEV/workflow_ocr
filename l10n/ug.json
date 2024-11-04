@@ -1,0 +1,11 @@
+{ "translations": {
+    "Workflow OCR" : "خىزمەت ئېقىمى OCR",
+    "Workflow OCR error for file {file}" : "ھۆججەت {ھۆججەت} نىڭ خىزمەت ئېقىمى OCR خاتالىقى",
+    "Workflow OCR error" : "خىزمەت ئېقىمى OCR خاتالىقى",
+    "Workflow settings JSON value cannot be parsed" : "خىزمەت ئېقىمى تەڭشەكلىرى JSON قىممىتىنى تەھلىل قىلىشقا بولمايدۇ",
+    "OCR file" : "OCR ھۆججىتى",
+    "OCR processing via workflow" : "خىزمەت ئېقىمى ئارقىلىق OCR بىر تەرەپ قىلىش",
+    "Server side OCR processing via workflow engine" : "خىزمەت ئېقىمى ماتورى ئارقىلىق مۇلازىمېتىر تەرەپ OCR بىر تەرەپ قىلىش",
+    "This app makes it possible to process various files via OCR algorithms.\n\tThe processing is done via workflow-engine and can therefore easily be customized.\n\tPlease note that you'll have to install the OcrMyPDF CLI on your Nextcloud server to\n\tprocess PDF files. More installation instructions can be found in the docs https://github.com/R0Wi/workflow_ocr/blob/master/README.md." : "بۇ ئەپ OCR ھېسابلاش ئۇسۇلى ئارقىلىق ھەر خىل ھۆججەتلەرنى بىر تەرەپ قىلالايدۇ.\n\tبىر تەرەپ قىلىش خىزمەت ئېقىمى ماتورى ئارقىلىق ئېلىپ بېرىلىدۇ ، شۇڭا ئاسانلا خاسلاشتۇرغىلى بولىدۇ.\n\tشۇنىڭغا دىققەت قىلىڭكى ، Nextcloud مۇلازىمېتىرىڭىزغا OcrMyPDF CLI نى ئورنىتىشىڭىز كېرەك\n\tPDF ھۆججىتىنى بىر تەرەپ قىلىڭ. تېخىمۇ كۆپ قاچىلاش كۆرسەتمىسىنى https://github.com/R0Wi/workflow_ocr/blob/master/README.md دىن تاپالايسىز."
+},"pluralForm" :"nplurals=2; plural=(n != 1);"
+}
