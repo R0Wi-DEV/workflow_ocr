@@ -36,6 +36,7 @@ use OCP\IURLGenerator;
 use OCP\L10N\IFactory;
 use OCP\Notification\AlreadyProcessedException;
 use OCP\Notification\INotification;
+use OCP\RichObjectStrings\IRichTextFormatter;
 use OCP\RichObjectStrings\IValidator;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -117,6 +118,8 @@ class NotifierTest extends TestCase {
 		$validator = $this->createMock(IValidator::class);
 		/** @var IL10N|MockObject */
 		$l10n = $this->createMock(IL10N::class);
+		/** @var IRichTextFormatter|MockObject */
+		$rtFormatter = $this->createMock(IRichTextFormatter::class);
 		$l10n->expects($this->once())
 			->method('t')
 			->with('Workflow OCR error for file {file}')
@@ -126,7 +129,7 @@ class NotifierTest extends TestCase {
 			->with('workflow_ocr')
 			->willReturn($l10n);
 
-		$notification = new Notification($validator);
+		$notification = new Notification($validator, $rtFormatter);
 		$notification->setUser('user');
 		$notification->setApp('workflow_ocr');
 		$notification->setSubject('ocr_error', ['message' => 'mymessage']);
@@ -188,6 +191,8 @@ class NotifierTest extends TestCase {
 	public function testPrepareConstructsOcrErrorCorrectlyWithoutFile() {
 		/** @var IValidator|MockObject */
 		$validator = $this->createMock(IValidator::class);
+		/** @var IRichTextFormatter|MockObject */
+		$rtFormatter = $this->createMock(IRichTextFormatter::class);
 		/** @var IL10N|MockObject */
 		$l10n = $this->createMock(IL10N::class);
 		$l10n->expects($this->once())
@@ -199,7 +204,7 @@ class NotifierTest extends TestCase {
 			->with('workflow_ocr')
 			->willReturn($l10n);
 
-		$notification = new Notification($validator);
+		$notification = new Notification($validator, $rtFormatter);
 		$notification->setUser('user');
 		$notification->setApp('workflow_ocr');
 		$notification->setSubject('ocr_error', ['message' => 'mymessage']);
@@ -226,6 +231,8 @@ class NotifierTest extends TestCase {
 	public function testSendsFallbackNotificationWithoutFileInfoIfFileNotFoundWasThrown() {
 		/** @var IValidator|MockObject */
 		$validator = $this->createMock(IValidator::class);
+		/** @var IRichTextFormatter|MockObject */
+		$rtFormatter = $this->createMock(IRichTextFormatter::class);
 		/** @var IL10N|MockObject */
 		$l10n = $this->createMock(IL10N::class);
 		$l10n->expects($this->once())
@@ -237,7 +244,7 @@ class NotifierTest extends TestCase {
 			->with('workflow_ocr')
 			->willReturn($l10n);
 
-		$notification = new Notification($validator);
+		$notification = new Notification($validator, $rtFormatter);
 		$notification->setUser('user');
 		$notification->setApp('workflow_ocr');
 		$notification->setSubject('ocr_error', ['message' => 'mymessage']);
@@ -277,6 +284,8 @@ class NotifierTest extends TestCase {
 	public function testSendsFallbackNotificationWithoutFileInfoIfReturnedFileArrayWasEmpty() {
 		/** @var IValidator|MockObject */
 		$validator = $this->createMock(IValidator::class);
+		/** @var IRichTextFormatter|MockObject */
+		$rtFormatter = $this->createMock(IRichTextFormatter::class);
 		/** @var IL10N|MockObject */
 		$l10n = $this->createMock(IL10N::class);
 		$l10n->expects($this->once())
@@ -288,7 +297,7 @@ class NotifierTest extends TestCase {
 			->with('workflow_ocr')
 			->willReturn($l10n);
 
-		$notification = new Notification($validator);
+		$notification = new Notification($validator, $rtFormatter);
 		$notification->setUser('user');
 		$notification->setApp('workflow_ocr');
 		$notification->setSubject('ocr_error', ['message' => 'mymessage']);
