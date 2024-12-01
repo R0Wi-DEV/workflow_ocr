@@ -36,8 +36,8 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
 class PdfOcrProcessorTest extends TestCase {
-	private const FILE_CONTENT_BEFORE = "someFileContentBefore";
-	private const FILE_CONTENT_AFTER = "somePDFFileContentAfter";
+	private const FILE_CONTENT_BEFORE = 'someFileContentBefore';
+	private const FILE_CONTENT_AFTER = 'somePDFFileContentAfter';
 
 	private $fileBeforeMimeType;
 	private $ocrMyPdfOutput;
@@ -165,7 +165,7 @@ class PdfOcrProcessorTest extends TestCase {
 		$this->command->expects($this->once())
 			->method('getStdErr')
 			->willReturn('stdErr');
-		$this->ocrMyPdfOutput = "";
+		$this->ocrMyPdfOutput = '';
 		$this->fileBefore->expects($this->once())
 			->method('getPath')
 			->willReturn('/admin/files/somefile.pdf');
@@ -353,7 +353,7 @@ class PdfOcrProcessorTest extends TestCase {
 			}));
 
 		$processor = new PdfOcrProcessor($this->command, $this->logger, $this->sidecarFileAccessor);
-		$processor->ocrFile($this->fileBefore, new WorkflowSettings('{"ocrMode": ' . WorkflowSettings::OCR_MODE_REDO_OCR .', "removeBackground": true}'), $this->defaultGlobalSettings);
+		$processor->ocrFile($this->fileBefore, new WorkflowSettings('{"ocrMode": ' . WorkflowSettings::OCR_MODE_REDO_OCR . ', "removeBackground": true}'), $this->defaultGlobalSettings);
 	}
 
 	public function dataProvider_testAppliesOcrModeParameter() {

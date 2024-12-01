@@ -31,9 +31,9 @@ use OCP\Files\File;
 interface IOcrProcessor {
 	/**
 	 * Processes OCR on the given file
-	 * @param File 				$file  				The file to be processed
-	 * @param WorkflowSettings 	$settings 			The settings to be used for this specific workflow
-	 * @param GlobalSettings 	$globalSettings 	The global settings configured for all OCR workflows on this system
+	 * @param File $file The file to be processed
+	 * @param WorkflowSettings $settings The settings to be used for this specific workflow
+	 * @param GlobalSettings $globalSettings The global settings configured for all OCR workflows on this system
 	 * @return OcrProcessorResult
 	 * @throws OcrNotPossibleException
 	 */

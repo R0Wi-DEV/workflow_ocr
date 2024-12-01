@@ -35,7 +35,7 @@ jobs:
         run: cd ${{ env.APP_NAME }} && make appstore
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.APP_NAME }}.tar.gz
           path: ${{ env.APP_NAME }}/build/artifacts/appstore/${{ env.APP_NAME }}.tar.gz

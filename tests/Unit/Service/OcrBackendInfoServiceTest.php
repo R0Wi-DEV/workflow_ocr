@@ -121,8 +121,8 @@ class OcrBackendInfoServiceTest extends TestCase {
 
 	public function testGetInstalledLanguagesThrowsIfCliDidNotProduceAnyOutput() : void {
 		$this->command->expects($this->once())
-		->method('setCommand')
-		->with('tesseract --list-langs');
+			->method('setCommand')
+			->with('tesseract --list-langs');
 		$this->command->expects($this->once())
 			->method('execute')
 			->willReturn(true);
@@ -142,7 +142,7 @@ class OcrBackendInfoServiceTest extends TestCase {
 
 	public function dataProviderInstalledLangs() {
 		return [
-			["List of available languages (4):\neng\ndeu\nosd\nchi", ["eng","deu","chi"]]
+			["List of available languages (4):\neng\ndeu\nosd\nchi", ['eng','deu','chi']]
 		];
 	}
 

@@ -52,7 +52,7 @@ class WorkflowSettings {
 	/**
 	 * @param string $json The serialized JSON string used in frontend as input for the Vue component
 	 */
-	public function __construct(string $json = null) {
+	public function __construct(?string $json = null) {
 		$this->setJson($json);
 	}
 
@@ -109,7 +109,7 @@ class WorkflowSettings {
 	/**
 	 * @return void
 	 */
-	private function setJson(string $json = null) {
+	private function setJson(?string $json = null) {
 		if (!$json) {
 			return;
 		}

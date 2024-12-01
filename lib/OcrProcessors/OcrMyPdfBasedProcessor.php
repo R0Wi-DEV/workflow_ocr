@@ -96,9 +96,9 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 			$this->logger->info('Temporary sidecar file at \'{path}\' was empty', ['path' => $this->sidecarFileAccessor->getOrCreateSidecarFile()]);
 		}
 
-		$this->logger->debug("OCR processing was successful");
+		$this->logger->debug('OCR processing was successful');
 
-		return new OcrProcessorResult($ocrFileContent, "pdf", $recognizedText);
+		return new OcrProcessorResult($ocrFileContent, 'pdf', $recognizedText);
 	}
 
 	/**

@@ -61,7 +61,7 @@ class OperationTest extends TestCase {
 	/** @var IRootFolder|MockObject */
 	private $rootFolder;
 
-	private const SETTINGS = "{\"languages\":[\"de\"],\"removeBackground\":true}";
+	private const SETTINGS = '{"languages":["de"],"removeBackground":true}';
 
 	protected function setUp(): void {
 		parent::setUp();
@@ -209,7 +209,7 @@ class OperationTest extends TestCase {
 	}
 
 	public function testAddWithCorrectFilePathAndUser() {
-		$filePath = "/admin/files/path/to/file.pdf";
+		$filePath = '/admin/files/path/to/file.pdf';
 		$fileId = 42;
 		$uid = 'admin';
 		$this->jobList->expects($this->once())
@@ -435,9 +435,9 @@ class OperationTest extends TestCase {
 
 	public function dataProvider_InvalidFilePaths() {
 		$arr = [
-			["/user/nofiles/somefile.pdf"],
-			["/invalidmount/data/somefile.pdf"],
-			["/some/somefile.txt"]
+			['/user/nofiles/somefile.pdf'],
+			['/invalidmount/data/somefile.pdf'],
+			['/some/somefile.txt']
 		];
 		return $arr;
 	}
