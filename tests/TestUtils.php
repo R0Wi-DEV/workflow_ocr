@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Nextcloud - Files_PhotoSpheres
  *

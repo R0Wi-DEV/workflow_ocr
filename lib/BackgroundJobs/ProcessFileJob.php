@@ -67,7 +67,7 @@ class ProcessFileJob extends \OCP\BackgroundJob\QueuedJob {
 			$this->ocrService->runOcrProcess($fileId, $uid, $settings);
 		} catch (\Throwable $ex) {
 			$this->logger->error($ex->getMessage(), ['exception' => $ex]);
-			$this->notificationService->createErrorNotification($uid, 'An error occured while executing the OCR process ('.$ex->getMessage().'). Please have a look at your servers logfile for more details.');
+			$this->notificationService->createErrorNotification($uid, 'An error occured while executing the OCR process (' . $ex->getMessage() . '). Please have a look at your servers logfile for more details.');
 		}
 
 		$this->logger->debug('ENDED -- Run ' . self::class . ' job. Argument: {argument}.', ['argument' => $argument]);

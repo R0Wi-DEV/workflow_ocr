@@ -353,7 +353,7 @@ class PdfOcrProcessorTest extends TestCase {
 			}));
 
 		$processor = new PdfOcrProcessor($this->command, $this->logger, $this->sidecarFileAccessor);
-		$processor->ocrFile($this->fileBefore, new WorkflowSettings('{"ocrMode": ' . WorkflowSettings::OCR_MODE_REDO_OCR .', "removeBackground": true}'), $this->defaultGlobalSettings);
+		$processor->ocrFile($this->fileBefore, new WorkflowSettings('{"ocrMode": ' . WorkflowSettings::OCR_MODE_REDO_OCR . ', "removeBackground": true}'), $this->defaultGlobalSettings);
 	}
 
 	public function dataProvider_testAppliesOcrModeParameter() {
