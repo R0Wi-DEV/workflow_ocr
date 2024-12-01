@@ -46,12 +46,12 @@ class GlobalSettingsTest extends TestCase {
 
 	public function testGetForm() {
 		$templateResponse = $this->adminSettings->getForm();
-		$templates = Chain::create(scandir("./templates"))
+		$templates = Chain::create(scandir('./templates'))
 			->filter(function ($file) {
 				return is_file("./templates/$file");
 			});
 		$this->assertEquals(1, count($templates->array));
-		$templateFileName = "./templates/" . $templates->first();
+		$templateFileName = './templates/' . $templates->first();
 		$templateNameWithoutExtension = pathinfo($templateFileName)['filename'];
 		$this->assertEquals($templateNameWithoutExtension, $templateResponse->getTemplateName());
 	}

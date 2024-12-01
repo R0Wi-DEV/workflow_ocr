@@ -37,7 +37,7 @@ use OCP\Notification\INotifier;
 use Psr\Log\LoggerInterface;
 
 class Notifier implements INotifier {
-	/** @var IFactory*/
+	/** @var IFactory */
 	private $l10nFactory;
 	/** @var IURLGenerator */
 	private $urlGenerator;
@@ -116,7 +116,7 @@ class Notifier implements INotifier {
 		return $notification;
 	}
 
-	private function tryGetRichParamForFile(string $uid, int $fileId) : array | bool {
+	private function tryGetRichParamForFile(string $uid, int $fileId) : array|bool {
 		try {
 			$userFolder = $this->rootFolder->getUserFolder($uid);
 			/** @var File[] */

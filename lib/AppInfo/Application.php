@@ -61,7 +61,7 @@ use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 
 class Application extends App implements IBootstrap {
-	public const APP_NAME = "workflow_ocr";
+	public const APP_NAME = 'workflow_ocr';
 
 	/**
 	 * Application constructor.

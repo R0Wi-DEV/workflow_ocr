@@ -46,7 +46,7 @@ class AutoloaderTest extends TestCase {
 	public function testLoadDynamicClass(): void {
 		$rand = Server::get(ISecureRandom::class);
 		$className = ucfirst($rand->generate(10, ISecureRandom::CHAR_LOWER));
-		$namespace = "OCA\\WorkflowOcr";
+		$namespace = 'OCA\\WorkflowOcr';
 
 		file_put_contents(self::getClassPath($className), <<<FILE
 <?php

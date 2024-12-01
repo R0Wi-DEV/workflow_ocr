@@ -58,7 +58,7 @@ class Version2702Date20230908170345 extends SimpleMigrationStep {
 	public function changeSchema(IOutput $output, Closure $schemaClosure, array $options): ?ISchemaWrapper {
 		try {
 			$this->deleteNonDeliverableNotifications();
-		} catch(\Throwable $e) {
+		} catch (\Throwable $e) {
 			$output->warning('Could not delete non-deliverable notifications: ' . $e->getMessage() . '. Please see https://github.com/R0Wi-DEV/workflow_ocr/issues/221.');
 		}
 

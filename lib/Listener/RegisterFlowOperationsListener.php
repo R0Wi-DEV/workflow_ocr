@@ -51,6 +51,6 @@ class RegisterFlowOperationsListener implements IEventListener {
 		$event->registerOperation($this->container->get(Operation::class));
 
 		// Register webpack bundled script 'js/workflow_ocr-main.js'
-		Util::addScript(Application::APP_NAME, Application::APP_NAME. '-main');
+		Util::addScript(Application::APP_NAME, Application::APP_NAME . '-main');
 	}
 }

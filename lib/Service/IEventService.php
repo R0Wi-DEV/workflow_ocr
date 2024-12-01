@@ -33,7 +33,7 @@ interface IEventService {
 	/**
 	 * Emits events
 	 *
-	 * @param OcrProcessorResult $result 	The processed ocr result
+	 * @param OcrProcessorResult $result The processed ocr result
 	 *
 	 */
 	public function textRecognized(OcrProcessorResult $result, File $node);
