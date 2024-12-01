@@ -49,6 +49,9 @@ class WorkflowSettings {
 	/** @var array string */
 	private $tagsToAddAfterOcr = [];
 
+	/** @var bool */
+	private $keepOriginalFileVersion = false;
+
 	/**
 	 * @param string $json The serialized JSON string used in frontend as input for the Vue component
 	 */
@@ -92,6 +95,13 @@ class WorkflowSettings {
 	}
 
 	/**
+	 * @return bool
+	 */
+	public function getKeepOriginalFileVersion(): bool {
+		return $this->keepOriginalFileVersion;
+	}
+
+	/**
 	 * Checks if a new WorkflowSettings object can be constructed from the given JSON string
 	 * @param string $json The serialized JSON string used in frontend as input for the Vue component
 	 * @return bool True if the JSON string is valid, false otherwise
@@ -131,6 +141,9 @@ class WorkflowSettings {
 		}
 		if (array_key_exists('tagsToAddAfterOcr', $data) && is_array($data['tagsToAddAfterOcr'])) {
 			$this->tagsToAddAfterOcr = $data['tagsToAddAfterOcr'];
+		}
+		if (array_key_exists('keepOriginalFileVersion', $data) && is_bool($data['keepOriginalFileVersion'])) {
+			$this->keepOriginalFileVersion = $data['keepOriginalFileVersion'];
 		}
 	}
 }

@@ -4,15 +4,18 @@ const ignorePatterns = [
 	'@mdi/svg',
 	'bail',
 	'comma-separated-tokens',
+	'ccount',
 	'char-regex',
 	'decode-named-character-reference',
 	'devlop',
 	'escape-string-regexp',
 	'hast-.*',
 	'is-.*',
+	'longest-streak',
 	'mdast-.*',
 	'micromark',
 	'micromark-.*',
+	'markdown-table',
 	'property-information',
 	'rehype-.*',
 	'remark-.*',
@@ -28,6 +31,7 @@ const ignorePatterns = [
 	'vfile-.*',
 	'vue-material-design-icons',
 	'web-namespaces',
+	'zwitch',
 ]
 
 module.exports = {

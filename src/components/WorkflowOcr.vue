@@ -22,70 +22,77 @@
 
 <template>
 	<div>
-		<SettingsItem :label="translate('OCR language')"
-			:info-text="translate('The language(s) to be used for OCR processing')">
+		<SettingsItem :label="t('workflow_ocr', 'OCR language')"
+			:info-text="t('workflow_ocr', 'The language(s) to be used for OCR processing')">
 			<NcSelect v-model="selectedLanguages"
 				track-by="langCode"
-				label="label"
+				:labelOutside="true"
 				:tag-width="80"
 				:placeholder="selectedLanguagesPlaceholder"
 				:multiple="true"
 				:options="availableLanguages" />
 		</SettingsItem>
-		<SettingsItem :label="translate('Assign tags after OCR')"
-			:info-text="translate('These tags will be assigned to the file after OCR processing has finished')">
+		<SettingsItem :label="t('workflow_ocr', 'Assign tags after OCR')"
+			:info-text="t('workflow_ocr', 'These tags will be assigned to the file after OCR processing has finished')">
 			<NcSelectTags v-model="tagsToAddAfterOcr"
+				:labelOutside="true"
 				:multiple="true">
 				{{ tagsToAddAfterOcr }}
 			</NcSelectTags>
 		</SettingsItem>
-		<SettingsItem :label="translate('Remove tags after OCR')"
-			:info-text="translate('These tags will be removed from the file after OCR processing has finished')">
+		<SettingsItem :label="t('workflow_ocr', 'Remove tags after OCR')"
+			:info-text="t('workflow_ocr', 'These tags will be removed from the file after OCR processing has finished')">
 			<NcSelectTags v-model="tagsToRemoveAfterOcr"
+				:labelOutside="true"
 				:multiple="true">
 				{{ tagsToRemoveAfterOcr }}
 			</NcSelectTags>
 		</SettingsItem>
-		<SettingsItem :label="translate('OCR mode')"
-			:info-text="translate('Apply this mode if file already has OCR content')">
+		<SettingsItem :label="t('workflow_ocr', 'OCR mode')"
+			:info-text="t('workflow_ocr', 'Apply this mode if file already has OCR content')">
 			<div>
 				<NcCheckboxRadioSwitch ref="ocrMode0"
 					:checked.sync="ocrMode"
 					type="radio"
 					name="ocr_mode_radio"
 					value="0">
-					{{ translate('Skip text') }}
+					{{ t('workflow_ocr', 'Skip text') }}
 				</NcCheckboxRadioSwitch>
 				<NcCheckboxRadioSwitch ref="ocrMode1"
 					:checked.sync="ocrMode"
 					type="radio"
 					name="ocr_mode_radio"
 					value="1">
-					{{ translate('Redo OCR') }}
+					{{ t('workflow_ocr', 'Redo OCR') }}
 				</NcCheckboxRadioSwitch>
 				<NcCheckboxRadioSwitch ref="ocrMode2"
 					:checked.sync="ocrMode"
 					type="radio"
 					name="ocr_mode_radio"
 					value="2">
-					{{ translate('Force OCR') }}
+					{{ t('workflow_ocr', 'Force OCR') }}
 				</NcCheckboxRadioSwitch>
 				<NcCheckboxRadioSwitch ref="ocrMode3"
 					:checked.sync="ocrMode"
 					type="radio"
 					name="ocr_mode_radio"
 					value="3">
-					{{ translate('Skip file completely') }}
+					{{ t('workflow_ocr', 'Skip file completely') }}
 				</NcCheckboxRadioSwitch>
 			</div>
 		</SettingsItem>
-		<SettingsItem :label="translate('Other settings')">
+		<SettingsItem :label="t('workflow_ocr', 'Other settings')">
 			<div>
 				<NcCheckboxRadioSwitch ref="removeBackgroundSwitch"
 					:disabled="removeBackgroundDisabled"
 					:checked.sync="removeBackground"
 					type="switch">
-					{{ translate('Remove background') }}
+					{{ t('workflow_ocr', 'Remove background') }}
+				</NcCheckboxRadioSwitch>
+				<NcCheckboxRadioSwitch ref="keepOriginalFileVersionSwitch"
+					:checked.sync="keepOriginalFileVersion"
+					type="switch">
+					{{ t('workflow_ocr', 'Keep original file version') }}
 				</NcCheckboxRadioSwitch>
 			</div>
 		</SettingsItem>
@@ -94,7 +101,7 @@
 
 <script>
 
-import { appId, tesseractLanguageMapping } from '../constants.js'
+import { tesseractLanguageMapping } from '../constants.js'
 import { getInstalledLanguages } from '../service/ocrBackendInfoService.js'
 import SettingsItem from './SettingsItem.vue'
 import { NcSelect, NcSelectTags, NcCheckboxRadioSwitch } from '@nextcloud/vue'
@@ -125,6 +132,7 @@ export default {
 			 *   assignTagsAfterOcr: [1, 2, 3],
 			 *   removeTagsAfterOcr: [42, 43],
 			 *   removeBackground: true,
+			 *	 keepOriginalFileVersion: true,
 			 *   ocrMode: 0,
 			 * }
 			 * It's initially set after component creation by 'created'-hook.
@@ -173,6 +181,15 @@ export default {
 				this.modelChanged()
 			},
 		},
+		keepOriginalFileVersion: {
+			get: function() {
+				return !!this.model.keepOriginalFileVersion
+			},
+			set: function(checked) {
+				this.$set(this.model, 'keepOriginalFileVersion', !!checked)
+				this.modelChanged()
+			},
+		},
 		ocrMode: {
 			get: function() {
 				return '' + (this.model.ocrMode ?? 0)
@@ -187,7 +204,7 @@ export default {
 			},
 		},
 		selectedLanguagesPlaceholder: function() {
-			return this.translate('Select language(s)')
+			return this.t('workflow_ocr', 'Select language(s)')
 		},
 		removeBackgroundDisabled: function() {
 			return this.model.ocrMode === 1
@@ -204,9 +221,6 @@ export default {
 	methods: {
 		modelChanged: function() {
 			this.$emit('input', JSON.stringify(this.model))
-		},
-		translate: function(str) {
-			return t(appId, str)
 		},
 	},
 }
