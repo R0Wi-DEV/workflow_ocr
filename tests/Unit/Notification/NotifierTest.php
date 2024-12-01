@@ -160,6 +160,10 @@ class NotifierTest extends TestCase {
 		$this->urlGenerator->expects($this->once())
 			->method('imagePath')
 			->with('workflow_ocr', 'app-dark.svg')
+			->willReturn('apps/workflow_ocr/app-dark.svg');
+		$this->urlGenerator->expects($this->once())
+			->method('getAbsoluteURL')
+			->with('apps/workflow_ocr/app-dark.svg')
 			->willReturn('http://localhost/index.php/apps/workflow_ocr/app-dark.svg');
 		$this->urlGenerator->expects($this->once())
 			->method('linkToRouteAbsolute')
@@ -204,6 +208,10 @@ class NotifierTest extends TestCase {
 		$this->urlGenerator->expects($this->once())
 			->method('imagePath')
 			->with('workflow_ocr', 'app-dark.svg')
+			->willReturn('apps/workflow_ocr/app-dark.svg');
+		$this->urlGenerator->expects($this->once())
+			->method('getAbsoluteURL')
+			->with('apps/workflow_ocr/app-dark.svg')
 			->willReturn('http://localhost/index.php/apps/workflow_ocr/app-dark.svg');
 		$this->urlGenerator->expects($this->never())
 			->method('linkToRouteAbsolute');
@@ -251,6 +259,10 @@ class NotifierTest extends TestCase {
 		$this->urlGenerator->expects($this->once())
 			->method('imagePath')
 			->with('workflow_ocr', 'app-dark.svg')
+			->willReturn('apps/workflow_ocr/app-dark.svg');
+		$this->urlGenerator->expects($this->once())
+			->method('getAbsoluteURL')
+			->with('apps/workflow_ocr/app-dark.svg')
 			->willReturn('http://localhost/index.php/apps/workflow_ocr/app-dark.svg');
 		$this->logger->expects($this->once())
 			->method('error')
@@ -297,6 +309,10 @@ class NotifierTest extends TestCase {
 		$this->urlGenerator->expects($this->once())
 			->method('imagePath')
 			->with('workflow_ocr', 'app-dark.svg')
+			->willReturn('apps/workflow_ocr/app-dark.svg');
+		$this->urlGenerator->expects($this->once())
+			->method('getAbsoluteURL')
+			->with('apps/workflow_ocr/app-dark.svg')
 			->willReturn('http://localhost/index.php/apps/workflow_ocr/app-dark.svg');
 		$this->logger->expects($this->once())
 			->method('warning')

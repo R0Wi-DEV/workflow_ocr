@@ -111,7 +111,7 @@ class Notifier implements INotifier {
 		$message = $notification->getSubjectParameters()['message'];
 		$notification
 			->setParsedMessage($message)
-			->setIcon($this->urlGenerator->imagePath(Application::APP_NAME, 'app-dark.svg'));
+			->setIcon($this->urlGenerator->getAbsoluteURL($this->urlGenerator->imagePath(Application::APP_NAME, 'app-dark.svg')));
 
 		return $notification;
 	}
