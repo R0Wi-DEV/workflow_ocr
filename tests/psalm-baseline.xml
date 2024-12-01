@@ -1,55 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.15.0@5c774aca4746caf3d239d9c8cadb9f882ca29352">
+<files psalm-version="5.26.1@d747f6500b38ac4f7dfc5edbcae6e4b637d7add0">
   <file src="lib/Notification/Notifier.php">
     <MissingDependency>
       <code><![CDATA[$this->rootFolder]]></code>
-      <code>IRootFolder</code>
-      <code>IRootFolder</code>
+      <code><![CDATA[IRootFolder]]></code>
+      <code><![CDATA[IRootFolder]]></code>
     </MissingDependency>
   </file>
   <file src="lib/Operation.php">
     <MissingDependency>
       <code><![CDATA[$this->rootFolder]]></code>
-      <code>IRootFolder</code>
-      <code>IRootFolder</code>
+      <code><![CDATA[IRootFolder]]></code>
+      <code><![CDATA[IRootFolder]]></code>
     </MissingDependency>
     <NullReference>
-      <code>$argsArray</code>
+      <code><![CDATA[$argsArray]]></code>
     </NullReference>
     <UndefinedClass>
-      <code>File</code>
+      <code><![CDATA[File]]></code>
     </UndefinedClass>
   </file>
   <file src="lib/Service/GlobalSettingsService.php">
     <ParamNameMismatch>
-      <code>$settings</code>
+      <code><![CDATA[$settings]]></code>
     </ParamNameMismatch>
-    <UndefinedConstant>
-      <code>ReflectionProperty::IS_PUBLIC</code>
-    </UndefinedConstant>
   </file>
   <file src="lib/Service/OcrService.php">
     <MissingDependency>
       <code><![CDATA[$this->rootFolder]]></code>
-      <code>IRootFolder</code>
-      <code>IRootFolder</code>
+      <code><![CDATA[IRootFolder]]></code>
+      <code><![CDATA[IRootFolder]]></code>
     </MissingDependency>
     <UndefinedClass>
-      <code>NoUserException</code>
+      <code><![CDATA[$version]]></code>
+      <code><![CDATA[$version]]></code>
+      <code><![CDATA[$version]]></code>
+      <code><![CDATA[$versionBackend]]></code>
+      <code><![CDATA[IMetadataVersion]]></code>
+      <code><![CDATA[IMetadataVersionBackend]]></code>
+      <code><![CDATA[IVersionManager]]></code>
+      <code><![CDATA[NoUserException]]></code>
     </UndefinedClass>
+    <UndefinedDocblockClass>
+      <code><![CDATA[$this->versionManager]]></code>
+      <code><![CDATA[IVersionManager]]></code>
+    </UndefinedDocblockClass>
   </file>
   <file src="lib/Wrapper/Filesystem.php">
     <UndefinedClass>
-      <code>\OC\Files\Filesystem</code>
+      <code><![CDATA[\OC\Files\Filesystem]]></code>
     </UndefinedClass>
   </file>
   <file src="lib/Wrapper/ViewWrapper.php">
     <UndefinedClass>
-      <code>View</code>
+      <code><![CDATA[View]]></code>
     </UndefinedClass>
     <UndefinedDocblockClass>
       <code><![CDATA[$this->wrappedView]]></code>
-      <code>View</code>
+      <code><![CDATA[View]]></code>
     </UndefinedDocblockClass>
   </file>
 </files>
