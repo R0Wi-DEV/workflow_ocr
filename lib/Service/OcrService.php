@@ -27,6 +27,9 @@ declare(strict_types=1);
 namespace OCA\WorkflowOcr\Service;
 
 use OC\User\NoUserException;
+use OCA\Files_Versions\Versions\IMetadataVersion;
+use OCA\Files_Versions\Versions\IMetadataVersionBackend;
+use OCA\Files_Versions\Versions\IVersionManager;
 use OCA\WorkflowOcr\Exception\OcrResultEmptyException;
 use OCA\WorkflowOcr\Helper\IProcessingFileAccessor;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
@@ -46,11 +49,17 @@ use OCP\SystemTag\TagNotFoundException;
 use Psr\Log\LoggerInterface;
 
 class OcrService implements IOcrService {
+	private const FILE_VERSION_LABEL_KEY = 'label';
+	private const FILE_VERSION_LABEL_VALUE = 'Before OCR';
+
 	/** @var IOcrProcessorFactory */
 	private $ocrProcessorFactory;
 
 	/** @var IGlobalSettingsService */
 	private $globalSettingsService;
+
+	/** @var IVersionManager */
+	private $versionManager;
 
 	/** @var ISystemTagObjectMapper */
 	private $systemTagObjectMapper;
@@ -82,6 +91,7 @@ class OcrService implements IOcrService {
 	public function __construct(
 		IOcrProcessorFactory $ocrProcessorFactory,
 		IGlobalSettingsService $globalSettingsService,
+		IVersionManager $versionManager,
 		ISystemTagObjectMapper $systemTagObjectMapper,
 		IUserManager $userManager,
 		IFilesystem $filesystem,
@@ -93,6 +103,7 @@ class OcrService implements IOcrService {
 		LoggerInterface $logger) {
 		$this->ocrProcessorFactory = $ocrProcessorFactory;
 		$this->globalSettingsService = $globalSettingsService;
+		$this->versionManager = $versionManager;
 		$this->systemTagObjectMapper = $systemTagObjectMapper;
 		$this->userManager = $userManager;
 		$this->filesystem = $filesystem;
@@ -133,6 +144,11 @@ class OcrService implements IOcrService {
 
 			// Only create a new file version if the file OCR result was not empty #130
 			if ($result->getRecognizedText() !== '') {
+				if ($settings->getKeepOriginalFileVersion()) {
+					// Add label to original file to prevent its expiry
+					$this->setFileVersionsLabel($file, $uid, self::FILE_VERSION_LABEL_VALUE);
+				}
+
 				$newFilePath = $originalFileExtension === $newFileExtension ?
 					$filePath :
 					$filePath . '.pdf';
@@ -223,6 +239,39 @@ class OcrService implements IOcrService {
 			$view->file_put_contents($filename, $ocrContent);
 		} finally {
 			$this->processingFileAccessor->setCurrentlyProcessedFileId(null);
+		}
+	}
+
+	/**
+	 * @param File $file The file to set the label for
+	 * @param string $uid The userId of the file owner
+	 * @param string $label The label to set
+	 */
+	private function setFileVersionsLabel(File $file, string $uid, string $label): void {
+		$fileMTime = $file->getMTime();
+		$user = $this->userManager->get($uid);
+		$versions = $this->versionManager->getVersionsForFile($user, $file);
+
+		foreach ($versions as $version) {
+			$revisionId = $version->getRevisionId();
+			if (!$version instanceof IMetadataVersion) {
+				$this->logger->debug('Skipping version with revision id {versionId} because "{versionClass}" is not an IMetadataVersion', ['versionId' => $revisionId, 'versionClass' => get_class($version)]);
+				continue;
+			}
+
+			$versionBackend = $version->getBackend();
+			if (!$versionBackend instanceof IMetadataVersionBackend) {
+				$this->logger->debug('Skipping version with revision id {versionId} because its backend "{versionBackendClass}" does not implement IMetadataVersionBackend', ['versionId' => $revisionId, 'versionBackendClass' => get_class($versionBackend)]);
+				continue;
+			}
+
+			$versionTimestamp = $version->getTimestamp();
+			$versionLabel = $version->getMetadataValue(self::FILE_VERSION_LABEL_KEY);
+
+			if ($fileMTime === $versionTimestamp && empty($versionLabel)) {
+				$this->logger->debug('Setting pre OCR label for version with revision id {versionId} on file {fileId}', ['versionId' => $revisionId, 'fileId' => $file->getId()]);
+				$versionBackend->setMetadataValue($file, $revisionId, self::FILE_VERSION_LABEL_KEY, $label);
+			}
 		}
 	}
 }

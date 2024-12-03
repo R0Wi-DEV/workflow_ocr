@@ -3,15 +3,67 @@ import { getInstalledLanguages } from '../../service/ocrBackendInfoService.js'
 import WorkflowOcr from '../../components/WorkflowOcr.vue'
 import SettingsItem from '../../components/SettingsItem.vue'
 import { NcSelect, NcSelectTags } from '@nextcloud/vue'
+import Vue from 'vue'
 
 let installedLanguages = []
 
+const systemTagsXml = `<?xml version="1.0"?>
+<d:multistatus xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns" xmlns:oc="http://owncloud.org/ns"
+    xmlns:nc="http://nextcloud.org/ns">
+    <d:response>
+        <d:href>/remote.php/dav/systemtags/</d:href>
+        <d:propstat>
+            <d:prop>
+                <oc:id />
+                <oc:display-name />
+                <oc:user-visible />
+                <oc:user-assignable />
+                <oc:can-assign />
+            </d:prop>
+            <d:status>HTTP/1.1 404 Not Found</d:status>
+        </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/remote.php/dav/systemtags/1/</d:href>
+        <d:propstat>
+            <d:prop>
+                <oc:id>1</oc:id>
+                <oc:display-name>testTag</oc:display-name>
+                <oc:user-visible>true</oc:user-visible>
+                <oc:user-assignable>true</oc:user-assignable>
+                <oc:can-assign>true</oc:can-assign>
+            </d:prop>
+            <d:status>HTTP/1.1 200 OK</d:status>
+        </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/remote.php/dav/systemtags/2/</d:href>
+        <d:propstat>
+            <d:prop>
+                <oc:id>2</oc:id>
+                <oc:display-name>testTag2</oc:display-name>
+                <oc:user-visible>true</oc:user-visible>
+                <oc:user-assignable>true</oc:user-assignable>
+                <oc:can-assign>true</oc:can-assign>
+            </d:prop>
+            <d:status>HTTP/1.1 200 OK</d:status>
+        </d:propstat>
+    </d:response>
+</d:multistatus>
+`
+
 jest.mock('../../service/ocrBackendInfoService')
 
+Vue.mixin({
+	methods: {
+		t: (key) => key, // Translation function
+	},
+})
+
 beforeEach(() => {
-	const mockT = jest.fn()
-	mockT.mockReturnValue('translated')
-	global.t = mockT
+	global.NextcloudVueDocs = {
+		tags: systemTagsXml,
+	}
 	jest.resetAllMocks()
 	getInstalledLanguages.mockImplementation(() => installedLanguages)
 })
@@ -94,7 +146,7 @@ describe('Language settings tests', () => {
 
 		// Simulate user input
 		const multiselect = wrapper.findAllComponents(SettingsItem).at(0).findComponent(NcSelect)
-		multiselect.vm.$emit('input', [
+		await multiselect.vm.$emit('input', [
 			{ label: 'German', langCode: 'de' },
 			{ label: 'English', langCode: 'en' },
 		])

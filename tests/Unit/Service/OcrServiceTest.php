@@ -26,6 +26,7 @@ namespace OCA\WorkflowOcr\Tests\Unit\Service;
 use Exception;
 use InvalidArgumentException;
 use OC\User\NoUserException;
+use OCA\Files_Versions\Versions\IVersionManager;
 use OCA\WorkflowOcr\Exception\OcrResultEmptyException;
 use OCA\WorkflowOcr\Helper\IProcessingFileAccessor;
 use OCA\WorkflowOcr\Model\GlobalSettings;
@@ -59,6 +60,8 @@ class OcrServiceTest extends TestCase {
 	private $ocrProcessor;
 	/** @var IGlobalSettingsService|MockObject */
 	private $globalSettingsService;
+	/** @var IVersionManager|MockObject */
+	private $versionManager;
 	/** @var ISystemTagObjectMapper|MockObject */
 	private $systemTagObjectMapper;
 	/** @var LoggerInterface|MockObject */
@@ -90,6 +93,7 @@ class OcrServiceTest extends TestCase {
 		parent::setUp();
 
 		$this->globalSettingsService = $this->createMock(IGlobalSettingsService::class);
+		$this->versionManager = $this->createMock(IVersionManager::class);
 		$this->ocrProcessor = $this->createMock(IOcrProcessor::class);
 		$this->systemTagObjectMapper = $this->createMock(ISystemTagObjectMapper::class);
 		$this->logger = $this->createMock(LoggerInterface::class);
@@ -129,6 +133,7 @@ class OcrServiceTest extends TestCase {
 		$this->ocrService = new OcrService(
 			$this->ocrProcessorFactory,
 			$this->globalSettingsService,
+			$this->versionManager,
 			$this->systemTagObjectMapper,
 			$this->userManager,
 			$this->filesystem,
@@ -373,6 +378,7 @@ class OcrServiceTest extends TestCase {
 		$this->ocrService = new OcrService(
 			$this->ocrProcessorFactory,
 			$this->globalSettingsService,
+			$this->versionManager,
 			$this->systemTagObjectMapper,
 			$userManager,
 			$this->filesystem,
