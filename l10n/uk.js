@@ -7,6 +7,7 @@ OC.L10N.register(
     "Workflow settings JSON value cannot be parsed" : "Не вдалося обробити значеня JSCON налаштування процесу",
     "OCR file" : "Файл оптичного розпізнавання",
     "OCR processing via workflow" : "Оптичне розпізнавання тексту через процес",
-    "Server side OCR processing via workflow engine" : "Оптичне розпізнавання на стороні сервера через налаштовані процеси"
+    "Server side OCR processing via workflow engine" : "Оптичне розпізнавання на стороні сервера через налаштовані процеси",
+    "Remove background" : "Вилучити тло"
 },
 "nplurals=4; plural=(n % 1 == 0 && n % 10 == 1 && n % 100 != 11 ? 0 : n % 1 == 0 && n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 1 : n % 1 == 0 && (n % 10 ==0 || (n % 10 >=5 && n % 10 <=9) || (n % 100 >=11 && n % 100 <=14 )) ? 2: 3);");

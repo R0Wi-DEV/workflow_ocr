@@ -6,6 +6,7 @@ OC.L10N.register(
     "Workflow OCR error" : "Σφάλμα ροής εργασίας OCR ",
     "Workflow settings JSON value cannot be parsed" : "Η τιμή JSON των ρυθμίσεων ροής εργασιών δεν μπορεί να αναλυθεί",
     "OCR file" : "αρχείο OCR",
-    "OCR processing via workflow" : "Γίνεται επεξεργασία OCR μέσο εργασίας ροής "
+    "OCR processing via workflow" : "Γίνεται επεξεργασία OCR μέσο εργασίας ροής ",
+    "Other settings" : "Άλλες ρυθμίσεις"
 },
 "nplurals=2; plural=(n != 1);");
