@@ -9,6 +9,21 @@ OC.L10N.register(
     "OCR processing via workflow" : "OCR-Verarbeitung über Workflow",
     "Server side OCR processing via workflow engine" : "Serverseitige OCR-Verarbeitung mittels Workflow-Engine",
     "This app makes it possible to process various files via OCR algorithms.\n\tThe processing is done via workflow-engine and can therefore easily be customized.\n\tPlease note that you'll have to install the OcrMyPDF CLI on your Nextcloud server to\n\tprocess PDF files. More installation instructions can be found in the docs https://github.com/R0Wi/workflow_ocr/blob/master/README.md." : "Diese App ermöglicht es, verschiedene Dateien über OCR-Algorithmen zu verarbeiten.\nDie Verarbeitung erfolgt über eine Workflow-Engine und kann daher leicht angepasst werden.\nBitte beachten Sie, dass Sie das OcrMyPDF CLI auf Ihrem Nextcloud-Server installieren müssen, um\nPDF-Dateien zu verarbeiten. Weitere Installationsanweisungen finden Sie in der Dokumentation unter https://github.com/R0Wi/workflow_ocr/blob/master/README.md",
-    "Other settings" : "Andere Einstellungen"
+    "OCR language" : "Texterkennungssprache",
+    "The language(s) to be used for OCR processing" : "Die Sprache(n) die für Texterkennung verwendet werden",
+    "Assign tags after OCR" : "Schlagwörter nach Texterkennung (OCR) zuweisen",
+    "These tags will be assigned to the file after OCR processing has finished" : "Diese Tags werden der Datei nach Abschluss der OCR-Verarbeitung zugewiesen",
+    "Remove tags after OCR" : "Schlagwörter nach Texterkennung (OCR) entfernen",
+    "These tags will be removed from the file after OCR processing has finished" : "Diese Schlagwörter werden nach Abschluss der OCR-Verarbeitung aus der Datei entfernt",
+    "OCR mode" : "Modus der Texterkennung (OCR)",
+    "Apply this mode if file already has OCR content" : "Wenden Sie diesen Modus an, wenn die Datei bereits OCR-Inhalte hat",
+    "Skip text" : "Text überspringen",
+    "Redo OCR" : "Texterkennung (OCR) wiederholen",
+    "Force OCR" : "Texterkennung (OCR) erzwingen",
+    "Skip file completely" : "Datei komplett überspringen",
+    "Other settings" : "Andere Einstellungen",
+    "Remove background" : "Hintergrund entfernen",
+    "Keep original file version" : "Ursprüngliche Dateiversion beibehalten",
+    "Select language(s)" : "Sprache(n) auswählen"
 },
 "nplurals=2; plural=(n != 1);");
