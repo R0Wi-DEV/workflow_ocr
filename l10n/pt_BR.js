@@ -9,7 +9,21 @@ OC.L10N.register(
     "OCR processing via workflow" : "Processamento de OCR através de workflow",
     "Server side OCR processing via workflow engine" : "Server side OCR processing via workflow engine",
     "This app makes it possible to process various files via OCR algorithms.\n\tThe processing is done via workflow-engine and can therefore easily be customized.\n\tPlease note that you'll have to install the OcrMyPDF CLI on your Nextcloud server to\n\tprocess PDF files. More installation instructions can be found in the docs https://github.com/R0Wi/workflow_ocr/blob/master/README.md." : "Este app torna possível processar diversos arquivos utilizando algorítimos OCR.\n\tO processamento é feito através de um motor de worflow e portanto pode ser facilmente customizado.\n\tNote que você precisará ter instalado o OcrMyPDF CLI em sua instância Nextcloud para\n\tprocessar arquivos PDF. Mais instruções de instalação podem ser encontradas na documentação em https://github.com/R0Wi/workflow_ocr/blob/master/README.md.",
+    "OCR language" : "Idioma do OCR",
+    "The language(s) to be used for OCR processing" : "O(s) idioma(s) a serem usados ​​para processamento de OCR",
+    "Assign tags after OCR" : "Atribuir tags após OCR",
+    "These tags will be assigned to the file after OCR processing has finished" : "Essas tags serão atribuídas ao arquivo após o término do processamento do OCR",
+    "Remove tags after OCR" : "Remover tags após OCR",
+    "These tags will be removed from the file after OCR processing has finished" : "Essas tags serão removidas do arquivo após o término do processamento do OCR",
+    "OCR mode" : "Modo OCR",
+    "Apply this mode if file already has OCR content" : "Aplique este modo se o arquivo já tiver conteúdo OCR",
+    "Skip text" : "Pular texto",
+    "Redo OCR" : "Refazer OCR",
+    "Force OCR" : "Forçar OCR",
+    "Skip file completely" : "Pular arquivo completamente",
     "Other settings" : "Outros ajustes",
-    "Remove background" : "Remover papel de parede"
+    "Remove background" : "Remover papel de parede",
+    "Keep original file version" : "Manter a versão original do arquivo",
+    "Select language(s)" : "Selecione o(s) idioma(s)"
 },
 "nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;");

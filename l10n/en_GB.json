@@ -7,6 +7,21 @@
     "OCR processing via workflow" : "OCR processing via workflow",
     "Server side OCR processing via workflow engine" : "Server side OCR processing via workflow engine",
     "This app makes it possible to process various files via OCR algorithms.\n\tThe processing is done via workflow-engine and can therefore easily be customized.\n\tPlease note that you'll have to install the OcrMyPDF CLI on your Nextcloud server to\n\tprocess PDF files. More installation instructions can be found in the docs https://github.com/R0Wi/workflow_ocr/blob/master/README.md." : "This app makes it possible to process various files via OCR algorithms.\n\tThe processing is done via workflow engine and can therefore easily be customized.\n\tPlease note that you'll have to install the OcrMyPDF CLI on your Nextcloud server to process PDF files. More installation instructions can be found in the docs https://github.com/R0Wi/workflow_ocr/blob/master/README.md.",
-    "Other settings" : "Other settings"
+    "OCR language" : "OCR language",
+    "The language(s) to be used for OCR processing" : "The language(s) to be used for OCR processing",
+    "Assign tags after OCR" : "Assign tags after OCR",
+    "These tags will be assigned to the file after OCR processing has finished" : "These tags will be assigned to the file after OCR processing has finished",
+    "Remove tags after OCR" : "Remove tags after OCR",
+    "These tags will be removed from the file after OCR processing has finished" : "These tags will be removed from the file after OCR processing has finished",
+    "OCR mode" : "OCR mode",
+    "Apply this mode if file already has OCR content" : "Apply this mode if file already has OCR content",
+    "Skip text" : "Skip text",
+    "Redo OCR" : "Redo OCR",
+    "Force OCR" : "Force OCR",
+    "Skip file completely" : "Skip file completely",
+    "Other settings" : "Other settings",
+    "Remove background" : "Remove background",
+    "Keep original file version" : "Keep original file version",
+    "Select language(s)" : "Select language(s)"
 },"pluralForm" :"nplurals=2; plural=(n != 1);"
 }

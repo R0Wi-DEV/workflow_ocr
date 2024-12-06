@@ -9,6 +9,21 @@ OC.L10N.register(
     "OCR processing via workflow" : "Próiseáil OCR trí shreabhadh oibre",
     "Server side OCR processing via workflow engine" : "Próiseáil OCR ar thaobh an fhreastalaí trí inneall sreabhadh oibre",
     "This app makes it possible to process various files via OCR algorithms.\n\tThe processing is done via workflow-engine and can therefore easily be customized.\n\tPlease note that you'll have to install the OcrMyPDF CLI on your Nextcloud server to\n\tprocess PDF files. More installation instructions can be found in the docs https://github.com/R0Wi/workflow_ocr/blob/master/README.md." : "Leis an aip seo is féidir comhaid éagsúla a phróiseáil trí halgartaim OCR.\n\t Déantar an phróiseáil trí inneall sreafa oibre agus mar sin is furasta é a shaincheapadh.\n\t Tabhair faoi deara go mbeidh ort an OcrMyPDF CLI a shuiteáil ar do fhreastalaí Nextcloud chun\n\t comhaid PDF a phróiseáil. Is féidir tuilleadh treoracha suiteála a fháil sna doiciméid https://github.com/R0Wi/workflow_ocr/blob/master/README.md.",
-    "Other settings" : "Socruithe eile"
+    "OCR language" : "Teanga OCR",
+    "The language(s) to be used for OCR processing" : "An teanga nó na teangacha a úsáidfear do phróiseáil OCR",
+    "Assign tags after OCR" : "Sann clibeanna tar éis OCR",
+    "These tags will be assigned to the file after OCR processing has finished" : "Sannfar na clibeanna seo don chomhad tar éis don phróiseáil OCR a bheith críochnaithe",
+    "Remove tags after OCR" : "Bain clibeanna tar éis OCR",
+    "These tags will be removed from the file after OCR processing has finished" : "Bainfear na clibeanna seo den chomhad tar éis don phróiseáil OCR a bheith críochnaithe",
+    "OCR mode" : "Modh OCR",
+    "Apply this mode if file already has OCR content" : "Cuir an mód seo i bhfeidhm má tá ábhar OCR sa chomhad cheana féin",
+    "Skip text" : "Léim an téacs",
+    "Redo OCR" : "Athdhéan OCR",
+    "Force OCR" : "Cuir OCR i bhfeidhm",
+    "Skip file completely" : "Scipeáil an comhad go hiomlán",
+    "Other settings" : "Socruithe eile",
+    "Remove background" : "Bain an cúlra",
+    "Keep original file version" : "Coinnigh leagan bunaidh an chomhaid",
+    "Select language(s)" : "Roghnaigh teanga(cha)"
 },
 "nplurals=5; plural=(n==1 ? 0 : n==2 ? 1 : n<7 ? 2 : n<11 ? 3 : 4);");
