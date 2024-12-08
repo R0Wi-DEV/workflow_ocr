@@ -8,6 +8,7 @@
     "Server side OCR processing via workflow engine" : "Traitement ROC côté serveur via le moteur de flux de travail",
     "This app makes it possible to process various files via OCR algorithms.\n\tThe processing is done via workflow-engine and can therefore easily be customized.\n\tPlease note that you'll have to install the OcrMyPDF CLI on your Nextcloud server to\n\tprocess PDF files. More installation instructions can be found in the docs https://github.com/R0Wi/workflow_ocr/blob/master/README.md." : "Cette application permet de traiter divers fichiers via des algorithmes de ROC (Reconnaissance Optique de Caractères).\n\tLe traitement est fait via moteur de flux de travail et peut donc facilement être personnalisé.\n\tVeuillez noter que vous devrez installer l'outil en ligne de commande OcrMyPDF sur votre serveur Nextcloud pour\n\ttraiter les fichiers PDF. Davantage d'informations concernant l'installation sont disponibles dans la documentation sur https://github.com/R0Wi/workflow_ocr/blob/master/README.md.",
     "Other settings" : "Autres paramètres",
-    "Remove background" : "Retirer l'arrière-plan"
+    "Remove background" : "Retirer l'arrière-plan",
+    "Select language(s)" : "Sélectionner la ou les langue(s)"
 },"pluralForm" :"nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;"
 }
