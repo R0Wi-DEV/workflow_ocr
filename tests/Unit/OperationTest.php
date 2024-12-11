@@ -433,6 +433,41 @@ class OperationTest extends TestCase {
 		$operation->onEvent($eventName, $event, $this->ruleMatcher);
 	}
 
+	/**
+	 * @dataProvider dataProvider_EventsWithTwoNodes
+	 */
+	public function testAddsEventOnEventWhereSubjectIsArray(string $eventName) {
+		$filePath = '/admin/files/path/to/file.pdf';
+		$fileId = 42;
+		$uid = 'admin';
+		$this->jobList->expects($this->once())
+			->method('add')
+			->with(ProcessFileJob::class, ['fileId' => $fileId, 'uid' => $uid, 'settings' => self::SETTINGS]);
+
+		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
+
+		/** @var MockObject|IUser */
+		$userMock = $this->createMock(IUser::class);
+		$userMock->expects($this->never())
+			->method('getUID')
+			->willReturn($uid);
+		/** @var MockObject|Node */
+		$fileMockSecondFile = $this->createMock(Node::class);
+		$fileMockSecondFile->method('getType')
+			->willReturn(FileInfo::TYPE_FILE);
+		$fileMockSecondFile->method('getPath')
+			->willReturn($filePath);
+		$fileMockSecondFile->method('getOwner')
+			->willReturn($userMock);
+		$fileMockSecondFile->method('getId')
+			->willReturn($fileId);
+		/** @var MockObject|Node */
+		$fileMockFirstFile = $this->createMock(Node::class);
+		$event = new GenericEvent([$fileMockFirstFile, $fileMockSecondFile]);
+
+		$operation->onEvent($eventName, $event, $this->ruleMatcher);
+	}
+
 	public function dataProvider_InvalidFilePaths() {
 		$arr = [
 			['/user/nofiles/somefile.pdf'],
@@ -453,6 +488,13 @@ class OperationTest extends TestCase {
 		return [
 			[''],
 			['{}']
+		];
+	}
+
+	public function dataProvider_EventsWithTwoNodes() {
+		return [
+			['\OCP\Files::postRename'],
+			['\OCP\Files::postCopy']
 		];
 	}
 }

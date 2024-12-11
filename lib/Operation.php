@@ -140,6 +140,15 @@ class Operation implements ISpecificOperation {
 
 	private function tryGetFileFromGenericEvent(string $eventName, GenericEvent $event, ?Node & $node) : bool {
 		$node = $event->getSubject();
+		
+		// Some events have two nodes involved
+		$arrayEvents = [
+			'\OCP\Files::postRename',
+			'\OCP\Files::postCopy'
+		];
+		if (in_array($eventName, $arrayEvents) && is_array($node) && count($node) >= 2) {
+			$node = $node[1];
+		}
 
 		if (!$node instanceof Node || $node->getType() !== FileInfo::TYPE_FILE) {
 			$this->logger->debug(
