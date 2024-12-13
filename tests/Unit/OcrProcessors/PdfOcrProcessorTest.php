@@ -312,7 +312,7 @@ class PdfOcrProcessorTest extends TestCase {
 	public function testAppliesOcrModeParameter(int $simulatedOcrMode, string $expectedOcrMyPdfFlag) {
 		$this->command->expects($this->once())
 			->method('setCommand')
-			->with('ocrmypdf -q ' . $expectedOcrMyPdfFlag . ' --sidecar /tmp/sidecar.txt - - | cat');
+			->with('ocrmypdf -q' . $expectedOcrMyPdfFlag . '--sidecar /tmp/sidecar.txt - - | cat');
 		$this->command->expects($this->once())
 			->method('execute')
 			->willReturn(true);
@@ -356,12 +356,34 @@ class PdfOcrProcessorTest extends TestCase {
 		$processor->ocrFile($this->fileBefore, new WorkflowSettings('{"ocrMode": ' . WorkflowSettings::OCR_MODE_REDO_OCR . ', "removeBackground": true}'), $this->defaultGlobalSettings);
 	}
 
+	public function testAppliesCustomCliArgsCorrectly() {
+		$this->command->expects($this->once())
+			->method('setCommand')
+			->with('ocrmypdf -q --skip-text --sidecar /tmp/sidecar.txt --output-type pdf - - | cat');
+		$this->command->expects($this->once())
+			->method('execute')
+			->willReturn(true);
+		$this->command->expects($this->once())
+			->method('getOutput')
+			->willReturn('someOcrContent');
+		$this->sidecarFileAccessor->expects($this->once())
+			->method('getSidecarFileContent')
+			->willReturn('someOcrContent');
+		$this->sidecarFileAccessor->expects($this->once())
+			->method('getOrCreateSidecarFile')
+			->willReturn('/tmp/sidecar.txt');
+
+		$workflowSettings = new WorkflowSettings('{"customCliArgs": "--output-type pdf"}');
+		$processor = new PdfOcrProcessor($this->command, $this->logger, $this->sidecarFileAccessor);
+		$processor->ocrFile($this->fileBefore, $workflowSettings, $this->defaultGlobalSettings);
+	}
+
 	public function dataProvider_testAppliesOcrModeParameter() {
 		return [
-			[WorkflowSettings::OCR_MODE_SKIP_TEXT, '--skip-text'],
-			[WorkflowSettings::OCR_MODE_REDO_OCR, '--redo-ocr'],
-			[WorkflowSettings::OCR_MODE_FORCE_OCR, '--force-ocr'],
-			[WorkflowSettings::OCR_MODE_SKIP_FILE, '']
+			[WorkflowSettings::OCR_MODE_SKIP_TEXT, ' --skip-text '],
+			[WorkflowSettings::OCR_MODE_REDO_OCR, ' --redo-ocr '],
+			[WorkflowSettings::OCR_MODE_FORCE_OCR, ' --force-ocr '],
+			[WorkflowSettings::OCR_MODE_SKIP_FILE, ' ']
 		];
 	}
 }

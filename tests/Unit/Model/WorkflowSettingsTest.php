@@ -46,7 +46,7 @@ class WorkflowSettingsTest extends TestCase {
 	public function dataProvider_testConstruction() {
 		return [
 			[
-				'{"removeBackground":true,"languages":["eng","deu","spa","fra","ita"]}',
+				'{"removeBackground":true,"languages":["eng","deu","spa","fra","ita"],"keepOriginalFileVersion":false}',
 				true,
 				['eng', 'deu', 'spa', 'fra', 'ita']
 			]

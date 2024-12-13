@@ -34,18 +34,18 @@
 		</SettingsItem>
 		<SettingsItem :label="t('workflow_ocr', 'Assign tags after OCR')"
 			:info-text="t('workflow_ocr', 'These tags will be assigned to the file after OCR processing has finished')">
-			<NcSelectTags v-model="tagsToAddAfterOcr"
+			<NcSelectTags v-model="model.tagsToAddAfterOcr"
 				:labelOutside="true"
 				:multiple="true">
-				{{ tagsToAddAfterOcr }}
+				{{ model.tagsToAddAfterOcr }}
 			</NcSelectTags>
 		</SettingsItem>
 		<SettingsItem :label="t('workflow_ocr', 'Remove tags after OCR')"
 			:info-text="t('workflow_ocr', 'These tags will be removed from the file after OCR processing has finished')">
-			<NcSelectTags v-model="tagsToRemoveAfterOcr"
+			<NcSelectTags v-model="model.tagsToRemoveAfterOcr"
 				:labelOutside="true"
 				:multiple="true">
-				{{ tagsToRemoveAfterOcr }}
+				{{ model.tagsToRemoveAfterOcr }}
 			</NcSelectTags>
 		</SettingsItem>
 		<SettingsItem :label="t('workflow_ocr', 'OCR mode')"
@@ -85,17 +85,23 @@
 			<div>
 				<NcCheckboxRadioSwitch ref="removeBackgroundSwitch"
 					:disabled="removeBackgroundDisabled"
-					:checked.sync="removeBackground"
+					:checked.sync="model.removeBackground"
 					type="switch">
 					{{ t('workflow_ocr', 'Remove background') }}
 				</NcCheckboxRadioSwitch>
 				<NcCheckboxRadioSwitch ref="keepOriginalFileVersionSwitch"
-					:checked.sync="keepOriginalFileVersion"
+					:checked.sync="model.keepOriginalFileVersion"
 					type="switch">
 					{{ t('workflow_ocr', 'Keep original file version') }}
 				</NcCheckboxRadioSwitch>
 			</div>
 		</SettingsItem>
+		<div>
+			<NcTextField :value.sync="model.customCliArgs"
+				:label="t('workflow_ocr', 'Custom ocrMyPdf CLI arguments')"
+				ref="customCliArgs">
+			</NcTextField>
+		</div>
 	</div>
 </template>
 
@@ -104,7 +110,7 @@
 import { tesseractLanguageMapping } from '../constants.js'
 import { getInstalledLanguages } from '../service/ocrBackendInfoService.js'
 import SettingsItem from './SettingsItem.vue'
-import { NcSelect, NcSelectTags, NcCheckboxRadioSwitch } from '@nextcloud/vue'
+import { NcSelect, NcSelectTags, NcCheckboxRadioSwitch, NcTextField } from '@nextcloud/vue'
 
 export default {
 	name: 'WorkflowOcr',
@@ -112,6 +118,7 @@ export default {
 		NcSelect: NcSelect,
 		NcSelectTags: NcSelectTags,
 		NcCheckboxRadioSwitch: NcCheckboxRadioSwitch,
+		NcTextField: NcTextField,
 		SettingsItem: SettingsItem,
 	},
 	props: {
@@ -129,15 +136,24 @@ export default {
 			 * Model structure which is captured by NC parent as JSON string:
 			 * {
 			 *   languages: [ 'de', 'en' ],
-			 *   assignTagsAfterOcr: [1, 2, 3],
-			 *   removeTagsAfterOcr: [42, 43],
+			 *   tagsToAddAfterOcr: [1, 2, 3],
+			 *   tagsToRemoveAfterOcr: [42, 43],
 			 *   removeBackground: true,
 			 *	 keepOriginalFileVersion: true,
 			 *   ocrMode: 0,
+			 *   customCliArgs: '--rotate-pages-threshold 8',
 			 * }
 			 * It's initially set after component creation by 'created'-hook.
 			 */
-			model: {},
+			model: {
+				languages: [],
+				tagsToAddAfterOcr: [],
+				tagsToRemoveAfterOcr: [],
+				removeBackground: false,
+				keepOriginalFileVersion: false,
+				ocrMode: 0,
+				customCliArgs: '',
+			},
 		}
 	},
 	computed: {
@@ -151,43 +167,6 @@ export default {
 			},
 			set: function(langArray) {
 				this.$set(this.model, 'languages', langArray.map(lang => lang.langCode).filter(lang => lang !== null))
-				this.modelChanged()
-			},
-		},
-		tagsToAddAfterOcr: {
-			get: function() {
-				return this.model.tagsToAddAfterOcr ?? []
-			},
-			set: function(tagIdArray) {
-				this.$set(this.model, 'tagsToAddAfterOcr', tagIdArray)
-				this.modelChanged()
-			},
-		},
-		tagsToRemoveAfterOcr: {
-			get: function() {
-				return this.model.tagsToRemoveAfterOcr ?? []
-			},
-			set: function(tagIdArray) {
-				this.$set(this.model, 'tagsToRemoveAfterOcr', tagIdArray)
-				this.modelChanged()
-			},
-		},
-		removeBackground: {
-			get: function() {
-				return !!this.model.removeBackground
-			},
-			set: function(checked) {
-				this.$set(this.model, 'removeBackground', !!checked)
-				this.modelChanged()
-			},
-		},
-		keepOriginalFileVersion: {
-			get: function() {
-				return !!this.model.keepOriginalFileVersion
-			},
-			set: function(checked) {
-				this.$set(this.model, 'keepOriginalFileVersion', !!checked)
-				this.modelChanged()
 			},
 		},
 		ocrMode: {
@@ -200,7 +179,6 @@ export default {
 				if (this.model.ocrMode === 1) {
 					this.$set(this.model, 'removeBackground', false)
 				}
-				this.modelChanged()
 			},
 		},
 		selectedLanguagesPlaceholder: function() {
@@ -214,13 +192,22 @@ export default {
 		const installedLanguagesCodes = await getInstalledLanguages()
 		this.availableLanguages = tesseractLanguageMapping.filter(lang => installedLanguagesCodes.includes(lang.langCode))
 	},
-	created: function() {
-		// Set the initial model by applying the JSON value set by parent after initial mount
-		this.model = this.value ? JSON.parse(this.value) : {}
-	},
-	methods: {
-		modelChanged: function() {
-			this.$emit('input', JSON.stringify(this.model))
+	watch: {
+		value: {
+			immediate: true,
+			handler(newValue) {
+				if (newValue) {
+					// Merge with defaults
+					this.model = { ...this.model, ...JSON.parse(newValue) }
+				}
+			},
+		},
+		model: {
+			deep: true,
+			handler(newValue) {
+				// Publish serialized model to parent
+				this.$emit('input', JSON.stringify(this.model))
+			},
 		},
 	},
 }
