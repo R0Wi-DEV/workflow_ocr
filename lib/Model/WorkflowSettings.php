@@ -52,6 +52,9 @@ class WorkflowSettings {
 	/** @var bool */
 	private $keepOriginalFileVersion = false;
 
+	/** @var string */
+	private $customCliArgs = '';
+
 	/**
 	 * @param string $json The serialized JSON string used in frontend as input for the Vue component
 	 */
@@ -102,6 +105,13 @@ class WorkflowSettings {
 	}
 
 	/**
+	 * @return string
+	 */
+	public function getCustomCliArgs(): string {
+		return $this->customCliArgs;
+	}
+
+	/**
 	 * Checks if a new WorkflowSettings object can be constructed from the given JSON string
 	 * @param string $json The serialized JSON string used in frontend as input for the Vue component
 	 * @return bool True if the JSON string is valid, false otherwise
@@ -127,23 +137,18 @@ class WorkflowSettings {
 		if ($data === null) {
 			throw new InvalidArgumentException('Invalid JSON: "' . $json . '"');
 		}
-		if (array_key_exists('languages', $data) && is_array($data['languages'])) {
-			$this->languages = $data['languages'];
-		}
-		if (array_key_exists('removeBackground', $data) && is_bool($data['removeBackground'])) {
-			$this->removeBackground = $data['removeBackground'];
-		}
-		if (array_key_exists('ocrMode', $data) && is_int($data['ocrMode'])) {
-			$this->ocrMode = $data['ocrMode'];
-		}
-		if (array_key_exists('tagsToRemoveAfterOcr', $data) && is_array($data['tagsToRemoveAfterOcr'])) {
-			$this->tagsToRemoveAfterOcr = $data['tagsToRemoveAfterOcr'];
-		}
-		if (array_key_exists('tagsToAddAfterOcr', $data) && is_array($data['tagsToAddAfterOcr'])) {
-			$this->tagsToAddAfterOcr = $data['tagsToAddAfterOcr'];
-		}
-		if (array_key_exists('keepOriginalFileVersion', $data) && is_bool($data['keepOriginalFileVersion'])) {
-			$this->keepOriginalFileVersion = $data['keepOriginalFileVersion'];
+		$this->setProperty($this->languages, $data, 'languages', fn ($value) => is_array($value));
+		$this->setProperty($this->removeBackground, $data, 'removeBackground', fn ($value) => is_bool($value));
+		$this->setProperty($this->ocrMode, $data, 'ocrMode', fn ($value) => is_int($value));
+		$this->setProperty($this->tagsToRemoveAfterOcr, $data, 'tagsToRemoveAfterOcr', fn ($value) => is_array($value));
+		$this->setProperty($this->tagsToAddAfterOcr, $data, 'tagsToAddAfterOcr', fn ($value) => is_array($value));
+		$this->setProperty($this->keepOriginalFileVersion, $data, 'keepOriginalFileVersion', fn ($value) => is_bool($value));
+		$this->setProperty($this->customCliArgs, $data, 'customCliArgs', fn ($value) => is_string($value));
+	}
+
+	private function setProperty(& $property, array $jsonData, string $key, ?callable $dataCheck = null): void {
+		if (array_key_exists($key, $jsonData) && ($dataCheck === null || $dataCheck($jsonData[$key]))) {
+			$property = $jsonData[$key];
 		}
 	}
 }

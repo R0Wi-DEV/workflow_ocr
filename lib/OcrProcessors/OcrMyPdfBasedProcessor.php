@@ -147,8 +147,18 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 			$args[] = '--sidecar ' . $sidecarFilePath;
 		}
 
-		$resultArgs = array_merge($args, $this->getAdditionalCommandlineArgs($settings, $globalSettings));
+		$resultArgs = array_filter(array_merge(
+			$args,
+			$this->getAdditionalCommandlineArgs($settings, $globalSettings),
+			[$this->escapeCustomCliArgs($settings->getCustomCliArgs())]
+		), fn ($arg) => !empty($arg));
 
 		return implode(' ', $resultArgs);
+	}
+
+	private function escapeCustomCliArgs(string $customCliArgs): string {
+		$customCliArgs = str_replace('&&', '', $customCliArgs);
+		$customCliArgs = str_replace(';', '', $customCliArgs);
+		return $customCliArgs;
 	}
 }

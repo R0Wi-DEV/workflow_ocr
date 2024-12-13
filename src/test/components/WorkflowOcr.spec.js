@@ -153,15 +153,16 @@ describe('Language settings tests', () => {
 
 		const inputEvent = wrapper.emitted().input
 		expect(inputEvent).toBeTruthy()
-		expect(inputEvent[0][0]).toBe('{"languages":["de","en"],"removeBackground":true}')
+		expect(inputEvent[0][0]).toBe('{"languages":["de","en"],"tagsToAddAfterOcr":[],"tagsToRemoveAfterOcr":[],"removeBackground":true,"keepOriginalFileVersion":false,"ocrMode":0,"customCliArgs":""}')
+		
 	})
 })
 
 describe('Add/remove tags tests', () => {
 	test('Values assignTagsAfterOcr/removeTagsAfterOcr tags are set to empty array if no value was choosen', () => {
 		const wrapper = mount(WorkflowOcr)
-		expect(wrapper.vm.tagsToAddAfterOcr).toEqual([])
-		expect(wrapper.vm.tagsToRemoveAfterOcr).toEqual([])
+		expect(wrapper.vm.model.tagsToAddAfterOcr).toEqual([])
+		expect(wrapper.vm.model.tagsToRemoveAfterOcr).toEqual([])
 	})
 
 	test('User input for assignTagsAfterOcr is applied correctly on empty component', async () => {
@@ -181,7 +182,7 @@ describe('Add/remove tags tests', () => {
 
 		const inputEvent = wrapper.emitted().input
 		expect(inputEvent).toBeTruthy()
-		expect(inputEvent[0][0]).toBe('{"languages":["de"],"removeBackground":true,"tagsToAddAfterOcr":[1,2]}')
+		expect(inputEvent[0][0]).toBe('{"languages":["de"],"tagsToAddAfterOcr":[1,2],"tagsToRemoveAfterOcr":[],"removeBackground":true,"keepOriginalFileVersion":false,"ocrMode":0,"customCliArgs":""}')
 	})
 
 	test('User input for removeTagsAfterOcr is applied correctly on empty component', async () => {
@@ -201,14 +202,14 @@ describe('Add/remove tags tests', () => {
 
 		const inputEvent = wrapper.emitted().input
 		expect(inputEvent).toBeTruthy()
-		expect(inputEvent[0][0]).toBe('{"languages":["de"],"removeBackground":true,"tagsToRemoveAfterOcr":[1,2]}')
+		expect(inputEvent[0][0]).toBe('{"languages":["de"],"tagsToAddAfterOcr":[],"tagsToRemoveAfterOcr":[1,2],"removeBackground":true,"keepOriginalFileVersion":false,"ocrMode":0,"customCliArgs":""}')
 	})
 })
 
 describe('Remove background tests', () => {
 	test('RemoveBackground default is false if value is not set', () => {
 		const wrapper = mount(WorkflowOcr)
-		expect(wrapper.vm.removeBackground).toBe(false)
+		expect(wrapper.vm.model.removeBackground).toBe(false)
 	})
 
 	test('RemoveBackground default is false if property not set', () => {
@@ -217,10 +218,10 @@ describe('Remove background tests', () => {
 				value: '{ "languages": [ "de" ] }',
 			},
 		})
-		expect(wrapper.vm.removeBackground).toBe(false)
+		expect(wrapper.vm.model.removeBackground).toBe(false)
 	})
 
-	test('Should set removeBackground to false', () => {
+	test('Should set removeBackground to false', async () => {
 		const wrapper = mount(WorkflowOcr, {
 			propsData: {
 				value: '{ "languages": [ "de" ], "removeBackground": true }',
@@ -234,9 +235,11 @@ describe('Remove background tests', () => {
 		// Simulate user input
 		radioSwitch.vm.$emit('update:checked', false)
 
+		await wrapper.vm.$nextTick()
+
 		const inputEvent = wrapper.emitted().input
 		expect(inputEvent).toBeTruthy()
-		expect(inputEvent[0][0]).toBe('{"languages":["de"],"removeBackground":false}')
+		expect(inputEvent[0][0]).toBe('{"languages":["de"],"tagsToAddAfterOcr":[],"tagsToRemoveAfterOcr":[],"removeBackground":false,"keepOriginalFileVersion":false,"ocrMode":0,"customCliArgs":""}')
 	})
 })
 
@@ -246,12 +249,19 @@ describe('OCR mode tests', () => {
 		expect(wrapper.vm.ocrMode).toBe('0')
 	})
 
-	test.each([0, 1, 2])('Should set OCR mode to %i', (mode) => {
-		const wrapper = mount(WorkflowOcr)
+	test.each([0, 1, 2])('Should set OCR mode to %i', async (mode) => {
+		const wrapper = mount(WorkflowOcr, {
+			propsData: {
+				// simulate that ocr mode is currently set to something diffferent
+				value: `{ "ocrMode": ${mode + 1 % 3}}`,
+			},
+		})
 		const radioButton = wrapper.findComponent({ ref: `ocrMode${mode}` })
 
 		// Simulate user click on radiobutton
 		radioButton.vm.$emit('update:checked', mode)
+
+		await wrapper.vm.$nextTick()
 
 		const inputEvent = wrapper.emitted().input
 		expect(inputEvent).toBeTruthy()
@@ -305,5 +315,31 @@ describe('OCR mode tests', () => {
 
 		const removeBackgroundSwitchPost = wrapper.findComponent({ ref: 'removeBackgroundSwitch' })
 		expect(removeBackgroundSwitchPost.vm.disabled).toBe(false)
+	})
+})
+
+describe('Custom CLI args test', () => {
+	test('Default value for customCliArgs is empty string', () => {
+		const wrapper = mount(WorkflowOcr)
+		expect(wrapper.vm.model.customCliArgs).toBe('')
+	})
+
+	test('Should set input element value to customCliArgs', async () => {
+		const wrapper = mount(WorkflowOcr, {
+			propsData: {
+				value: '{}',
+			},
+		})
+
+		const textInput = wrapper.findComponent({ ref: 'customCliArgs' })
+
+		// Simulate user input
+		textInput.vm.$emit('update:value', '--dpi 300')
+
+		await wrapper.vm.$nextTick()
+
+		const inputEvent = wrapper.emitted().input
+		expect(inputEvent).toBeTruthy()
+		expect(inputEvent[0][0]).toBe('{"languages":[],"tagsToAddAfterOcr":[],"tagsToRemoveAfterOcr":[],"removeBackground":false,"keepOriginalFileVersion":false,"ocrMode":0,"customCliArgs":"--dpi 300"}')
 	})
 })
