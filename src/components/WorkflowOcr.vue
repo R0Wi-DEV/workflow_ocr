@@ -89,10 +89,15 @@
 					type="switch">
 					{{ t('workflow_ocr', 'Remove background') }}
 				</NcCheckboxRadioSwitch>
-				<NcCheckboxRadioSwitch ref="keepOriginalFileVersionSwitch"
+				<NcCheckboxRadioSwitch ref="keepOriginalFileVersion"
 					:checked.sync="model.keepOriginalFileVersion"
 					type="switch">
 					{{ t('workflow_ocr', 'Keep original file version') }}
+				</NcCheckboxRadioSwitch>
+				<NcCheckboxRadioSwitch ref="keepOriginalFileDate"
+					:checked.sync="model.keepOriginalFileDate"
+					type="switch">
+					{{ t('workflow_ocr', 'Keep original file modification date') }}
 				</NcCheckboxRadioSwitch>
 			</div>
 		</SettingsItem>
@@ -140,6 +145,7 @@ export default {
 			 *   tagsToRemoveAfterOcr: [42, 43],
 			 *   removeBackground: true,
 			 *	 keepOriginalFileVersion: true,
+			 *   keepOriginalFileDate: true,
 			 *   ocrMode: 0,
 			 *   customCliArgs: '--rotate-pages-threshold 8',
 			 * }
@@ -151,6 +157,7 @@ export default {
 				tagsToRemoveAfterOcr: [],
 				removeBackground: false,
 				keepOriginalFileVersion: false,
+				keepOriginalFileDate: false,
 				ocrMode: 0,
 				customCliArgs: '',
 			},

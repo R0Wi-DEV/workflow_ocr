@@ -121,6 +121,13 @@ class OcrService implements IOcrService {
 			$this->initUserEnvironment($uid);
 
 			$file = $this->getNode($fileId);
+			
+			$fileMtime = null;
+			if ($settings->getKeepOriginalFileDate()) {
+				// Add one ms to the original file modification time to prevent the new original version from being overwritten
+				$fileMtime = $file->getMTime() + 1;
+			}
+
 			$ocrProcessor = $this->ocrProcessorFactory->create($file->getMimeType());
 			$globalSettings = $this->globalSettingsService->getGlobalSettings();
 			
@@ -153,7 +160,7 @@ class OcrService implements IOcrService {
 					$filePath :
 					$filePath . '.pdf';
 
-				$this->createNewFileVersion($newFilePath, $fileContent, $fileId);
+				$this->createNewFileVersion($newFilePath, $fileContent, $fileId, $fileMtime);
 			}
 
 			$this->eventService->textRecognized($result, $file);
@@ -180,7 +187,7 @@ class OcrService implements IOcrService {
 		$this->userSession->setUser(null);
 	}
 
-	private function getNode(int $fileId) : ?Node {
+	private function getNode(int $fileId) : Node {
 		/** @var File[] */
 		$nodeArr = $this->rootFolder->getById($fileId);
 		if (count($nodeArr) === 0) {
@@ -223,8 +230,9 @@ class OcrService implements IOcrService {
 	 * @param string $filePath The filepath of the file to write
 	 * @param string $ocrContent The new filecontent (which was OCR processed)
 	 * @param int $fileId The id of the file to write. Used for locking.
+	 * @param int $fileMtime The mtime of the new file. Can be used to restore the original modification time of the non-OCR file.
 	 */
-	private function createNewFileVersion(string $filePath, string $ocrContent, int $fileId) : void {
+	private function createNewFileVersion(string $filePath, string $ocrContent, int $fileId, ?int $fileMtime = null) : void {
 		$dirPath = dirname($filePath);
 		$filename = basename($filePath);
 		
@@ -237,6 +245,11 @@ class OcrService implements IOcrService {
 			// add the file to the queue again but this is tackled
 			// by the processingFileAccessor.
 			$view->file_put_contents($filename, $ocrContent);
+
+			// Restore the original modification time of the non-OCR file
+			if ($fileMtime !== null) {
+				$view->touch($filename, $fileMtime);
+			}
 		} finally {
 			$this->processingFileAccessor->setCurrentlyProcessedFileId(null);
 		}

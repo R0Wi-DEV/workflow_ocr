@@ -43,4 +43,11 @@ class ViewWrapper implements IView {
 		$retVal = $this->wrappedView->file_put_contents($filePath, $content);
 		return boolval($retVal);
 	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public function touch($path, $mtime = null): bool {
+		return $this->wrappedView->touch($path, $mtime);
+	}
 }
