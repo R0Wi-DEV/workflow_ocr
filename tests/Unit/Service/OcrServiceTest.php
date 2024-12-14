@@ -519,6 +519,35 @@ class OcrServiceTest extends TestCase {
 		$this->assertTrue($thrown);
 	}
 
+	public function testRestoreOriginalFileModificationDate() {
+		$settings = new WorkflowSettings('{"keepOriginalFileDate": true}');
+		$mimeType = 'application/pdf';
+		$content = 'someFileContent';
+		$ocrContent = 'someOcrProcessedFile';
+		$ocrResult = new OcrProcessorResult($ocrContent, 'pdf', $ocrContent); // Extend this cases if we add new OCR processors
+
+		$fileMock = $this->createValidFileMock($mimeType, $content);
+		$this->rootFolderGetById42ReturnValue = [$fileMock];
+
+		$this->ocrProcessor->expects($this->once())
+			->method('ocrFile')
+			->willReturn($ocrResult);
+
+		$viewMock = $this->createMock(IView::class);
+		$this->viewFactory->expects($this->once())
+			->method('create')
+			->willReturn($viewMock);
+
+		$fileMock->expects($this->once())
+			->method('getMTime')
+			->willReturn(1234);
+		$viewMock->expects($this->once())
+			->method('touch')
+			->with('somefile.pdf', 1235);
+
+		$this->ocrService->runOcrProcess(42, 'usr', $settings);
+	}
+
 	public function dataProvider_InvalidNodes() {
 		/** @var MockObject|Node */
 		$folderMock = $this->createMock(Node::class);
@@ -552,7 +581,7 @@ class OcrServiceTest extends TestCase {
 	/**
 	 * @return File|MockObject
 	 */
-	private function createValidFileMock(string $mimeType = 'application/pdf', string $content = 'someFileContent', string $rootFolderPath = '/admin/files', string $fileName = 'somefile.pdf') {
+	private function createValidFileMock(string $mimeType = 'application/pdf', string $content = 'someFileContent', string $rootFolderPath = '/admin/files', string $fileName = 'somefile.pdf'): File {
 		/** @var MockObject|File */
 		$fileMock = $this->createMock(File::class);
 		$fileMock->method('getType')

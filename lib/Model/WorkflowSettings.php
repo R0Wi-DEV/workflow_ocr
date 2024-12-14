@@ -52,6 +52,9 @@ class WorkflowSettings {
 	/** @var bool */
 	private $keepOriginalFileVersion = false;
 
+	/** @var bool */
+	private $keepOriginalFileDate = false;
+
 	/** @var string */
 	private $customCliArgs = '';
 
@@ -105,6 +108,13 @@ class WorkflowSettings {
 	}
 
 	/**
+	 * @return bool
+	 */
+	public function getKeepOriginalFileDate(): bool {
+		return $this->keepOriginalFileDate;
+	}
+
+	/**
 	 * @return string
 	 */
 	public function getCustomCliArgs(): string {
@@ -143,6 +153,7 @@ class WorkflowSettings {
 		$this->setProperty($this->tagsToRemoveAfterOcr, $data, 'tagsToRemoveAfterOcr', fn ($value) => is_array($value));
 		$this->setProperty($this->tagsToAddAfterOcr, $data, 'tagsToAddAfterOcr', fn ($value) => is_array($value));
 		$this->setProperty($this->keepOriginalFileVersion, $data, 'keepOriginalFileVersion', fn ($value) => is_bool($value));
+		$this->setProperty($this->keepOriginalFileDate, $data, 'keepOriginalFileDate', fn ($value) => is_bool($value));
 		$this->setProperty($this->customCliArgs, $data, 'customCliArgs', fn ($value) => is_string($value));
 	}
 

@@ -62,6 +62,22 @@ class ViewWrapperTest extends TestCase {
 		}
 	}
 
+	public function testTouch() {
+		$path = '/mytestuser/files';
+		$filename = 'testfile.txt';
+		$viewWrapper = new ViewWrapper($path);
+
+		$result = $viewWrapper->touch($filename);
+		$this->assertTrue($result);
+
+		$ncView = new View($path);
+		$this->assertTrue($ncView->file_exists($filename));
+
+		$viewWrapper->touch($filename, 1234567890);
+		$stat = $ncView->stat($filename);
+		$this->assertEquals(1234567890, $stat['mtime']);
+	}
+
 	public function dataProvider_FilePutContents() {
 		return [
 			['testfile.txt', true],

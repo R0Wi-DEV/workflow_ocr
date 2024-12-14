@@ -57,6 +57,7 @@
     </UndefinedClass>
     <UndefinedDocblockClass>
       <code><![CDATA[$this->wrappedView]]></code>
+      <code><![CDATA[$this->wrappedView]]></code>
       <code><![CDATA[View]]></code>
     </UndefinedDocblockClass>
   </file>

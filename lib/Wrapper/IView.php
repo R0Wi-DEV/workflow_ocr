@@ -31,4 +31,5 @@ namespace OCA\WorkflowOcr\Wrapper;
  */
 interface IView {
 	public function file_put_contents(string $filePath, string $content) : bool;
+	public function touch($path, $mtime = null): bool;
 }
