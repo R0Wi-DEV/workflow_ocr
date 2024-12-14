@@ -81,16 +81,27 @@ class Notifier implements INotifier {
 			throw new \InvalidArgumentException();
 		}
 
-		// Currently we only support sending notifications for ocr_error
+		$l = $this->l10nFactory->get(Application::APP_NAME, $languageCode);
+
+		// Currently we only support sending notifications for ocr_error and ocr_success
 		$subject = $notification->getSubject();
-		if ($subject !== 'ocr_error') {
+		$allowedSubjects = [
+			'ocr_error' => [
+				'parsedSubject' => fn() => $l->t('Workflow OCR error'), // Lazy ...
+				'richSubject' => fn() => $l->t('Workflow OCR error for file {file}'),
+			], 
+			'ocr_success' => [
+				'parsedSubject' => fn() => $l->t('Workflow OCR success'),
+				'richSubject' => fn() => $l->t('Workflow OCR success for file {file}'),
+			]
+		];
+
+		if (!array_key_exists($subject, $allowedSubjects)) {
 			$this->logger->warning('Unsupported notification subject {subject}', ['subject' => $subject]);
-			// Note:: AlreadyProcessedException has be be thrown before any call to $notification->set...
+			// Note:: AlreadyProcessedException has to be thrown before any call to $notification->set...
 			// otherwise notification won't be removed from the database
 			throw new AlreadyProcessedException();
 		}
-
-		$l = $this->l10nFactory->get(Application::APP_NAME, $languageCode);
 
 		// Only add file info if we have some ...
 		$richParams = false;
@@ -99,13 +110,15 @@ class Notifier implements INotifier {
 			($uid = $notification->getUser())) {
 			$richParams = $this->tryGetRichParamForFile($uid, intval($fileId));
 			if ($richParams !== false) {
-				$notification->setRichSubject($l->t('Workflow OCR error for file {file}'), $richParams);
+				$richSubject = $allowedSubjects[$subject]['richSubject']();
+				$notification->setRichSubject($richSubject, $richParams);
 			}
 		}
 		
 		// Fallback to generic error message without file link
 		if ($richParams === false) {
-			$notification->setParsedSubject($l->t('Workflow OCR error'));
+			$parsedSubject = $allowedSubjects[$subject]['parsedSubject']();
+			$notification->setParsedSubject($parsedSubject);
 		}
 
 		$message = $notification->getSubjectParameters()['message'];

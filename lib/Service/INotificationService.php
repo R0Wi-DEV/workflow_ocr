@@ -35,4 +35,12 @@ interface INotificationService {
 	 * @param int $fileId Optional file ID of the file that failed to OCR. If given, user can jump to the file via link.
 	 */
 	public function createErrorNotification(?string $userId, string $message, ?int $fileId = null);
+
+	/**
+	 * Create a new notification for the given user if the OCR process of the given file was successful.
+	 * @param string $userId The user ID of the user that should receive the notification.
+	 * @param string $message The success message that should be displayed in the notification.
+	 * @param int $fileId Optional file ID of the file that was successfully OCR'd. If given, user can jump to the file via link.
+	 */
+	public function createSuccessNotification(?string $userId, ?int $fileId = null);
 }

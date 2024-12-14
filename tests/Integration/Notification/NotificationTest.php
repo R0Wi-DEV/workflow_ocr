@@ -21,17 +21,23 @@
 
 namespace OCA\WorkflowOcr\Tests\Integration\Notification;
 
-use OC\BackgroundJob\JobList;
-use OCA\WorkflowOcr\BackgroundJobs\ProcessFileJob;
+use OCA\Files_Versions\Versions\IVersionManager;
 use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
+use OCA\WorkflowOcr\Helper\IProcessingFileAccessor;
+use OCA\WorkflowOcr\OcrProcessors\IOcrProcessorFactory;
+use OCA\WorkflowOcr\Service\IEventService;
+use OCA\WorkflowOcr\Service\IGlobalSettingsService;
 use OCA\WorkflowOcr\Service\INotificationService;
 use OCA\WorkflowOcr\Service\IOcrService;
 use OCA\WorkflowOcr\Service\NotificationService;
-use OCP\AppFramework\Utility\ITimeFactory;
-use OCP\DB\QueryBuilder\IExpressionBuilder;
-use OCP\DB\QueryBuilder\IQueryBuilder;
-use OCP\IConfig;
-use OCP\IDBConnection;
+use OCA\WorkflowOcr\Service\OcrService;
+use OCA\WorkflowOcr\Wrapper\IFilesystem;
+use OCA\WorkflowOcr\Wrapper\IViewFactory;
+use OCP\Files\IRootFolder;
+use OCP\IUserManager;
+use OCP\IUserSession;
+use OCP\Notification\INotification;
+use OCP\SystemTag\ISystemTagObjectMapper;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -40,13 +46,9 @@ class NotificationTest extends TestCase {
 	/** @var LoggerInterface|MockObject */
 	private $logger;
 	/** @var IOcrService|MockObject */
-	private $ocrService;
-	/** @var INotificationService|MockObject */
+	//private $ocrService;
+	/** @var INotificationService */
 	private $notificationService;
-	/** @var JobList */
-	private $jobList;
-	/** @var ProcessFileJob */
-	private $processFileJob;
 
 	protected function setUp() : void {
 		parent::setUp();
@@ -57,64 +59,37 @@ class NotificationTest extends TestCase {
 		$this->notificationService = new NotificationService(\OC::$server->get(\OCP\Notification\IManager::class));
 
 		$this->logger = $this->createMock(LoggerInterface::class);
-		$this->ocrService = $this->createMock(IOcrService::class);
-		
-		$this->processFileJob = new ProcessFileJob(
-			$this->logger,
-			$this->ocrService,
+	}
+
+	public function testOcrServiceCreatesErrorNotificationIfOcrFailed() {
+		// Simulate an early exception
+		$userManager = $this->createMock(IUserManager::class);
+		$userManager->method('get')
+			->with('someuser')
+			->willThrowException(new OcrNotPossibleException('Some error'));
+		$ocrService = new OcrService(
+			$this->createMock(IOcrProcessorFactory::class),
+			$this->createMock(IGlobalSettingsService::class),
+			$this->createMock(IVersionManager::class),
+			$this->createMock(ISystemTagObjectMapper::class),
+			$userManager,
+			$this->createMock(IFilesystem::class),
+			$this->createMock(IUserSession::class),
+			$this->createMock(IRootFolder::class),
+			$this->createMock(IEventService::class),
+			$this->createMock(IViewFactory::class),
+			$this->createMock(IProcessingFileAccessor::class),
 			$this->notificationService,
-			$this->createMock(ITimeFactory::class)
-		);
-		
-		/** @var IConfig */
-		$configMock = $this->createMock(IConfig::class);
-		/** @var ITimeFactory */
-		$timeFactoryMock = $this->createMock(ITimeFactory::class);
-		/** @var MockObject|IDbConnection */
-		$connectionMock = $this->createMock(IDBConnection::class);
-		/** @var MockObject|IQueryBuilder */
-		$queryBuilderMock = $this->createMock(IQueryBuilder::class);
-		$expressionBuilderMock = $this->createMock(IExpressionBuilder::class);
-
-		$queryBuilderMock->method('delete')
-			->withAnyParameters()
-			->willReturn($queryBuilderMock);
-		$queryBuilderMock->method('set')
-			->withAnyParameters()
-			->willReturn($queryBuilderMock);
-		$queryBuilderMock->method('update')
-			->withAnyParameters()
-			->willReturn($queryBuilderMock);
-		$queryBuilderMock->method('expr')
-			->withAnyParameters()
-			->willReturn($expressionBuilderMock);
-		$connectionMock->method('getQueryBuilder')
-			->withAnyParameters()
-			->willReturn($queryBuilderMock);
-
-		$this->jobList = new JobList(
-			$connectionMock,
-			$configMock,
-			$timeFactoryMock,
 			$this->logger
 		);
+		// Notification recorder ...
+		$appFake = \OC::$server->get(AppFake::class);
 
-		$this->processFileJob->setId(111);
-		$this->processFileJob->setArgument([
+		$ocrService->runOcrProcessWithJobArgument([
 			'fileId' => 42,
 			'uid' => 'someuser',
 			'settings' => '{}'
 		]);
-	}
-
-	public function testBackgroundJobCreatesErrorNotificationIfOcrFailed() {
-		$this->ocrService->expects($this->once())
-			->method('runOcrProcess')
-			->withAnyParameters()
-			->willThrowException(new OcrNotPossibleException('Some error'));
-		$appFake = \OC::$server->get(AppFake::class);
-
-		$this->processFileJob->start($this->jobList);
 
 		$notifications = $appFake->getNotifications();
 		$this->assertCount(1, $notifications);
@@ -123,5 +98,24 @@ class NotificationTest extends TestCase {
 		$this->assertEquals('workflow_ocr', $notification->getApp());
 		$this->assertEquals('ocr_error', $notification->getSubject());
 		$this->assertEquals('An error occured while executing the OCR process (Some error). Please have a look at your servers logfile for more details.', $notification->getSubjectParameters()['message']);
+	}
+
+	public function testCreateSuccessNotification() {
+		// Notification recorder ...
+		$appFake = \OC::$server->get(AppFake::class);
+
+		$this->notificationService->createSuccessNotification('someuser', 42);
+
+		$notifications = $appFake->getNotifications();
+		$this->assertCount(1, $notifications);
+
+		/** @var INotification */
+		$notification = $notifications[0];
+		$this->assertEquals('workflow_ocr', $notification->getApp());
+		$this->assertEquals('ocr_success', $notification->getSubject());
+		$this->assertEquals('42', $notification->getObjectId());
+		$this->assertEquals('someuser', $notification->getUser());
+		$this->assertEquals('file', $notification->getObjectType());
+		$this->assertEquals([], $notification->getSubjectParameters());
 	}
 }

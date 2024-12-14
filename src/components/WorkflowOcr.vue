@@ -99,6 +99,11 @@
 					type="switch">
 					{{ t('workflow_ocr', 'Keep original file modification date') }}
 				</NcCheckboxRadioSwitch>
+				<NcCheckboxRadioSwitch ref="sendSuccessNotification"
+					:checked.sync="model.sendSuccessNotification"
+					type="switch">
+					{{ t('workflow_ocr', 'Send success notification') }}
+				</NcCheckboxRadioSwitch>
 			</div>
 		</SettingsItem>
 		<div>
@@ -146,6 +151,7 @@ export default {
 			 *   removeBackground: true,
 			 *	 keepOriginalFileVersion: true,
 			 *   keepOriginalFileDate: true,
+			 *   sendSuccessNotification: true,
 			 *   ocrMode: 0,
 			 *   customCliArgs: '--rotate-pages-threshold 8',
 			 * }
@@ -158,6 +164,7 @@ export default {
 				removeBackground: false,
 				keepOriginalFileVersion: false,
 				keepOriginalFileDate: false,
+				sendSuccessNotification: false,
 				ocrMode: 0,
 				customCliArgs: '',
 			},

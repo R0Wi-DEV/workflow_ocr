@@ -32,6 +32,18 @@ interface IOcrService {
 	/**
 	 * Processes OCR on the given file. Creates a new file version and emits appropriate events.
 	 *
+	 * @param mixed $argument The argument from the \OCP\BackgroundJob\Job->run which executes this method
+	 *
+	 * @throws \OCA\WorkflowOcr\Exception\OcrNotPossibleException
+	 * @throws \OCA\WorkflowOcr\Exception\OcrProcessorNotFoundException
+	 * @throws \OCA\WorkflowOcr\Exception\OcrResultEmptyException
+	 * @throws \InvalidArgumentException
+	 */
+	public function runOcrProcessWithJobArgument($argument) : void;
+
+	/**
+	 * Processes OCR on the given file. Creates a new file version and emits appropriate events.
+	 *
 	 * @param int $fileId The id if the file to be processed
 	 * @param string $uid The id of the user who has access to this file
 	 * @param WorkflowSettings $settings The settings to be used for processing
