@@ -24,6 +24,7 @@ OC.L10N.register(
     "Other settings" : "Andere Einstellungen",
     "Remove background" : "Hintergrund entfernen",
     "Keep original file version" : "Ursprüngliche Dateiversion beibehalten",
+    "Custom ocrMyPdf CLI arguments" : "Benutzerdefinierte ocrMyPdf Komandozeilen-Argumente",
     "Select language(s)" : "Sprache(n) auswählen"
 },
 "nplurals=2; plural=(n != 1);");
