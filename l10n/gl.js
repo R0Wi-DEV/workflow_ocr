@@ -24,6 +24,7 @@ OC.L10N.register(
     "Other settings" : "Outros axustes",
     "Remove background" : "Eliminar o fondo",
     "Keep original file version" : "Conservar a versión orixinal do ficheiro",
+    "Keep original file modification date" : "Manter a data de modificación do ficheiro orixinal",
     "Custom ocrMyPdf CLI arguments" : "Argumentos personalizados da CLI de ocrMyPdf",
     "Select language(s)" : "Seleccionar idioma(s)"
 },
