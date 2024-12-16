@@ -24,6 +24,7 @@ OC.L10N.register(
     "Other settings" : "其他設定",
     "Remove background" : "移除背景",
     "Keep original file version" : "保留原始檔案版本",
+    "Keep original file modification date" : "保留原先的檔案的修改日期",
     "Custom ocrMyPdf CLI arguments" : "自訂 ocrMyPdf CLI 參數",
     "Select language(s)" : "選取語言"
 },
