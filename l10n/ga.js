@@ -24,6 +24,7 @@ OC.L10N.register(
     "Other settings" : "Socruithe eile",
     "Remove background" : "Bain an cúlra",
     "Keep original file version" : "Coinnigh leagan bunaidh an chomhaid",
+    "Keep original file modification date" : "Coinnigh dáta modhnaithe an chomhaid bhunaidh",
     "Custom ocrMyPdf CLI arguments" : "Argóintí CLI saincheaptha ocrMyPdf",
     "Select language(s)" : "Roghnaigh teanga(cha)"
 },
