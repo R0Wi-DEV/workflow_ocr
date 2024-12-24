@@ -187,7 +187,7 @@ class PdfOcrProcessorTest extends TestCase {
 	public function testLanguageSettingsAreSetCorrectly() {
 		$this->command->expects($this->once())
 			->method('setCommand')
-			->with('ocrmypdf -q --skip-text -l deu+eng - - | cat');
+			->with('ocrmypdf -q --skip-text -l deu+eng - - || exit $? ; cat');
 		$this->command->expects($this->once())
 			->method('execute')
 			->willReturn(true);
@@ -202,7 +202,7 @@ class PdfOcrProcessorTest extends TestCase {
 	public function testRemoveBackgroundFlagIsSetCorrectly() {
 		$this->command->expects($this->once())
 			->method('setCommand')
-			->with('ocrmypdf -q --skip-text --remove-background - - | cat');
+			->with('ocrmypdf -q --skip-text --remove-background - - || exit $? ; cat');
 		$this->command->expects($this->once())
 			->method('execute')
 			->willReturn(true);
@@ -217,7 +217,7 @@ class PdfOcrProcessorTest extends TestCase {
 	public function testProcessorCountIsNotSetIfGlobalSettingsDoesNotContainProcessorCount() {
 		$this->command->expects($this->once())
 			->method('setCommand')
-			->with('ocrmypdf -q --skip-text - - | cat');
+			->with('ocrmypdf -q --skip-text - - || exit $? ; cat');
 		$this->command->expects($this->once())
 			->method('execute')
 			->willReturn(true);
@@ -232,7 +232,7 @@ class PdfOcrProcessorTest extends TestCase {
 	public function testProcessorCountIsSetCorrectlyFromGobalSettings() {
 		$this->command->expects($this->once())
 			->method('setCommand')
-			->with('ocrmypdf -q --skip-text -j 42 - - | cat');
+			->with('ocrmypdf -q --skip-text -j 42 - - || exit $? ; cat');
 		$this->command->expects($this->once())
 			->method('execute')
 			->willReturn(true);
@@ -288,7 +288,7 @@ class PdfOcrProcessorTest extends TestCase {
 	public function testAppliesSidecarParameterIfSidecarFileCanBeCreated() {
 		$this->command->expects($this->once())
 			->method('setCommand')
-			->with('ocrmypdf -q --skip-text --sidecar /tmp/sidecar.txt - - | cat');
+			->with('ocrmypdf -q --skip-text --sidecar /tmp/sidecar.txt - - || exit $? ; cat');
 		$this->command->expects($this->once())
 			->method('execute')
 			->willReturn(true);
@@ -312,7 +312,7 @@ class PdfOcrProcessorTest extends TestCase {
 	public function testAppliesOcrModeParameter(int $simulatedOcrMode, string $expectedOcrMyPdfFlag) {
 		$this->command->expects($this->once())
 			->method('setCommand')
-			->with('ocrmypdf -q' . $expectedOcrMyPdfFlag . '--sidecar /tmp/sidecar.txt - - | cat');
+			->with('ocrmypdf -q' . $expectedOcrMyPdfFlag . '--sidecar /tmp/sidecar.txt - - || exit $? ; cat');
 		$this->command->expects($this->once())
 			->method('execute')
 			->willReturn(true);
@@ -333,7 +333,7 @@ class PdfOcrProcessorTest extends TestCase {
 	public function testRemoveBackgroundIsNotAppliedIfOcrModeIsRedoOcr() {
 		$this->command->expects($this->once())
 			->method('setCommand')
-			->with('ocrmypdf -q --redo-ocr --sidecar /tmp/sidecar.txt - - | cat');
+			->with('ocrmypdf -q --redo-ocr --sidecar /tmp/sidecar.txt - - || exit $? ; cat');
 		$this->command->expects($this->once())
 			->method('execute')
 			->willReturn(true);
@@ -359,7 +359,7 @@ class PdfOcrProcessorTest extends TestCase {
 	public function testAppliesCustomCliArgsCorrectly() {
 		$this->command->expects($this->once())
 			->method('setCommand')
-			->with('ocrmypdf -q --skip-text --sidecar /tmp/sidecar.txt --output-type pdf - - | cat');
+			->with('ocrmypdf -q --skip-text --sidecar /tmp/sidecar.txt --output-type pdf - - || exit $? ; cat');
 		$this->command->expects($this->once())
 			->method('execute')
 			->willReturn(true);
