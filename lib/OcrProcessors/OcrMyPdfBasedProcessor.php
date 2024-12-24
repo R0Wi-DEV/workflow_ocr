@@ -56,7 +56,7 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 	}
 
 	public function ocrFile(File $file, WorkflowSettings $settings, GlobalSettings $globalSettings): OcrProcessorResult {
-		$commandStr = 'ocrmypdf ' . $this->getCommandlineArgs($settings, $globalSettings) . ' - - | cat';
+		$commandStr = 'ocrmypdf ' . $this->getCommandlineArgs($settings, $globalSettings) . ' - - || exit $? ; cat';
 
 		$inputFileContent = $file->getContent();
 
