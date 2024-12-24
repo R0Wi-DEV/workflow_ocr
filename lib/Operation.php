@@ -26,6 +26,7 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr;
 
+use OC\Core\Command\Info\FileUtils;
 use OCA\WorkflowEngine\Entity\File;
 use OCA\WorkflowOcr\AppInfo\Application;
 use OCA\WorkflowOcr\BackgroundJobs\ProcessFileJob;
@@ -58,6 +59,8 @@ class Operation implements ISpecificOperation {
 	private $processingFileAccessor;
 	/** @var IRootFolder */
 	private $rootFolder;
+	/** @var fileUtils */
+	private $fileUtils;
 
 	public function __construct(
 		IJobList $jobList,
@@ -65,13 +68,15 @@ class Operation implements ISpecificOperation {
 		LoggerInterface $logger,
 		IURLGenerator $urlGenerator,
 		IProcessingFileAccessor $processingFileAccessor,
-		IRootFolder $rootFolder) {
+		IRootFolder $rootFolder,
+		FileUtils $fileUtils) {
 		$this->jobList = $jobList;
 		$this->l = $l;
 		$this->logger = $logger;
 		$this->urlGenerator = $urlGenerator;
 		$this->processingFileAccessor = $processingFileAccessor;
 		$this->rootFolder = $rootFolder;
+		$this->fileUtils = $fileUtils;
 	}
 
 	/**
@@ -214,6 +219,22 @@ class Operation implements ISpecificOperation {
 				['path' => $filePath]);
 			return false;
 		}
+
+		// Change to an alternative user if node is not updateable
+		if (!$node->isUpdateable()) {
+			$originalUser = $user;
+
+			$filesPerUser = $this->fileUtils->getFilesByUser($node);
+			foreach ($filesPerUser as $uid => $files) {
+				foreach ($files as $userFile) {
+					if ($userFile->isUpdateable()) {
+						$user = $uid;
+						break;	
+					}
+				}
+			}
+			$this->logger->debug('User \'{originalUser}\' has no update permissions for node. Thus, changing to user \'{user}\'.', ['originalUser' => $originalUser, 'user' => $user]);
+                }
 
 		$argsArray = [
 			'uid' => $user,
