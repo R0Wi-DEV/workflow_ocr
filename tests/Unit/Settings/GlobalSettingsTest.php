@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\Tests\Unit\Settings;
 
-use Cocur\Chain\Chain;
 use OCA\WorkflowOcr\Settings\GlobalSettings;
 use Test\TestCase;
 
@@ -46,12 +45,9 @@ class GlobalSettingsTest extends TestCase {
 
 	public function testGetForm() {
 		$templateResponse = $this->adminSettings->getForm();
-		$templates = Chain::create(scandir('./templates'))
-			->filter(function ($file) {
-				return is_file("./templates/$file");
-			});
-		$this->assertEquals(1, count($templates->array));
-		$templateFileName = './templates/' . $templates->first();
+		$templates = array_filter(scandir('./templates'), fn ($file) => is_file("./templates/$file"));
+		$this->assertEquals(1, count($templates));
+		$templateFileName = './templates/' . $templates[array_keys($templates)[0]];
 		$templateNameWithoutExtension = pathinfo($templateFileName)['filename'];
 		$this->assertEquals($templateNameWithoutExtension, $templateResponse->getTemplateName());
 	}

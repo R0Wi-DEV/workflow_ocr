@@ -58,6 +58,16 @@ class NotifierTest extends TestCase {
 	/** @var Notifier */
 	private $notifier;
 
+	private static $returnValueMapError = [
+		['Workflow OCR error', [], '<translated> Workflow OCR error'],
+		['Workflow OCR error for file {file}', [], '<translated> Workflow OCR error for file {file}']
+	];
+
+	private static $returnValueMapSuccess = [
+		['Workflow OCR success', [], '<translated> Workflow OCR success'],
+		['Workflow OCR success for file {file}', [], '<translated> Workflow OCR success for file file.txt']
+	];
+
 	public function setUp() : void {
 		$this->l10nFactory = $this->createMock(IFactory::class);
 		$this->rootFolder = $this->createMock(IRootFolder::class);
@@ -120,10 +130,7 @@ class NotifierTest extends TestCase {
 		$l10n = $this->createMock(IL10N::class);
 		/** @var IRichTextFormatter|MockObject */
 		$rtFormatter = $this->createMock(IRichTextFormatter::class);
-		$l10n->expects($this->once())
-			->method('t')
-			->with('Workflow OCR error for file {file}')
-			->willReturn('<translated> Workflow OCR error for file {file}');
+		$l10n->method('t')->will($this->returnValueMap(self::$returnValueMapError));
 		$this->l10nFactory->expects($this->once())
 			->method('get')
 			->with('workflow_ocr')
@@ -186,6 +193,7 @@ class NotifierTest extends TestCase {
 			'path' => 'files/file.txt',
 			'link' => 'http://localhost/index.php/apps/files/?file=123'
 		]], $richSubjectParams);
+		$this->assertIsString($richSubjectParams['file']['id']);
 	}
 
 	public function testPrepareConstructsOcrErrorCorrectlyWithoutFile() {
@@ -195,10 +203,7 @@ class NotifierTest extends TestCase {
 		$rtFormatter = $this->createMock(IRichTextFormatter::class);
 		/** @var IL10N|MockObject */
 		$l10n = $this->createMock(IL10N::class);
-		$l10n->expects($this->once())
-			->method('t')
-			->with('Workflow OCR error')
-			->willReturn('<translated> Workflow OCR error');
+		$l10n->method('t')->will($this->returnValueMap(self::$returnValueMapError));
 		$this->l10nFactory->expects($this->once())
 			->method('get')
 			->with('workflow_ocr')
@@ -235,10 +240,7 @@ class NotifierTest extends TestCase {
 		$rtFormatter = $this->createMock(IRichTextFormatter::class);
 		/** @var IL10N|MockObject */
 		$l10n = $this->createMock(IL10N::class);
-		$l10n->expects($this->once())
-			->method('t')
-			->with('Workflow OCR error')
-			->willReturn('<translated> Workflow OCR error');
+		$l10n->method('t')->will($this->returnValueMap(self::$returnValueMapError));
 		$this->l10nFactory->expects($this->once())
 			->method('get')
 			->with('workflow_ocr')
@@ -288,10 +290,7 @@ class NotifierTest extends TestCase {
 		$rtFormatter = $this->createMock(IRichTextFormatter::class);
 		/** @var IL10N|MockObject */
 		$l10n = $this->createMock(IL10N::class);
-		$l10n->expects($this->once())
-			->method('t')
-			->with('Workflow OCR error')
-			->willReturn('<translated> Workflow OCR error');
+		$l10n->method('t')->will($this->returnValueMap(self::$returnValueMapError));
 		$this->l10nFactory->expects($this->once())
 			->method('get')
 			->with('workflow_ocr')
@@ -331,5 +330,38 @@ class NotifierTest extends TestCase {
 
 		$this->assertEmpty($notification->getRichSubject());
 		$this->assertEquals('<translated> Workflow OCR error', $notification->getParsedSubject());
+	}
+
+	public function testFallbackToParsedSubjectIfMessageIsEmpty() {
+		/** @var IValidator|MockObject */
+		$validator = $this->createMock(IValidator::class);
+		/** @var IRichTextFormatter|MockObject */
+		$rtFormatter = $this->createMock(IRichTextFormatter::class);
+		/** @var IL10N|MockObject */
+		$l10n = $this->createMock(IL10N::class);
+		$l10n->method('t')->will($this->returnValueMap(self::$returnValueMapSuccess));
+		$this->l10nFactory->expects($this->once())
+			->method('get')
+			->with('workflow_ocr')
+			->willReturn($l10n);
+
+		$notification = new Notification($validator, $rtFormatter);
+		$notification->setUser('user');
+		$notification->setApp('workflow_ocr');
+		$notification->setSubject('ocr_success', []);
+
+		$this->urlGenerator->expects($this->once())
+			->method('imagePath')
+			->with('workflow_ocr', 'app-dark.svg')
+			->willReturn('apps/workflow_ocr/app-dark.svg');
+		$this->urlGenerator->expects($this->once())
+			->method('getAbsoluteURL')
+			->with('apps/workflow_ocr/app-dark.svg')
+			->willReturn('http://localhost/index.php/apps/workflow_ocr/app-dark.svg');
+
+		$preparedNotification = $this->notifier->prepare($notification, 'en');
+
+		$this->assertEmpty($preparedNotification->getRichSubject());
+		$this->assertEquals('<translated> Workflow OCR success', $preparedNotification->getParsedSubject());
 	}
 }

@@ -55,6 +55,9 @@ class WorkflowSettings {
 	/** @var bool */
 	private $keepOriginalFileDate = false;
 
+	/** @var bool */
+	private $sendSuccessNotification = false;
+
 	/** @var string */
 	private $customCliArgs = '';
 
@@ -115,6 +118,13 @@ class WorkflowSettings {
 	}
 
 	/**
+	 * @return bool
+	 */
+	public function getSendSuccessNotification(): bool {
+		return $this->sendSuccessNotification;
+	}
+
+	/**
 	 * @return string
 	 */
 	public function getCustomCliArgs(): string {
@@ -154,6 +164,7 @@ class WorkflowSettings {
 		$this->setProperty($this->tagsToAddAfterOcr, $data, 'tagsToAddAfterOcr', fn ($value) => is_array($value));
 		$this->setProperty($this->keepOriginalFileVersion, $data, 'keepOriginalFileVersion', fn ($value) => is_bool($value));
 		$this->setProperty($this->keepOriginalFileDate, $data, 'keepOriginalFileDate', fn ($value) => is_bool($value));
+		$this->setProperty($this->sendSuccessNotification, $data, 'sendSuccessNotification', fn ($value) => is_bool($value));
 		$this->setProperty($this->customCliArgs, $data, 'customCliArgs', fn ($value) => is_string($value));
 	}
 
