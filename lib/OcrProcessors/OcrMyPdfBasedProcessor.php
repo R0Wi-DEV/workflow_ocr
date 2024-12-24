@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\OcrProcessors;
 
-use Cocur\Chain\Chain;
 use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
 use OCA\WorkflowOcr\Exception\OcrResultEmptyException;
 use OCA\WorkflowOcr\Helper\ISidecarFileAccessor;
@@ -121,7 +120,7 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 
 		// Language settings
 		if ($settings->getLanguages()) {
-			$langStr = Chain::create($settings->getLanguages())->join('+');
+			$langStr = implode('+', $settings->getLanguages());
 			$args[] = "-l $langStr";
 		}
 

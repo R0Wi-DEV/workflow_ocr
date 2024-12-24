@@ -26,11 +26,8 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\BackgroundJobs;
 
-use OCA\WorkflowOcr\Model\WorkflowSettings;
-use OCA\WorkflowOcr\Service\INotificationService;
 use OCA\WorkflowOcr\Service\IOcrService;
 use OCP\AppFramework\Utility\ITimeFactory;
-use OCP\Files\File;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -42,18 +39,14 @@ class ProcessFileJob extends \OCP\BackgroundJob\QueuedJob {
 	protected $logger;
 	/** @var IOcrService */
 	private $ocrService;
-	/** @var INotificationService */
-	private $notificationService;
 	
 	public function __construct(
 		LoggerInterface $logger,
 		IOcrService $ocrService,
-		INotificationService $notificationService,
 		ITimeFactory $timeFactory) {
 		parent::__construct($timeFactory);
 		$this->logger = $logger;
 		$this->ocrService = $ocrService;
-		$this->notificationService = $notificationService;
 	}
 	
 	/**
@@ -61,35 +54,7 @@ class ProcessFileJob extends \OCP\BackgroundJob\QueuedJob {
 	 */
 	protected function run($argument) : void {
 		$this->logger->debug('STARTED -- Run ' . self::class . ' job. Argument: {argument}.', ['argument' => $argument]);
-
-		try {
-			[$fileId, $uid, $settings] = $this->parseArguments($argument);
-			$this->ocrService->runOcrProcess($fileId, $uid, $settings);
-		} catch (\Throwable $ex) {
-			$this->logger->error($ex->getMessage(), ['exception' => $ex]);
-			$this->notificationService->createErrorNotification($uid, 'An error occured while executing the OCR process (' . $ex->getMessage() . '). Please have a look at your servers logfile for more details.');
-		}
-
+		$this->ocrService->runOcrProcessWithJobArgument($argument);
 		$this->logger->debug('ENDED -- Run ' . self::class . ' job. Argument: {argument}.', ['argument' => $argument]);
-	}
-
-	/**
-	 * @param mixed $argument
-	 */
-	private function parseArguments($argument) : array {
-		if (!is_array($argument)) {
-			throw new \InvalidArgumentException('Argument is no array in ' . self::class . ' method \'tryParseArguments\'.');
-		}
-
-		$jsonSettings = $argument['settings'];
-		$settings = new WorkflowSettings($jsonSettings);
-		$uid = $argument['uid'];
-		$fileId = intval($argument['fileId']);
-
-		return [
-			$fileId,
-			$uid,
-			$settings
-		];
 	}
 }

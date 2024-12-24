@@ -26,7 +26,6 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\Service;
 
-use Cocur\Chain\Chain;
 use OCA\WorkflowOcr\Exception\CommandException;
 use OCA\WorkflowOcr\Wrapper\ICommand;
 use Psr\Log\LoggerInterface;
@@ -70,12 +69,10 @@ class OcrBackendInfoService implements IOcrBackendInfoService {
 		}
 
 		$lines = explode("\n", $installedLangsStr);
-		$arr = Chain::create($lines)
-			->slice(1) // Skip tesseract header line
-			->filter(function ($line) {
-				return $line !== 'osd'; // Also skip "osd" (OSD is not a language)
-			})
-			->array;
+		$arr = array_filter(
+			array_slice($lines, 1), // Skip tesseract header line
+			fn ($line) => $line !== 'osd' // Also skip "osd" (OSD is not a language)
+		);
 		return array_values($arr);
 	}
 }

@@ -153,7 +153,7 @@ describe('Language settings tests', () => {
 
 		const inputEvent = wrapper.emitted().input
 		expect(inputEvent).toBeTruthy()
-		expect(inputEvent[0][0]).toBe('{"languages":["de","en"],"tagsToAddAfterOcr":[],"tagsToRemoveAfterOcr":[],"removeBackground":true,"keepOriginalFileVersion":false,"keepOriginalFileDate":false,"ocrMode":0,"customCliArgs":""}')
+		expect(inputEvent[0][0]).toBe('{"languages":["de","en"],"tagsToAddAfterOcr":[],"tagsToRemoveAfterOcr":[],"removeBackground":true,"keepOriginalFileVersion":false,"keepOriginalFileDate":false,"sendSuccessNotification":false,"ocrMode":0,"customCliArgs":""}')
 		
 	})
 })
@@ -182,7 +182,7 @@ describe('Add/remove tags tests', () => {
 
 		const inputEvent = wrapper.emitted().input
 		expect(inputEvent).toBeTruthy()
-		expect(inputEvent[0][0]).toBe('{"languages":["de"],"tagsToAddAfterOcr":[1,2],"tagsToRemoveAfterOcr":[],"removeBackground":true,"keepOriginalFileVersion":false,"keepOriginalFileDate":false,"ocrMode":0,"customCliArgs":""}')
+		expect(inputEvent[0][0]).toBe('{"languages":["de"],"tagsToAddAfterOcr":[1,2],"tagsToRemoveAfterOcr":[],"removeBackground":true,"keepOriginalFileVersion":false,"keepOriginalFileDate":false,"sendSuccessNotification":false,"ocrMode":0,"customCliArgs":""}')
 	})
 
 	test('User input for removeTagsAfterOcr is applied correctly on empty component', async () => {
@@ -202,7 +202,7 @@ describe('Add/remove tags tests', () => {
 
 		const inputEvent = wrapper.emitted().input
 		expect(inputEvent).toBeTruthy()
-		expect(inputEvent[0][0]).toBe('{"languages":["de"],"tagsToAddAfterOcr":[],"tagsToRemoveAfterOcr":[1,2],"removeBackground":true,"keepOriginalFileVersion":false,"keepOriginalFileDate":false,"ocrMode":0,"customCliArgs":""}')
+		expect(inputEvent[0][0]).toBe('{"languages":["de"],"tagsToAddAfterOcr":[],"tagsToRemoveAfterOcr":[1,2],"removeBackground":true,"keepOriginalFileVersion":false,"keepOriginalFileDate":false,"sendSuccessNotification":false,"ocrMode":0,"customCliArgs":""}')
 	})
 })
 
@@ -239,7 +239,7 @@ describe('Remove background tests', () => {
 
 		const inputEvent = wrapper.emitted().input
 		expect(inputEvent).toBeTruthy()
-		expect(inputEvent[0][0]).toBe('{"languages":["de"],"tagsToAddAfterOcr":[],"tagsToRemoveAfterOcr":[],"removeBackground":false,"keepOriginalFileVersion":false,"keepOriginalFileDate":false,"ocrMode":0,"customCliArgs":""}')
+		expect(inputEvent[0][0]).toBe('{"languages":["de"],"tagsToAddAfterOcr":[],"tagsToRemoveAfterOcr":[],"removeBackground":false,"keepOriginalFileVersion":false,"keepOriginalFileDate":false,"sendSuccessNotification":false,"ocrMode":0,"customCliArgs":""}')
 	})
 })
 
@@ -340,7 +340,7 @@ describe('Custom CLI args test', () => {
 
 		const inputEvent = wrapper.emitted().input
 		expect(inputEvent).toBeTruthy()
-		expect(inputEvent[0][0]).toBe('{"languages":[],"tagsToAddAfterOcr":[],"tagsToRemoveAfterOcr":[],"removeBackground":false,"keepOriginalFileVersion":false,"keepOriginalFileDate":false,"ocrMode":0,"customCliArgs":"--dpi 300"}')
+		expect(inputEvent[0][0]).toBe('{"languages":[],"tagsToAddAfterOcr":[],"tagsToRemoveAfterOcr":[],"removeBackground":false,"keepOriginalFileVersion":false,"keepOriginalFileDate":false,"sendSuccessNotification":false,"ocrMode":0,"customCliArgs":"--dpi 300"}')
 	})
 })
 

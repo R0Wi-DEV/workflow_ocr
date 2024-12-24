@@ -45,16 +45,28 @@ class NotificationService implements INotificationService {
 	 * @return void
 	 */
 	public function createErrorNotification(?string $userId, string $message, ?int $fileId = null) {
+		$this->createNotification($userId, 'ocr_error', $message, $fileId);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function createSuccessNotification(?string $userId, ?int $fileId = null) {
+		$this->createNotification($userId, 'ocr_success', null, $fileId);
+	}
+
+	private function createNotification(?string $userId, string $type, ?string $message = null, ?int $fileId = null) {
 		// We don't create unbound notifications
 		if (!$userId) {
 			return;
 		}
-		
+
+		$parameters = $message ? ['message' => $message] : [];
 		$notification = $this->notificationManager->createNotification();
 		$notification->setApp(Application::APP_NAME)
 			->setUser($userId)
 			->setDateTime(new \DateTime())
-			->setSubject('ocr_error', ['message' => $message]);
+			->setSubject($type, $parameters);
 
 		if ($fileId) {
 			$notification->setObject('file', strval($fileId));

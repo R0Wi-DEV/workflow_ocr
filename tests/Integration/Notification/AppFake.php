@@ -47,4 +47,8 @@ class AppFake implements IApp {
 	public function getProcessed() {
 		return $this->processed;
 	}
+
+	public function resetNotifications() {
+		$this->notifications = [];
+	}
 }

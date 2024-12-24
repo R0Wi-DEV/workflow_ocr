@@ -34,6 +34,7 @@ use OCP\L10N\IFactory;
 use OCP\Notification\AlreadyProcessedException;
 use OCP\Notification\INotification;
 use OCP\Notification\INotifier;
+use OCP\Notification\UnknownNotificationException;
 use Psr\Log\LoggerInterface;
 
 class Notifier implements INotifier {
@@ -78,19 +79,28 @@ class Notifier implements INotifier {
 	 */
 	public function prepare(INotification $notification, string $languageCode): INotification {
 		if ($notification->getApp() !== Application::APP_NAME) {
-			throw new \InvalidArgumentException();
-		}
-
-		// Currently we only support sending notifications for ocr_error
-		$subject = $notification->getSubject();
-		if ($subject !== 'ocr_error') {
-			$this->logger->warning('Unsupported notification subject {subject}', ['subject' => $subject]);
-			// Note:: AlreadyProcessedException has be be thrown before any call to $notification->set...
-			// otherwise notification won't be removed from the database
-			throw new AlreadyProcessedException();
+			throw new UnknownNotificationException();
 		}
 
 		$l = $this->l10nFactory->get(Application::APP_NAME, $languageCode);
+
+		// Currently we only support sending notifications for ocr_error and ocr_success
+		$subject = $notification->getSubject();
+		switch ($subject) {
+			case 'ocr_error':
+				$parsedSubject = $l->t('Workflow OCR error');
+				$richSubject = $l->t('Workflow OCR error for file {file}');
+				break;
+			case 'ocr_success':
+				$parsedSubject = $l->t('Workflow OCR success');
+				$richSubject = $l->t('Workflow OCR success for file {file}');
+				break;
+			default:
+				$this->logger->warning('Unsupported notification subject {subject}', ['subject' => $subject]);
+				// Note:: AlreadyProcessedException has to be thrown before any call to $notification->set...
+				// otherwise notification won't be removed from the database
+				throw new AlreadyProcessedException();
+		}
 
 		// Only add file info if we have some ...
 		$richParams = false;
@@ -99,16 +109,19 @@ class Notifier implements INotifier {
 			($uid = $notification->getUser())) {
 			$richParams = $this->tryGetRichParamForFile($uid, intval($fileId));
 			if ($richParams !== false) {
-				$notification->setRichSubject($l->t('Workflow OCR error for file {file}'), $richParams);
+				$notification->setRichSubject($richSubject, $richParams);
 			}
 		}
 		
 		// Fallback to generic error message without file link
 		if ($richParams === false) {
-			$notification->setParsedSubject($l->t('Workflow OCR error'));
+			$notification->setParsedSubject($parsedSubject);
 		}
 
-		$message = $notification->getSubjectParameters()['message'];
+		// If caller sends a message, use it, otherwise use the parsed subject
+		$subjectParams = $notification->getSubjectParameters();
+		$message = isset($subjectParams['message']) ? $subjectParams['message'] : $parsedSubject;
+
 		$notification
 			->setParsedMessage($message)
 			->setIcon($this->urlGenerator->getAbsoluteURL($this->urlGenerator->imagePath(Application::APP_NAME, 'app-dark.svg')));
@@ -136,7 +149,7 @@ class Notifier implements INotifier {
 		return [
 			'file' => [
 				'type' => 'file',
-				'id' => $file->getId(),
+				'id' => strval($file->getId()),
 				'name' => $file->getName(),
 				'path' => $relativePath,
 				'link' => $this->urlGenerator->linkToRouteAbsolute('files.viewcontroller.showFile', ['fileid' => $fileId])

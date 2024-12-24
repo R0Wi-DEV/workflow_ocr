@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\Tests\Unit\Listener;
 
-use Cocur\Chain\Chain;
 use OCA\WorkflowOcr\AppInfo\Application;
 use OCA\WorkflowOcr\Listener\RegisterFlowOperationsListener;
 use OCA\WorkflowOcr\Operation;
@@ -82,11 +81,12 @@ class RegisterFlowOperationsListenerTest extends TestCase {
 		$scripts = Util::getScripts();
 		$appName = Application::APP_NAME;
 
-		$scriptCount = Chain::create($scripts)
-			->filter(function ($script) use ($appName) {
-				return strpos($script, "$appName/l10n/") !== false || strpos($script, "$appName/js/workflow_ocr-main") !== false;
-			})
-			->count();
+		$scriptCount = 0;
+		foreach ($scripts as $script) {
+			if (strpos($script, "$appName/l10n/") !== false || strpos($script, "$appName/js/workflow_ocr-main") !== false) {
+				$scriptCount++;
+			}
+		}
 		
 		$this->assertEquals(2, $scriptCount);
 	}

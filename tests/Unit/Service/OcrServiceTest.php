@@ -27,6 +27,8 @@ use Exception;
 use InvalidArgumentException;
 use OC\User\NoUserException;
 use OCA\Files_Versions\Versions\IVersionManager;
+use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
+use OCA\WorkflowOcr\Exception\OcrProcessorNotFoundException;
 use OCA\WorkflowOcr\Exception\OcrResultEmptyException;
 use OCA\WorkflowOcr\Helper\IProcessingFileAccessor;
 use OCA\WorkflowOcr\Model\GlobalSettings;
@@ -36,6 +38,7 @@ use OCA\WorkflowOcr\OcrProcessors\IOcrProcessorFactory;
 use OCA\WorkflowOcr\OcrProcessors\OcrProcessorResult;
 use OCA\WorkflowOcr\Service\IEventService;
 use OCA\WorkflowOcr\Service\IGlobalSettingsService;
+use OCA\WorkflowOcr\Service\INotificationService;
 use OCA\WorkflowOcr\Service\OcrService;
 use OCA\WorkflowOcr\Wrapper\IFilesystem;
 use OCA\WorkflowOcr\Wrapper\IView;
@@ -82,12 +85,20 @@ class OcrServiceTest extends TestCase {
 	private $user;
 	/** @var IProcessingFileAccessor|MockObject */
 	private $processingFileAccessor;
+	/** @var INotificationService|MockObject */
+	private $notificationService;
 	/** @var File[] */
 	private $rootFolderGetById42ReturnValue;
 	/** @var OcrService */
 	private $ocrService;
 	/** @var File|MockObject */
 	private $fileInput;
+
+	private $defaultArgument = [
+		'fileId' => 42,
+		'uid' => 'admin',
+		'settings' => '{}'
+	];
 
 	public function setUp() : void {
 		parent::setUp();
@@ -103,6 +114,7 @@ class OcrServiceTest extends TestCase {
 		$this->filesystem = $this->createMock(IFilesystem::class);
 		$this->userSession = $this->createMock(IUserSession::class);
 		$this->processingFileAccessor = $this->createMock(IProcessingFileAccessor::class);
+		$this->notificationService = $this->createMock(INotificationService::class);
 
 		/** @var MockObject|IRootFolder */
 		$this->rootFolder = $this->createMock(IRootFolder::class);
@@ -142,6 +154,7 @@ class OcrServiceTest extends TestCase {
 			$this->eventService,
 			$this->viewFactory,
 			$this->processingFileAccessor,
+			$this->notificationService,
 			$this->logger);
 	}
 
@@ -205,6 +218,37 @@ class OcrServiceTest extends TestCase {
 		$this->systemTagObjectMapper->expects($this->exactly(2))
 			->method('assignTags')
 			->withConsecutive(['42', 'files', 3], ['42', 'files', 4]);
+
+		$this->ocrService->runOcrProcess(42, 'usr', $settings);
+	}
+
+	public function testSendsSuccessNotificationIfConfigured() {
+		$mime = 'application/pdf';
+		$content = 'someFileContent';
+		$settings = new WorkflowSettings('{"sendSuccessNotification": true}');
+		$globalSettings = new GlobalSettings();
+
+		$this->fileInput->method('getMimeType')
+			->willReturn($mime);
+		$this->fileInput->method('getContent')
+			->willReturn($content);
+
+		$this->globalSettingsService->expects($this->once())
+			->method('getGlobalSettings')
+			->willReturn($globalSettings);
+
+		$this->ocrProcessorFactory->expects($this->once())
+			->method('create')
+			->with($mime)
+			->willReturn($this->ocrProcessor);
+
+		$this->ocrProcessor->expects($this->once())
+			->method('ocrFile')
+			->with($this->fileInput, $settings, $globalSettings);
+
+		$this->notificationService->expects($this->once())
+			->method('createSuccessNotification')
+			->with('usr', 42);
 
 		$this->ocrService->runOcrProcess(42, 'usr', $settings);
 	}
@@ -387,6 +431,7 @@ class OcrServiceTest extends TestCase {
 			$this->eventService,
 			$this->viewFactory,
 			$this->processingFileAccessor,
+			$this->notificationService,
 			$this->logger);
 
 		$thrown = false;
@@ -547,6 +592,62 @@ class OcrServiceTest extends TestCase {
 
 		$this->ocrService->runOcrProcess(42, 'usr', $settings);
 	}
+	
+	public function testRunOcrProcessWithJobArgumentCatchedException() {
+		$exception = new Exception('someEx');
+		$this->userManager->method('get')
+			->willThrowException($exception);
+		
+		$this->logger->expects($this->once())
+			->method('error')
+			->with($exception->getMessage(), ['exception' => $exception]);
+
+		$this->ocrService->runOcrProcessWithJobArgument($this->defaultArgument);
+	}
+
+	/**
+	 * @dataProvider dataProvider_InvalidArguments
+	 */
+	public function testRunOcrProcessWithJobArgumentLogsErrorAndDoesNothingOnInvalidArguments($argument, $errorMessagePart) {
+		$this->userManager->expects($this->never())
+			->method('get')
+			->withAnyParameters();
+		$this->logger->expects($this->once())
+			->method('error')
+			->with($this->stringContains($errorMessagePart), $this->callback(function ($loggerArgs) {
+				return is_array($loggerArgs) && ($loggerArgs['exception'] instanceof \Exception);
+			}));
+
+		$this->ocrService->runOcrProcessWithJobArgument($argument);
+	}
+
+	public function testRunOcrProcessWithJobArgumentLogsErrorAndSendsNotificationOnNotFound() {
+		$this->rootFolder->method('getById')
+			->willThrowException(new NotFoundException('File was not found'));
+		$this->logger->expects($this->once())
+			->method('error')
+			->with($this->stringContains('File was not found'), $this->callback(function ($subject) {
+				return is_array($subject) && ($subject['exception'] instanceof NotFoundException);
+			}));
+		$this->notificationService->expects($this->once())
+			->method('createErrorNotification')
+			->with($this->stringContains('An error occured while executing the OCR process (') && $this->stringContains('File was not found'));
+
+		$this->ocrService->runOcrProcessWithJobArgument($this->defaultArgument);
+	}
+
+	/**
+	 * @dataProvider dataProvider_ExceptionsToBeCaught
+	 */
+	public function testRunOcrProcessWithJobArgumentLogsErrorOnException(Exception $exception) {
+		$this->ocrProcessor->method('ocrFile')
+			->willThrowException($exception);
+		
+		$this->logger->expects($this->once())
+			->method('error');
+
+		$this->ocrService->runOcrProcessWithJobArgument($this->defaultArgument);
+	}
 
 	public function dataProvider_InvalidNodes() {
 		/** @var MockObject|Node */
@@ -575,6 +676,23 @@ class OcrServiceTest extends TestCase {
 		return [
 			['somefile.pdf', 'somefile.pdf'],
 			['somefile.jpg', 'somefile.jpg.pdf']
+		];
+	}
+
+	public function dataProvider_InvalidArguments() {
+		$arr = [
+			[null, 'Argument is not an array'],
+			[['mykey' => 'myvalue'], 'Undefined array key']
+		];
+		return $arr;
+	}
+
+	public function dataProvider_ExceptionsToBeCaught() {
+		return [
+			[new OcrNotPossibleException('Ocr not possible')],
+			[new OcrProcessorNotFoundException('audio/mpeg')],
+			[new OcrResultEmptyException('Ocr result was empty')],
+			[new Exception('Some exception')]
 		];
 	}
 

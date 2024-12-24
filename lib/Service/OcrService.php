@@ -34,6 +34,7 @@ use OCA\WorkflowOcr\Exception\OcrResultEmptyException;
 use OCA\WorkflowOcr\Helper\IProcessingFileAccessor;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCA\WorkflowOcr\OcrProcessors\IOcrProcessorFactory;
+use OCA\WorkflowOcr\OcrProcessors\OcrProcessorResult;
 use OCA\WorkflowOcr\Wrapper\IFilesystem;
 use OCA\WorkflowOcr\Wrapper\IViewFactory;
 use OCP\Files\File;
@@ -85,6 +86,9 @@ class OcrService implements IOcrService {
 	/** @var IProcessingFileAccessor */
 	private $processingFileAccessor;
 
+	/** @var INotificationService */
+	private $notificationService;
+
 	/** @var LoggerInterface */
 	private $logger;
 
@@ -100,6 +104,7 @@ class OcrService implements IOcrService {
 		IEventService $eventService,
 		IViewFactory $viewFactory,
 		IProcessingFileAccessor $processingFileAccessor,
+		INotificationService $notificationService,
 		LoggerInterface $logger) {
 		$this->ocrProcessorFactory = $ocrProcessorFactory;
 		$this->globalSettingsService = $globalSettingsService;
@@ -112,11 +117,23 @@ class OcrService implements IOcrService {
 		$this->eventService = $eventService;
 		$this->viewFactory = $viewFactory;
 		$this->processingFileAccessor = $processingFileAccessor;
+		$this->notificationService = $notificationService;
 		$this->logger = $logger;
 	}
 
 	/** @inheritdoc */
-	public function runOcrProcess(int $fileId, string $uid, WorkflowSettings $settings) : void {
+	public function runOcrProcessWithJobArgument($argument): void {
+		try {
+			[$fileId, $uid, $settings] = $this->parseArguments($argument);
+			$this->runOcrProcess($fileId, $uid, $settings);
+		} catch (\Throwable $ex) {
+			$this->logger->error($ex->getMessage(), ['exception' => $ex]);
+			$this->notificationService->createErrorNotification($uid ?? null, 'An error occured while executing the OCR process (' . $ex->getMessage() . '). Please have a look at your servers logfile for more details.');
+		}
+	}
+
+	/** @inheritdoc */
+	public function runOcrProcess(int $fileId, string $uid, WorkflowSettings $settings) : void { // TODO :: make private
 		try {
 			$this->initUserEnvironment($uid);
 
@@ -142,31 +159,30 @@ class OcrService implements IOcrService {
 				throw $ex;
 			}
 
-			$this->processTagsAfterSuccessfulOcr($file, $settings);
-
-			$filePath = $file->getPath();
-			$fileContent = $result->getFileContent();
-			$originalFileExtension = $file->getExtension();
-			$newFileExtension = $result->getFileExtension();
-
-			// Only create a new file version if the file OCR result was not empty #130
-			if ($result->getRecognizedText() !== '') {
-				if ($settings->getKeepOriginalFileVersion()) {
-					// Add label to original file to prevent its expiry
-					$this->setFileVersionsLabel($file, $uid, self::FILE_VERSION_LABEL_VALUE);
-				}
-
-				$newFilePath = $originalFileExtension === $newFileExtension ?
-					$filePath :
-					$filePath . '.pdf';
-
-				$this->createNewFileVersion($newFilePath, $fileContent, $fileId, $fileMtime);
-			}
-
-			$this->eventService->textRecognized($result, $file);
+			$this->doPostProcessing($file, $uid, $settings, $result, $fileMtime);
 		} finally {
 			$this->shutdownUserEnvironment();
 		}
+	}
+
+	/**
+	 * @param mixed $argument
+	 */
+	private function parseArguments($argument) : array {
+		if (!is_array($argument)) {
+			throw new \InvalidArgumentException('Argument is not an array in ' . self::class . ' method \'tryParseArguments\'.');
+		}
+
+		$jsonSettings = $argument['settings'];
+		$settings = new WorkflowSettings($jsonSettings);
+		$uid = $argument['uid'];
+		$fileId = intval($argument['fileId']);
+
+		return [
+			$fileId,
+			$uid,
+			$settings
+		];
 	}
 
 	/**
@@ -285,6 +301,36 @@ class OcrService implements IOcrService {
 				$this->logger->debug('Setting pre OCR label for version with revision id {versionId} on file {fileId}', ['versionId' => $revisionId, 'fileId' => $file->getId()]);
 				$versionBackend->setMetadataValue($file, $revisionId, self::FILE_VERSION_LABEL_KEY, $label);
 			}
+		}
+	}
+
+	private function doPostProcessing(Node $file, string $uid, WorkflowSettings $settings, OcrProcessorResult $result, ?int $fileMtime = null): void {
+		$this->processTagsAfterSuccessfulOcr($file, $settings);
+
+		$filePath = $file->getPath();
+		$fileId = $file->getId();
+		$fileContent = $result->getFileContent();
+		$originalFileExtension = $file->getExtension();
+		$newFileExtension = $result->getFileExtension();
+
+		// Only create a new file version if the file OCR result was not empty #130
+		if ($result->getRecognizedText() !== '') {
+			if ($settings->getKeepOriginalFileVersion()) {
+				// Add label to original file to prevent its expiry
+				$this->setFileVersionsLabel($file, $uid, self::FILE_VERSION_LABEL_VALUE);
+			}
+
+			$newFilePath = $originalFileExtension === $newFileExtension ?
+				$filePath :
+				$filePath . '.pdf';
+
+			$this->createNewFileVersion($newFilePath, $fileContent, $fileId, $fileMtime);
+		}
+
+		$this->eventService->textRecognized($result, $file);
+
+		if ($settings->getSendSuccessNotification()) {
+			$this->notificationService->createSuccessNotification($uid, $fileId);
 		}
 	}
 }
