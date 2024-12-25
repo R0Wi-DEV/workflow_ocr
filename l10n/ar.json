@@ -1,7 +1,7 @@
 { "translations": {
     "Workflow OCR" : "أتمتة سير العمل الخاص بتحويل صورة الكتابة إلى نص",
-    "Workflow OCR error for file {file}" : "خطأ في أتمتة سير العمل لتحويل الصورة لنص في الملف {file}",
     "Workflow OCR error" : "خطأ في أتمتة سير العمل لتحويل الصورة لنص",
+    "Workflow OCR error for file {file}" : "خطأ في أتمتة سير العمل لتحويل الصورة لنص في الملف {file}",
     "Workflow settings JSON value cannot be parsed" : "لم يمكن تحليل قيمة JSON لإعداد أتمتة سير العمل",
     "OCR file" : "ملف تحويل صورة الكتابة إلى نص",
     "OCR processing via workflow" : "معالجة تحويل صورة الكتابة إلى نص عبر أتمتة سير العمل",

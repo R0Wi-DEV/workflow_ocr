@@ -1,7 +1,7 @@
 { "translations": {
     "Workflow OCR" : "Arbeidsflyt OCR",
-    "Workflow OCR error for file {file}" : "Arbeidsflyt OCR-feil for fil {fil}",
     "Workflow OCR error" : "Arbeidsflyt OCR-feil",
+    "Workflow OCR error for file {file}" : "Arbeidsflyt OCR-feil for fil {fil}",
     "Workflow settings JSON value cannot be parsed" : "Arbeidsflytinnstillinger JSON-verdi kan ikke analyseres",
     "OCR file" : "OCR-fil",
     "OCR processing via workflow" : "OCR-behandling via arbeidsflyt",

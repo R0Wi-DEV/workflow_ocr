@@ -2,8 +2,8 @@ OC.L10N.register(
     "workflow_ocr",
     {
     "Workflow OCR" : "Flux de travail ROC",
-    "Workflow OCR error for file {file}" : "Erreur de flux de travail ROC pour le fichier {file}",
     "Workflow OCR error" : "Erreur de flux de travail ROC",
+    "Workflow OCR error for file {file}" : "Erreur de flux de travail ROC pour le fichier {file}",
     "Workflow settings JSON value cannot be parsed" : "Impossible d'analyser la valeur JSON des paramètres de flux de travail",
     "OCR file" : "Fichier ROC",
     "OCR processing via workflow" : "Traitement ROC par flux de travail",

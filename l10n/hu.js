@@ -2,8 +2,8 @@ OC.L10N.register(
     "workflow_ocr",
     {
     "Workflow OCR" : "Munkafolyamat OCR",
-    "Workflow OCR error for file {file}" : "OCR munkafolyamat hiba a következő fájlon: {file}",
     "Workflow OCR error" : "Munkafolyamat OCR hiba",
+    "Workflow OCR error for file {file}" : "OCR munkafolyamat hiba a következő fájlon: {file}",
     "Workflow settings JSON value cannot be parsed" : "A munkafolyamat-beállítások JSON-értéke nem dolgozható fel",
     "OCR file" : "OCR-fájl",
     "OCR processing via workflow" : "ORC-feldolgozás munkafolyamattal",
