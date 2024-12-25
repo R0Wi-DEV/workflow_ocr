@@ -1,7 +1,7 @@
 { "translations": {
     "Workflow OCR" : "OCR 工作流程",
-    "Workflow OCR error for file {file}" : "檔案 {file} 的 OCR 工作流程錯誤",
     "Workflow OCR error" : "OCR 工作流程錯誤",
+    "Workflow OCR error for file {file}" : "檔案 {file} 的 OCR 工作流程錯誤",
     "Workflow settings JSON value cannot be parsed" : "無法分析工作流程設定的 JSON 值",
     "OCR file" : "OCR 檔案",
     "OCR processing via workflow" : "透過工作流程進行 OCR 處理",

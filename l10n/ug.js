@@ -2,8 +2,8 @@ OC.L10N.register(
     "workflow_ocr",
     {
     "Workflow OCR" : "خىزمەت ئېقىمى OCR",
-    "Workflow OCR error for file {file}" : "ھۆججەت {file} نىڭ خىزمەت ئېقىمى OCR خاتالىقى",
     "Workflow OCR error" : "خىزمەت ئېقىمى OCR خاتالىقى",
+    "Workflow OCR error for file {file}" : "ھۆججەت {file} نىڭ خىزمەت ئېقىمى OCR خاتالىقى",
     "Workflow settings JSON value cannot be parsed" : "خىزمەت ئېقىمى تەڭشەكلىرى JSON قىممىتىنى تەھلىل قىلىشقا بولمايدۇ",
     "OCR file" : "OCR ھۆججىتى",
     "OCR processing via workflow" : "خىزمەت ئېقىمى ئارقىلىق OCR بىر تەرەپ قىلىش",
