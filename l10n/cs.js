@@ -2,8 +2,8 @@ OC.L10N.register(
     "workflow_ocr",
     {
     "Workflow OCR" : "OCR pro pracovní postup",
-    "Workflow OCR error for file {file}" : "Chyba Workflow OCR pro soubor {file}",
     "Workflow OCR error" : "Chyba ve Workflow OCR",
+    "Workflow OCR error for file {file}" : "Chyba Workflow OCR pro soubor {file}",
     "Workflow settings JSON value cannot be parsed" : "Hodnotu JSON nastavení pracovního postupu nelze analyzovat",
     "OCR file" : "rozpoznat text v souboru",
     "OCR processing via workflow" : "Rozpoznávání textu v obrazových datech (OCR) v rámci pracovního postupu",

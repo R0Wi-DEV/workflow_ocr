@@ -2,8 +2,8 @@ OC.L10N.register(
     "workflow_ocr",
     {
     "Workflow OCR" : "Sreabhadh oibre OCR",
-    "Workflow OCR error for file {file}" : "Earráid OCR sreabhadh oibre don chomhad {file}",
     "Workflow OCR error" : "Earráid OCR sreabhadh oibre",
+    "Workflow OCR error for file {file}" : "Earráid OCR sreabhadh oibre don chomhad {file}",
     "Workflow settings JSON value cannot be parsed" : "Ní féidir luach JSON socruithe sreafa oibre a pharsáil",
     "OCR file" : "Comhad OCR",
     "OCR processing via workflow" : "Próiseáil OCR trí shreabhadh oibre",
