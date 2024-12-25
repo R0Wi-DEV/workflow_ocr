@@ -1,7 +1,7 @@
 { "translations": {
     "Workflow OCR" : "Рабочий процесс OCR",
-    "Workflow OCR error for file {file}" : "Ошибка OCR рабочего процесса для файла {file}",
     "Workflow OCR error" : "Ошибка OCR рабочего процесса",
+    "Workflow OCR error for file {file}" : "Ошибка OCR рабочего процесса для файла {file}",
     "Workflow settings JSON value cannot be parsed" : "Значение JSON настроек рабочего процесса не может быть обработано",
     "OCR file" : "Файл OCR",
     "OCR processing via workflow" : "OCR обработка через рабочий процесс",
