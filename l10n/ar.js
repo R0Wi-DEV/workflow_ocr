@@ -4,6 +4,8 @@ OC.L10N.register(
     "Workflow OCR" : "أتمتة سير العمل الخاص بتحويل صورة الكتابة إلى نص",
     "Workflow OCR error" : "خطأ في أتمتة سير العمل لتحويل الصورة لنص",
     "Workflow OCR error for file {file}" : "خطأ في أتمتة سير العمل لتحويل الصورة لنص في الملف {file}",
+    "Workflow OCR success" : "السير الإجرائي لتحويل الصورة لنص تمّ بنجاح",
+    "Workflow OCR success for file {file}" : "سير إجرائي ناجح للملف {file}",
     "Workflow settings JSON value cannot be parsed" : "لم يمكن تحليل قيمة JSON لإعداد أتمتة سير العمل",
     "OCR file" : "ملف تحويل صورة الكتابة إلى نص",
     "OCR processing via workflow" : "معالجة تحويل صورة الكتابة إلى نص عبر أتمتة سير العمل",
@@ -25,6 +27,7 @@ OC.L10N.register(
     "Remove background" : "حذف الخلفية",
     "Keep original file version" : "الاحتفاظ بنسخة من الملف الأصلي",
     "Keep original file modification date" : "أبقِ على تاريخ آخر تعديل للملف الأصلي",
+    "Send success notification" : "أرسل إشعاراً بنجاح الإجراء",
     "Custom ocrMyPdf CLI arguments" : "بارامترات مخصصة للأمر السطري ocrMyPdf  ",
     "Select language(s)" : "إختر اللغة (اللغات)"
 },
