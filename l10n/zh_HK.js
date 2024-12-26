@@ -4,6 +4,8 @@ OC.L10N.register(
     "Workflow OCR" : "OCR 工作流程",
     "Workflow OCR error" : "OCR 工作流程錯誤",
     "Workflow OCR error for file {file}" : "檔案 {file} 的工作流程 OCR 錯誤",
+    "Workflow OCR success" : "OCR 工作流程成功",
+    "Workflow OCR success for file {file}" : "檔案 {file} 的 OCR 工作流程成功",
     "Workflow settings JSON value cannot be parsed" : "無法分析工作流程設置 JSON 值",
     "OCR file" : "OCR 檔案",
     "OCR processing via workflow" : "通過工作流程進行 OCR 處理",
@@ -25,6 +27,7 @@ OC.L10N.register(
     "Remove background" : "移除背景",
     "Keep original file version" : "保留原始檔案版本",
     "Keep original file modification date" : "保留原先的檔案的修改日期",
+    "Send success notification" : "傳送成功通知",
     "Custom ocrMyPdf CLI arguments" : "自訂 ocrMyPdf CLI 參數",
     "Select language(s)" : "選取語言"
 },

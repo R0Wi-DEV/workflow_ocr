@@ -4,6 +4,8 @@ OC.L10N.register(
     "Workflow OCR" : "Workflow-OCR",
     "Workflow OCR error" : "Workflow-OCR Fehler",
     "Workflow OCR error for file {file}" : "Workflow-OCR Fehler für die Datei {file}",
+    "Workflow OCR success" : "Erfolgreicher Arbeitsablauf der Texterkennung",
+    "Workflow OCR success for file {file}" : "Erfolgreicher Arbeitsablauf der Texterkennung für Datei {file}",
     "Workflow settings JSON value cannot be parsed" : "JSON-Wert der Workflow-Einstellungen kann nicht geparst werden",
     "OCR file" : "OCR-Datei",
     "OCR processing via workflow" : "OCR-Verarbeitung über Workflow",
@@ -25,6 +27,7 @@ OC.L10N.register(
     "Remove background" : "Hintergrund entfernen",
     "Keep original file version" : "Ursprüngliche Dateiversion beibehalten",
     "Keep original file modification date" : "Ursprüngliches Dateiänderungsdatum beibehalten",
+    "Send success notification" : "Erfolgsbenachrichtigung senden",
     "Custom ocrMyPdf CLI arguments" : "Benutzerdefinierte ocrMyPdf Komandozeilen-Argumente",
     "Select language(s)" : "Sprache(n) auswählen"
 },
