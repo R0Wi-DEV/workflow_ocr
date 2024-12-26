@@ -4,6 +4,8 @@ OC.L10N.register(
     "Workflow OCR" : "Sreabhadh oibre OCR",
     "Workflow OCR error" : "Earráid OCR sreabhadh oibre",
     "Workflow OCR error for file {file}" : "Earráid OCR sreabhadh oibre don chomhad {file}",
+    "Workflow OCR success" : "Sreabhadh oibre rath OCR",
+    "Workflow OCR success for file {file}" : "D'éirigh le sreabhadh oibre OCR do chomhad {file}",
     "Workflow settings JSON value cannot be parsed" : "Ní féidir luach JSON socruithe sreafa oibre a pharsáil",
     "OCR file" : "Comhad OCR",
     "OCR processing via workflow" : "Próiseáil OCR trí shreabhadh oibre",
@@ -25,6 +27,7 @@ OC.L10N.register(
     "Remove background" : "Bain an cúlra",
     "Keep original file version" : "Coinnigh leagan bunaidh an chomhaid",
     "Keep original file modification date" : "Coinnigh dáta modhnaithe an chomhaid bhunaidh",
+    "Send success notification" : "Seol fógra ratha",
     "Custom ocrMyPdf CLI arguments" : "Argóintí CLI saincheaptha ocrMyPdf",
     "Select language(s)" : "Roghnaigh teanga(cha)"
 },
