@@ -4,6 +4,8 @@ OC.L10N.register(
     "Workflow OCR" : "OCR pro pracovní postup",
     "Workflow OCR error" : "Chyba ve Workflow OCR",
     "Workflow OCR error for file {file}" : "Chyba Workflow OCR pro soubor {file}",
+    "Workflow OCR success" : "Úspěch ve Workflow OCR",
+    "Workflow OCR success for file {file}" : "Workflow OCR úspěch pro soubor {file}",
     "Workflow settings JSON value cannot be parsed" : "Hodnotu JSON nastavení pracovního postupu nelze analyzovat",
     "OCR file" : "rozpoznat text v souboru",
     "OCR processing via workflow" : "Rozpoznávání textu v obrazových datech (OCR) v rámci pracovního postupu",
@@ -25,6 +27,7 @@ OC.L10N.register(
     "Remove background" : "Odebrat obrázek na pozadí",
     "Keep original file version" : "Ponechat původní verzi souboru",
     "Keep original file modification date" : "Ponechat datum změny jako u původního souboru",
+    "Send success notification" : "Odeslat upozornění na úspěch",
     "Custom ocrMyPdf CLI arguments" : "Uživatelsky určené argumenty pro příkazový řádek s ocrMyPdf",
     "Select language(s)" : "Vybrat jazyk(y)"
 },
