@@ -81,6 +81,14 @@ apt-get install tesseract-ocr-deu
 apt-get install tesseract-ocr-chi-sim
 ```
 
+### Setup Checks
+
+The app will perform some [Setup Checks](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/security_setup_warnings.html) to verify your installation. If there is any problem with your backend setup, you'll see an error printed in Nextcloud under `Administration Settings` &#8594; `Overview` &#8594; `Security & setup warnings`.
+
+<p align="center">
+  <img width="50%" src="doc/img/setup_checks.jpg" alt="Setup checks">
+</p>
+
 ## Usage
 You can configure the OCR processing via Nextcloud's workflow engine. Therefore configure a new flow via `Settings` &#8594; `Flow` &#8594; `Add new flow` (if you don't see `OCR file` here the app isn't installed properly or you forgot to activate it).
 

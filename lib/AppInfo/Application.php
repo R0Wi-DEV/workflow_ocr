@@ -45,6 +45,7 @@ use OCA\WorkflowOcr\Service\IOcrService;
 use OCA\WorkflowOcr\Service\NotificationService;
 use OCA\WorkflowOcr\Service\OcrBackendInfoService;
 use OCA\WorkflowOcr\Service\OcrService;
+use OCA\WorkflowOcr\SetupChecks\OcrMyPdfCheck;
 use OCA\WorkflowOcr\Wrapper\CommandWrapper;
 use OCA\WorkflowOcr\Wrapper\Filesystem;
 use OCA\WorkflowOcr\Wrapper\ICommand;
@@ -99,6 +100,7 @@ class Application extends App implements IBootstrap {
 
 		$context->registerEventListener(RegisterOperationsEvent::class, RegisterFlowOperationsListener::class);
 		$context->registerNotifierService(Notifier::class);
+		$context->registerSetupCheck(OcrMyPdfCheck::class);
 	}
 
 	/**
