@@ -2,9 +2,15 @@
     "Workflow OCR" : "İş akışı karakter tanıma",
     "Workflow OCR error" : "İş akışı karakter tanıma sorunu",
     "Workflow OCR error for file {file}" : "{file} dosyasında iş akışı karakter tanıma sorunu",
+    "Workflow OCR success" : "İş akışı karakter tanıması tamamlandı",
+    "Workflow OCR success for file {file}" : "{file} dosyasında iş akışı karakter tanıması tamamlandı",
     "Workflow settings JSON value cannot be parsed" : "İş akışı ayarları JSON değeri işlenemedi",
     "OCR file" : "Karakter tanıma dosyası",
     "OCR processing via workflow" : "İş akışı ile karakter tanıma işlemi",
+    "Is OCRmyPDF installed" : "OCRmyPDF kurulmuş mu",
+    "OCRmyPDF CLI is not installed." : "OCRmyPDF CLI kurulmamış.",
+    "OCRmyPDF CLI is not working correctly. Error was: %1$s" : "OCRmyPDF CLI doğru çalışmıyor. Hata: %1$s",
+    "OCRmyPDF is installed and has version %1$s." : "OCRmyPDF %1$s sürümü kurulmuş.",
     "Server side OCR processing via workflow engine" : "İş akışı işleyici ile sunucu tarafında karakter tanıma işlemi",
     "This app makes it possible to process various files via OCR algorithms.\n\tThe processing is done via workflow-engine and can therefore easily be customized.\n\tPlease note that you'll have to install the OcrMyPDF CLI on your Nextcloud server to\n\tprocess PDF files. More installation instructions can be found in the docs https://github.com/R0Wi/workflow_ocr/blob/master/README.md." : "Bu uygulama, çeşitli dosyaların karakter tanıma algoritmaları ile işlenmesini sağlar.\n\tİşleme, iş akışı işleyici ile yapılır ve bu nedenle kolayca özelleştirilebilir.\n\tNextcloud sunucunuza OcrMyPDF komut satırı arayüzünü kurmanız gerekeceğini lütfen unutmayın.\n\tPDF dosyalarını işler. Kurulum yönergesi için https://github.com/R0Wi/workflow_ocr/blob/master/README.md belgelerine bakabilirsiniz.",
     "OCR language" : "Karakter tanıma dili",
@@ -23,6 +29,7 @@
     "Remove background" : "Arka planı kaldır",
     "Keep original file version" : "Özgün dosya sürümü korunsun",
     "Keep original file modification date" : "Özgün dosya değiştirilme tarihi korunsun",
+    "Send success notification" : "Gönderildi bildirimi",
     "Custom ocrMyPdf CLI arguments" : "Özel ocrMyPdf komut satırı parametreleri",
     "Select language(s)" : "Dilleri seçin"
 },"pluralForm" :"nplurals=2; plural=(n > 1);"
