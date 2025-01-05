@@ -252,7 +252,7 @@ class OcrService implements IOcrService {
 		$dirPath = dirname($filePath);
 		$filename = basename($filePath);
 		
-		$this->processingFileAccessor->setCurrentlyProcessedFileId($fileId);
+		$this->processingFileAccessor->setCurrentlyProcessedFilePath($filePath);
 
 		try {
 			$view = $this->viewFactory->create($dirPath);
@@ -267,7 +267,7 @@ class OcrService implements IOcrService {
 				$view->touch($filename, $fileMtime);
 			}
 		} finally {
-			$this->processingFileAccessor->setCurrentlyProcessedFileId(null);
+			$this->processingFileAccessor->setCurrentlyProcessedFilePath(null);
 		}
 	}
 
@@ -315,14 +315,23 @@ class OcrService implements IOcrService {
 
 		// Only create a new file version if the file OCR result was not empty #130
 		if ($result->getRecognizedText() !== '') {
-			if ($settings->getKeepOriginalFileVersion()) {
+			if ($settings->getKeepOriginalFileVersion() && $file->isUpdateable()) {
 				// Add label to original file to prevent its expiry
 				$this->setFileVersionsLabel($file, $uid, self::FILE_VERSION_LABEL_VALUE);
 			}
 
-			$newFilePath = $originalFileExtension === $newFileExtension ?
-				$filePath :
-				$filePath . '.pdf';
+			if ($originalFileExtension === $newFileExtension) {
+				if (!$file->isUpdateable()) {
+					// Add suffix '_OCR' if original file cannot be updated
+					$fileInfo = pathinfo($filePath);
+					$newFilePath = $fileInfo['dirname'] . '/' . $fileInfo['filename'] . '_OCR.' . $originalFileExtension;
+				} else {
+					$newFilePath = $filePath;
+				}
+			} else {
+				$newFilePath = $filePath . '.pdf';
+			}
+
 
 			$this->createNewFileVersion($newFilePath, $fileContent, $fileId, $fileMtime);
 		}

@@ -226,7 +226,7 @@ class Operation implements ISpecificOperation {
 
 	private function eventTriggeredByOcrProcess(Node $node) : bool {
 		// Check if the event was triggered by OCR rewrite of the file
-		if ($node->getId() === $this->processingFileAccessor->getCurrentlyProcessedFileId()) {
+		if ($node->getPath() === $this->processingFileAccessor->getCurrentlyProcessedFilePath()) {
 			$this->logger->debug('Not processing event because file with path \'{path}\' was written by OCR process.',
 				['path' => $node->getPath()]);
 			return true;
