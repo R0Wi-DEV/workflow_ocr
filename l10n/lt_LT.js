@@ -1,6 +1,7 @@
 OC.L10N.register(
     "workflow_ocr",
     {
+    "Skip text" : "Praleisti tekstą",
     "Other settings" : "Kiti nustatymai",
     "Remove background" : "Šalinti foną"
 },
