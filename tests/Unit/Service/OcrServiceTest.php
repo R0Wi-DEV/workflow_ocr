@@ -449,6 +449,7 @@ class OcrServiceTest extends TestCase {
 		$mimeType = 'application/pdf';
 		$content = 'someFileContent';
 		$ocrContent = 'someOcrProcessedFile';
+		$filePath = '/admin/files/somefile.pdf';
 		$ocrResult = new OcrProcessorResult($ocrContent, 'pdf', $ocrContent); // Extend this cases if we add new OCR processors
 
 		$this->rootFolderGetById42ReturnValue = [$this->createValidFileMock($mimeType, $content)];
@@ -462,17 +463,17 @@ class OcrServiceTest extends TestCase {
 			->method('create')
 			->willReturn($viewMock);
 
-		$calledWithFileId42 = 0;
+		$calledWithFilePath = 0;
 		$calledWithNull = 0;
-		$withIdCalledFirst = false;
+		$withFilePathCalledFirst = false;
 
 		$this->processingFileAccessor->expects($this->exactly(2))
-			->method('setCurrentlyProcessedFileId')
-			->with($this->callback(function ($id) use (&$calledWithFileId42, &$calledWithNull, &$withIdCalledFirst) {
-				if ($id === 42) {
-					$calledWithFileId42++;
-					$withIdCalledFirst = $calledWithNull === 0;
-				} elseif ($id === null) {
+			->method('setCurrentlyProcessedFilePath')
+			->with($this->callback(function ($fPath) use (&$calledWithFilePath, &$calledWithNull, &$withFilePathCalledFirst, $filePath) {
+				if ($fPath === $filePath) {
+					$calledWithFilePath++;
+					$withFilePathCalledFirst = $calledWithNull === 0;
+				} elseif ($fPath === null) {
 					$calledWithNull++;
 				}
 
@@ -481,9 +482,9 @@ class OcrServiceTest extends TestCase {
 
 		$this->ocrService->runOcrProcess(42, 'usr', $settings);
 
-		$this->assertEquals(1, $calledWithFileId42);
+		$this->assertEquals(1, $calledWithFilePath);
 		$this->assertEquals(1, $calledWithNull);
-		$this->assertTrue($withIdCalledFirst);
+		$this->assertTrue($withFilePathCalledFirst);
 	}
 
 	public function testDoesNotCreateNewFileVersionIfOcrContentWasEmpty() {
@@ -510,7 +511,7 @@ class OcrServiceTest extends TestCase {
 			->willReturn($viewMock);
 
 		$this->processingFileAccessor->expects($this->never())
-			->method('setCurrentlyProcessedFileId');
+			->method('setCurrentlyProcessedFilePath');
 
 		$this->eventService->expects($this->once())
 			->method('textRecognized');
@@ -649,6 +650,32 @@ class OcrServiceTest extends TestCase {
 		$this->ocrService->runOcrProcessWithJobArgument($this->defaultArgument);
 	}
 
+	public function testCreatesNewFileVersionWithSuffixIfNodeIsNotUpdateable() {
+		$settings = new WorkflowSettings();
+		$mimeType = 'application/pdf';
+		$content = 'someFileContent';
+		$ocrContent = 'someOcrProcessedFile';
+		$ocrResult = new OcrProcessorResult($ocrContent, 'pdf', $ocrContent); // Extend this cases if we add new OCR processors
+
+		$fileMock = $this->createValidFileMock($mimeType, $content, '/admin/files', 'somefile.pdf', false);
+		$this->rootFolderGetById42ReturnValue = [$fileMock];
+
+		$this->ocrProcessor->expects($this->once())
+			->method('ocrFile')
+			->willReturn($ocrResult);
+
+		$viewMock = $this->createMock(IView::class);
+		$this->viewFactory->expects($this->once())
+			->method('create')
+			->willReturn($viewMock);
+
+		$viewMock->expects($this->once())
+			->method('file_put_contents')
+			->with('somefile_OCR.pdf', $ocrContent);
+
+		$this->ocrService->runOcrProcess(42, 'usr', $settings);
+	}
+
 	public function dataProvider_InvalidNodes() {
 		/** @var MockObject|Node */
 		$folderMock = $this->createMock(Node::class);
@@ -699,7 +726,7 @@ class OcrServiceTest extends TestCase {
 	/**
 	 * @return File|MockObject
 	 */
-	private function createValidFileMock(string $mimeType = 'application/pdf', string $content = 'someFileContent', string $rootFolderPath = '/admin/files', string $fileName = 'somefile.pdf'): File {
+	private function createValidFileMock(string $mimeType = 'application/pdf', string $content = 'someFileContent', string $rootFolderPath = '/admin/files', string $fileName = 'somefile.pdf', bool $updatable = true): File {
 		/** @var MockObject|File */
 		$fileMock = $this->createMock(File::class);
 		$fileMock->method('getType')
@@ -715,6 +742,8 @@ class OcrServiceTest extends TestCase {
 		#get extension from filename
 		$fileMock->method('getExtension')
 			->willReturn(pathinfo($fileName, PATHINFO_EXTENSION));
+		$fileMock->method('isUpdateable')
+			->willReturn($updatable);
 		return $fileMock;
 	}
 }
