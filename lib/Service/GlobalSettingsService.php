@@ -28,7 +28,7 @@ namespace OCA\WorkflowOcr\Service;
 
 use OCA\WorkflowOcr\AppInfo\Application;
 use OCA\WorkflowOcr\Model\GlobalSettings;
-use OCP\IConfig;
+use OCP\IAppConfig;
 use ReflectionClass;
 use ReflectionProperty;
 
@@ -39,11 +39,10 @@ use ReflectionProperty;
  * @package OCA\WorkflowOcr\Service
  */
 class GlobalSettingsService implements IGlobalSettingsService {
-	/** @var IConfig */
-	private $config;
 
-	public function __construct(IConfig $config) {
-		$this->config = $config;
+	public function __construct(
+		private IAppConfig $config,
+	) {
 	}
 
 	/**
@@ -54,7 +53,7 @@ class GlobalSettingsService implements IGlobalSettingsService {
 
 		foreach ($this->getProperties($settings) as $prop) {
 			$key = $prop->getName();
-			$configValue = $this->config->getAppValue(Application::APP_NAME, $key);
+			$configValue = $this->config->getValueString(Application::APP_NAME, $key);
 			$settings->$key = $configValue;
 		}
 
@@ -70,7 +69,7 @@ class GlobalSettingsService implements IGlobalSettingsService {
 		foreach ($this->getProperties($settings) as $prop) {
 			$key = $prop->getName();
 			$value = $settings->$key;
-			$this->config->setAppValue(Application::APP_NAME, $key, $value);
+			$this->config->setValueString(Application::APP_NAME, $key, $value);
 		}
 	}
 

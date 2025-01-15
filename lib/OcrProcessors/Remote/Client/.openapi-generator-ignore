@@ -1,0 +1,9 @@
+# Currently we're only generating Models (no API clients)
+!Model/ErrorResult.php
+!Model/ModelInterface.php
+!Model/OcrResult.php
+!ObjectSerializer.php
+!Configuration.php
+*.*
+.*
+**/*

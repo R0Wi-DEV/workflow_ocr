@@ -27,6 +27,7 @@ use Exception;
 use InvalidArgumentException;
 use OC\User\NoUserException;
 use OCA\Files_Versions\Versions\IVersionManager;
+use OCA\Files_Versions\Versions\Version;
 use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
 use OCA\WorkflowOcr\Exception\OcrProcessorNotFoundException;
 use OCA\WorkflowOcr\Exception\OcrResultEmptyException;
@@ -676,6 +677,61 @@ class OcrServiceTest extends TestCase {
 		$this->ocrService->runOcrProcess(42, 'usr', $settings);
 	}
 
+	public function testSetsFileVersionsLabelIfKeepOriginalFileVersionIsTrue() {
+		$settings = new WorkflowSettings('{"keepOriginalFileVersion": true}');
+		$mimeType = 'application/pdf';
+		$content = 'someFileContent';
+		$ocrContent = 'someOcrProcessedFile';
+		$ocrResult = new OcrProcessorResult($ocrContent, 'pdf', $ocrContent);
+	
+		$fileMock = $this->createValidFileMock($mimeType, $content);
+		$this->rootFolderGetById42ReturnValue = [$fileMock];
+	
+		$this->ocrProcessor->expects($this->once())
+			->method('ocrFile')
+			->willReturn($ocrResult);
+	
+		$viewMock = $this->createMock(IView::class);
+		$this->viewFactory->expects($this->once())
+			->method('create')
+			->willReturn($viewMock);
+	
+		$fileMock->expects($this->once())
+			->method('getMTime')
+			->willReturn(1234);
+
+		// With PHPUnit 10 use
+		// https://docs.phpunit.de/en/10.5/test-doubles.html#createmockforintersectionofinterfaces
+		$versionMock = $this->createMock(Version::class);
+		$versionMock->expects($this->once())
+			->method('getRevisionId')
+			->willReturn(1);
+		$versionMock->expects($this->once())
+			->method('getTimestamp')
+			->willReturn(1234);
+		$versionMock->expects($this->once())
+			->method('getMetadataValue')
+			->with('label')
+			->willReturn('');
+	
+		$versionBackendMock = $this->getMockBuilder(VersionBackendMock::class)
+			->setConstructorArgs([fn ($className) => $this->createMock($className)])
+			->getMock();
+		$versionMock->expects($this->once())
+			->method('getBackend')
+			->willReturn($versionBackendMock);
+	
+		$versionBackendMock->expects($this->once())
+			->method('setMetadataValue')
+			->with($fileMock, 1, 'label', 'Before OCR');
+	
+		$this->versionManager->expects($this->once())
+			->method('getVersionsForFile')
+			->willReturn([$versionMock]);
+	
+		$this->ocrService->runOcrProcess(42, 'usr', $settings);
+	}
+
 	public function dataProvider_InvalidNodes() {
 		/** @var MockObject|Node */
 		$folderMock = $this->createMock(Node::class);
@@ -717,7 +773,8 @@ class OcrServiceTest extends TestCase {
 	public function dataProvider_ExceptionsToBeCaught() {
 		return [
 			[new OcrNotPossibleException('Ocr not possible')],
-			[new OcrProcessorNotFoundException('audio/mpeg')],
+			[new OcrProcessorNotFoundException('audio/mpeg', false)],
+			[new OcrProcessorNotFoundException('audio/mpeg', true)],
 			[new OcrResultEmptyException('Ocr result was empty')],
 			[new Exception('Some exception')]
 		];

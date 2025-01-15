@@ -23,17 +23,28 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\Tests\Unit\Service;
 
+use Exception;
 use OCA\WorkflowOcr\Exception\CommandException;
+use OCA\WorkflowOcr\OcrProcessors\Remote\Client\IApiClient;
 use OCA\WorkflowOcr\Service\OcrBackendInfoService;
+use OCA\WorkflowOcr\Wrapper\IAppApiWrapper;
 use OCA\WorkflowOcr\Wrapper\ICommand;
+use OCP\App\IAppManager;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\Log\LoggerInterface;
 
 class OcrBackendInfoServiceTest extends TestCase {
 	/** @var ICommand|MockObject */
 	private $command;
-
+	/** @var IApiClient|MockObject */
+	private $apiClient;
+	/** @var IAppManager|MockObject */
+	private $appManager;
+	/** @var IAppApiManager|MockObject */
+	private $appApiWrapper;
 	/** @var LoggerInterface|MockObject */
 	private $logger;
 
@@ -43,7 +54,10 @@ class OcrBackendInfoServiceTest extends TestCase {
 	protected function setUp() : void {
 		$this->command = $this->createMock(ICommand::class);
 		$this->logger = $this->createMock(LoggerInterface::class);
-		$this->service = new OcrBackendInfoService($this->command, $this->logger);
+		$this->apiClient = $this->createMock(IApiClient::class);
+		$this->appManager = $this->createMock(IAppManager::class);
+		$this->appApiWrapper = $this->createMock(IAppApiWrapper::class);
+		$this->service = new OcrBackendInfoService($this->command, $this->apiClient, $this->appManager, $this->appApiWrapper, $this->logger);
 		parent::setUp();
 	}
 
@@ -140,6 +154,58 @@ class OcrBackendInfoServiceTest extends TestCase {
 		$this->service->getInstalledLanguages();
 	}
 
+	public function testIsRemoteBackendReturnsTrueIfRemoteBackendIsInstalledViaAppApi() {
+		$this->appManager->expects($this->once())
+			->method('isEnabledForUser')
+			->with('app_api')
+			->willReturn(true);
+		$this->appApiWrapper->expects($this->once())
+			->method('getExApp')
+			->with('workflow_ocr_backend')
+			->willReturn(['enabled' => true]);
+
+		$result = $this->service->isRemoteBackend();
+
+		$this->assertTrue($result);
+	}
+
+	/**
+	 * @dataProvider dataProviderDependencyInjectionExceptions
+	 */
+	public function testIsRemoteBackendReturnsFalseIfBackendAppIsNotInstalled(Exception $exception) {
+		$this->appManager->expects($this->once())
+			->method('isEnabledForUser')
+			->with('app_api')
+			->willReturn(true);
+		$this->appApiWrapper->expects($this->once())
+			->method('getExApp')
+			->with('workflow_ocr_backend')
+			->willThrowException($exception);
+
+		$result = $this->service->isRemoteBackend();
+
+		$this->assertFalse($result);
+	}
+
+	public function testGetInstalledLanguagesFromRemoteBackend() {
+		$this->appManager->expects($this->once())
+			->method('isEnabledForUser')
+			->with('app_api')
+			->willReturn(true);
+		$this->appApiWrapper->expects($this->once())
+			->method('getExApp')
+			->with('workflow_ocr_backend')
+			->willReturn(['enabled' => true]);
+			
+		$this->apiClient->expects($this->once())
+			->method('getLanguages')
+			->willReturn(['eng', 'deu', 'chi']);
+
+		$result = $this->service->getInstalledLanguages();
+
+		$this->assertEquals(['eng', 'deu', 'chi'], $result);
+	}
+
 	public function dataProviderInstalledLangs() {
 		return [
 			["List of available languages (4):\neng\ndeu\nosd\nchi", ['eng','deu','chi']]
@@ -150,6 +216,13 @@ class OcrBackendInfoServiceTest extends TestCase {
 		return [
 			['someStdErrMessage', ''],
 			['', 'someErrorOutput']
+		];
+	}
+
+	public function dataProviderDependencyInjectionExceptions() {
+		return [
+			[$this->createMock(ContainerExceptionInterface::class)],
+			[$this->createMock(NotFoundExceptionInterface::class)]
 		];
 	}
 }
