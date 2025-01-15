@@ -25,23 +25,38 @@ namespace OCA\WorkflowOcr\OcrProcessors;
 
 use OCA\WorkflowOcr\Exception\OcrProcessorNotFoundException;
 use OCA\WorkflowOcr\Helper\ISidecarFileAccessor;
+use OCA\WorkflowOcr\OcrProcessors\Local\ImageOcrProcessor;
+use OCA\WorkflowOcr\OcrProcessors\Local\PdfOcrProcessor;
+use OCA\WorkflowOcr\OcrProcessors\Remote\WorkflowOcrRemoteProcessor;
+use OCA\WorkflowOcr\Service\IOcrBackendInfoService;
 use OCA\WorkflowOcr\Wrapper\ICommand;
 use OCP\AppFramework\Bootstrap\IRegistrationContext;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 
 class OcrProcessorFactory implements IOcrProcessorFactory {
-	private static $mapping = [
+	/**
+	 * List of processors which are using a local CLI tool to perform OCR.
+	 */
+	private static $localMapping = [
 		'application/pdf' => PdfOcrProcessor::class,
 		'image/jpeg' => ImageOcrProcessor::class,
 		'image/png' => ImageOcrProcessor::class
 	];
 
-	/** @var ContainerInterface */
-	private $container;
+	/**
+	 * List of processors which are using a remote service (Workflow OCR Backend) to perform OCR.
+	 */
+	private static $remoteMapping = [
+		'application/pdf' => WorkflowOcrRemoteProcessor::class,
+		'image/jpeg' => WorkflowOcrRemoteProcessor::class,
+		'image/png' => WorkflowOcrRemoteProcessor::class
+	];
 
-	public function __construct(ContainerInterface $container) {
-		$this->container = $container;
+	public function __construct(
+		private ContainerInterface $container,
+		private IOcrBackendInfoService $ocrBackendInfoService,
+	) {
 	}
 
 	public static function registerOcrProcessors(IRegistrationContext $context) : void {
@@ -52,26 +67,35 @@ class OcrProcessorFactory implements IOcrProcessorFactory {
 		*	"singleton per request" which leads to problems regarding the reused Command object
 		*	under the hood.
 		*/
-		$context->registerService(PdfOcrProcessor::class, function (ContainerInterface $c) {
-			return new PdfOcrProcessor($c->get(ICommand::class), $c->get(LoggerInterface::class), $c->get(ISidecarFileAccessor::class));
-		}, false);
-		$context->registerService(ImageOcrProcessor::class, function (ContainerInterface $c) {
-			return new ImageOcrProcessor($c->get(ICommand::class), $c->get(LoggerInterface::class), $c->get(ISidecarFileAccessor::class));
-		}, false);
+		$context->registerService(PdfOcrProcessor::class, fn (ContainerInterface $c) =>
+			new PdfOcrProcessor(
+				$c->get(ICommand::class),
+				$c->get(LoggerInterface::class),
+				$c->get(ISidecarFileAccessor::class),
+				$c->get(ICommandLineUtils::class)), false);
+		$context->registerService(ImageOcrProcessor::class, fn (ContainerInterface $c) =>
+			new ImageOcrProcessor(
+				$c->get(ICommand::class),
+				$c->get(LoggerInterface::class),
+				$c->get(ISidecarFileAccessor::class),
+				$c->get(ICommandLineUtils::class)), false);
 	}
 
 	/** @inheritdoc */
 	public function create(string $mimeType) : IOcrProcessor {
-		if (!$this->canCreate($mimeType)) {
-			throw new OcrProcessorNotFoundException($mimeType);
+		$useRemoteBackend = $this->ocrBackendInfoService->isRemoteBackend();
+		/** @var array */
+		$mimeTypeToProcessorMapping = $useRemoteBackend ? self::$remoteMapping : self::$localMapping;
+
+		if (!self::canCreate($mimeType, $mimeTypeToProcessorMapping)) {
+			throw new OcrProcessorNotFoundException($mimeType, $useRemoteBackend);
 		}
-		$className = self::$mapping[$mimeType];
+		$className = $mimeTypeToProcessorMapping[$mimeType];
 
 		return $this->container->get($className);
 	}
 
-	/** @inheritdoc */
-	public function canCreate(string $mimeType) : bool {
-		return array_key_exists($mimeType, self::$mapping);
+	private static function canCreate(string $mimeType, array $mimeTypeToProcessorMapping) : bool {
+		return array_key_exists($mimeType, $mimeTypeToProcessorMapping);
 	}
 }

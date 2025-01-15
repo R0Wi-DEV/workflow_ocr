@@ -26,23 +26,45 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\Service;
 
+use OCA\WorkflowOcr\AppInfo\Application;
 use OCA\WorkflowOcr\Exception\CommandException;
+use OCA\WorkflowOcr\OcrProcessors\Remote\Client\IApiClient;
+use OCA\WorkflowOcr\Wrapper\IAppApiWrapper;
 use OCA\WorkflowOcr\Wrapper\ICommand;
+use OCP\App\IAppManager;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\Log\LoggerInterface;
 
 class OcrBackendInfoService implements IOcrBackendInfoService {
-	/** @var ICommand */
-	private $command;
-
-	/** @var LoggerInterface */
-	private $logger;
-
-	public function __construct(ICommand $command, LoggerInterface $logger) {
-		$this->command = $command;
-		$this->logger = $logger;
+	public function __construct(
+		private ICommand $command,
+		private IApiClient $apiClient,
+		private IAppManager $appManager,
+		private IAppApiWrapper $appApiWrapper,
+		private LoggerInterface $logger,
+	) {
 	}
 
 	public function getInstalledLanguages() : array {
+		return $this->isRemoteBackend() ? $this->getInstalledLanguagesFromRemoteBackend() : $this->getInstalledLanguagesFromLocalCli();
+	}
+
+	public function isRemoteBackend(): bool {
+		if (!$this->appManager->isEnabledForUser(Application::APP_API_APP_NAME)) {
+			return false;
+		}
+		try {
+			/** @var array */
+			$backendApp = $this->appApiWrapper->getExApp(Application::APP_BACKEND_NAME);
+		} catch (ContainerExceptionInterface|NotFoundExceptionInterface $e) {
+			return false;
+		}
+
+		return $backendApp !== null && isset($backendApp['enabled']) && boolval($backendApp['enabled']) === true;
+	}
+
+	private function getInstalledLanguagesFromLocalCli() : array {
 		$commandStr = 'tesseract --list-langs';
 		$this->command->setCommand($commandStr);
 
@@ -74,5 +96,9 @@ class OcrBackendInfoService implements IOcrBackendInfoService {
 			fn ($line) => $line !== 'osd' // Also skip "osd" (OSD is not a language)
 		);
 		return array_values($arr);
+	}
+
+	private function getInstalledLanguagesFromRemoteBackend() : array {
+		return $this->apiClient->getLanguages();
 	}
 }

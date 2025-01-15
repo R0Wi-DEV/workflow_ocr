@@ -7,6 +7,45 @@
       <code><![CDATA[IRootFolder]]></code>
     </MissingDependency>
   </file>
+  <file src="lib/OcrProcessors/Remote/Client/ApiClient.php">
+    <InvalidReturnStatement>
+      <code><![CDATA[ObjectSerializer::deserialize(json_decode($response->getBody(), false, 512, JSON_THROW_ON_ERROR), $class)]]></code>
+    </InvalidReturnStatement>
+    <InvalidReturnType>
+      <code><![CDATA[OcrResult|ErrorResult]]></code>
+    </InvalidReturnType>
+    <NullableReturnStatement>
+      <code><![CDATA[ObjectSerializer::deserialize(json_decode($response->getBody(), false, 512, JSON_THROW_ON_ERROR), $class)]]></code>
+    </NullableReturnStatement>
+  </file>
+  <file src="lib/OcrProcessors/Remote/Client/Configuration.php">
+    <InvalidReturnStatement>
+      <code><![CDATA[$url]]></code>
+    </InvalidReturnStatement>
+  </file>
+  <file src="lib/OcrProcessors/Remote/Client/Model/ErrorResult.php">
+    <InvalidPropertyAssignmentValue>
+      <code><![CDATA[$this->openAPINullablesSetToNull]]></code>
+    </InvalidPropertyAssignmentValue>
+  </file>
+  <file src="lib/OcrProcessors/Remote/Client/Model/OcrResult.php">
+    <InvalidPropertyAssignmentValue>
+      <code><![CDATA[$this->openAPINullablesSetToNull]]></code>
+    </InvalidPropertyAssignmentValue>
+  </file>
+  <file src="lib/OcrProcessors/Remote/Client/ObjectSerializer.php">
+    <InvalidArgument>
+      <code><![CDATA[$value]]></code>
+      <code><![CDATA[$value]]></code>
+      <code><![CDATA[$value]]></code>
+    </InvalidArgument>
+    <NoValue>
+      <code><![CDATA[return $timestamp;]]></code>
+    </NoValue>
+    <UndefinedClass>
+      <code><![CDATA[Utils]]></code>
+    </UndefinedClass>
+  </file>
   <file src="lib/Operation.php">
     <MissingDependency>
       <code><![CDATA[$this->rootFolder]]></code>
@@ -35,6 +74,7 @@
       <code><![CDATA[$version]]></code>
       <code><![CDATA[$version]]></code>
       <code><![CDATA[$version]]></code>
+      <code><![CDATA[$version]]></code>
       <code><![CDATA[$versionBackend]]></code>
       <code><![CDATA[IMetadataVersion]]></code>
       <code><![CDATA[IMetadataVersionBackend]]></code>
@@ -45,6 +85,12 @@
       <code><![CDATA[$this->versionManager]]></code>
       <code><![CDATA[IVersionManager]]></code>
     </UndefinedDocblockClass>
+  </file>
+  <file src="lib/Wrapper/AppApiWrapper.php">
+    <UndefinedClass>
+      <code><![CDATA[PublicFunctions]]></code>
+      <code><![CDATA[PublicFunctions]]></code>
+    </UndefinedClass>
   </file>
   <file src="lib/Wrapper/Filesystem.php">
     <UndefinedClass>
