@@ -307,7 +307,6 @@ class OcrService implements IOcrService {
 	private function doPostProcessing(Node $file, string $uid, WorkflowSettings $settings, OcrProcessorResult $result, ?int $fileMtime = null): void {
 		$this->processTagsAfterSuccessfulOcr($file, $settings);
 
-		$filePath = $file->getPath();
 		$fileId = $file->getId();
 		$fileContent = $result->getFileContent();
 		$originalFileExtension = $file->getExtension();
@@ -320,19 +319,7 @@ class OcrService implements IOcrService {
 				$this->setFileVersionsLabel($file, $uid, self::FILE_VERSION_LABEL_VALUE);
 			}
 
-			if ($originalFileExtension === $newFileExtension) {
-				if (!$file->isUpdateable()) {
-					// Add suffix '_OCR' if original file cannot be updated
-					$fileInfo = pathinfo($filePath);
-					$newFilePath = $fileInfo['dirname'] . '/' . $fileInfo['filename'] . '_OCR.' . $originalFileExtension;
-				} else {
-					$newFilePath = $filePath;
-				}
-			} else {
-				$newFilePath = $filePath . '.pdf';
-			}
-
-
+			$newFilePath = $this->determineNewFilePath($file, $originalFileExtension, $newFileExtension);
 			$this->createNewFileVersion($newFilePath, $fileContent, $fileId, $fileMtime);
 		}
 
@@ -341,5 +328,29 @@ class OcrService implements IOcrService {
 		if ($settings->getSendSuccessNotification()) {
 			$this->notificationService->createSuccessNotification($uid, $fileId);
 		}
+	}
+
+	/**
+	 * Determines the new file path for a given file by analyzing the original- and new file extension.
+	 * Also takes into consideration, if the file can be updated by the current user.
+	 *
+	 * @param Node $file The original file node for which the OCR processing has been succeeded.
+	 * @param string $originalFileExtension The original file extension.
+	 * @param string $newFileExtension The new file extension to be applied.
+	 * @return string The new file path with the updated extension.
+	 */
+	private function determineNewFilePath(Node $file, string $originalFileExtension, string $newFileExtension): string {
+		$filePath = $file->getPath();
+		if ($originalFileExtension !== $newFileExtension) {
+			// If the extension changed, will create a new file with the new extension
+			return $filePath . '.' . $newFileExtension;
+		}
+		if (!$file->isUpdateable()) {
+			// Add suffix '_OCR' if original file cannot be updated
+			$fileInfo = pathinfo($filePath);
+			return $fileInfo['dirname'] . '/' . $fileInfo['filename'] . '_OCR.' . $newFileExtension;
+		}
+		// By returning the original file path, we will create a new file version of the original file
+		return $filePath;
 	}
 }
