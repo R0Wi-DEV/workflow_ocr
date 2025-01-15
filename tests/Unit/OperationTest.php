@@ -26,6 +26,7 @@ namespace OCA\WorkflowOcr\Tests\Unit;
 use OCA\WorkflowEngine\Entity\File;
 use OCA\WorkflowOcr\BackgroundJobs\ProcessFileJob;
 use OCA\WorkflowOcr\Helper\IProcessingFileAccessor;
+use OCA\WorkflowOcr\Helper\ProcessingFileAccessor;
 use OCA\WorkflowOcr\Operation;
 use OCP\BackgroundJob\IJobList;
 use OCP\EventDispatcher\Event;
@@ -36,7 +37,6 @@ use OCP\Files\IRootFolder;
 use OCP\Files\Node;
 use OCP\IL10N;
 use OCP\IURLGenerator;
-use OCP\IUser;
 use OCP\SystemTag\MapperEvent;
 use OCP\WorkflowEngine\IManager;
 use OCP\WorkflowEngine\IRuleMatcher;
@@ -70,13 +70,17 @@ class OperationTest extends TestCase {
 		$this->l = $this->createMock(IL10N::class);
 		$this->logger = $this->createMock(LoggerInterface::class);
 		$this->urlGenerator = $this->createMock(IURLGenerator::class);
-		$this->processingFileAccessor = $this->createMock(IProcessingFileAccessor::class);
+		$this->processingFileAccessor = ProcessingFileAccessor::getInstance();
 		$this->ruleMatcher = $this->createMock(IRuleMatcher::class);
 		$this->rootFolder = $this->createMock(IRootFolder::class);
 
 		$match = ['operation' => self::SETTINGS];
 		$this->ruleMatcher->method('getFlows')
 			->willReturn($match); // simulate single matching operation
+	}
+
+	protected function tearDown(): void {
+		$this->processingFileAccessor->setCurrentlyProcessedFilePath(null);
 	}
 
 	public function testDoesNothingIfRuleMatcherDoesNotMatch() {
@@ -120,7 +124,7 @@ class OperationTest extends TestCase {
 	}
 
 	public function testDoesNothingOnPostWriteTriggeredByCurrentOcrProcess() {
-		$fileId = 42;
+		$filePath = '/user/files/somefile.pdf';
 
 		$this->jobList->expects($this->never())
 			->method('add')
@@ -129,26 +133,16 @@ class OperationTest extends TestCase {
 			->method('debug')
 			->withAnyParameters();
 
-		$this->processingFileAccessor->expects($this->once())
-			->method('getCurrentlyProcessedFileId')
-			->willReturn($fileId);
-
+		$this->processingFileAccessor->setCurrentlyProcessedFilePath($filePath);
 		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
 
-		/** @var MockObject|IUser */
-		$userMock = $this->createMock(IUser::class);
-		$userMock->expects($this->never())
-			->method('getUID');
 		/** @var MockObject|Node */
 		$fileMock = $this->createMock(Node::class);
 		$fileMock->method('getType')
 			->willReturn(FileInfo::TYPE_FILE);
-		$fileMock->method('getPath')
-			->willReturn('/someuser/files/somefile.pdf');
-		$fileMock->method('getOwner')
-			->willReturn($userMock);
-		$fileMock->method('getId')
-			->willReturn($fileId);
+		$fileMock->expects($this->never())->method('getOwner');
+		$fileMock->expects($this->atLeastOnce())->method('getPath')
+			->willReturn($filePath);
 		$event = new GenericEvent($fileMock);
 		$eventName = '\OCP\Files::postCreate';
 
@@ -183,31 +177,6 @@ class OperationTest extends TestCase {
 		$operation->onEvent($eventName, $event, $this->ruleMatcher);
 	}
 
-	public function testDoesNothingOnFileWithoutOwner() {
-		$this->jobList->expects($this->never())
-			->method('add')
-			->withAnyParameters();
-		$this->logger->expects($this->atLeastOnce())
-			->method('debug')
-			->withAnyParameters();
-
-		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
-
-		/** @var MockObject|Node */
-		$fileMock = $this->createMock(Node::class);
-		$fileMock->method('getType')
-			->willReturn(FileInfo::TYPE_FILE);
-		$fileMock->method('getPath')
-			->willReturn('/admin/files/path/to/file.pdf');
-		$fileMock->method('getOwner')
-			->willReturn(null);
-
-		$event = new GenericEvent($fileMock);
-		$eventName = '\OCP\Files::postCreate';
-
-		$operation->onEvent($eventName, $event, $this->ruleMatcher);
-	}
-
 	public function testAddWithCorrectFilePathAndUser() {
 		$filePath = '/admin/files/path/to/file.pdf';
 		$fileId = 42;
@@ -218,19 +187,13 @@ class OperationTest extends TestCase {
 
 		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
 
-		/** @var MockObject|IUser */
-		$userMock = $this->createMock(IUser::class);
-		$userMock->expects($this->never())
-			->method('getUID')
-			->willReturn($uid);
 		/** @var MockObject|Node */
 		$fileMock = $this->createMock(Node::class);
 		$fileMock->method('getType')
 			->willReturn(FileInfo::TYPE_FILE);
 		$fileMock->method('getPath')
 			->willReturn($filePath);
-		$fileMock->method('getOwner')
-			->willReturn($userMock);
+		$fileMock->expects($this->never())->method('getOwner');
 		$fileMock->method('getId')
 			->willReturn($fileId);
 		$event = new GenericEvent($fileMock);
@@ -406,19 +369,13 @@ class OperationTest extends TestCase {
 			->method('add')
 			->with(ProcessFileJob::class, ['fileId' => $fileId, 'uid' => $uid, 'settings' => self::SETTINGS]);
 
-		/** @var MockObject|IUser */
-		$userMock = $this->createMock(IUser::class);
-		$userMock->expects($this->never())
-			->method('getUID')
-			->willReturn($uid);
 		/** @var MockObject|\OCP\Files\File */
 		$fileMock = $this->createMock(\OCP\Files\File::class);
 		$fileMock->method('getType')
 			->willReturn(FileInfo::TYPE_FILE);
 		$fileMock->method('getPath')
 			->willReturn($filePath);
-		$fileMock->method('getOwner')
-			->willReturn($userMock);
+		$fileMock->expects($this->never())->method('getOwner');
 		$fileMock->method('getId')
 			->willReturn($fileId);
 		/** @var MockObject|IRootFolder */
@@ -446,19 +403,13 @@ class OperationTest extends TestCase {
 
 		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
 
-		/** @var MockObject|IUser */
-		$userMock = $this->createMock(IUser::class);
-		$userMock->expects($this->never())
-			->method('getUID')
-			->willReturn($uid);
 		/** @var MockObject|Node */
 		$fileMockSecondFile = $this->createMock(Node::class);
 		$fileMockSecondFile->method('getType')
 			->willReturn(FileInfo::TYPE_FILE);
 		$fileMockSecondFile->method('getPath')
 			->willReturn($filePath);
-		$fileMockSecondFile->method('getOwner')
-			->willReturn($userMock);
+		$fileMockSecondFile->expects($this->never())->method('getOwner');
 		$fileMockSecondFile->method('getId')
 			->willReturn($fileId);
 		/** @var MockObject|Node */
