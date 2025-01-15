@@ -245,14 +245,13 @@ class OcrService implements IOcrService {
 	/**
 	 * @param string $filePath The filepath of the file to write
 	 * @param string $ocrContent The new filecontent (which was OCR processed)
-	 * @param int $fileId The id of the file to write. Used for locking.
 	 * @param int $fileMtime The mtime of the new file. Can be used to restore the original modification time of the non-OCR file.
 	 */
-	private function createNewFileVersion(string $filePath, string $ocrContent, int $fileId, ?int $fileMtime = null) : void {
+	private function createNewFileVersion(string $filePath, string $ocrContent, ?int $fileMtime = null) : void {
 		$dirPath = dirname($filePath);
 		$filename = basename($filePath);
 		
-		$this->processingFileAccessor->setCurrentlyProcessedFileId($fileId);
+		$this->processingFileAccessor->setCurrentlyProcessedFilePath($filePath);
 
 		try {
 			$view = $this->viewFactory->create($dirPath);
@@ -267,7 +266,7 @@ class OcrService implements IOcrService {
 				$view->touch($filename, $fileMtime);
 			}
 		} finally {
-			$this->processingFileAccessor->setCurrentlyProcessedFileId(null);
+			$this->processingFileAccessor->setCurrentlyProcessedFilePath(null);
 		}
 	}
 
@@ -307,7 +306,6 @@ class OcrService implements IOcrService {
 	private function doPostProcessing(Node $file, string $uid, WorkflowSettings $settings, OcrProcessorResult $result, ?int $fileMtime = null): void {
 		$this->processTagsAfterSuccessfulOcr($file, $settings);
 
-		$filePath = $file->getPath();
 		$fileId = $file->getId();
 		$fileContent = $result->getFileContent();
 		$originalFileExtension = $file->getExtension();
@@ -315,16 +313,13 @@ class OcrService implements IOcrService {
 
 		// Only create a new file version if the file OCR result was not empty #130
 		if ($result->getRecognizedText() !== '') {
-			if ($settings->getKeepOriginalFileVersion()) {
+			if ($settings->getKeepOriginalFileVersion() && $file->isUpdateable()) {
 				// Add label to original file to prevent its expiry
 				$this->setFileVersionsLabel($file, $uid, self::FILE_VERSION_LABEL_VALUE);
 			}
 
-			$newFilePath = $originalFileExtension === $newFileExtension ?
-				$filePath :
-				$filePath . '.pdf';
-
-			$this->createNewFileVersion($newFilePath, $fileContent, $fileId, $fileMtime);
+			$newFilePath = $this->determineNewFilePath($file, $originalFileExtension, $newFileExtension);
+			$this->createNewFileVersion($newFilePath, $fileContent, $fileMtime);
 		}
 
 		$this->eventService->textRecognized($result, $file);
@@ -332,5 +327,29 @@ class OcrService implements IOcrService {
 		if ($settings->getSendSuccessNotification()) {
 			$this->notificationService->createSuccessNotification($uid, $fileId);
 		}
+	}
+
+	/**
+	 * Determines the new file path for a given file by analyzing the original- and new file extension.
+	 * Also takes into consideration, if the file can be updated by the current user.
+	 *
+	 * @param Node $file The original file node for which the OCR processing has been succeeded.
+	 * @param string $originalFileExtension The original file extension.
+	 * @param string $newFileExtension The new file extension to be applied.
+	 * @return string The new file path with the updated extension.
+	 */
+	private function determineNewFilePath(Node $file, string $originalFileExtension, string $newFileExtension): string {
+		$filePath = $file->getPath();
+		if ($originalFileExtension !== $newFileExtension) {
+			// If the extension changed, will create a new file with the new extension
+			return $filePath . '.' . $newFileExtension;
+		}
+		if (!$file->isUpdateable()) {
+			// Add suffix '_OCR' if original file cannot be updated
+			$fileInfo = pathinfo($filePath);
+			return $fileInfo['dirname'] . '/' . $fileInfo['filename'] . '_OCR.' . $newFileExtension;
+		}
+		// By returning the original file path, we will create a new file version of the original file
+		return $filePath;
 	}
 }

@@ -36,8 +36,8 @@ class ProcessingFileAccessorTest extends TestCase {
 	
 	public function testGetSet() {
 		$o = ProcessingFileAccessor::getInstance();
-		$o ->setCurrentlyProcessedFileId(42);
-		$this->assertEquals(42, $o->getCurrentlyProcessedFileId());
-		$o->setCurrentlyProcessedFileId(null);
+		$o ->setCurrentlyProcessedFilePath('/someuser/files/somefile.pdf');
+		$this->assertEquals('/someuser/files/somefile.pdf', $o->getCurrentlyProcessedFilePath());
+		$o->setCurrentlyProcessedFilePath(null);
 	}
 }

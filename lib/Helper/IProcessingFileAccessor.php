@@ -25,15 +25,15 @@ namespace OCA\WorkflowOcr\Helper;
 
 interface IProcessingFileAccessor {
 	/**
-	 * Returns the id of the file which is currently
+	 * Returns the path of the file which is currently
 	 * processed via OCR
-	 * @return ?int
+	 * @return ?string
 	 */
-	public function getCurrentlyProcessedFileId() : ?int;
+	public function getCurrentlyProcessedFilePath() : ?string;
 
 	/**
-	 * Sets the id of the file which is currently
+	 * Sets the path of the file which is currently
 	 * processed via OCR
 	 */
-	public function setCurrentlyProcessedFileId(?int $fileId) : void;
+	public function setCurrentlyProcessedFilePath(?string $filePath) : void;
 }

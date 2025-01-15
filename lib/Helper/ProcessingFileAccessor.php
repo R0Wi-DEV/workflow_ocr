@@ -24,15 +24,15 @@ declare(strict_types=1);
 namespace OCA\WorkflowOcr\Helper;
 
 /**
- * This class is a singleton which holds the id
+ * This class is a singleton which holds the path
  * of the currently OCR processed file. This ensures
  * that a files is not added to the processing queue
  * if the 'postWrite' hook was triggered by a new
  * version created by the OCR process.
  */
 class ProcessingFileAccessor implements IProcessingFileAccessor {
-	/** @var ?int */
-	private $currentlyProcessedFileId;
+	/** @var ?string */
+	private $currentlyProcessedFilePath;
 
 	/** @var ProcessingFileAccessor */
 	private static $instance;
@@ -50,14 +50,14 @@ class ProcessingFileAccessor implements IProcessingFileAccessor {
 	/**
 	 * @inheritdoc
 	 */
-	public function getCurrentlyProcessedFileId() : ?int {
-		return $this->currentlyProcessedFileId;
+	public function getCurrentlyProcessedFilePath() : ?string {
+		return $this->currentlyProcessedFilePath;
 	}
 
 	/**
 	 * @inheritdoc
 	 */
-	public function setCurrentlyProcessedFileId(?int $fileId) : void {
-		$this->currentlyProcessedFileId = $fileId;
+	public function setCurrentlyProcessedFilePath(?string $filePath) : void {
+		$this->currentlyProcessedFilePath = $filePath;
 	}
 }
