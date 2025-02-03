@@ -168,7 +168,7 @@ class WorkflowSettings {
 		$this->setProperty($this->customCliArgs, $data, 'customCliArgs', fn ($value) => is_string($value));
 	}
 
-	private function setProperty(& $property, array $jsonData, string $key, ?callable $dataCheck = null): void {
+	private function setProperty(array|bool|int|string & $property, array $jsonData, string $key, ?callable $dataCheck = null): void {
 		if (array_key_exists($key, $jsonData) && ($dataCheck === null || $dataCheck($jsonData[$key]))) {
 			$property = $jsonData[$key];
 		}

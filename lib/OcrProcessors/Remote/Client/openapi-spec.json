@@ -1,0 +1,266 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "FastAPI",
+        "version": "0.1.0"
+    },
+    "paths": {
+        "/process_ocr": {
+            "post": {
+                "summary": "Process Ocr",
+                "description": "Processes an OCR request.\nThis endpoint accepts a file upload and optional OCR parameters to process the file using OCR (Optical Character Recognition).",
+                "operationId": "process_ocr_process_ocr_post",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Body_process_ocr_process_ocr_post"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OcrResult"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResult"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/installed_languages": {
+            "get": {
+                "summary": "Installed Languages",
+                "description": "Retrieves the list of installed Tesseract languages - relevant for OCRmyPDF.",
+                "operationId": "installed_languages_installed_languages_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "items": {
+                                        "type": "string"
+                                    },
+                                    "type": "array",
+                                    "title": "Response Installed Languages Installed Languages Get"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/enabled": {
+            "put": {
+                "summary": "Enabled Callback",
+                "operationId": "enabled_callback_enabled_put",
+                "parameters": [
+                    {
+                        "name": "enabled",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "boolean",
+                            "title": "Enabled"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/heartbeat": {
+            "get": {
+                "summary": "Heartbeat Callback",
+                "operationId": "heartbeat_callback_heartbeat_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/init": {
+            "post": {
+                "summary": "Init Callback",
+                "operationId": "init_callback_init_post",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Body_process_ocr_process_ocr_post": {
+                "properties": {
+                    "file": {
+                        "type": "string",
+                        "format": "binary",
+                        "title": "File",
+                        "description": "The file to be processed using OCR."
+                    },
+                    "ocrmypdf_parameters": {
+                        "type": "string",
+                        "title": "Ocrmypdf Parameters",
+                        "description": "Additional parameters for the OCRmyPdf process (see https://ocrmypdf.readthedocs.io/en/latest/cookbook.html#basic-examples)."
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "file"
+                ],
+                "title": "Body_process_ocr_process_ocr_post"
+            },
+            "ErrorResult": {
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "title": "Message",
+                        "description": "Error message"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "message"
+                ],
+                "title": "ErrorResult"
+            },
+            "HTTPValidationError": {
+                "properties": {
+                    "detail": {
+                        "items": {
+                            "$ref": "#/components/schemas/ValidationError"
+                        },
+                        "type": "array",
+                        "title": "Detail"
+                    }
+                },
+                "type": "object",
+                "title": "HTTPValidationError"
+            },
+            "OcrResult": {
+                "properties": {
+                    "filename": {
+                        "type": "string",
+                        "title": "Filename",
+                        "description": "Name of the file"
+                    },
+                    "contentType": {
+                        "type": "string",
+                        "title": "Contenttype",
+                        "description": "Content type of the file. For example: application/pdf"
+                    },
+                    "recognizedText": {
+                        "type": "string",
+                        "title": "Recognizedtext",
+                        "description": "Recognized text from the file"
+                    },
+                    "fileContent": {
+                        "type": "string",
+                        "title": "Filecontent",
+                        "description": "Base64 encoded file content"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "filename",
+                    "contentType",
+                    "recognizedText",
+                    "fileContent"
+                ],
+                "title": "OcrResult"
+            },
+            "ValidationError": {
+                "properties": {
+                    "loc": {
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ]
+                        },
+                        "type": "array",
+                        "title": "Location"
+                    },
+                    "msg": {
+                        "type": "string",
+                        "title": "Message"
+                    },
+                    "type": {
+                        "type": "string",
+                        "title": "Error Type"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "loc",
+                    "msg",
+                    "type"
+                ],
+                "title": "ValidationError"
+            }
+        }
+    }
+}

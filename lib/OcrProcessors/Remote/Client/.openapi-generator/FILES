@@ -1,0 +1,5 @@
+Configuration.php
+Model/ErrorResult.php
+Model/ModelInterface.php
+Model/OcrResult.php
+ObjectSerializer.php

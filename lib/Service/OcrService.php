@@ -281,18 +281,19 @@ class OcrService implements IOcrService {
 		$versions = $this->versionManager->getVersionsForFile($user, $file);
 
 		foreach ($versions as $version) {
-			$revisionId = $version->getRevisionId();
 			if (!$version instanceof IMetadataVersion) {
 				$this->logger->debug('Skipping version with revision id {versionId} because "{versionClass}" is not an IMetadataVersion', ['versionId' => $revisionId, 'versionClass' => get_class($version)]);
 				continue;
 			}
 
 			$versionBackend = $version->getBackend();
+
 			if (!$versionBackend instanceof IMetadataVersionBackend) {
 				$this->logger->debug('Skipping version with revision id {versionId} because its backend "{versionBackendClass}" does not implement IMetadataVersionBackend', ['versionId' => $revisionId, 'versionBackendClass' => get_class($versionBackend)]);
 				continue;
 			}
 
+			$revisionId = $version->getRevisionId();
 			$versionTimestamp = $version->getTimestamp();
 			$versionLabel = $version->getMetadataValue(self::FILE_VERSION_LABEL_KEY);
 

@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * @copyright Copyright (c) 2020 Robin Windey <ro.windey@gmail.com>
+ * @copyright Copyright (c) 2025 Robin Windey <ro.windey@gmail.com>
  *
  *  @license GNU AGPL version 3 or any later version
  *
@@ -21,11 +21,24 @@ declare(strict_types=1);
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OCA\WorkflowOcr\OcrProcessors;
+namespace OCA\WorkflowOcr\Wrapper;
 
-interface IOcrProcessorFactory {
-	/**
-	 * Creates a IOcrProcessor object for the given mimetype
-	 */
-	public function create(string $mimeType) : IOcrProcessor;
+use OCP\Http\Client\IResponse;
+use OCP\IRequest;
+
+/**
+ * Consolidates all used calls to OCA\AppAPI\PublicFunctions
+ */
+interface IAppApiWrapper {
+	public function exAppRequest(
+		string $appId,
+		string $route,
+		?string $userId = null,
+		string $method = 'POST',
+		array $params = [],
+		array $options = [],
+		?IRequest $request = null,
+	): IResponse|array ;
+
+	public function getExApp(string $appName): ?array;
 }

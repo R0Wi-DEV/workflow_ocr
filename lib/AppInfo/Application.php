@@ -33,8 +33,12 @@ use OCA\WorkflowOcr\Helper\ProcessingFileAccessor;
 use OCA\WorkflowOcr\Helper\SidecarFileAccessor;
 use OCA\WorkflowOcr\Listener\RegisterFlowOperationsListener;
 use OCA\WorkflowOcr\Notification\Notifier;
+use OCA\WorkflowOcr\OcrProcessors\CommandLineUtils;
+use OCA\WorkflowOcr\OcrProcessors\ICommandLineUtils;
 use OCA\WorkflowOcr\OcrProcessors\IOcrProcessorFactory;
 use OCA\WorkflowOcr\OcrProcessors\OcrProcessorFactory;
+use OCA\WorkflowOcr\OcrProcessors\Remote\Client\ApiClient;
+use OCA\WorkflowOcr\OcrProcessors\Remote\Client\IApiClient;
 use OCA\WorkflowOcr\Service\EventService;
 use OCA\WorkflowOcr\Service\GlobalSettingsService;
 use OCA\WorkflowOcr\Service\IEventService;
@@ -46,8 +50,10 @@ use OCA\WorkflowOcr\Service\NotificationService;
 use OCA\WorkflowOcr\Service\OcrBackendInfoService;
 use OCA\WorkflowOcr\Service\OcrService;
 use OCA\WorkflowOcr\SetupChecks\OcrMyPdfCheck;
+use OCA\WorkflowOcr\Wrapper\AppApiWrapper;
 use OCA\WorkflowOcr\Wrapper\CommandWrapper;
 use OCA\WorkflowOcr\Wrapper\Filesystem;
+use OCA\WorkflowOcr\Wrapper\IAppApiWrapper;
 use OCA\WorkflowOcr\Wrapper\ICommand;
 use OCA\WorkflowOcr\Wrapper\IFilesystem;
 use OCA\WorkflowOcr\Wrapper\IViewFactory;
@@ -63,6 +69,8 @@ use Psr\Log\LoggerInterface;
 
 class Application extends App implements IBootstrap {
 	public const APP_NAME = 'workflow_ocr';
+	public const APP_BACKEND_NAME = 'workflow_ocr_backend';
+	public const APP_API_APP_NAME = 'app_api';
 
 	/**
 	 * Application constructor.
@@ -83,6 +91,9 @@ class Application extends App implements IBootstrap {
 		$context->registerServiceAlias(IEventService::class, EventService::class);
 		$context->registerServiceAlias(IOcrBackendInfoService::class, OcrBackendInfoService::class);
 		$context->registerServiceAlias(INotificationService::class, NotificationService::class);
+		$context->registerServiceAlias(IApiClient::class, ApiClient::class);
+		$context->registerServiceAlias(ICommandLineUtils::class, CommandLineUtils::class);
+		$context->registerServiceAlias(IAppApiWrapper::class, AppApiWrapper::class);
 
 		// BUG #43
 		$context->registerService(ICommand::class, function () {

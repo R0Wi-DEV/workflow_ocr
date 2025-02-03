@@ -1,0 +1,20 @@
+{
+  "$schema": "./node_modules/@openapitools/openapi-generator-cli/config.schema.json",
+  "spaces": 2,
+  "generator-cli": {
+    "version": "7.10.0",
+    "generators": {
+      "php": {
+        "generatorName": "php",
+        "output": "#{cwd}",
+        "glob": "openapi-spec.json",
+        "additionalProperties": {
+          "invokerPackage": "OCA\\\\WorkflowOcr\\\\OcrProcessors\\\\Remote\\\\Client",
+          "variableNamingConvention": "camelCase",
+          "srcBasePath": "."
+        },
+        "templateDir": "templates"
+      }
+    }
+  }
+}
