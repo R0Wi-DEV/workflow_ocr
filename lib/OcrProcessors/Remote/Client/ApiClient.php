@@ -76,6 +76,11 @@ class ApiClient implements IApiClient {
 		return json_decode($response->getBody(), true);
 	}
 
+	public function heartbeat(): bool {
+		$response = $this->exAppRequest('/heartbeat', null, 'GET', false);
+		return $response->getStatusCode() === 200;
+	}
+
 	private function exAppRequest(string $path, ?array $options, string $method, bool $throwIfResponseCodeNot200 = false): IResponse {
 		$this->logger->debug('Executing request', ['path' => $path, 'options' => $options, 'method' => $method]);
 		$response = $this->appApiWrapper->exAppRequest(
@@ -84,7 +89,7 @@ class ApiClient implements IApiClient {
 			null,
 			$method,
 			[],
-			$options
+			$options ?? []
 		);
 		$this->logger->debug('Response received', ['path' => $path, 'response' => $response]);
 		

@@ -44,4 +44,9 @@ interface IApiClient {
 	 * @return string[]
 	 */
 	public function getLanguages(): array;
+
+	/**
+	 * Send a heartbeat to the remote backend.
+	 */
+	public function heartbeat(): bool;
 }
