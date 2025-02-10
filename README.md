@@ -93,7 +93,7 @@ apt-get install tesseract-ocr-chi-sim
 
 Starting from version 30, Nextcloud added support for [AppApi](https://docs.nextcloud.com/server/latest/admin_manual/exapps_management/AppAPIAndExternalApps.html) apps. In essence this allows external container based applications to be integrated into the Nextcloud ecosystem. This app is using this feature to provide an alternative backend setup via Docker.
 
-If everything is setup properly, you can just install the `workflow_ocr_backend` app from the [appstore](hhttps://apps.nextcloud.com/apps/workflow_ocr_backend).
+If everything is setup properly, you can just install the `workflow_ocr_backend` app from the [appstore](https://apps.nextcloud.com/apps/workflow_ocr_backend).
 
 Please refer to **https://github.com/R0Wi-DEV/workflow_ocr_backend** for more information on how to setup the backend.
 

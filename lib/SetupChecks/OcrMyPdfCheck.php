@@ -26,6 +26,7 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\SetupChecks;
 
+use OCA\WorkflowOcr\OcrProcessors\Remote\Client\IApiClient;
 use OCA\WorkflowOcr\Service\IOcrBackendInfoService;
 use OCA\WorkflowOcr\Wrapper\ICommand;
 use OCP\IL10N;
@@ -37,6 +38,7 @@ class OcrMyPdfCheck implements ISetupCheck {
 		private IL10N $l10n,
 		private ICommand $command,
 		private IOcrBackendInfoService $ocrBackendInfoService,
+		private IApiClient $apiClient,
 	) {
 	}
 
@@ -50,7 +52,9 @@ class OcrMyPdfCheck implements ISetupCheck {
 
 	public function run(): SetupResult {
 		if ($this->ocrBackendInfoService->isRemoteBackend()) {
-			return SetupResult::success($this->l10n->t('Workflow OCR Backend is installed.')); // TODO :: health check ?
+			return $this->apiClient->heartbeat() ?
+				SetupResult::success($this->l10n->t('Workflow OCR Backend is installed.')) :
+				SetupResult::warning($this->l10n->t('Workflow OCR Backend is installed but heartbeat failed.'));
 		}
 		$this->command->setCommand('ocrmypdf --version')->execute();
 		if ($this->command->getExitCode() === 127) {
