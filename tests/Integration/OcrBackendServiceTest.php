@@ -23,47 +23,64 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\Tests\Integration;
 
+use CurlHandle;
+use DomainException;
 use OCA\WorkflowEngine\Helper\ScopeContext;
 use OCA\WorkflowEngine\Manager;
 use OCA\WorkflowOcr\AppInfo\Application;
+use OCA\WorkflowOcr\BackgroundJobs\ProcessFileJob;
 use OCA\WorkflowOcr\OcrProcessors\Remote\Client\IApiClient;
 use OCA\WorkflowOcr\OcrProcessors\Remote\Client\Model\OcrResult;
 use OCA\WorkflowOcr\Operation;
 use OCA\WorkflowOcr\Service\IOcrBackendInfoService;
 use OCP\AppFramework\App;
+use OCP\BackgroundJob\IJobList;
+use OCP\IConfig;
 use OCP\WorkflowEngine\IManager;
 use Psr\Container\ContainerInterface;
 use Test\TestCase;
 
 /**
+ * Full test case for registering new OCR Workflow, uploading file and
+ * processing it via OCR Backend Service.
  * @group DB
  */
 class OcrBackendServiceTest extends TestCase {
-	private const USER = 'admin';
-	private const PASS = 'admin';
-
 	private ContainerInterface $container;
-	private Manager $manager;
+	private Manager $workflowEngineManager;
 	private IntegrationTestApiClient $apiClient;
 	private ScopeContext $context;
+	private IConfig $config;
+
 	private $operationClass = Operation::class;
+	private $oldLogLevel;
 
 	protected function setUp(): void {
 		parent::setUp();
 
 		$app = new App(Application::APP_NAME);
 		$this->container = $app->getContainer();
-		$this->manager = $this->container->get(Manager::class);
+		$this->workflowEngineManager = $this->container->get(Manager::class);
 		$this->apiClient = $this->container->get(IntegrationTestApiClient::class);
+		$this->config = $this->container->get(IConfig::class);
 		$this->context = new ScopeContext(IManager::SCOPE_ADMIN);
 
 		$this->overwriteService(IApiClient::class, $this->apiClient);
 
-		if (!$this->checkOcrBackendInstalled()) {
+		$githubActionsJob = getenv('GITHUB_JOB');
+		$isOcrBackendInstalled = $this->checkOcrBackendInstalled();
+
+		if ($githubActionsJob === 'github-php-integrationtests' && !$isOcrBackendInstalled) {
+			$this->fail('Running Github Actions Integrationtests but OCR Backend is not installed');
+			return;
+		}
+
+		if (!$isOcrBackendInstalled) {
 			$this->markTestSkipped('OCR Backend is not installed');
 			return;
 		}
 
+		$this->setNextcloudLogLevel();
 		$this->deleteTestFileIfExists();
 		$this->deleteOperation();
 	}
@@ -75,119 +92,169 @@ class OcrBackendServiceTest extends TestCase {
 
 		$this->deleteTestFileIfExists();
 		$this->deleteOperation();
+		$this->restoreNextcloudLogLevel();
+		
 		parent::tearDown();
 	}
 
-	/**
-	 * Full test case for registering new OCR Workflow, uploading file and
-	 * processing it via OCR Backend Service.
-	 */
 	public function testWorkflowOcrBackendService() {
 		$this->addOperation();
 		$this->uploadTestFile();
-		$this->runNextcloudCron();
+		$this->runOcrBackgroundJob();
 
 		$requests = $this->apiClient->getRequests();
-		$this->assertCount(1, $requests);
-		$this->assertTrue(strpos($requests[0]['fileName'], 'document-ready-for-ocr.pdf') >= 0);
-		$this->assertTrue($requests['ocrMyPdfParameters'] === '--skip-text');
+		$this->assertCount(1, $requests, 'Expected 1 OCR request');
+		$request = $requests[0];
+		$this->assertTrue(strpos($request['fileName'], 'document-ready-for-ocr.pdf') >= 0, 'Expected filename in request');
+		$this->assertTrue($request['ocrMyPdfParameters'] === '--skip-text', 'Expected OCR parameters in request');
 
 		$responses = $this->apiClient->getResponses();
-		$this->assertCount(1, $responses);
-		$this->assertTrue($responses[0] instanceof OcrResult);
+		$this->assertCount(1, $responses, 'Expected 1 OCR response');
+		$this->assertTrue($responses[0] instanceof OcrResult, 'Expected OcrResult instance, type is: ' . get_class($responses[0]));
 		/** @var OcrResult */
 		$ocrResult = $responses[0];
-		$this->assertEquals($requests[0]['fileName'], $ocrResult->getFileName());
-		$this->assertEquals('application/pdf', $ocrResult->getContentType());
-		$this->assertTrue(strpos($ocrResult->getRecognizedText(), 'This document is ready for OCR') >= 0);
+		$this->assertEquals($requests[0]['fileName'], $ocrResult->getFileName(), 'Expected filename in response to be equal to request');
+		$this->assertEquals('application/pdf', $ocrResult->getContentType(), 'Expected content type in response');
+		$this->assertTrue(strpos($ocrResult->getRecognizedText(), 'This document is ready for OCR') >= 0, 'Expected recognized text in response');
 	}
 
 	private function addOperation() {
-		$name = '';
-		$checks = [
-			0 =>
-			 [
-			 	'class' => 'OCA\\WorkflowEngine\\Check\\FileMimeType',
-			 	'operator' => 'is',
-			 	'value' => 'application/pdf',
-			 	'invalid' => false,
-			 ]
-		];
-		$operation = '';
-		$entity = "OCA\WorkflowEngine\Entity\File";
-		$events = [
-			0 => '\\OCP\\Files::postCreate',
-		];
-		$operation = $this->manager->addOperation($this->operationClass, $name, $checks, $operation, $this->context, $entity, $events);
-		$this->clearApcu();
+		// NOTE :: we're creating the workflow operation via
+		// REST API because if we'd use the manager directly, we'd
+		// face some issues because of caching etc (test ist running
+		// in another process than webserver ...)
+		$url = $this->getNextcloudOcsApiUrl() . 'apps/workflowengine/api/v1/workflows/global?format=json';
+		$json = '
+		{
+			"id":-1,
+			"class":"' . str_replace('\\', '\\\\', $this->operationClass) . '",
+			"entity":"OCA\\\\WorkflowEngine\\\\Entity\\\\File",
+			"events":["\\\\OCP\\\\Files::postCreate"],
+			"name":"",
+			"checks":[
+				{
+					"class":"OCA\\\\WorkflowEngine\\\\Check\\\\FileMimeType",
+					"operator":"is",
+					"value":"application/pdf",
+					"invalid":false
+				}
+			],
+			"operation":"",
+			"valid":true
+		}';
+		
+		$ch = curl_init($url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_POST, true);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, [
+			'Content-Type: application/json',
+			'OCS-APIREQUEST: true'
+		]);
+
+		$this->executeCurl($ch);
 	}
 
 	private function deleteOperation() {
-		$operations = $this->manager->getOperations($this->operationClass, $this->context);
+		$operations = $this->workflowEngineManager->getOperations($this->operationClass, $this->context);
 		foreach ($operations as $operation) {
-			$this->manager->deleteOperation($operation['id'], $this->context);
+			try {
+				$this->workflowEngineManager->deleteOperation($operation['id'], $this->context);
+			} catch (DomainException) {
+				// ignore
+			}
 		}
 		
 	}
 
 	private function uploadTestFile() {
-		$webdav_url = 'http://localhost/remote.php/dav/files/' . self::USER . '/';
-		$local_file = __DIR__ . '/testdata/document-ready-for-ocr.pdf';
-		$file = fopen($local_file, 'r');
+		$localFile = $this->getTestFileReadyForOcr();
+		$file = fopen($localFile, 'r');
 
 		$ch = curl_init();
 
-		curl_setopt($ch, CURLOPT_URL, $webdav_url . basename($local_file));
-		curl_setopt($ch, CURLOPT_USERPWD, self::USER . ':' . self::PASS);
+		curl_setopt($ch, CURLOPT_URL, $this->getNextcloudWebdavUrl() . basename($localFile));
 		curl_setopt($ch, CURLOPT_PUT, true);
 		curl_setopt($ch, CURLOPT_INFILE, $file);
-		curl_setopt($ch, CURLOPT_INFILESIZE, filesize($local_file));
+		curl_setopt($ch, CURLOPT_INFILESIZE, filesize($localFile));
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-		curl_exec($ch);
-
-		if (curl_errno($ch)) {
-			$this->fail('Error: ' . curl_error($ch));
-		}
-
-		curl_close($ch);
+		$this->executeCurl($ch);
 		fclose($file);
 	}
 
 	private function deleteTestFileIfExists() {
-		$webdav_url = 'http://localhost/remote.php/dav/files/' . self::USER . '/';
-		$local_file = __DIR__ . '/testdata/document-ready-for-ocr.pdf';
+		$localFile = $this->getTestFileReadyForOcr();
 
 		$ch = curl_init();
 
-		curl_setopt($ch, CURLOPT_URL, $webdav_url . basename($local_file));
-		curl_setopt($ch, CURLOPT_USERPWD, self::USER . ':' . self::PASS);
+		curl_setopt($ch, CURLOPT_URL, $this->getNextcloudWebdavUrl() . basename($localFile));
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-		curl_exec($ch);
+		$this->executeCurl($ch, [404]);
+	}
+
+	private function executeCurl(CurlHandle $ch, array $allowedNonSuccessResponseCodes = []) : string|bool {
+		curl_setopt($ch, CURLOPT_USERPWD, $this->getNextcloudCredentials());
+
+		$result = curl_exec($ch);
 
 		if (curl_errno($ch)) {
-			$this->fail('Error: ' . curl_error($ch));
+			$this->fail('cURL Error: ' . curl_error($ch));
+		}
+
+		$responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		if ($responseCode >= 400 && !in_array($responseCode, $allowedNonSuccessResponseCodes)) {
+			$responseBody = curl_multi_getcontent($ch);
+			$this->fail('cURL HTTP Error ' . $responseCode . ': ' . $responseBody);
 		}
 
 		curl_close($ch);
+
+		return $result;
 	}
 
-	private function runNextcloudCron() {
-		global $argv;
-		$argv = [];
-		require __DIR__ . '/../../../../cron.php';
-	}
-
-	private function clearApcu() {
-		if (function_exists('apcu_clear_cache')) {
-			apcu_clear_cache();
-		}
+	private function runOcrBackgroundJob() {
+		/** @var IJoblist */
+		$jobList = $this->container->get(IJobList::class);
+		$job = $jobList->getNext(false, [ProcessFileJob::class]);
+		$this->assertNotNull($job);
+		$job->start($jobList);
 	}
 
 	private function checkOcrBackendInstalled() : bool {
 		$ocrBackendInfoService = $this->container->get(IOcrBackendInfoService::class);
 		return $ocrBackendInfoService->isRemoteBackend();
+	}
+
+	private function getNextcloudWebdavUrl() : string {
+		$port = getenv('NEXTCLOUD_PORT') ?: '80';
+		$user = getenv('NEXTCLOUD_USER') ?: 'admin';
+		return 'http://localhost:' . $port . '/remote.php/dav/files/' . $user . '/';
+	}
+
+	private function getNextcloudOcsApiUrl() : string {
+		$port = getenv('NEXTCLOUD_PORT') ?: '80';
+		return 'http://localhost:' . $port . '/ocs/v2.php/';
+	}
+
+	private function getNextcloudCredentials() : string {
+		$user = getenv('NEXTCLOUD_USER') ?: 'admin';
+		$pass = getenv('NEXTCLOUD_PASS') ?: 'admin';
+		return $user . ':' . $pass;
+	}
+
+	private function getTestFileReadyForOcr() : string {
+		return __DIR__ . '/testdata/document-ready-for-ocr.pdf';
+	}
+
+	private function setNextcloudLogLevel() : void {
+		$this->oldLogLevel = $this->config->getSystemValue('loglevel', 3);
+		$this->config->setSystemValue('loglevel', 0);
+	}
+
+	private function restoreNextcloudLogLevel() : void {
+		$this->config->setSystemValue('loglevel', $this->oldLogLevel);
 	}
 }
