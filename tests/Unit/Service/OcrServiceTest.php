@@ -26,6 +26,9 @@ namespace OCA\WorkflowOcr\Tests\Unit\Service;
 use Exception;
 use InvalidArgumentException;
 use OC\User\NoUserException;
+use OCA\Files_Versions\Versions\IMetadataVersion;
+use OCA\Files_Versions\Versions\IVersion;
+use OCA\Files_Versions\Versions\IVersionBackend;
 use OCA\Files_Versions\Versions\IVersionManager;
 use OCA\Files_Versions\Versions\Version;
 use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
@@ -54,8 +57,8 @@ use OCP\IUserManager;
 use OCP\IUserSession;
 use OCP\SystemTag\ISystemTagObjectMapper;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use Test\TestCase;
 
 class OcrServiceTest extends TestCase {
 	/** @var IOcrProcessorFactory|MockObject */
@@ -527,15 +530,23 @@ class OcrServiceTest extends TestCase {
 		$this->ocrProcessor->expects($this->once())
 			->method('ocrFile')
 			->willThrowException(new OcrResultEmptyException('oops'));
-		$this->logger->expects($this->once())
+		$loggedSkipMessage = false;
+		$this->logger->expects($this->atLeastOnce())
 			->method('debug')
-			->with($this->stringStartsWith('Skipping empty OCR result for file with id'), ['fileId' => $fileId]);
+			->willReturnCallback(function ($message, $params) use (&$loggedSkipMessage, $fileId) {
+				if (str_contains($message, 'Skipping empty OCR result for file with id') &&
+					isset($params['fileId']) && $params['fileId'] === $fileId) {
+					$loggedSkipMessage = true;
+				}
+			});
 		$this->viewFactory->expects($this->never())
 			->method('create');
 		$this->eventService->expects($this->never())
 			->method('textRecognized');
 			
 		$this->ocrService->runOcrProcess($fileId, 'usr', $settings);
+
+		$this->assertTrue($loggedSkipMessage);
 	}
 
 	/**
@@ -549,7 +560,7 @@ class OcrServiceTest extends TestCase {
 		$this->ocrProcessor->expects($this->once())
 			->method('ocrFile')
 			->willThrowException($ex);
-		$this->logger->expects($this->never())
+		$this->logger->expects($this->atLeastOnce())
 			->method('debug');
 		$this->viewFactory->expects($this->never())
 			->method('create');
@@ -778,6 +789,60 @@ class OcrServiceTest extends TestCase {
 			[new OcrResultEmptyException('Ocr result was empty')],
 			[new Exception('Some exception')]
 		];
+	}
+
+	public function testSetFileVersionsLabelSkipsNonMetadataVersion(): void {
+		$file = $this->createMock(File::class);
+		$user = 'admin';
+		$version = $this->createMock(IVersion::class);
+		$userObj = $this->createMock(IUser::class);
+		$this->userManager->expects($this->once())
+			->method('get')
+			->with($user)
+			->willReturn($userObj);
+
+		$this->versionManager->expects($this->once())
+			->method('getVersionsForFile')
+			->with($userObj, $file)
+			->willReturn([$version]);
+
+		$this->logger->expects($this->once())
+			->method('debug')
+			->with('Skipping version with revision id {versionId} because "{versionClass}" is not an IMetadataVersion', ['versionClass' => get_class($version)]);
+
+		$this->invokePrivate($this->ocrService, 'setFileVersionsLabel', [$file, $user, 'label']);
+	}
+
+	public function testSetFileVersionsLabelSkipsNonMetadataVersionBackend(): void {
+		$file = $this->createMock(File::class);
+		$user = 'admin';
+		$version = $this->getMockBuilder(IMetadataVersion::class)
+			->disableOriginalConstructor()
+			->disableOriginalClone()
+			->disableArgumentCloning()
+			->disallowMockingUnknownTypes()
+			->addMethods(['getBackend'])
+			->getMockForAbstractClass();
+
+		$versionBackend = $this->createMock(IVersionBackend::class);
+		$userObj = $this->createMock(IUser::class);
+		$this->userManager->expects($this->once())
+			->method('get')
+			->with($user)
+			->willReturn($userObj);
+
+		$this->versionManager->expects($this->once())
+			->method('getVersionsForFile')
+			->with($userObj, $file)
+			->willReturn([$version]);
+
+		$version->method('getBackend')->willReturn($versionBackend);
+
+		$this->logger->expects($this->once())
+			->method('debug')
+			->with('Skipping version with revision id {versionId} because its backend "{versionBackendClass}" does not implement IMetadataVersionBackend', ['versionBackendClass' => get_class($versionBackend)]);
+
+		$this->invokePrivate($this->ocrService, 'setFileVersionsLabel', [$file, $user, 'label']);
 	}
 
 	/**
