@@ -45,8 +45,9 @@ jobs:
         php-versions: ['8.3']
         databases: ['mysql']
         server-versions: ['stable31']
+        backend: ['remote', 'local'] # Do not change these names, they're used in the integration tests
 
-    name: php-integrationtests${{ matrix.php-versions }}-${{ matrix.databases }}
+    name: php-integrationtests-${{ matrix.backend }}-${{ matrix.php-versions }}-${{ matrix.databases }}
 
     steps:
       - name: Checkout server
@@ -75,6 +76,12 @@ jobs:
           extensions: mbstring, iconv, fileinfo, intl, sqlite, pdo_sqlite, gd, zip, imagick
           coverage: none
 
+      - name: Install ocrmypdf
+        if: matrix.backend == 'local'
+        run: |
+          sudo apt-get update && sudo apt-get install -y ocrmypdf
+          ocrmypdf --version
+
       - name: Install composer dependencies
         working-directory: apps/${{ env.APP_NAME }}
         run: composer i
@@ -93,12 +100,14 @@ jobs:
 
       - name: Checkout AppApi
         uses: actions/checkout@v4
+        if: matrix.backend == 'remote'
         with:
           repository: nextcloud/app_api
           ref: ${{ matrix.server-versions }}
           path: apps/app_api
 
       - name: Set up AppApi/ExApp infrastructure
+        if: matrix.backend == 'remote'
         run: |
           ./occ app:enable app_api
           ./occ app_api:daemon:register local_docker "docker-socket-proxy" \
@@ -110,10 +119,12 @@ jobs:
 
       - name: PHPUnit
         working-directory: apps/${{ env.APP_NAME }}
+        env:
+          GITHUB_MATRIX_BACKEND: ${{ matrix.backend }}
         run: make php-integrationtest
 
       - name: Write OCR Backend logs to file
-        if: failure()
+        if: failure() && matrix.backend == 'remote'
         run: |
           docker logs nc_app_workflow_ocr_backend > data/ocr_backend.log
 

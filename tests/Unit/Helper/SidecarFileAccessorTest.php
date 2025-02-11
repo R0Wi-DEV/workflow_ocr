@@ -42,19 +42,20 @@ class SidecarFileAccessorTest extends TestCase {
 	/** @var string */
 	private $tmpFilePath;
 
+	/** @var resource */
+	private $tmpFileHandle;
+
 	public function setUp(): void {
 		$this->tempManager = $this->createMock(ITempManager::class);
 		$this->logger = $this->createMock(LoggerInterface::class);
 		$this->accessor = new SidecarFileAccessor($this->tempManager, $this->logger);
-		$tmpFile = tmpfile();
-		$this->tmpFilePath = stream_get_meta_data($tmpFile)['uri'];
+		$this->tmpFileHandle = tmpfile();
+		$this->tmpFilePath = stream_get_meta_data($this->tmpFileHandle)['uri'];
 		parent::setUp();
 	}
 
 	public function tearDown(): void {
-		if (file_exists($this->tmpFilePath)) {
-			unlink($this->tmpFilePath);
-		}
+		fclose($this->tmpFileHandle);
 		parent::tearDown();
 	}
 
@@ -93,5 +94,20 @@ class SidecarFileAccessorTest extends TestCase {
 
 		$sidecarFileContent = $this->accessor->getSidecarFileContent();
 		$this->assertEquals('', $sidecarFileContent);
+	}
+
+	public function testLogsWarningIfFileIsNotWriteable() {
+		chmod($this->tmpFilePath, 0111);
+		$this->tempManager->expects($this->once())
+			->method('getTemporaryFile')
+			->with('sidecar')
+			->willReturn($this->tmpFilePath);
+
+		$this->logger->expects($this->once())
+			->method('warning')
+			->with('Temporary sidecar file is not writable');
+
+		$sidecarFilePath = $this->accessor->getOrCreateSidecarFile();
+		$this->assertEquals($this->tmpFilePath, $sidecarFilePath);
 	}
 }
