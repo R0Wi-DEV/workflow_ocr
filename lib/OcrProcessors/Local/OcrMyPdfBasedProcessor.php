@@ -21,42 +21,33 @@ declare(strict_types=1);
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OCA\WorkflowOcr\OcrProcessors;
+namespace OCA\WorkflowOcr\OcrProcessors\Local;
 
 use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
 use OCA\WorkflowOcr\Exception\OcrResultEmptyException;
 use OCA\WorkflowOcr\Helper\ISidecarFileAccessor;
 use OCA\WorkflowOcr\Model\GlobalSettings;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
+use OCA\WorkflowOcr\OcrProcessors\ICommandLineUtils;
+use OCA\WorkflowOcr\OcrProcessors\IOcrProcessor;
+use OCA\WorkflowOcr\OcrProcessors\OcrProcessorResult;
 use OCA\WorkflowOcr\Wrapper\ICommand;
 use OCP\Files\File;
 use Psr\Log\LoggerInterface;
 
 abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
-	private static $ocrModeToCmdParameterMapping = [
-		WorkflowSettings::OCR_MODE_SKIP_TEXT => '--skip-text',
-		WorkflowSettings::OCR_MODE_REDO_OCR => '--redo-ocr',
-		WorkflowSettings::OCR_MODE_FORCE_OCR => '--force-ocr',
-		WorkflowSettings::OCR_MODE_SKIP_FILE => '' // This is the ocrmypdf default behaviour
-	];
-
-	/** @var ICommand */
-	private $command;
-
-	/** @var LoggerInterface */
-	private $logger;
-
-	/** @var ISidecarFileAccessor */
-	private $sidecarFileAccessor;
-
-	public function __construct(ICommand $command, LoggerInterface $logger, ISidecarFileAccessor $sidecarFileAccessor) {
-		$this->command = $command;
-		$this->logger = $logger;
-		$this->sidecarFileAccessor = $sidecarFileAccessor;
+	public function __construct(
+		private ICommand $command,
+		private LoggerInterface $logger,
+		private ISidecarFileAccessor $sidecarFileAccessor,
+		private ICommandLineUtils $commandLineUtils,
+	) {
 	}
 
 	public function ocrFile(File $file, WorkflowSettings $settings, GlobalSettings $globalSettings): OcrProcessorResult {
-		$commandStr = 'ocrmypdf ' . $this->getCommandlineArgs($settings, $globalSettings) . ' - - || exit $? ; cat';
+		$additionalCommandlineArgs = $this->getAdditionalCommandlineArgs($settings, $globalSettings);
+		$sidecarFile = $this->sidecarFileAccessor->getOrCreateSidecarFile();
+		$commandStr = 'ocrmypdf ' . $this->commandLineUtils->getCommandlineArgs($settings, $globalSettings, $sidecarFile, $additionalCommandlineArgs) . ' - - || exit $? ; cat';
 
 		$inputFileContent = $file->getContent();
 
@@ -92,7 +83,7 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 		$recognizedText = $this->sidecarFileAccessor->getSidecarFileContent();
 
 		if (!$recognizedText) {
-			$this->logger->info('Temporary sidecar file at \'{path}\' was empty', ['path' => $this->sidecarFileAccessor->getOrCreateSidecarFile()]);
+			$this->logger->info('Temporary sidecar file at \'{path}\' was empty', ['path' => $sidecarFile]);
 		}
 
 		$this->logger->debug('OCR processing was successful');
@@ -108,56 +99,5 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 	 */
 	protected function getAdditionalCommandlineArgs(WorkflowSettings $settings, GlobalSettings $globalSettings): array {
 		return [];
-	}
-
-
-	private function getCommandlineArgs(WorkflowSettings $settings, GlobalSettings $globalSettings): string {
-		// Default setting is quiet
-		$args = ['-q'];
-
-		// OCR mode ('--skip-text', '--redo-ocr', '--force-ocr' or empty)
-		$args[] = self::$ocrModeToCmdParameterMapping[$settings->getOcrMode()];
-
-		// Language settings
-		if ($settings->getLanguages()) {
-			$langStr = implode('+', $settings->getLanguages());
-			$args[] = "-l $langStr";
-		}
-
-		// Remove background option (NOTE :: this is incompatible with redo-ocr, so
-		// we have to make it exclusive against each other!)
-		if ($settings->getRemoveBackground()) {
-			if ($settings->getOcrMode() === WorkflowSettings::OCR_MODE_REDO_OCR) {
-				$this->logger->warning('--remove-background is incompatible with --redo-ocr, ignoring');
-			} else {
-				$args[] = '--remove-background';
-			}
-		}
-
-		// Number of CPU's to be used
-		$processorCount = intval($globalSettings->processorCount);
-		if ($processorCount > 0) {
-			$args[] = '-j ' . $processorCount;
-		}
-
-		// Save recognized text in tempfile
-		$sidecarFilePath = $this->sidecarFileAccessor->getOrCreateSidecarFile();
-		if ($sidecarFilePath) {
-			$args[] = '--sidecar ' . $sidecarFilePath;
-		}
-
-		$resultArgs = array_filter(array_merge(
-			$args,
-			$this->getAdditionalCommandlineArgs($settings, $globalSettings),
-			[$this->escapeCustomCliArgs($settings->getCustomCliArgs())]
-		), fn ($arg) => !empty($arg));
-
-		return implode(' ', $resultArgs);
-	}
-
-	private function escapeCustomCliArgs(string $customCliArgs): string {
-		$customCliArgs = str_replace('&&', '', $customCliArgs);
-		$customCliArgs = str_replace(';', '', $customCliArgs);
-		return $customCliArgs;
 	}
 }

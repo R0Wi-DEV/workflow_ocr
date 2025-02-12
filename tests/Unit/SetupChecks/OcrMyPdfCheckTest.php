@@ -26,6 +26,8 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\Tests\Unit\SetupChecks;
 
+use OCA\WorkflowOcr\OcrProcessors\Remote\Client\IApiClient;
+use OCA\WorkflowOcr\Service\IOcrBackendInfoService;
 use OCA\WorkflowOcr\SetupChecks\OcrMyPdfCheck;
 use OCA\WorkflowOcr\Wrapper\ICommand;
 use OCP\IL10N;
@@ -38,13 +40,19 @@ class OcrMyPdfCheckTest extends TestCase {
 	private $l10n;
 	/** @var ICommand|MockObject */
 	private $command;
+	/** @var IOcrBackendInfoService|MockObject */
+	private $ocrBackendInfoService;
+	/** @var IApiClient|MockObject */
+	private $apiClient;
 	/** @var OcrMyPdfCheck */
 	private $ocrMyPdfCheck;
 
 	protected function setUp(): void {
 		$this->l10n = $this->createMock(IL10N::class);
 		$this->command = $this->createMock(ICommand::class);
-		$this->ocrMyPdfCheck = new OcrMyPdfCheck($this->l10n, $this->command);
+		$this->ocrBackendInfoService = $this->createMock(IOcrBackendInfoService::class);
+		$this->apiClient = $this->createMock(IApiClient::class);
+		$this->ocrMyPdfCheck = new OcrMyPdfCheck($this->l10n, $this->command, $this->ocrBackendInfoService, $this->apiClient);
 	}
 
 	public function testGetCategory(): void {
@@ -99,5 +107,33 @@ class OcrMyPdfCheckTest extends TestCase {
 		$this->assertInstanceOf(SetupResult::class, $result);
 		$this->assertEquals(SetupResult::SUCCESS, $result->getSeverity());
 		$this->assertEquals('OCRmyPDF is installed and has version 12.0.0.', $result->getDescription());
+	}
+
+	public function testRunOcrMyPdfInstalledViaRemoteBackend(): void {
+		$this->ocrBackendInfoService->expects($this->once())->method('isRemoteBackend')->willReturn(true);
+		$this->apiClient->expects($this->once())->method('heartbeat')->willReturn(true);
+		$this->l10n->expects($this->once())->method('t')
+			->with('Workflow OCR Backend is installed.')
+			->willReturn('Workflow OCR Backend is installed.');
+
+		$result = $this->ocrMyPdfCheck->run();
+
+		$this->assertInstanceOf(SetupResult::class, $result);
+		$this->assertEquals(SetupResult::SUCCESS, $result->getSeverity());
+		$this->assertEquals('Workflow OCR Backend is installed.', $result->getDescription());
+	}
+
+	public function testRunOcrMyPdfInstalledVIaRemoteBackendHeartbeatFailed(): void {
+		$this->ocrBackendInfoService->expects($this->once())->method('isRemoteBackend')->willReturn(true);
+		$this->apiClient->expects($this->once())->method('heartbeat')->willReturn(false);
+		$this->l10n->expects($this->once())->method('t')
+			->with('Workflow OCR Backend is installed but heartbeat failed.')
+			->willReturn('Workflow OCR Backend is installed but heartbeat failed.');
+
+		$result = $this->ocrMyPdfCheck->run();
+
+		$this->assertInstanceOf(SetupResult::class, $result);
+		$this->assertEquals(SetupResult::WARNING, $result->getSeverity());
+		$this->assertEquals('Workflow OCR Backend is installed but heartbeat failed.', $result->getDescription());
 	}
 }
