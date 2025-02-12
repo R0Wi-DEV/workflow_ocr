@@ -44,7 +44,7 @@ jobs:
       matrix:
         php-versions: ['8.3']
         databases: ['mysql']
-        server-versions: ['stable31']
+        server-versions: ['master']
         backend: ['remote', 'local'] # Do not change these names, they're used in the integration tests
 
     name: php-integrationtests-${{ matrix.backend }}-${{ matrix.php-versions }}-${{ matrix.databases }}
@@ -103,7 +103,7 @@ jobs:
         if: matrix.backend == 'remote'
         with:
           repository: nextcloud/app_api
-          ref: ${{ matrix.server-versions }}
+          ref: ${{ matrix.server-versions == 'master' && 'main' || matrix.server-versions }}
           path: apps/app_api
 
       - name: Set up AppApi/ExApp infrastructure
