@@ -26,12 +26,12 @@ namespace OCA\WorkflowOcr\Tests\Unit\Service;
 use OCA\WorkflowOcr\AppInfo\Application;
 use OCA\WorkflowOcr\Model\GlobalSettings;
 use OCA\WorkflowOcr\Service\GlobalSettingsService;
-use OCP\IConfig;
+use OCP\IAppConfig;
 use PHPUnit\Framework\MockObject\MockObject;
 use Test\TestCase;
 
 class GlobalSettingsServiceTest extends TestCase {
-	/** @var IConfig|MockObject */
+	/** @var IAppConfig|MockObject */
 	private $config;
 
 	/** @var GlobalSettingsService */
@@ -39,14 +39,14 @@ class GlobalSettingsServiceTest extends TestCase {
 
 	public function setUp() : void {
 		parent::setUp();
-		$this->config = $this->createMock(IConfig::class);
+		$this->config = $this->createMock(IAppConfig::class);
 		$this->globalSettingsService = new GlobalSettingsService($this->config);
 	}
 
 	public function testGetSettings_ReturnsCorrectSettings() {
 		$this->config->expects($this->once())
-			->method('getAppValue')
-			->with(Application::APP_NAME, 'processorCount', '')
+			->method('getValueString')
+			->with(Application::APP_NAME, 'processorCount')
 			->willReturn('2');
 
 		$settings = $this->globalSettingsService->getGlobalSettings();
@@ -57,10 +57,10 @@ class GlobalSettingsServiceTest extends TestCase {
 
 	public function testSetSettings_CallsConfigSetAppValue() {
 		$settings = new GlobalSettings();
-		$settings->processorCount = 2;
+		$settings->processorCount = '2';
 
 		$this->config->expects($this->once())
-			->method('setAppValue')
+			->method('setValueString')
 			->with(Application::APP_NAME, 'processorCount', '2');
 
 		$this->globalSettingsService->setGlobalSettings($settings);

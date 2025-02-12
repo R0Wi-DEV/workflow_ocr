@@ -12,37 +12,40 @@
 ## Table of contents
 
 - [Nextcloud Workflow OCR app](#nextcloud-workflow-ocr-app)
-	- [Table of contents](#table-of-contents)
-	- [Setup](#setup)
-		- [App installation](#app-installation)
-		- [Nextcloud background jobs](#nextcloud-background-jobs)
-		- [Backend](#backend)
-	- [Usage](#usage)
-		- [Useful triggers](#useful-triggers)
-			- [Trigger OCR if file was created or updated](#trigger-ocr-if-file-was-created-or-updated)
-			- [Trigger OCR on tag assigning](#trigger-ocr-on-tag-assigning)
-		- [Settings](#settings)
-			- [Per workflow settings](#per-workflow-settings)
-			- [Global settings](#global-settings)
-		- [Testing your configuration](#testing-your-configuration)
-		- [Get feedback via Notifications](#get-feedback-via-notifications)
-	- [How it works](#how-it-works)
-		- [General](#general)
-		- [PDF](#pdf)
-		- [Images](#images)
-	- [Troubleshooting](#troubleshooting)
-		- [Generic troubleshooting guide](#generic-troubleshooting-guide)
-		- [The Nextcloud Workflowengine](#the-nextcloud-workflowengine)
-	- [Development](#development)
-		- [Dev setup](#dev-setup)
-		- [Debugging](#debugging)
-		- [`docker`-based setup](#docker-based-setup)
-		- [Executing tests](#executing-tests)
-		- [Adding a new `OcrProcessor`](#adding-a-new-ocrprocessor)
-		- [Events emitted by the app](#events-emitted-by-the-app)
-			- [`TextRecognizedEvent`](#textrecognizedevent)
-	- [Limitations](#limitations)
-	- [Used libraries \& components](#used-libraries--components)
+  - [Table of contents](#table-of-contents)
+  - [Setup](#setup)
+    - [App installation](#app-installation)
+    - [Nextcloud background jobs](#nextcloud-background-jobs)
+    - [Backend](#backend)
+      - [Local installation](#local-installation)
+      - [`workflow_ocr_backend` installation](#workflow_ocr_backend-installation)
+    - [Setup Checks](#setup-checks)
+  - [Usage](#usage)
+    - [Useful triggers](#useful-triggers)
+      - [Trigger OCR if file was created or updated](#trigger-ocr-if-file-was-created-or-updated)
+      - [Trigger OCR on tag assigning](#trigger-ocr-on-tag-assigning)
+    - [Settings](#settings)
+      - [Per workflow settings](#per-workflow-settings)
+      - [Global settings](#global-settings)
+    - [Testing your configuration](#testing-your-configuration)
+    - [Get feedback via Notifications](#get-feedback-via-notifications)
+  - [How it works](#how-it-works)
+    - [General](#general)
+    - [PDF](#pdf)
+    - [Images](#images)
+  - [Troubleshooting](#troubleshooting)
+    - [Generic troubleshooting guide](#generic-troubleshooting-guide)
+    - [The Nextcloud Workflowengine](#the-nextcloud-workflowengine)
+  - [Development](#development)
+    - [Dev setup](#dev-setup)
+    - [Debugging](#debugging)
+    - [`docker`-based setup](#docker-based-setup)
+    - [Executing tests](#executing-tests)
+    - [Adding a new `OcrProcessor`](#adding-a-new-ocrprocessor)
+    - [Events emitted by the app](#events-emitted-by-the-app)
+      - [`TextRecognizedEvent`](#textrecognizedevent)
+  - [Limitations](#limitations)
+  - [Used libraries \& components](#used-libraries--components)
 
 ## Setup
 ### App installation
@@ -58,6 +61,11 @@ Since the actual processing of the files is done asynchronously via Nextcloud's 
 
 
 ### Backend
+
+This app is based on `ocrmypdf`. You can either install the CLI directly on the server running Nextcloud or use the alternative backend setup via Docker.
+
+#### Local installation
+
 > :warning: Since `v1.20.1` you'll have to install `OCRmyPDF`.
 
 In the backend [`OCRmyPDF`](https://github.com/jbarlow83/OCRmyPDF) is used for processing PDF files. Make sure you have this commandline tool installed. Make sure you have the appropriate version (see below, Used libraries').
@@ -80,6 +88,16 @@ apt-get install tesseract-ocr-deu
 # Chinese - Simplified
 apt-get install tesseract-ocr-chi-sim
 ```
+
+#### `workflow_ocr_backend` installation
+
+Starting from version 30, Nextcloud added support for [AppApi](https://docs.nextcloud.com/server/latest/admin_manual/exapps_management/AppAPIAndExternalApps.html) apps. In essence this allows external container based applications to be integrated into the Nextcloud ecosystem. This app is using this feature to provide an alternative backend setup via Docker.
+
+If everything is setup properly, you can just install the `workflow_ocr_backend` app from the [appstore](https://apps.nextcloud.com/apps/workflow_ocr_backend).
+
+Please refer to **https://github.com/R0Wi-DEV/workflow_ocr_backend** for more information on how to setup the backend.
+
+> :information_source: If the `workflow_ocr_backend` External App is installed, this "frontend" app will automatically use it as the backend even if you installed `ocrmypdf` locally.
 
 ### Setup Checks
 

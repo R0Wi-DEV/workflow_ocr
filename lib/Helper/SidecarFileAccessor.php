@@ -49,6 +49,8 @@ class SidecarFileAccessor implements ISidecarFileAccessor {
 			$this->sidecarFilePath = $this->tempManager->getTemporaryFile('sidecar');
 			if (!$this->sidecarFilePath) {
 				$this->logger->warning('Could not create temporary sidecar file');
+			} elseif (!is_writable($this->sidecarFilePath)) {
+				$this->logger->warning('Temporary sidecar file is not writable');
 			}
 		}
 		return $this->sidecarFilePath;

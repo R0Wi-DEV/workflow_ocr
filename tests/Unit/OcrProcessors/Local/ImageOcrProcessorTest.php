@@ -21,12 +21,13 @@ declare(strict_types=1);
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OCA\WorkflowOcr\Tests\Unit\OcrProcessors;
+namespace OCA\WorkflowOcr\Tests\Unit\OcrProcessors\Local;
 
 use OCA\WorkflowOcr\Helper\ISidecarFileAccessor;
 use OCA\WorkflowOcr\Model\GlobalSettings;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
-use OCA\WorkflowOcr\OcrProcessors\ImageOcrProcessor;
+use OCA\WorkflowOcr\OcrProcessors\ICommandLineUtils;
+use OCA\WorkflowOcr\OcrProcessors\Local\ImageOcrProcessor;
 use OCA\WorkflowOcr\Wrapper\ICommand;
 use OCP\Files\File;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -43,8 +44,12 @@ class ImageOcrProcessorTest extends TestCase {
 		$file = $this->createMock(File::class);
 		/** @var ISidecarFileAccessor|MockObject $fileReader */
 		$sidecarFileAccessor = $this->createMock(ISidecarFileAccessor::class);
+		/** @var ICommandLineUtils|MockObject $commandLineUtils */
+		$commandLineUtils = $this->createMock(ICommandLineUtils::class);
+		$commandLineUtils->method('getCommandlineArgs')
+			->willReturnCallback(fn ($settings, $globalSettings, $sidecarFile, $additionalCommandlineArgs) => implode(' ', $additionalCommandlineArgs));
 
-		$processor = new ImageOcrProcessor($command, $logger, $sidecarFileAccessor);
+		$processor = new ImageOcrProcessor($command, $logger, $sidecarFileAccessor, $commandLineUtils);
 
 		$file->expects($this->once())
 			->method('getContent')
