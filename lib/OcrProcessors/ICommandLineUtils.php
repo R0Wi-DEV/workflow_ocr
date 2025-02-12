@@ -27,5 +27,5 @@ use OCA\WorkflowOcr\Model\GlobalSettings;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
 
 interface ICommandLineUtils {
-	public function getCommandlineArgs(WorkflowSettings $settings, GlobalSettings $globalSettings, array $additionalCommandlineArgs = []): string;
+	public function getCommandlineArgs(WorkflowSettings $settings, GlobalSettings $globalSettings, ?string $sidecarFile = null, array $additionalCommandlineArgs = []): string;
 }

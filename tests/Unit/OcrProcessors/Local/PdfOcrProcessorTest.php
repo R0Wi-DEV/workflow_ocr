@@ -70,7 +70,7 @@ class PdfOcrProcessorTest extends TestCase {
 		$this->logger = $this->createMock(LoggerInterface::class);
 		$this->sidecarFileAccessor = $this->createMock(ISidecarFileAccessor::class);
 		$this->ocrBackendInfoService = $this->createMock(IOcrBackendInfoService::class);
-		$this->commandLineUtils = new CommandLineUtils($this->sidecarFileAccessor, $this->ocrBackendInfoService, $this->logger);
+		$this->commandLineUtils = new CommandLineUtils($this->ocrBackendInfoService, $this->logger);
 		
 		$this->defaultSettings = new WorkflowSettings();
 		$this->defaultGlobalSettings = new GlobalSettings();

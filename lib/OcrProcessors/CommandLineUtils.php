@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\OcrProcessors;
 
-use OCA\WorkflowOcr\Helper\ISidecarFileAccessor;
 use OCA\WorkflowOcr\Model\GlobalSettings;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCA\WorkflowOcr\Service\IOcrBackendInfoService;
@@ -38,13 +37,12 @@ class CommandLineUtils implements ICommandLineUtils {
 	];
 
 	public function __construct(
-		private ISidecarFileAccessor $sidecarFileAccessor,
 		private IOcrBackendInfoService $ocrBackendInfoService,
 		private LoggerInterface $logger,
 	) {
 	}
 
-	public function getCommandlineArgs(WorkflowSettings $settings, GlobalSettings $globalSettings, array $additionalCommandlineArgs = []): string {
+	public function getCommandlineArgs(WorkflowSettings $settings, GlobalSettings $globalSettings, ?string $sidecarFile = null, array $additionalCommandlineArgs = []): string {
 		$isLocalExecution = !$this->ocrBackendInfoService->isRemoteBackend();
 		
 		// Default setting is quiet
@@ -75,12 +73,9 @@ class CommandLineUtils implements ICommandLineUtils {
 			$args[] = '--jobs ' . $processorCount;
 		}
 
-		if ($isLocalExecution) {
+		if ($isLocalExecution && $sidecarFile !== null) {
 			// Save recognized text in tempfile
-			$sidecarFilePath = $this->sidecarFileAccessor->getOrCreateSidecarFile();
-			if ($sidecarFilePath) {
-				$args[] = '--sidecar ' . $sidecarFilePath;
-			}
+			$args[] = '--sidecar ' . $sidecarFile;
 		}
 
 		$resultArgs = array_filter(array_merge(

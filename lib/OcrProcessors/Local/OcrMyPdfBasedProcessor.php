@@ -46,7 +46,8 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 
 	public function ocrFile(File $file, WorkflowSettings $settings, GlobalSettings $globalSettings): OcrProcessorResult {
 		$additionalCommandlineArgs = $this->getAdditionalCommandlineArgs($settings, $globalSettings);
-		$commandStr = 'ocrmypdf ' . $this->commandLineUtils->getCommandlineArgs($settings, $globalSettings, $additionalCommandlineArgs) . ' - - || exit $? ; cat';
+		$sidecarFile = $this->sidecarFileAccessor->getOrCreateSidecarFile();
+		$commandStr = 'ocrmypdf ' . $this->commandLineUtils->getCommandlineArgs($settings, $globalSettings, $sidecarFile, $additionalCommandlineArgs) . ' - - || exit $? ; cat';
 
 		$inputFileContent = $file->getContent();
 
@@ -82,7 +83,7 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 		$recognizedText = $this->sidecarFileAccessor->getSidecarFileContent();
 
 		if (!$recognizedText) {
-			$this->logger->info('Temporary sidecar file at \'{path}\' was empty', ['path' => $this->sidecarFileAccessor->getOrCreateSidecarFile()]);
+			$this->logger->info('Temporary sidecar file at \'{path}\' was empty', ['path' => $sidecarFile]);
 		}
 
 		$this->logger->debug('OCR processing was successful');

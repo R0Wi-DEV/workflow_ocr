@@ -47,7 +47,7 @@ class ImageOcrProcessorTest extends TestCase {
 		/** @var ICommandLineUtils|MockObject $commandLineUtils */
 		$commandLineUtils = $this->createMock(ICommandLineUtils::class);
 		$commandLineUtils->method('getCommandlineArgs')
-			->willReturnCallback(fn ($settings, $globalSettings, $additionalCommandlineArgs) => implode(' ', $additionalCommandlineArgs));
+			->willReturnCallback(fn ($settings, $globalSettings, $sidecarFile, $additionalCommandlineArgs) => implode(' ', $additionalCommandlineArgs));
 
 		$processor = new ImageOcrProcessor($command, $logger, $sidecarFileAccessor, $commandLineUtils);
 
