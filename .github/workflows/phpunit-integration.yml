@@ -1,0 +1,138 @@
+name: PHPUnit-Integration
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - stable*
+
+env:
+  APP_NAME: workflow_ocr
+  NEXTCLOUD_PORT: 8080
+  NEXTCLOUD_USER: "admin"
+  NEXTCLOUD_PASS: "password"
+  NC_HAPROXY_PASSWORD: "some_secure_password"
+  NC_HAPROXY_PORT: 2375
+  DB_PORT: 4444
+  MYSQL_ROOT_PASSWORD: "rootpassword"
+
+jobs:
+  # Do not change this name, it is used in the integration tests
+  github-php-integrationtests:
+    runs-on: ubuntu-24.04
+    services:
+      docker-socket-proxy:
+        image: ghcr.io/nextcloud/nextcloud-appapi-dsp:release
+        env:
+          NC_HAPROXY_PASSWORD: "some_secure_password"
+        options: --privileged 
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock
+        ports:
+          - 2375:2375
+      mysql:
+        image: mariadb:10.5
+        ports:
+          - 4444:3306/tcp
+        env:
+          MYSQL_ROOT_PASSWORD: rootpassword
+        options: --health-cmd="mysqladmin ping" --health-interval 5s --health-timeout 2s --health-retries 5
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        php-versions: ['8.3']
+        databases: ['mysql']
+        server-versions: ['master']
+        backend: ['remote', 'local'] # Do not change these names, they're used in the integration tests
+
+    name: php-integrationtests-${{ matrix.backend }}-${{ matrix.php-versions }}-${{ matrix.databases }}
+
+    steps:
+      - name: Checkout server
+        uses: actions/checkout@v4
+        with:
+          repository: nextcloud/server
+          ref: ${{ matrix.server-versions }}
+
+      - name: Checkout submodules
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git submodule sync --recursive
+          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+
+      - name: Checkout app
+        uses: actions/checkout@v4
+        with:
+          path: apps/${{ env.APP_NAME }}
+
+      - name: Set up php ${{ matrix.php-versions }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          tools: phpunit
+          extensions: mbstring, iconv, fileinfo, intl, sqlite, pdo_sqlite, gd, zip, imagick
+          coverage: none
+
+      - name: Install ocrmypdf
+        if: matrix.backend == 'local'
+        run: |
+          sudo apt-get update && sudo apt-get install -y ocrmypdf
+          ocrmypdf --version
+
+      - name: Install composer dependencies
+        working-directory: apps/${{ env.APP_NAME }}
+        run: composer i
+
+      # Note: ./occ maintenance:mimetype:update-db is required to avoid
+      # issues with the application/pdf mimetype
+      - name: Set up Nextcloud
+        run: |
+          mkdir data
+          ./occ maintenance:install --verbose --database=${{ matrix.databases }} --database-name=nextcloud \
+            --database-host=127.0.0.1 --database-port=${{ env.DB_PORT }} --database-user=root --database-pass=${{ env.MYSQL_ROOT_PASSWORD }} \
+            --admin-user ${{ env.NEXTCLOUD_USER }} --admin-pass ${{ env.NEXTCLOUD_PASS }}
+          ./occ app:enable ${{ env.APP_NAME }}
+          ./occ maintenance:mimetype:update-db
+          php -S localhost:${{ env.NEXTCLOUD_PORT }} &
+
+      - name: Checkout AppApi
+        uses: actions/checkout@v4
+        if: matrix.backend == 'remote'
+        with:
+          repository: nextcloud/app_api
+          ref: ${{ matrix.server-versions == 'master' && 'main' || matrix.server-versions }}
+          path: apps/app_api
+
+      - name: Set up AppApi/ExApp infrastructure
+        if: matrix.backend == 'remote'
+        run: |
+          ./occ app:enable app_api
+          ./occ app_api:daemon:register local_docker "docker-socket-proxy" \
+            "docker-install" "http" "localhost:${{ env.NC_HAPROXY_PORT }}" "http://localhost:${{ env.NEXTCLOUD_PORT }}" \
+            --set-default --haproxy_password="${{ env.NC_HAPROXY_PASSWORD }}"
+          ./occ app_api:app:register workflow_ocr_backend \
+            --wait-finish \
+            --info-xml https://raw.githubusercontent.com/R0Wi-DEV/workflow_ocr_backend/refs/heads/${{ matrix.server-versions }}/appinfo/info.xml
+
+      - name: PHPUnit
+        working-directory: apps/${{ env.APP_NAME }}
+        env:
+          GITHUB_MATRIX_BACKEND: ${{ matrix.backend }}
+        run: make php-integrationtest
+
+      - name: Write OCR Backend logs to file
+        if: failure() && matrix.backend == 'remote'
+        run: |
+          docker logs nc_app_workflow_ocr_backend > data/ocr_backend.log
+
+      - name: Upload logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs
+          path: data/*.log
+
+

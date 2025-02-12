@@ -22,6 +22,9 @@
       <directory suffix=".php">./vendor</directory>
       <directory suffix=".php">./node_modules</directory>
       <directory suffix=".php">./lib/Migration</directory>
+      <directory suffix=".php">./lib/OcrProcessors/Remote/Client/Model</directory>
+      <file>./lib/OcrProcessors/Remote/Client/Configuration.php</file>
+      <file>./lib/OcrProcessors/Remote/Client/ObjectSerializer.php</file>
       <file>./.php-cs-fixer.dist.php</file>
     </exclude>
   </coverage>
