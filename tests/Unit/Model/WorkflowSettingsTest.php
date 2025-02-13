@@ -25,12 +25,11 @@ namespace OCA\WorkflowOcr\Tests\Unit\Model;
 
 use InvalidArgumentException;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Test\TestCase;
 
 class WorkflowSettingsTest extends TestCase {
-	/**
-	 * @dataProvider dataProvider_testConstruction
-	 */
+	#[DataProvider('dataProvider_testConstruction')]
 	public function testWorkflowSettingsConstruction(string $json, bool $expectedRemoveBackground, array $expectedLangSettings) {
 		$workflowSettings = new WorkflowSettings($json);
 		$this->assertEquals($expectedRemoveBackground, $workflowSettings->getRemoveBackground());
@@ -43,7 +42,7 @@ class WorkflowSettingsTest extends TestCase {
 		new WorkflowSettings('{');
 	}
 
-	public function dataProvider_testConstruction() {
+	public static function dataProvider_testConstruction() {
 		return [
 			[
 				'{"removeBackground":true,"languages":["eng","deu","spa","fra","ita"],"keepOriginalFileVersion":false}',

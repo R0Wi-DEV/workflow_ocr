@@ -27,10 +27,10 @@ use Exception;
 use InvalidArgumentException;
 use OC\User\NoUserException;
 use OCA\Files_Versions\Versions\IMetadataVersion;
+use OCA\Files_Versions\Versions\IMetadataVersionBackend;
 use OCA\Files_Versions\Versions\IVersion;
 use OCA\Files_Versions\Versions\IVersionBackend;
 use OCA\Files_Versions\Versions\IVersionManager;
-use OCA\Files_Versions\Versions\Version;
 use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
 use OCA\WorkflowOcr\Exception\OcrProcessorNotFoundException;
 use OCA\WorkflowOcr\Exception\OcrResultEmptyException;
@@ -56,6 +56,7 @@ use OCP\IUser;
 use OCP\IUserManager;
 use OCP\IUserSession;
 use OCP\SystemTag\ISystemTagObjectMapper;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 use Test\TestCase;
@@ -213,15 +214,27 @@ class OcrServiceTest extends TestCase {
 
 		// Check call for function:
 		// unassignTags(string $objId, string $objectType, $tagIds);
-		$this->systemTagObjectMapper->expects($this->exactly(2))
+		$unassignTagCallMatcher = $this->exactly(2);
+		$this->systemTagObjectMapper->expects($unassignTagCallMatcher)
 			->method('unassignTags')
-			->withConsecutive(['42', 'files', 1], ['42', 'files', 2]);
+			->willReturnCallback(function ($objId, $objectType, $tagIds) use ($unassignTagCallMatcher) {
+				return match($unassignTagCallMatcher->numberOfInvocations()) {
+					1 => ['42', 'files', 1],
+					2 => ['42', 'files', 2]
+				};
+			});
 
 		// Check call for function:
 		// assignTags(string $objId, string $objectType, $tagIds);
-		$this->systemTagObjectMapper->expects($this->exactly(2))
+		$assignTagCallMatcher = $this->exactly(2);
+		$this->systemTagObjectMapper->expects($assignTagCallMatcher)
 			->method('assignTags')
-			->withConsecutive(['42', 'files', 3], ['42', 'files', 4]);
+			->willReturnCallback(function ($objId, $objectType, $tagIds) use ($unassignTagCallMatcher) {
+				return match($unassignTagCallMatcher->numberOfInvocations()) {
+					1 => ['42', 'files', 3],
+					2 => ['42', 'files', 4]
+				};
+			});
 
 		$this->ocrService->runOcrProcess(42, 'usr', $settings);
 	}
@@ -302,9 +315,15 @@ class OcrServiceTest extends TestCase {
 		// Make sure user-environment is reset after any exception
 		// so the user should be set on beginning but should also
 		// be reset to null after any run.
-		$this->userSession->expects($this->exactly(2))
+		$setUserCallMatcher = $this->exactly(2);
+		$this->userSession->expects($setUserCallMatcher)
 			->method('setUser')
-			->withConsecutive([$this->user], [null]);
+			->willReturnCallback(function ($user) use ($setUserCallMatcher) {
+				return match ($setUserCallMatcher->numberOfInvocations()) {
+					1 => $this->user,
+					2 => null
+				};
+			});
 
 		$thrown = false;
 		try {
@@ -354,9 +373,7 @@ class OcrServiceTest extends TestCase {
 		$this->ocrService->runOcrProcess(42, 'usr', $settings);
 	}
 
-	/**
-	 * @dataProvider dataProvider_OriginalAndNewFilesnames
-	 */
+	#[DataProvider('dataProvider_OriginalAndNewFilesnames')]
 	public function testCreatesNewFileVersionAndEmitsTextRecognizedEvent(string $originalFilename, string $expectedOcrFilename) {
 		$settings = new WorkflowSettings();
 
@@ -398,10 +415,9 @@ class OcrServiceTest extends TestCase {
 		$this->ocrService->runOcrProcess(42, 'usr', $settings);
 	}
 
-	/**
-	 * @dataProvider dataProvider_InvalidNodes
-	 */
-	public function testDoesNotCallOcr_OnNonFile($invalidNode) {
+	#[DataProvider('dataProvider_InvalidNodes')]
+	public function testDoesNotCallOcr_OnNonFile(callable $invalidNodeCallback) {
+		$invalidNode = $invalidNodeCallback($this);
 		$settings = new WorkflowSettings();
 		$this->rootFolderGetById42ReturnValue = [$invalidNode];
 
@@ -549,9 +565,7 @@ class OcrServiceTest extends TestCase {
 		$this->assertTrue($loggedSkipMessage);
 	}
 
-	/**
-	 * @dataProvider dataProvider_OcrModesThrowOnEmptyResult
-	 */
+	#[DataProvider('dataProvider_OcrModesThrowOnEmptyResult')]
 	public function testOcrEmptyExceptionIsThrown(int $ocrMode) {
 		$fileId = 42;
 		$settings = new WorkflowSettings('{"ocrMode": ' . $ocrMode . '}');
@@ -618,16 +632,14 @@ class OcrServiceTest extends TestCase {
 		$this->ocrService->runOcrProcessWithJobArgument($this->defaultArgument);
 	}
 
-	/**
-	 * @dataProvider dataProvider_InvalidArguments
-	 */
-	public function testRunOcrProcessWithJobArgumentLogsErrorAndDoesNothingOnInvalidArguments($argument, $errorMessagePart) {
+	#[DataProvider('dataProvider_InvalidArguments')]
+	public function testRunOcrProcessWithJobArgumentLogsErrorAndDoesNothingOnInvalidArguments($argument, $errorMessageRegex) {
 		$this->userManager->expects($this->never())
 			->method('get')
 			->withAnyParameters();
 		$this->logger->expects($this->once())
 			->method('error')
-			->with($this->stringContains($errorMessagePart), $this->callback(function ($loggerArgs) {
+			->with($this->matchesRegularExpression($errorMessageRegex), $this->callback(function ($loggerArgs) {
 				return is_array($loggerArgs) && ($loggerArgs['exception'] instanceof \Exception);
 			}));
 
@@ -649,9 +661,7 @@ class OcrServiceTest extends TestCase {
 		$this->ocrService->runOcrProcessWithJobArgument($this->defaultArgument);
 	}
 
-	/**
-	 * @dataProvider dataProvider_ExceptionsToBeCaught
-	 */
+	#[DataProvider('dataProvider_ExceptionsToBeCaught')]
 	public function testRunOcrProcessWithJobArgumentLogsErrorOnException(Exception $exception) {
 		$this->ocrProcessor->method('ocrFile')
 			->willThrowException($exception);
@@ -711,9 +721,7 @@ class OcrServiceTest extends TestCase {
 			->method('getMTime')
 			->willReturn(1234);
 
-		// With PHPUnit 10 use
-		// https://docs.phpunit.de/en/10.5/test-doubles.html#createmockforintersectionofinterfaces
-		$versionMock = $this->createMock(Version::class);
+		$versionMock = $this->createMockForIntersectionOfInterfaces([IVersion::class, IMetadataVersion::class]);
 		$versionMock->expects($this->once())
 			->method('getRevisionId')
 			->willReturn(1);
@@ -725,9 +733,7 @@ class OcrServiceTest extends TestCase {
 			->with('label')
 			->willReturn('');
 	
-		$versionBackendMock = $this->getMockBuilder(VersionBackendMock::class)
-			->setConstructorArgs([fn ($className) => $this->createMock($className)])
-			->getMock();
+		$versionBackendMock = $this->createMockForIntersectionOfInterfaces([IVersionBackend::class, IMetadataVersionBackend::class]);
 		$versionMock->expects($this->once())
 			->method('getBackend')
 			->willReturn($versionBackendMock);
@@ -743,22 +749,25 @@ class OcrServiceTest extends TestCase {
 		$this->ocrService->runOcrProcess(42, 'usr', $settings);
 	}
 
-	public function dataProvider_InvalidNodes() {
-		/** @var MockObject|Node */
-		$folderMock = $this->createMock(Node::class);
-		$folderMock->method('getType')
-			->willReturn(FileInfo::TYPE_FOLDER);
-		$fileInfoMock = $this->createMock(FileInfo::class);
+	public static function dataProvider_InvalidNodes() {
+		$folderMockCallable = function (self $testClass) {
+			/** @var MockObject|Node */
+			$folderMock = $testClass->createMock(Node::class);
+			$folderMock->method('getType')
+				->willReturn(FileInfo::TYPE_FOLDER);
+			return $folderMock;
+		};
+		$fileInfoMockCallable = fn (self $testClass) => $testClass->createMock(FileInfo::class);
 		$arr = [
-			[$folderMock],
-			[$fileInfoMock],
-			[null],
-			[(object)['someField' => 'someValue']]
+			[$folderMockCallable],
+			[$fileInfoMockCallable],
+			[fn () => null],
+			[fn () => (object)['someField' => 'someValue']]
 		];
 		return $arr;
 	}
 
-	public function dataProvider_OcrModesThrowOnEmptyResult() {
+	public static function dataProvider_OcrModesThrowOnEmptyResult() {
 		return [
 			[WorkflowSettings::OCR_MODE_FORCE_OCR],
 			[WorkflowSettings::OCR_MODE_SKIP_TEXT],
@@ -766,22 +775,22 @@ class OcrServiceTest extends TestCase {
 		];
 	}
 
-	public function dataProvider_OriginalAndNewFilesnames() {
+	public static function dataProvider_OriginalAndNewFilesnames() {
 		return [
 			['somefile.pdf', 'somefile.pdf'],
 			['somefile.jpg', 'somefile.jpg.pdf']
 		];
 	}
 
-	public function dataProvider_InvalidArguments() {
+	public static function dataProvider_InvalidArguments() {
 		$arr = [
-			[null, 'Argument is not an array'],
-			[['mykey' => 'myvalue'], 'Undefined array key']
+			[null, '/Argument is not an array.*/'],
+			[['mykey' => 'myvalue'], '/Argument key.*not found/']
 		];
 		return $arr;
 	}
 
-	public function dataProvider_ExceptionsToBeCaught() {
+	public static function dataProvider_ExceptionsToBeCaught() {
 		return [
 			[new OcrNotPossibleException('Ocr not possible')],
 			[new OcrProcessorNotFoundException('audio/mpeg', false)],
@@ -816,13 +825,7 @@ class OcrServiceTest extends TestCase {
 	public function testSetFileVersionsLabelSkipsNonMetadataVersionBackend(): void {
 		$file = $this->createMock(File::class);
 		$user = 'admin';
-		$version = $this->getMockBuilder(IMetadataVersion::class)
-			->disableOriginalConstructor()
-			->disableOriginalClone()
-			->disableArgumentCloning()
-			->disallowMockingUnknownTypes()
-			->addMethods(['getBackend'])
-			->getMockForAbstractClass();
+		$version = $this->createMock(IMetadataVersionWithBackend::class);
 
 		$versionBackend = $this->createMock(IVersionBackend::class);
 		$userObj = $this->createMock(IUser::class);

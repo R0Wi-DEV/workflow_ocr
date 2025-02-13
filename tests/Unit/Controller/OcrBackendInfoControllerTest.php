@@ -27,6 +27,7 @@ use OCA\WorkflowOcr\AppInfo\Application;
 use OCA\WorkflowOcr\Controller\OcrBackendInfoController;
 use OCA\WorkflowOcr\Service\IOcrBackendInfoService;
 use OCP\IRequest;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -47,9 +48,7 @@ class OcrBackendInfoControllerTest extends TestCase {
 		parent::setUp();
 	}
 
-	/**
-	 * @dataProvider dataProviderInstalledLangsJson
-	 */
+	#[DataProvider('dataProviderInstalledLangsJson')]
 	public function testGetInstalledLanguagesReturnsJsonArray(array $simulatedServiceResponse, string $expectedResultJson) : void {
 		$this->ocrBackendInfoService->expects($this->once())
 			->method('getInstalledLanguages')
@@ -58,7 +57,7 @@ class OcrBackendInfoControllerTest extends TestCase {
 		$this->assertEquals($expectedResultJson, $response->render());
 	}
 
-	public function dataProviderInstalledLangsJson() {
+	public static function dataProviderInstalledLangsJson() {
 		return [
 			[['eng', 'deu', 'chi'], '["eng","deu","chi"]'],
 			[['eng'], '["eng"]']

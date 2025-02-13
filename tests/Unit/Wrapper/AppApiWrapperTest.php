@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\Tests\Unit\Wrapper;
 
+include_once __DIR__ . '/../../../../../build/stubs/app_api.php';
+
 use OCA\AppAPI\PublicFunctions;
 use OCA\WorkflowOcr\Wrapper\AppApiWrapper;
 use OCP\Http\Client\IResponse;

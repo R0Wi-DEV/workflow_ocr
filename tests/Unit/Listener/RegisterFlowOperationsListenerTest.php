@@ -33,6 +33,7 @@ use OCP\WorkflowEngine\Events\RegisterChecksEvent;
 use OCP\WorkflowEngine\Events\RegisterEntitiesEvent;
 use OCP\WorkflowEngine\Events\RegisterOperationsEvent;
 use OCP\WorkflowEngine\IManager;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
@@ -46,10 +47,10 @@ class RegisterFlowOperationsListenerTest extends TestCase {
 		$this->container = $this->createMock(ContainerInterface::class);
 	}
 
-	/**
-	 * @dataProvider dataProvider_NonRegisterOperationsEvent
-	 */
-	public function testDoesNothing_OnNonRegisterOpterationsEvent(Event $event) {
+	#[DataProvider('dataProvider_NonRegisterOperationsEvent')]
+	public function testDoesNothing_OnNonRegisterOpterationsEvent(callable $eventCallback) {
+		/** @var Event */
+		$event = $eventCallback($this);
 		$this->container->expects($this->never())
 			->method('get')
 			->withAnyParameters();
@@ -91,13 +92,13 @@ class RegisterFlowOperationsListenerTest extends TestCase {
 		$this->assertEquals(2, $scriptCount);
 	}
 
-	public function dataProvider_NonRegisterOperationsEvent() {
+	public static function dataProvider_NonRegisterOperationsEvent() {
 		/** @var IManager */
-		$manager = $this->createMock(IManager::class);
+		$managerCreator = fn (self $testClass) => $testClass->createMock(IManager::class);
 		$arr = [
-			[ new RegisterEntitiesEvent($manager) ],
-			[ new RegisterChecksEvent($manager) ],
-			[ new LoadSettingsScriptsEvent() ]
+			[ fn (self $testClass) => new RegisterEntitiesEvent($managerCreator($testClass)) ],
+			[ fn (self $testClass) => new RegisterChecksEvent($managerCreator($testClass)) ],
+			[ fn () => new LoadSettingsScriptsEvent() ]
 		];
 		return $arr;
 	}
