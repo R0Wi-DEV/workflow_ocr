@@ -30,6 +30,7 @@ use OCA\WorkflowOcr\OcrProcessors\Local\PdfOcrProcessor;
 use OCA\WorkflowOcr\OcrProcessors\OcrProcessorFactory;
 use OCA\WorkflowOcr\OcrProcessors\Remote\WorkflowOcrRemoteProcessor;
 use OCA\WorkflowOcr\Service\IOcrBackendInfoService;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Container\ContainerInterface;
 use Test\TestCase;
@@ -67,9 +68,7 @@ class OcrProcessorFactoryTest extends TestCase {
 		$factory->create('no/mimetype');
 	}
 
-	/**
-	 * @dataProvider dataProvider_mimeTypes
-	 */
+	#[DataProvider('dataProvider_mimeTypes')]
 	public function testOcrProcessorsAreNotCached($mimetype) {
 		// Related to BUG #43
 
@@ -79,9 +78,7 @@ class OcrProcessorFactoryTest extends TestCase {
 		$this->assertFalse($processor1 === $processor2);
 	}
 
-	/**
-	 * @dataProvider dataProvider_mimeTypes
-	 */
+	#[DataProvider('dataProvider_mimeTypes')]
 	public function testPdfCommandNotCached($mimetype) {
 		// Related to BUG #43
 
@@ -96,10 +93,9 @@ class OcrProcessorFactoryTest extends TestCase {
 		$this->assertFalse($cmd1 === $cmd2);
 		$this->assertFalse($sidecar1 === $sidecar2);
 	}
-
-	public function dataProvider_mimeTypes() {
+	public static function dataProvider_mimeTypes() {
 		$mimetypes = [];
-		$mapping = $this->invokePrivate(OcrProcessorFactory::class, 'localMapping');
+		$mapping = (new \ReflectionClass(OcrProcessorFactory::class))->getProperty('localMapping')->getValue();
 		foreach ($mapping as $mimetype => $className) {
 			$mimetypes[] = [$mimetype];
 		}

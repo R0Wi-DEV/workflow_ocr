@@ -1,16 +1,15 @@
 <?xml version="1.0"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.5/phpunit.xsd"
          bootstrap="tests/bootstrap.php"
          colors="true"
-         verbose="true"
          timeoutForSmallTests="900"
          timeoutForMediumTests="900"
          timeoutForLargeTests="900">
   <testsuite name="integration">
     <directory>./tests/Integration</directory>
   </testsuite>
-  <coverage>
+  <source>
     <include>
       <directory suffix=".php">./</directory>
     </include>
@@ -25,5 +24,5 @@
       <directory suffix=".php">./lib/OcrProcessors/Remote/Client</directory>
       <file>./.php-cs-fixer.dist.php</file>
     </exclude>
-  </coverage>
+  </source>
 </phpunit>

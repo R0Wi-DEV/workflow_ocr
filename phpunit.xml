@@ -1,16 +1,20 @@
 <?xml version="1.0"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.5/phpunit.xsd"
          bootstrap="tests/bootstrap.php"
          colors="true"
-         verbose="true"
          timeoutForSmallTests="900"
          timeoutForMediumTests="900"
-         timeoutForLargeTests="900">
+         timeoutForLargeTests="900"
+         displayDetailsOnTestsThatTriggerDeprecations="true"
+         displayDetailsOnTestsThatTriggerErrors="true"
+         displayDetailsOnTestsThatTriggerNotices="true"
+         displayDetailsOnTestsThatTriggerWarnings="true"
+         displayDetailsOnPhpunitDeprecations="true">
   <testsuite name="unit">
     <directory>./tests/Unit</directory>
   </testsuite>
-  <coverage>
+  <source>
     <include>
       <directory suffix=".php">./</directory>
     </include>
@@ -27,5 +31,5 @@
       <file>./lib/OcrProcessors/Remote/Client/ObjectSerializer.php</file>
       <file>./.php-cs-fixer.dist.php</file>
     </exclude>
-  </coverage>
+  </source>
 </phpunit>

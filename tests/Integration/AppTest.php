@@ -26,6 +26,7 @@ use OCA\WorkflowOcr\AppInfo\Application;
 use OCA\WorkflowOcr\Operation;
 use OCP\App\IAppManager;
 use OCP\AppFramework\App;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Psr\Container\ContainerInterface;
 use Test\TestCase;
 
@@ -52,9 +53,7 @@ class AppTest extends TestCase {
 		$this->assertTrue($this->appManager->isInstalled(Application::APP_NAME));
 	}
 
-	/**
-	 * @dataProvider trueFalseProvider
-	 */
+	#[DataProvider('trueFalseProvider')]
 	public function testOperationClassRegistered(bool $lazy) {
 		$this->runBootstrapRegistrations($lazy);
 		$operation = $this->container->get(Operation::class);
@@ -68,7 +67,7 @@ class AppTest extends TestCase {
 		$this->assertTrue($commandClassExists);
 	}
 
-	public function trueFalseProvider() {
+	public static function trueFalseProvider() {
 		return [
 			[true],
 			[false]

@@ -23,13 +23,13 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\Tests\Unit\Service;
 
-use Exception;
 use OCA\WorkflowOcr\Exception\CommandException;
 use OCA\WorkflowOcr\OcrProcessors\Remote\Client\IApiClient;
 use OCA\WorkflowOcr\Service\OcrBackendInfoService;
 use OCA\WorkflowOcr\Wrapper\IAppApiWrapper;
 use OCA\WorkflowOcr\Wrapper\ICommand;
 use OCP\App\IAppManager;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerExceptionInterface;
@@ -61,9 +61,7 @@ class OcrBackendInfoServiceTest extends TestCase {
 		parent::setUp();
 	}
 
-	/**
-	 * @dataProvider dataProviderInstalledLangs
-	 */
+	#[DataProvider('dataProviderInstalledLangs')]
 	public function testGetInstalledLanguagesReturnsNonAssociativeArray(string $simulatedCliResult, array $expectedArray) : void {
 		// Testcase for https://github.com/R0Wi/workflow_ocr/issues/140#issuecomment-1245310080
 
@@ -96,9 +94,7 @@ class OcrBackendInfoServiceTest extends TestCase {
 		$this->service->getInstalledLanguages();
 	}
 
-	/**
-	 * @dataProvider dataProviderStdErrAndErrOutput
-	 */
+	#[DataProvider('dataProviderStdErrAndErrOutput')]
 	public function testGetInstalledLanguagesLogsWarningIfCommandStrErrOrErrOutputWasNotEmpty(string $stdErr, string $errorOutput) : void {
 		$this->command->expects($this->once())
 			->method('setCommand')
@@ -169,10 +165,9 @@ class OcrBackendInfoServiceTest extends TestCase {
 		$this->assertTrue($result);
 	}
 
-	/**
-	 * @dataProvider dataProviderDependencyInjectionExceptions
-	 */
-	public function testIsRemoteBackendReturnsFalseIfBackendAppIsNotInstalled(Exception $exception) {
+	#[DataProvider('dataProviderDependencyInjectionExceptions')]
+	public function testIsRemoteBackendReturnsFalseIfBackendAppIsNotInstalled(callable $exceptionCallback) {
+		$exception = $exceptionCallback($this);
 		$this->appManager->expects($this->once())
 			->method('isEnabledForUser')
 			->with('app_api')
@@ -206,23 +201,23 @@ class OcrBackendInfoServiceTest extends TestCase {
 		$this->assertEquals(['eng', 'deu', 'chi'], $result);
 	}
 
-	public function dataProviderInstalledLangs() {
+	public static function dataProviderInstalledLangs() {
 		return [
 			["List of available languages (4):\neng\ndeu\nosd\nchi", ['eng','deu','chi']]
 		];
 	}
 
-	public function dataProviderStdErrAndErrOutput() {
+	public static function dataProviderStdErrAndErrOutput() {
 		return [
 			['someStdErrMessage', ''],
 			['', 'someErrorOutput']
 		];
 	}
 
-	public function dataProviderDependencyInjectionExceptions() {
+	public static function dataProviderDependencyInjectionExceptions() {
 		return [
-			[$this->createMock(ContainerExceptionInterface::class)],
-			[$this->createMock(NotFoundExceptionInterface::class)]
+			[fn (self $testClass) => $testClass->createMock(ContainerExceptionInterface::class)],
+			[fn (self $testClass) => $testClass->createMock(NotFoundExceptionInterface::class)]
 		];
 	}
 }
