@@ -34,6 +34,7 @@ use OCA\WorkflowOcr\OcrProcessors\Local\PdfOcrProcessor;
 use OCA\WorkflowOcr\Service\IOcrBackendInfoService;
 use OCA\WorkflowOcr\Wrapper\ICommand;
 use OCP\Files\File;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -79,16 +80,13 @@ class PdfOcrProcessorTest extends TestCase {
 		$this->fileBefore->method('getContent')
 			->willReturn(self::FILE_CONTENT_BEFORE);
 		$this->fileBefore->method('getMimeType')
-			->will($this->returnCallback(function () {
-				return $this->fileBeforeMimeType;
-			}));
+			->willReturnCallback(fn () => $this->fileBeforeMimeType);
 
 		$this->fileBeforeMimeType = 'application/pdf';
 		$this->ocrMyPdfOutput = self::FILE_CONTENT_AFTER;
 		$this->command->method('getOutput')
-			->will($this->returnCallback(function () {
-				return $this->ocrMyPdfOutput !== self::FILE_CONTENT_AFTER ? $this->ocrMyPdfOutput : self::FILE_CONTENT_AFTER;
-			}));
+			->willReturnCallback(fn () => $this->ocrMyPdfOutput !== self::FILE_CONTENT_AFTER ? $this->ocrMyPdfOutput : self::FILE_CONTENT_AFTER);
+		;
 		$this->ocrBackendInfoService->method('isRemoteBackend')
 			->willReturn(false);
 	}
@@ -318,9 +316,7 @@ class PdfOcrProcessorTest extends TestCase {
 		$processor->ocrFile($this->fileBefore, $this->defaultSettings, $this->defaultGlobalSettings);
 	}
 
-	/**
-	 * @dataProvider dataProvider_testAppliesOcrModeParameter
-	 */
+	#[DataProvider('dataProvider_testAppliesOcrModeParameter')]
 	public function testAppliesOcrModeParameter(int $simulatedOcrMode, string $expectedOcrMyPdfFlag) {
 		$this->command->expects($this->once())
 			->method('setCommand')
@@ -390,7 +386,7 @@ class PdfOcrProcessorTest extends TestCase {
 		$processor->ocrFile($this->fileBefore, $workflowSettings, $this->defaultGlobalSettings);
 	}
 
-	public function dataProvider_testAppliesOcrModeParameter() {
+	public static function dataProvider_testAppliesOcrModeParameter() {
 		return [
 			[WorkflowSettings::OCR_MODE_SKIP_TEXT, ' --skip-text '],
 			[WorkflowSettings::OCR_MODE_REDO_OCR, ' --redo-ocr '],

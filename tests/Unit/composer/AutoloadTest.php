@@ -28,7 +28,7 @@ use OCP\App\IAppManager;
 use OCP\AppFramework\App;
 use PHPUnit\Framework\TestCase;
 
-class composerTest extends TestCase {
+class AutoloadTest extends TestCase {
 	public function testAutoloaderFileCanBeLoaded() {
 		$app = new App(Application::APP_NAME);
 		$container = $app->getContainer();

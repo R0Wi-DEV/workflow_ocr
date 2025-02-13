@@ -181,10 +181,14 @@ class OcrService implements IOcrService {
 			throw new \InvalidArgumentException('Argument is not an array in ' . self::class . ' method \'tryParseArguments\'.');
 		}
 
-		$jsonSettings = $argument['settings'];
+		$getArgument = fn ($key) => array_key_exists($key, $argument) ?
+			$argument[$key] :
+			throw new \InvalidArgumentException("Argument key '$key' not found in " . self::class . ' method \'tryParseArguments\'.');
+
+		$jsonSettings = $getArgument('settings');
 		$settings = new WorkflowSettings($jsonSettings);
-		$uid = $argument['uid'];
-		$fileId = intval($argument['fileId']);
+		$uid = $getArgument('uid');
+		$fileId = intval($getArgument('fileId'));
 
 		return [
 			$fileId,

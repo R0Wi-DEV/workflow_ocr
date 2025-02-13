@@ -40,6 +40,7 @@ use OCP\IURLGenerator;
 use OCP\SystemTag\MapperEvent;
 use OCP\WorkflowEngine\IManager;
 use OCP\WorkflowEngine\IRuleMatcher;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -150,9 +151,7 @@ class OperationTest extends TestCase {
 	}
 
 
-	/**
-	 * @dataProvider dataProvider_InvalidFilePaths
-	 */
+	#[DataProvider('dataProvider_InvalidFilePaths')]
 	public function testDoesNothingOnInvalidFilePath(string $filePath) {
 		$this->jobList->expects($this->never())
 			->method('add')
@@ -202,9 +201,7 @@ class OperationTest extends TestCase {
 		$operation->onEvent($eventName, $event, $this->ruleMatcher);
 	}
 
-	/**
-	 * @dataProvider dataProvider_ValidScopes
-	 */
+	#[DataProvider('dataProvider_ValidScopes')]
 	public function testIsAvailableForScope(int $scope) {
 		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
 		$result = $operation->isAvailableForScope($scope);
@@ -212,9 +209,7 @@ class OperationTest extends TestCase {
 		$this->assertTrue($result);
 	}
 
-	/**
-	 * @dataProvider dataProvider_EmptyOperationSettings
-	 */
+	#[DataProvider('dataProvider_EmptyOperationSettings')]
 	public function testValidateOperationAcceptsEmptyOperationSettings($settings) {
 		$this->jobList->expects($this->never())
 			->method($this->anything());
@@ -390,9 +385,7 @@ class OperationTest extends TestCase {
 		$operation->onEvent($eventName, $event, $this->ruleMatcher);
 	}
 
-	/**
-	 * @dataProvider dataProvider_EventsWithTwoNodes
-	 */
+	#[DataProvider('dataProvider_EventsWithTwoNodes')]
 	public function testAddsEventOnEventWhereSubjectIsArray(string $eventName) {
 		$filePath = '/admin/files/path/to/file.pdf';
 		$fileId = 42;
@@ -419,7 +412,7 @@ class OperationTest extends TestCase {
 		$operation->onEvent($eventName, $event, $this->ruleMatcher);
 	}
 
-	public function dataProvider_InvalidFilePaths() {
+	public static function dataProvider_InvalidFilePaths() {
 		$arr = [
 			['/user/nofiles/somefile.pdf'],
 			['/invalidmount/data/somefile.pdf'],
@@ -428,21 +421,21 @@ class OperationTest extends TestCase {
 		return $arr;
 	}
 
-	public function dataProvider_ValidScopes() {
+	public static function dataProvider_ValidScopes() {
 		return [
 			[IManager::SCOPE_ADMIN],
 			[IManager::SCOPE_USER]
 		];
 	}
 
-	public function dataProvider_EmptyOperationSettings() {
+	public static function dataProvider_EmptyOperationSettings() {
 		return [
 			[''],
 			['{}']
 		];
 	}
 
-	public function dataProvider_EventsWithTwoNodes() {
+	public static function dataProvider_EventsWithTwoNodes() {
 		return [
 			['\OCP\Files::postRename'],
 			['\OCP\Files::postCopy']
