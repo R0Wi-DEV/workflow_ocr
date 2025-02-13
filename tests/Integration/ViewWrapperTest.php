@@ -25,6 +25,7 @@ namespace OCA\WorkflowOcr\Tests\Integration;
 
 use OC\Files\View;
 use OCA\WorkflowOcr\Wrapper\ViewWrapper;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Test\TestCase;
 use Test\Traits\UserTrait;
 
@@ -42,9 +43,7 @@ class ViewWrapperTest extends TestCase {
 		$this->loginAsUser(self::USER);
 	}
 
-	/**
-	 * @dataProvider dataProvider_FilePutContents
-	 */
+	#[DataProvider('dataProvider_FilePutContents')]
 	public function testFilePutContents(string $filename, bool $expectedResult) {
 		$path = '/mytestuser/files';
 		$content = 'hello world';
@@ -78,7 +77,7 @@ class ViewWrapperTest extends TestCase {
 		$this->assertEquals(1234567890, $stat['mtime']);
 	}
 
-	public function dataProvider_FilePutContents() {
+	public static function dataProvider_FilePutContents() {
 		return [
 			['testfile.txt', true],
 			['this_is_invalid/..', false]

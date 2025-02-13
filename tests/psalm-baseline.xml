@@ -1,11 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.26.1@d747f6500b38ac4f7dfc5edbcae6e4b637d7add0">
+<files psalm-version="6.4.1@09a200c15910905ddc49e5edd37b73f9c78f7580">
+  <file src="lib/AppInfo/Application.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="lib/BackgroundJobs/ProcessFileJob.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="lib/Controller/GlobalSettingsController.php">
+    <UnusedClass>
+      <code><![CDATA[GlobalSettingsController]]></code>
+    </UnusedClass>
+  </file>
+  <file src="lib/Controller/OcrBackendInfoController.php">
+    <UnusedClass>
+      <code><![CDATA[OcrBackendInfoController]]></code>
+    </UnusedClass>
+  </file>
+  <file src="lib/Events/TextRecognizedEvent.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[getFile]]></code>
+      <code><![CDATA[getRecognizedText]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="lib/Helper/SidecarFileAccessor.php">
+    <FalsableReturnStatement>
+      <code><![CDATA[$this->sidecarFilePath ? file_get_contents($this->sidecarFilePath) : '']]></code>
+    </FalsableReturnStatement>
+  </file>
+  <file src="lib/Listener/RegisterFlowOperationsListener.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="lib/Migration/Version2404Date20220903071748.php">
+    <UnusedClass>
+      <code><![CDATA[Version2404Date20220903071748]]></code>
+    </UnusedClass>
+  </file>
+  <file src="lib/Migration/Version2702Date20230908170345.php">
+    <UnusedClass>
+      <code><![CDATA[Version2702Date20230908170345]]></code>
+    </UnusedClass>
+  </file>
   <file src="lib/Notification/Notifier.php">
     <MissingDependency>
       <code><![CDATA[$this->rootFolder]]></code>
       <code><![CDATA[IRootFolder]]></code>
       <code><![CDATA[IRootFolder]]></code>
     </MissingDependency>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+    </PossiblyUnusedMethod>
+    <PossiblyUnusedParam>
+      <code><![CDATA[$factory]]></code>
+      <code><![CDATA[$logger]]></code>
+      <code><![CDATA[$rootFolder]]></code>
+      <code><![CDATA[$urlGenerator]]></code>
+    </PossiblyUnusedParam>
+  </file>
+  <file src="lib/OcrProcessors/CommandLineUtils.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="lib/OcrProcessors/OcrProcessorFactory.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+    </PossiblyUnusedMethod>
   </file>
   <file src="lib/OcrProcessors/Remote/Client/ApiClient.php">
     <InvalidReturnStatement>
@@ -17,21 +82,89 @@
     <NullableReturnStatement>
       <code><![CDATA[ObjectSerializer::deserialize(json_decode($response->getBody(), false, 512, JSON_THROW_ON_ERROR), $class)]]></code>
     </NullableReturnStatement>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+    </PossiblyUnusedMethod>
   </file>
   <file src="lib/OcrProcessors/Remote/Client/Configuration.php">
     <InvalidReturnStatement>
       <code><![CDATA[$url]]></code>
     </InvalidReturnStatement>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[getAccessToken]]></code>
+      <code><![CDATA[getApiKeyWithPrefix]]></code>
+      <code><![CDATA[getDebug]]></code>
+      <code><![CDATA[getDebugFile]]></code>
+      <code><![CDATA[getHost]]></code>
+      <code><![CDATA[getHostFromSettings]]></code>
+      <code><![CDATA[getPassword]]></code>
+      <code><![CDATA[getUserAgent]]></code>
+      <code><![CDATA[getUsername]]></code>
+      <code><![CDATA[setAccessToken]]></code>
+      <code><![CDATA[setApiKey]]></code>
+      <code><![CDATA[setApiKeyPrefix]]></code>
+      <code><![CDATA[setBooleanFormatForQueryString]]></code>
+      <code><![CDATA[setDebug]]></code>
+      <code><![CDATA[setDebugFile]]></code>
+      <code><![CDATA[setDefaultConfiguration]]></code>
+      <code><![CDATA[setHost]]></code>
+      <code><![CDATA[setPassword]]></code>
+      <code><![CDATA[setTempFolderPath]]></code>
+      <code><![CDATA[setUserAgent]]></code>
+      <code><![CDATA[setUsername]]></code>
+      <code><![CDATA[toDebugReport]]></code>
+    </PossiblyUnusedMethod>
   </file>
   <file src="lib/OcrProcessors/Remote/Client/Model/ErrorResult.php">
+    <FalsableReturnStatement>
+      <code><![CDATA[json_encode(
+			ObjectSerializer::sanitizeForSerialization($this),
+			JSON_PRETTY_PRINT
+		)]]></code>
+      <code><![CDATA[json_encode(ObjectSerializer::sanitizeForSerialization($this))]]></code>
+    </FalsableReturnStatement>
     <InvalidPropertyAssignmentValue>
       <code><![CDATA[$this->openAPINullablesSetToNull]]></code>
     </InvalidPropertyAssignmentValue>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+      <code><![CDATA[setMessage]]></code>
+      <code><![CDATA[toHeaderValue]]></code>
+    </PossiblyUnusedMethod>
+    <UnusedMethod>
+      <code><![CDATA[setOpenAPINullablesSetToNull]]></code>
+    </UnusedMethod>
+  </file>
+  <file src="lib/OcrProcessors/Remote/Client/Model/ModelInterface.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[getModelName]]></code>
+      <code><![CDATA[setters]]></code>
+      <code><![CDATA[valid]]></code>
+    </PossiblyUnusedMethod>
   </file>
   <file src="lib/OcrProcessors/Remote/Client/Model/OcrResult.php">
+    <FalsableReturnStatement>
+      <code><![CDATA[json_encode(
+			ObjectSerializer::sanitizeForSerialization($this),
+			JSON_PRETTY_PRINT
+		)]]></code>
+      <code><![CDATA[json_encode(ObjectSerializer::sanitizeForSerialization($this))]]></code>
+    </FalsableReturnStatement>
     <InvalidPropertyAssignmentValue>
       <code><![CDATA[$this->openAPINullablesSetToNull]]></code>
     </InvalidPropertyAssignmentValue>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+      <code><![CDATA[getContentType]]></code>
+      <code><![CDATA[setContentType]]></code>
+      <code><![CDATA[setFileContent]]></code>
+      <code><![CDATA[setFilename]]></code>
+      <code><![CDATA[setRecognizedText]]></code>
+      <code><![CDATA[toHeaderValue]]></code>
+    </PossiblyUnusedMethod>
+    <UnusedMethod>
+      <code><![CDATA[setOpenAPINullablesSetToNull]]></code>
+    </UnusedMethod>
   </file>
   <file src="lib/OcrProcessors/Remote/Client/ObjectSerializer.php">
     <InvalidArgument>
@@ -39,12 +172,38 @@
       <code><![CDATA[$value]]></code>
       <code><![CDATA[$value]]></code>
     </InvalidArgument>
+    <InvalidNullableReturnType>
+      <code><![CDATA[string]]></code>
+      <code><![CDATA[string]]></code>
+    </InvalidNullableReturnType>
     <NoValue>
       <code><![CDATA[return $timestamp;]]></code>
     </NoValue>
+    <NullableReturnStatement>
+      <code><![CDATA[preg_replace('/%5B[0-9]+%5D=/', '=', http_build_query($collection, '', '&'))]]></code>
+      <code><![CDATA[preg_replace('/(:\d{2}.\d{6})\d*/', '$1', $timestamp)]]></code>
+    </NullableReturnStatement>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[buildQuery]]></code>
+      <code><![CDATA[sanitizeFilename]]></code>
+      <code><![CDATA[setDateTimeFormat]]></code>
+      <code><![CDATA[toFormValue]]></code>
+      <code><![CDATA[toHeaderValue]]></code>
+      <code><![CDATA[toPathValue]]></code>
+      <code><![CDATA[toQueryValue]]></code>
+    </PossiblyUnusedMethod>
+    <PossiblyUnusedParam>
+      <code><![CDATA[$httpHeaders]]></code>
+      <code><![CDATA[$type]]></code>
+    </PossiblyUnusedParam>
     <UndefinedClass>
       <code><![CDATA[Utils]]></code>
     </UndefinedClass>
+  </file>
+  <file src="lib/OcrProcessors/Remote/WorkflowOcrRemoteProcessor.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+    </PossiblyUnusedMethod>
   </file>
   <file src="lib/Operation.php">
     <MissingDependency>
@@ -55,14 +214,48 @@
     <NullReference>
       <code><![CDATA[$argsArray]]></code>
     </NullReference>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+    </PossiblyUnusedMethod>
+    <PossiblyUnusedParam>
+      <code><![CDATA[$jobList]]></code>
+      <code><![CDATA[$l]]></code>
+      <code><![CDATA[$logger]]></code>
+      <code><![CDATA[$processingFileAccessor]]></code>
+      <code><![CDATA[$rootFolder]]></code>
+      <code><![CDATA[$urlGenerator]]></code>
+    </PossiblyUnusedParam>
     <UndefinedClass>
       <code><![CDATA[File]]></code>
     </UndefinedClass>
+  </file>
+  <file src="lib/Service/EventService.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+    </PossiblyUnusedMethod>
   </file>
   <file src="lib/Service/GlobalSettingsService.php">
     <ParamNameMismatch>
       <code><![CDATA[$settings]]></code>
     </ParamNameMismatch>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="lib/Service/INotificationService.php">
+    <UnusedDocblockParam>
+      <code><![CDATA[$message]]></code>
+    </UnusedDocblockParam>
+  </file>
+  <file src="lib/Service/NotificationService.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="lib/Service/OcrBackendInfoService.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+    </PossiblyUnusedMethod>
   </file>
   <file src="lib/Service/OcrService.php">
     <MissingDependency>
@@ -70,6 +263,24 @@
       <code><![CDATA[IRootFolder]]></code>
       <code><![CDATA[IRootFolder]]></code>
     </MissingDependency>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+    </PossiblyUnusedMethod>
+    <PossiblyUnusedParam>
+      <code><![CDATA[$eventService]]></code>
+      <code><![CDATA[$filesystem]]></code>
+      <code><![CDATA[$globalSettingsService]]></code>
+      <code><![CDATA[$logger]]></code>
+      <code><![CDATA[$notificationService]]></code>
+      <code><![CDATA[$ocrProcessorFactory]]></code>
+      <code><![CDATA[$processingFileAccessor]]></code>
+      <code><![CDATA[$rootFolder]]></code>
+      <code><![CDATA[$systemTagObjectMapper]]></code>
+      <code><![CDATA[$userManager]]></code>
+      <code><![CDATA[$userSession]]></code>
+      <code><![CDATA[$versionManager]]></code>
+      <code><![CDATA[$viewFactory]]></code>
+    </PossiblyUnusedParam>
     <UndefinedClass>
       <code><![CDATA[$version]]></code>
       <code><![CDATA[$version]]></code>
@@ -86,7 +297,20 @@
       <code><![CDATA[IVersionManager]]></code>
     </UndefinedDocblockClass>
   </file>
+  <file src="lib/Settings/GlobalSettings.php">
+    <UnusedClass>
+      <code><![CDATA[GlobalSettings]]></code>
+    </UnusedClass>
+  </file>
+  <file src="lib/SetupChecks/OcrMyPdfCheck.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+    </PossiblyUnusedMethod>
+  </file>
   <file src="lib/Wrapper/AppApiWrapper.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+    </PossiblyUnusedMethod>
     <UndefinedClass>
       <code><![CDATA[PublicFunctions]]></code>
       <code><![CDATA[PublicFunctions]]></code>
@@ -96,6 +320,17 @@
     <UndefinedClass>
       <code><![CDATA[\OC\Files\Filesystem]]></code>
     </UndefinedClass>
+  </file>
+  <file src="lib/Wrapper/ICommand.php">
+    <PossiblyUnusedReturnValue>
+      <code><![CDATA[ICommand]]></code>
+    </PossiblyUnusedReturnValue>
+  </file>
+  <file src="lib/Wrapper/IView.php">
+    <PossiblyUnusedReturnValue>
+      <code><![CDATA[bool]]></code>
+      <code><![CDATA[bool]]></code>
+    </PossiblyUnusedReturnValue>
   </file>
   <file src="lib/Wrapper/ViewWrapper.php">
     <UndefinedClass>

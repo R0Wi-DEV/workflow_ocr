@@ -276,7 +276,7 @@ port `9003`. Depending on your system a possible configuration could
 look like this:
 
 ```ini
-; /etc/php/8.1/cli/php.ini
+; /etc/php/8.3/cli/php.ini
 ; ...
 [Xdebug]
 zend_extension=/usr/lib/php/20190902/xdebug.so
@@ -287,7 +287,7 @@ xdebug.remote_autostart=1
 ```
 
 ```ini
-; /etc/php/8.1/apache2/php.ini
+; /etc/php/8.3/apache2/php.ini
 ; ...
 [Xdebug]
 zend_extension=/usr/lib/php/20190902/xdebug.so
@@ -342,7 +342,7 @@ services:
     networks:
       - web_dev
 ```
-`IMAGE` could be set to `IMAGE=thecodingmachine/php:8.1-v4-apache-node14` and the content of `Dockerfile` might
+`IMAGE` could be set to `IMAGE=thecodingmachine/php:8.3-v4-apache-node14` and the content of `Dockerfile` might
 look like this:
 
 ```dockerfile

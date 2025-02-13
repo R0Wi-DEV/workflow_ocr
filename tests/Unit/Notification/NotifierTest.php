@@ -130,7 +130,7 @@ class NotifierTest extends TestCase {
 		$l10n = $this->createMock(IL10N::class);
 		/** @var IRichTextFormatter|MockObject */
 		$rtFormatter = $this->createMock(IRichTextFormatter::class);
-		$l10n->method('t')->will($this->returnValueMap(self::$returnValueMapError));
+		$l10n->method('t')->willReturnMap(self::$returnValueMapError);
 		$this->l10nFactory->expects($this->once())
 			->method('get')
 			->with('workflow_ocr')
@@ -203,7 +203,7 @@ class NotifierTest extends TestCase {
 		$rtFormatter = $this->createMock(IRichTextFormatter::class);
 		/** @var IL10N|MockObject */
 		$l10n = $this->createMock(IL10N::class);
-		$l10n->method('t')->will($this->returnValueMap(self::$returnValueMapError));
+		$l10n->method('t')->willReturnMap(self::$returnValueMapError);
 		$this->l10nFactory->expects($this->once())
 			->method('get')
 			->with('workflow_ocr')
@@ -240,7 +240,7 @@ class NotifierTest extends TestCase {
 		$rtFormatter = $this->createMock(IRichTextFormatter::class);
 		/** @var IL10N|MockObject */
 		$l10n = $this->createMock(IL10N::class);
-		$l10n->method('t')->will($this->returnValueMap(self::$returnValueMapError));
+		$l10n->method('t')->willReturnMap(self::$returnValueMapError);
 		$this->l10nFactory->expects($this->once())
 			->method('get')
 			->with('workflow_ocr')
@@ -290,7 +290,7 @@ class NotifierTest extends TestCase {
 		$rtFormatter = $this->createMock(IRichTextFormatter::class);
 		/** @var IL10N|MockObject */
 		$l10n = $this->createMock(IL10N::class);
-		$l10n->method('t')->will($this->returnValueMap(self::$returnValueMapError));
+		$l10n->method('t')->willReturnMap(self::$returnValueMapError);
 		$this->l10nFactory->expects($this->once())
 			->method('get')
 			->with('workflow_ocr')
@@ -339,7 +339,7 @@ class NotifierTest extends TestCase {
 		$rtFormatter = $this->createMock(IRichTextFormatter::class);
 		/** @var IL10N|MockObject */
 		$l10n = $this->createMock(IL10N::class);
-		$l10n->method('t')->will($this->returnValueMap(self::$returnValueMapSuccess));
+		$l10n->method('t')->willReturnMap(self::$returnValueMapSuccess);
 		$this->l10nFactory->expects($this->once())
 			->method('get')
 			->with('workflow_ocr')
