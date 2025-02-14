@@ -10,6 +10,8 @@ OC.L10N.register(
     "OCR file" : "ملف تحويل صورة الكتابة إلى نص",
     "OCR processing via workflow" : "معالجة تحويل صورة الكتابة إلى نص عبر أتمتة سير العمل",
     "Is OCRmyPDF installed" : "هل OCRmyPDF مُثبَّت",
+    "Workflow OCR Backend is installed." : "تمّ تثبيت خلفية السير الإجرائي لتحويل الصور إلى نصوص OCR.",
+    "Workflow OCR Backend is installed but heartbeat failed." : "خلفية السير الإجرائي لتحويل الصور إلى نصوص OCR تمّ تثبيتها؛ لكن اختبار النبض heartbeat فشل.",
     "OCRmyPDF CLI is not installed." : "OCRmyPDF CLI غير مُثبَّت.",
     "OCRmyPDF CLI is not working correctly. Error was: %1$s" : "OCRmyPDF CLI لاتعمل كما يجب. الخطأ: %1$s",
     "OCRmyPDF is installed and has version %1$s." : "OCRmyPDF مُثبَّتة وإصدارها هو %1$s.",
