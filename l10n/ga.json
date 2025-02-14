@@ -8,6 +8,8 @@
     "OCR file" : "Comhad OCR",
     "OCR processing via workflow" : "Próiseáil OCR trí shreabhadh oibre",
     "Is OCRmyPDF installed" : "An bhfuil OCRmyPDF suiteáilte",
+    "Workflow OCR Backend is installed." : "Tá Inneall OCR Sreabhadh Oibre suiteáilte.",
+    "Workflow OCR Backend is installed but heartbeat failed." : "Tá Inneall OCR Sreabhadh Oibre suiteáilte ach theip ar bhuille croí.",
     "OCRmyPDF CLI is not installed." : "Níl OCRmyPDF CLI suiteáilte.",
     "OCRmyPDF CLI is not working correctly. Error was: %1$s" : "Níl OCRmyPDF CLI ag obair i gceart. Earráid a bhí: %1$s",
     "OCRmyPDF is installed and has version %1$s." : "Tá OCRmyPDF suiteáilte agus tá leagan aige %1$s.",

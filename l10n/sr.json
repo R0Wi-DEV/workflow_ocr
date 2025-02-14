@@ -8,6 +8,8 @@
     "OCR file" : "OCR фајл",
     "OCR processing via workflow" : "OCR обрада помоћу workflow",
     "Is OCRmyPDF installed" : "Да ли је инсталиран OCRmyPDF",
+    "Workflow OCR Backend is installed." : "Инсталиран је Workflow OCR позадински механизам.",
+    "Workflow OCR Backend is installed but heartbeat failed." : "Инсталиран је Workflow OCR позадински механизам али није успело опипавање пулса.",
     "OCRmyPDF CLI is not installed." : "OCRmyPDF CLI није инсталиран.",
     "OCRmyPDF CLI is not working correctly. Error was: %1$s" : "OCRmyPDF CLI не ради како треба. Јавила се грешка: %1$s",
     "OCRmyPDF is installed and has version %1$s." : "OCRmyPDF је инсталиран и верзија је %1$s.",
