@@ -10,6 +10,8 @@ OC.L10N.register(
     "OCR file" : "OCR 檔案",
     "OCR processing via workflow" : "通過工作流程進行 OCR 處理",
     "Is OCRmyPDF installed" : "OCRmyPDF 是否已安裝",
+    "Workflow OCR Backend is installed." : "工作流程 OCR 後端已安裝。",
+    "Workflow OCR Backend is installed but heartbeat failed." : "工作流程 OCR 後端已安裝，但心跳檢查失敗。",
     "OCRmyPDF CLI is not installed." : "尚未安裝 OCRmyPDF CLI",
     "OCRmyPDF CLI is not working correctly. Error was: %1$s" : "OCRmyPDF CLI 並未正確運作。錯誤為：%1$s",
     "OCRmyPDF is installed and has version %1$s." : "OCRmyPDF 已安裝，版本為 %1$s。",
