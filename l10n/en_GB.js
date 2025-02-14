@@ -10,6 +10,8 @@ OC.L10N.register(
     "OCR file" : "OCR file",
     "OCR processing via workflow" : "OCR processing via workflow",
     "Is OCRmyPDF installed" : "Is OCRmyPDF installed",
+    "Workflow OCR Backend is installed." : "Workflow OCR Backend is installed.",
+    "Workflow OCR Backend is installed but heartbeat failed." : "Workflow OCR Backend is installed but heartbeat failed.",
     "OCRmyPDF CLI is not installed." : "OCRmyPDF CLI is not installed.",
     "OCRmyPDF CLI is not working correctly. Error was: %1$s" : "OCRmyPDF CLI is not working correctly. Error was: %1$s",
     "OCRmyPDF is installed and has version %1$s." : "OCRmyPDF is installed and has version %1$s.",
