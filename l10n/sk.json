@@ -8,6 +8,8 @@
     "OCR file" : "Súbor OCR",
     "OCR processing via workflow" : "Spracovanie OCR pomocou workflow",
     "Is OCRmyPDF installed" : "Je nainštalovaný OCRmyPDF",
+    "Workflow OCR Backend is installed." : "Workflow OCR Backend je nainštalovaný.",
+    "Workflow OCR Backend is installed but heartbeat failed." : "Workflow OCR Backend je nainštalovaný ale kontrola stavu zlyhala.",
     "OCRmyPDF CLI is not installed." : "OCRmyPDF CLI nie je nainštalovaný.",
     "OCRmyPDF CLI is not working correctly. Error was: %1$s" : "OCRmyPDF CLI nefunguje správne. Chyba: %1$s",
     "OCRmyPDF is installed and has version %1$s." : "OCRmyPDF je nainštalovaný vo verzii %1$s.",
