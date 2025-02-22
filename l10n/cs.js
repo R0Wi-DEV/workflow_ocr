@@ -10,6 +10,8 @@ OC.L10N.register(
     "OCR file" : "rozpoznat text v souboru",
     "OCR processing via workflow" : "Rozpoznávání textu v obrazových datech (OCR) v rámci pracovního postupu",
     "Is OCRmyPDF installed" : "Je OCRmyPDF nainstalované",
+    "Workflow OCR Backend is installed." : "Podpůrná vrstva pro Workflow OCR je nainstalovaná.",
+    "Workflow OCR Backend is installed but heartbeat failed." : "Podpůrná vrstva pro Workflow OCR je nainstalovaná, ale kontrola stavu se nezdařila.",
     "OCRmyPDF CLI is not installed." : "OCRmyPDF CLI není nainstalované.",
     "OCRmyPDF CLI is not working correctly. Error was: %1$s" : "OCRmyPDF CLI nefunguje správně. Chyba byla: %1$s",
     "OCRmyPDF is installed and has version %1$s." : "OCRmyPDF je nainstalované a má verzi %1$s.",
