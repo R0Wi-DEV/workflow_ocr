@@ -21,7 +21,7 @@ OC.L10N.register(
     "The language(s) to be used for OCR processing" : "Idioma(s) que se empregará(n) para o procesamento de OCR",
     "Assign tags after OCR" : "Asignar etiquetas após o OCR",
     "These tags will be assigned to the file after OCR processing has finished" : "Estas etiquetas asignaranse ao ficheiro após que remate o procesamento de OCR",
-    "Remove tags after OCR" : "Elimina as etiquetas após o OCR",
+    "Remove tags after OCR" : "Retirar as etiquetas após o OCR",
     "These tags will be removed from the file after OCR processing has finished" : "Estas etiquetas retiraranse do ficheiro após que remate o procesamento de OCR",
     "OCR mode" : "Modo de OCR",
     "Apply this mode if file already has OCR content" : "Aplicar este modo se o ficheiro xa ten contido de OCR",
