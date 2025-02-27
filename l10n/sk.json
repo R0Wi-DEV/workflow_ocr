@@ -15,6 +15,7 @@
     "OCRmyPDF is installed and has version %1$s." : "OCRmyPDF je nainštalovaný vo verzii %1$s.",
     "Server side OCR processing via workflow engine" : "Spracovanie OCR  na strane servera pomocou nástroja workflow",
     "This app makes it possible to process various files via OCR algorithms.\n\tThe processing is done via workflow-engine and can therefore easily be customized.\n\tPlease note that you'll have to install the OcrMyPDF CLI on your Nextcloud server to\n\tprocess PDF files. More installation instructions can be found in the docs https://github.com/R0Wi/workflow_ocr/blob/master/README.md." : "Táto aplikácia umožňuje spracovávať rôzne súbory pomocou algoritmov OCR.\nSpracovanie sa vykonáva prostredníctvom nástroja workflow-engine, a preto sa dá ľahko prispôsobiť.\nUpozorňujeme, že budete musieť nainštalovať OcrMyPDF CLI na server Nextcloud\npre spracovávanie súborov PDF. Ďalšie pokyny na inštaláciu nájdete v návode https://github.com/R0Wi/workflow_ocr/blob/master/README.md.",
+    "Select language(s)" : "Vyberte jazyk(y)",
     "OCR language" : "Jazyk OCR",
     "The language(s) to be used for OCR processing" : "Jazyk(y) ktoré budú použité pre spracovanie pomocou OCR",
     "Assign tags after OCR" : "Po OCR pridať štítky",
@@ -32,7 +33,6 @@
     "Keep original file version" : "Ponechať originálnu verziu súboru",
     "Keep original file modification date" : "Ponechať originálny dátum zmeny súboru",
     "Send success notification" : "Upozornenie na úspešné odoslanie",
-    "Custom ocrMyPdf CLI arguments" : "Uživateľské parametre pre ocrMyPdf CLI",
-    "Select language(s)" : "Vyberte jazyk(y)"
+    "Custom ocrMyPdf CLI arguments" : "Uživateľské parametre pre ocrMyPdf CLI"
 },"pluralForm" :"nplurals=4; plural=(n % 1 == 0 && n == 1 ? 0 : n % 1 == 0 && n >= 2 && n <= 4 ? 1 : n % 1 != 0 ? 2: 3);"
 }

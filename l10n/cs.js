@@ -17,6 +17,7 @@ OC.L10N.register(
     "OCRmyPDF is installed and has version %1$s." : "OCRmyPDF je nainstalované a má verzi %1$s.",
     "Server side OCR processing via workflow engine" : "Zpracování OCR na straně serveru prostřednictvím workflow-engine",
     "This app makes it possible to process various files via OCR algorithms.\n\tThe processing is done via workflow-engine and can therefore easily be customized.\n\tPlease note that you'll have to install the OcrMyPDF CLI on your Nextcloud server to\n\tprocess PDF files. More installation instructions can be found in the docs https://github.com/R0Wi/workflow_ocr/blob/master/README.md." : "Tato aplikace umožňuje zpracovávat různé soubory pomocí algoritmů optického rozpoznávání znaků (OCR).\n\tZpracovávání se děje prostřednictvím workflow-engine a a je ho proto možné snadno přizpůsobit.\n\tMějte na paměti, že aby bylo možné zpracovávat PDF soubory je třeba, aby na vámi využívaném serveru byl nainstalován nástroj OcrMyPDF CLI \n\tDalší pokyny ohledně instalace jsou k dispozici v dokumentaci https://github.com/R0Wi/workflow_ocr/blob/master/README.md.",
+    "Select language(s)" : "Vybrat jazyk(y)",
     "OCR language" : "Jazyk pro rozpoznávání",
     "The language(s) to be used for OCR processing" : "Jazyk(y) které použít pro optické rozpoznávání znaků",
     "Assign tags after OCR" : "Po rozpoznání znaků přiřadit štítky",
@@ -34,7 +35,6 @@ OC.L10N.register(
     "Keep original file version" : "Ponechat původní verzi souboru",
     "Keep original file modification date" : "Ponechat datum změny jako u původního souboru",
     "Send success notification" : "Odeslat upozornění na úspěch",
-    "Custom ocrMyPdf CLI arguments" : "Uživatelsky určené argumenty pro příkazový řádek s ocrMyPdf",
-    "Select language(s)" : "Vybrat jazyk(y)"
+    "Custom ocrMyPdf CLI arguments" : "Uživatelsky určené argumenty pro příkazový řádek s ocrMyPdf"
 },
 "nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n <= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;");
