@@ -15,6 +15,7 @@ OC.L10N.register(
     "OCRmyPDF is installed and has version %1$s." : "OCRmyPDF %1$s sürümü kurulmuş.",
     "Server side OCR processing via workflow engine" : "İş akışı işleyici ile sunucu tarafında karakter tanıma işlemi",
     "This app makes it possible to process various files via OCR algorithms.\n\tThe processing is done via workflow-engine and can therefore easily be customized.\n\tPlease note that you'll have to install the OcrMyPDF CLI on your Nextcloud server to\n\tprocess PDF files. More installation instructions can be found in the docs https://github.com/R0Wi/workflow_ocr/blob/master/README.md." : "Bu uygulama, çeşitli dosyaların karakter tanıma algoritmaları ile işlenmesini sağlar.\n\tİşleme, iş akışı işleyici ile yapılır ve bu nedenle kolayca özelleştirilebilir.\n\tNextcloud sunucunuza OcrMyPDF komut satırı arayüzünü kurmanız gerekeceğini lütfen unutmayın.\n\tPDF dosyalarını işler. Kurulum yönergesi için https://github.com/R0Wi/workflow_ocr/blob/master/README.md belgelerine bakabilirsiniz.",
+    "Select language(s)" : "Dilleri seçin",
     "OCR language" : "Karakter tanıma dili",
     "The language(s) to be used for OCR processing" : "Karakter tanıma işleminde kullanılacak diller",
     "Assign tags after OCR" : "Karakter tanımadan sonra eklenecek etiketler",
@@ -32,7 +33,6 @@ OC.L10N.register(
     "Keep original file version" : "Özgün dosya sürümü korunsun",
     "Keep original file modification date" : "Özgün dosya değiştirilme tarihi korunsun",
     "Send success notification" : "Gönderildi bildirimi",
-    "Custom ocrMyPdf CLI arguments" : "Özel ocrMyPdf komut satırı parametreleri",
-    "Select language(s)" : "Dilleri seçin"
+    "Custom ocrMyPdf CLI arguments" : "Özel ocrMyPdf komut satırı parametreleri"
 },
 "nplurals=2; plural=(n > 1);");

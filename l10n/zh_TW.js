@@ -17,6 +17,7 @@ OC.L10N.register(
     "OCRmyPDF is installed and has version %1$s." : "OCRmyPDF 已安裝，版本為 %1$s。",
     "Server side OCR processing via workflow engine" : "透過工作引擎進行伺服器端 OCR 處理",
     "This app makes it possible to process various files via OCR algorithms.\n\tThe processing is done via workflow-engine and can therefore easily be customized.\n\tPlease note that you'll have to install the OcrMyPDF CLI on your Nextcloud server to\n\tprocess PDF files. More installation instructions can be found in the docs https://github.com/R0Wi/workflow_ocr/blob/master/README.md." : "此應用程式可以透過 OCR 演算法處理各種檔案。\n\t處理是透過工作流程引擎完成的，因此可以很容易地自訂。\n\t請注意，您必須在 Nextcloud 伺服器上安裝 OcrMyPDF CLI 才能\n\t處理 PDF 檔案。詳細安裝說明可以在文件 https://github.com/R0Wi/workflow_ocr/blob/master/README.md 中找到。",
+    "Select language(s)" : "選取語言",
     "OCR language" : "OCR 語言",
     "The language(s) to be used for OCR processing" : "OCR 處理所使用的語言",
     "Assign tags after OCR" : "在 OCR 後指定標籤",
@@ -34,7 +35,6 @@ OC.L10N.register(
     "Keep original file version" : "保留原始檔案版本",
     "Keep original file modification date" : "保留原始檔案修改日期",
     "Send success notification" : "傳送成功通知",
-    "Custom ocrMyPdf CLI arguments" : "自訂 ocrMyPdf CLI 引數",
-    "Select language(s)" : "選取語言"
+    "Custom ocrMyPdf CLI arguments" : "自訂 ocrMyPdf CLI 引數"
 },
 "nplurals=1; plural=0;");
