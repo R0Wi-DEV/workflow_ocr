@@ -17,6 +17,7 @@ OC.L10N.register(
     "OCRmyPDF is installed and has version %1$s." : "OCRmyPDF is installed and has version %1$s.",
     "Server side OCR processing via workflow engine" : "Server side OCR processing via workflow engine",
     "This app makes it possible to process various files via OCR algorithms.\n\tThe processing is done via workflow-engine and can therefore easily be customized.\n\tPlease note that you'll have to install the OcrMyPDF CLI on your Nextcloud server to\n\tprocess PDF files. More installation instructions can be found in the docs https://github.com/R0Wi/workflow_ocr/blob/master/README.md." : "This app makes it possible to process various files via OCR algorithms.\n\tThe processing is done via workflow engine and can therefore easily be customized.\n\tPlease note that you'll have to install the OcrMyPDF CLI on your Nextcloud server to process PDF files. More installation instructions can be found in the docs https://github.com/R0Wi/workflow_ocr/blob/master/README.md.",
+    "Select language(s)" : "Select language(s)",
     "OCR language" : "OCR language",
     "The language(s) to be used for OCR processing" : "The language(s) to be used for OCR processing",
     "Assign tags after OCR" : "Assign tags after OCR",
@@ -34,7 +35,6 @@ OC.L10N.register(
     "Keep original file version" : "Keep original file version",
     "Keep original file modification date" : "Keep original file's modification date",
     "Send success notification" : "Send success notification",
-    "Custom ocrMyPdf CLI arguments" : "Custom ocrMyPdf CLI arguments",
-    "Select language(s)" : "Select language(s)"
+    "Custom ocrMyPdf CLI arguments" : "Custom ocrMyPdf CLI arguments"
 },
 "nplurals=2; plural=(n != 1);");

@@ -17,6 +17,7 @@ OC.L10N.register(
     "OCRmyPDF is installed and has version %1$s." : "OCRmyPDF مُثبَّتة وإصدارها هو %1$s.",
     "Server side OCR processing via workflow engine" : "معالجة OCR \"التحويل من صورة إلى نص\" على المُخدّم من خلال محرك أتمتة سير العمل",
     "This app makes it possible to process various files via OCR algorithms.\n\tThe processing is done via workflow-engine and can therefore easily be customized.\n\tPlease note that you'll have to install the OcrMyPDF CLI on your Nextcloud server to\n\tprocess PDF files. More installation instructions can be found in the docs https://github.com/R0Wi/workflow_ocr/blob/master/README.md." : "هذا التطبيق يسمح بمعالجة ملفات متعددة الأنواع من خلال خوارزميات تحويل صورة الكتابة إلى نص. عملية التحويل تتم عبر محرك أتمتة سير العمل و هي بالتالي قابلة للتخصيص بحسب التطبيق. يٌرجى ملاحظة ضرورة تنصيب OcrMyPDF من خلال سطر الأوامر CLI في مخدم Nextcloud حتى يتسنّى معالجة ملفات PDF.\nتعليمات أكثر حول التنصيب تجدها في الشروحات في:  https://github.com/R0Wi/workflow_ocr/blob/master/README.md.",
+    "Select language(s)" : "إختر اللغة (اللغات)",
     "OCR language" : "لغة التحويل من صورة إلى نص OCR",
     "The language(s) to be used for OCR processing" : "اللغة (أو اللغات) التي سيتم استعمالها في التحويل من صورة إلى نص OCR",
     "Assign tags after OCR" : "أسنِد وسوماً بعد التحويل إلى نص",
@@ -34,7 +35,6 @@ OC.L10N.register(
     "Keep original file version" : "الاحتفاظ بنسخة من الملف الأصلي",
     "Keep original file modification date" : "أبقِ على تاريخ آخر تعديل للملف الأصلي",
     "Send success notification" : "أرسل إشعاراً بنجاح الإجراء",
-    "Custom ocrMyPdf CLI arguments" : "بارامترات مخصصة للأمر السطري ocrMyPdf  ",
-    "Select language(s)" : "إختر اللغة (اللغات)"
+    "Custom ocrMyPdf CLI arguments" : "بارامترات مخصصة للأمر السطري ocrMyPdf  "
 },
 "nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;");
