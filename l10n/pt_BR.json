@@ -2,9 +2,14 @@
     "Workflow OCR" : "Workflow OCR",
     "Workflow OCR error" : "Erro de OCR do fluxo de trabalho",
     "Workflow OCR error for file {file}" : "Erro de OCR do fluxo de trabalho para o arquivo {file}",
+    "Workflow OCR success" : "Sucesso do fluxo de trabalho de OCR",
+    "Workflow OCR success for file {file}" : "Sucesso do fluxo de trabalho de OCR para o arquivo {file}",
     "Workflow settings JSON value cannot be parsed" : "JSON de configurações do workflow não pôde ser processado",
     "OCR file" : "Arquivo OCR",
     "OCR processing via workflow" : "Processamento de OCR através de workflow",
+    "Is OCRmyPDF installed" : "O OCRmyPDF está instalado?",
+    "OCRmyPDF CLI is not installed." : "OCRmyPDF CLI não está instalado.",
+    "OCRmyPDF CLI is not working correctly. Error was: %1$s" : "A CLI do OCRmyPDF não está funcionando corretamente. O erro foi: %1$s",
     "Server side OCR processing via workflow engine" : "Server side OCR processing via workflow engine",
     "This app makes it possible to process various files via OCR algorithms.\n\tThe processing is done via workflow-engine and can therefore easily be customized.\n\tPlease note that you'll have to install the OcrMyPDF CLI on your Nextcloud server to\n\tprocess PDF files. More installation instructions can be found in the docs https://github.com/R0Wi/workflow_ocr/blob/master/README.md." : "Este app torna possível processar diversos arquivos utilizando algorítimos OCR.\n\tO processamento é feito através de um motor de worflow e portanto pode ser facilmente customizado.\n\tNote que você precisará ter instalado o OcrMyPDF CLI em sua instância Nextcloud para\n\tprocessar arquivos PDF. Mais instruções de instalação podem ser encontradas na documentação em https://github.com/R0Wi/workflow_ocr/blob/master/README.md.",
     "Select language(s)" : "Selecione o(s) idioma(s)",
@@ -22,6 +27,9 @@
     "Skip file completely" : "Pular arquivo completamente",
     "Other settings" : "Outros ajustes",
     "Remove background" : "Remover papel de parede",
-    "Keep original file version" : "Manter a versão original do arquivo"
+    "Keep original file version" : "Manter a versão original do arquivo",
+    "Keep original file modification date" : "Manter a data original de modificação do arquivo",
+    "Send success notification" : "Enviar notificação de sucesso",
+    "Custom ocrMyPdf CLI arguments" : "Argumentos personalizados da CLI do ocrMyPdf"
 },"pluralForm" :"nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;"
 }
