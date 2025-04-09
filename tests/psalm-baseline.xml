@@ -125,15 +125,15 @@
     </FalsableReturnStatement>
     <InvalidPropertyAssignmentValue>
       <code><![CDATA[$this->openAPINullablesSetToNull]]></code>
+      <code><![CDATA[$this->openAPINullablesSetToNull]]></code>
     </InvalidPropertyAssignmentValue>
     <PossiblyUnusedMethod>
       <code><![CDATA[__construct]]></code>
+      <code><![CDATA[getOcrMyPdfExitCode]]></code>
       <code><![CDATA[setMessage]]></code>
+      <code><![CDATA[setOcrMyPdfExitCode]]></code>
       <code><![CDATA[toHeaderValue]]></code>
     </PossiblyUnusedMethod>
-    <UnusedMethod>
-      <code><![CDATA[setOpenAPINullablesSetToNull]]></code>
-    </UnusedMethod>
   </file>
   <file src="lib/OcrProcessors/Remote/Client/Model/ModelInterface.php">
     <PossiblyUnusedMethod>

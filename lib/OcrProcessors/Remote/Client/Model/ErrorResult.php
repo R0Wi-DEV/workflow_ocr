@@ -57,7 +57,8 @@ class ErrorResult implements ModelInterface, ArrayAccess, \JsonSerializable {
 	 * @var string[]
 	 */
 	protected static $openAPITypes = [
-		'message' => 'string'
+		'message' => 'string',
+		'ocrMyPdfExitCode' => 'int'
 	];
 
 	/**
@@ -68,7 +69,8 @@ class ErrorResult implements ModelInterface, ArrayAccess, \JsonSerializable {
 	 * @psalm-var array<string, string|null>
 	 */
 	protected static $openAPIFormats = [
-		'message' => null
+		'message' => null,
+		'ocrMyPdfExitCode' => null
 	];
 
 	/**
@@ -77,7 +79,8 @@ class ErrorResult implements ModelInterface, ArrayAccess, \JsonSerializable {
 	 * @var boolean[]
 	 */
 	protected static array $openAPINullables = [
-		'message' => false
+		'message' => false,
+		'ocrMyPdfExitCode' => true
 	];
 
 	/**
@@ -159,7 +162,8 @@ class ErrorResult implements ModelInterface, ArrayAccess, \JsonSerializable {
 	 * @var string[]
 	 */
 	protected static $attributeMap = [
-		'message' => 'message'
+		'message' => 'message',
+		'ocrMyPdfExitCode' => 'ocrMyPdfExitCode'
 	];
 
 	/**
@@ -168,7 +172,8 @@ class ErrorResult implements ModelInterface, ArrayAccess, \JsonSerializable {
 	 * @var string[]
 	 */
 	protected static $setters = [
-		'message' => 'setMessage'
+		'message' => 'setMessage',
+		'ocrMyPdfExitCode' => 'setOcrMyPdfExitCode'
 	];
 
 	/**
@@ -177,7 +182,8 @@ class ErrorResult implements ModelInterface, ArrayAccess, \JsonSerializable {
 	 * @var string[]
 	 */
 	protected static $getters = [
-		'message' => 'getMessage'
+		'message' => 'getMessage',
+		'ocrMyPdfExitCode' => 'getOcrMyPdfExitCode'
 	];
 
 	/**
@@ -233,6 +239,7 @@ class ErrorResult implements ModelInterface, ArrayAccess, \JsonSerializable {
 	 */
 	public function __construct(?array $data = null) {
 		$this->setIfExists('message', $data ?? [], null);
+		$this->setIfExists('ocrMyPdfExitCode', $data ?? [], null);
 	}
 
 	/**
@@ -298,6 +305,38 @@ class ErrorResult implements ModelInterface, ArrayAccess, \JsonSerializable {
 			throw new \InvalidArgumentException('non-nullable message cannot be null');
 		}
 		$this->container['message'] = $message;
+
+		return $this;
+	}
+
+	/**
+	 * Gets ocrMyPdfExitCode
+	 *
+	 * @return int|null
+	 */
+	public function getOcrMyPdfExitCode() {
+		return $this->container['ocrMyPdfExitCode'];
+	}
+
+	/**
+	 * Sets ocrMyPdfExitCode
+	 *
+	 * @param int|null $ocrMyPdfExitCode ocrMyPdfExitCode
+	 *
+	 * @return self
+	 */
+	public function setOcrMyPdfExitCode($ocrMyPdfExitCode) {
+		if (is_null($ocrMyPdfExitCode)) {
+			array_push($this->openAPINullablesSetToNull, 'ocrMyPdfExitCode');
+		} else {
+			$nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+			$index = array_search('ocrMyPdfExitCode', $nullablesSetToNull);
+			if ($index !== false) {
+				unset($nullablesSetToNull[$index]);
+				$this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+			}
+		}
+		$this->container['ocrMyPdfExitCode'] = $ocrMyPdfExitCode;
 
 		return $this;
 	}
