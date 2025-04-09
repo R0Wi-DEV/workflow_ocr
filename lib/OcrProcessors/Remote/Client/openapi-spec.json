@@ -175,6 +175,18 @@
                         "type": "string",
                         "title": "Message",
                         "description": "Error message"
+                    },
+                    "ocrMyPdfExitCode": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Ocrmypdfexitcode",
+                        "description": "Exit code of the OCRmyPDF process (if applicable)"
                     }
                 },
                 "type": "object",
