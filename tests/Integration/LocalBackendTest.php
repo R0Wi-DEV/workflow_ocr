@@ -125,4 +125,28 @@ class LocalBackendTest extends BackendTestBase {
 		$this->assertInstanceOf(TextRecognizedEvent::class, $textRecognizedEvent, 'Expected TextRecognizedEvent instance');
 		$this->assertEquals('[OCR skipped on page(s) 1]', trim($textRecognizedEvent->getRecognizedText()), 'Expected recognized text');
 	}
+
+	public function testWorkflowOcrLocalBackendPngWithAlphaChannel(): void {
+		$this->addOperation('image/png');
+		$this->uploadTestFile('png-with-alpha-channel.png');
+		$this->runOcrBackgroundJob();
+
+		$this->assertEmpty($this->apiClient->getRequests(), 'Expected no OCR Backend Service requests');
+		$this->assertEquals(1, count($this->capturedEvents), 'Expected 1 TextRecognizedEvent');
+		$textRecognizedEvent = $this->capturedEvents[0];
+		$this->assertInstanceOf(TextRecognizedEvent::class, $textRecognizedEvent, 'Expected TextRecognizedEvent instance');
+		$this->assertEquals('PNG with alpha channel', trim($textRecognizedEvent->getRecognizedText()), 'Expected recognized text');
+	}
+
+	public function testWorkflowOcrLocalBackendRegularJpg(): void {
+		$this->addOperation('image/png');
+		$this->uploadTestFile('png-without-alpha-channel.png');
+		$this->runOcrBackgroundJob();
+
+		$this->assertEmpty($this->apiClient->getRequests(), 'Expected no OCR Backend Service requests');
+		$this->assertEquals(1, count($this->capturedEvents), 'Expected 1 TextRecognizedEvent');
+		$textRecognizedEvent = $this->capturedEvents[0];
+		$this->assertInstanceOf(TextRecognizedEvent::class, $textRecognizedEvent, 'Expected TextRecognizedEvent instance');
+		$this->assertEquals('PNG without alpha channel', trim($textRecognizedEvent->getRecognizedText()), 'Expected recognized text');
+	}
 }

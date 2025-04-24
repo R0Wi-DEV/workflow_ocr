@@ -23,34 +23,30 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\OcrProcessors\Local;
 
-use OCA\WorkflowOcr\Exception\OcrAlreadyDoneException;
-use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
-use OCA\WorkflowOcr\Exception\OcrResultEmptyException;
 use OCA\WorkflowOcr\Helper\ISidecarFileAccessor;
 use OCA\WorkflowOcr\Model\GlobalSettings;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCA\WorkflowOcr\OcrProcessors\ICommandLineUtils;
-use OCA\WorkflowOcr\OcrProcessors\IOcrProcessor;
-use OCA\WorkflowOcr\OcrProcessors\OcrProcessorResult;
+use OCA\WorkflowOcr\OcrProcessors\OcrProcessorBase;
 use OCA\WorkflowOcr\Wrapper\ICommand;
-use OCP\Files\File;
 use Psr\Log\LoggerInterface;
 
-abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
+abstract class OcrMyPdfBasedProcessor extends OcrProcessorBase {
 	public function __construct(
 		private ICommand $command,
-		private LoggerInterface $logger,
+		protected LoggerInterface $logger,
 		private ISidecarFileAccessor $sidecarFileAccessor,
 		private ICommandLineUtils $commandLineUtils,
 	) {
+		parent::__construct($logger);
 	}
 
-	public function ocrFile(File $file, WorkflowSettings $settings, GlobalSettings $globalSettings): OcrProcessorResult {
+	protected function doOcrProcessing($fileResource, string $fileName, WorkflowSettings $settings, GlobalSettings $globalSettings): array {
 		$additionalCommandlineArgs = $this->getAdditionalCommandlineArgs($settings, $globalSettings);
 		$sidecarFile = $this->sidecarFileAccessor->getOrCreateSidecarFile();
 		$commandStr = 'ocrmypdf ' . $this->commandLineUtils->getCommandlineArgs($settings, $globalSettings, $sidecarFile, $additionalCommandlineArgs) . ' - - || exit $? ; cat';
 
-		$inputFileContent = $file->getContent();
+		$inputFileContent = stream_get_contents($fileResource);
 
 		$this->command
 			->setCommand($commandStr)
@@ -64,11 +60,7 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 		$exitCode = $this->command->getExitCode();
 
 		if (!$success) {
-			# Gracefully handle OCR_MODE_SKIP_FILE (ExitCode.already_done_ocr)
-			if ($exitCode === 6) {
-				throw new OcrAlreadyDoneException('File ' . $file->getPath() . ' appears to contain text so it may not need OCR. Message: ' . $errorOutput . ' ' . $stdErr);
-			}
-			throw new OcrNotPossibleException('OCRmyPDF exited abnormally with exit-code ' . $exitCode . ' for file ' . $file->getPath() . '. Message: ' . $errorOutput . ' ' . $stdErr);
+			return [false, null, null, $exitCode, $errorOutput . ' ' . $stdErr];
 		}
 
 		if ($stdErr !== '' || $errorOutput !== '') {
@@ -80,20 +72,9 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 		}
 
 		$ocrFileContent = $this->command->getOutput();
-
-		if (!$ocrFileContent) {
-			throw new OcrResultEmptyException('OCRmyPDF did not produce any output for file ' . $file->getPath());
-		}
-
 		$recognizedText = $this->sidecarFileAccessor->getSidecarFileContent();
 
-		if (!$recognizedText) {
-			$this->logger->info('Temporary sidecar file at \'{path}\' was empty', ['path' => $sidecarFile]);
-		}
-
-		$this->logger->debug('OCR processing was successful');
-
-		return new OcrProcessorResult($ocrFileContent, 'pdf', $recognizedText);
+		return [true, $ocrFileContent, $recognizedText, $exitCode, null];
 	}
 
 	/**

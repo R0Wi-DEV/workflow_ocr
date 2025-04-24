@@ -23,34 +23,28 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\OcrProcessors\Remote;
 
-use OCA\WorkflowOcr\Exception\OcrAlreadyDoneException;
-use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
 use OCA\WorkflowOcr\Model\GlobalSettings;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCA\WorkflowOcr\OcrProcessors\ICommandLineUtils;
-use OCA\WorkflowOcr\OcrProcessors\IOcrProcessor;
-use OCA\WorkflowOcr\OcrProcessors\OcrProcessorResult;
+use OCA\WorkflowOcr\OcrProcessors\OcrProcessorBase;
 use OCA\WorkflowOcr\OcrProcessors\Remote\Client\IApiClient;
 use OCA\WorkflowOcr\OcrProcessors\Remote\Client\Model\ErrorResult;
-use OCP\Files\File;
 use Psr\Log\LoggerInterface;
 
 /**
  * OCR Processor which utilizes the Workflow OCR Backend remote service to perform OCR.
  */
-class WorkflowOcrRemoteProcessor implements IOcrProcessor {
+class WorkflowOcrRemoteProcessor extends OcrProcessorBase {
 	public function __construct(
 		private IApiClient $apiClient,
 		private ICommandLineUtils $commandLineUtils,
-		private LoggerInterface $logger,
+		protected LoggerInterface $logger,
 	) {
-
+		parent::__construct($logger);
 	}
 
-	public function ocrFile(File $file, WorkflowSettings $settings, GlobalSettings $globalSettings): OcrProcessorResult {
+	protected function doOcrProcessing($fileResource, string $fileName, WorkflowSettings $settings, GlobalSettings $globalSettings): array {
 		$ocrMyPdfParameters = $this->commandLineUtils->getCommandlineArgs($settings, $globalSettings);
-		$fileResource = $file->fopen('rb');
-		$fileName = $file->getName();
 
 		$this->logger->debug('Sending OCR request to remote backend');
 		$apiResult = $this->apiClient->processOcr($fileResource, $fileName, $ocrMyPdfParameters);
@@ -60,17 +54,9 @@ class WorkflowOcrRemoteProcessor implements IOcrProcessor {
 			$resultMessage = $apiResult->getMessage();
 			$exitCode = $apiResult->getOcrMyPdfExitCode();
 
-			# Gracefully handle OCR_MODE_SKIP_FILE (ExitCode.already_done_ocr)
-			if ($exitCode === 6) {
-				throw new OcrAlreadyDoneException('File ' . $file->getPath() . ' appears to contain text so it may not need OCR. Message: ' . $resultMessage);
-			}
-			throw new OcrNotPossibleException($resultMessage);
+			return [false, null, null, $exitCode, $resultMessage];
 		}
 
-		return new OcrProcessorResult(
-			base64_decode($apiResult->getFileContent()),
-			pathinfo($apiResult->getFilename(), PATHINFO_EXTENSION),
-			$apiResult->getRecognizedText()
-		);
+		return [true, base64_decode($apiResult->getFileContent()), $apiResult->getRecognizedText(), 0, null];
 	}
 }

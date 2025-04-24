@@ -155,6 +155,7 @@
     <PossiblyUnusedMethod>
       <code><![CDATA[__construct]]></code>
       <code><![CDATA[getContentType]]></code>
+      <code><![CDATA[getFilename]]></code>
       <code><![CDATA[setContentType]]></code>
       <code><![CDATA[setFileContent]]></code>
       <code><![CDATA[setFilename]]></code>

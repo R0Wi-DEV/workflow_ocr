@@ -82,6 +82,15 @@ class PdfOcrProcessorTest extends TestCase {
 			->willReturn(self::FILE_CONTENT_BEFORE);
 		$this->fileBefore->method('getMimeType')
 			->willReturnCallback(fn () => $this->fileBeforeMimeType);
+		$this->fileBefore->method('getName')
+			->willReturn('someFileName.pdf');
+		$this->fileBefore->method('fopen')
+			->willReturnCallback(function ($mode) {
+				$stream = fopen('php://temp', 'r+');
+				fwrite($stream, self::FILE_CONTENT_BEFORE);
+				rewind($stream);
+				return $stream;
+			});
 
 		$this->fileBeforeMimeType = 'application/pdf';
 		$this->ocrMyPdfOutput = self::FILE_CONTENT_AFTER;
@@ -177,9 +186,6 @@ class PdfOcrProcessorTest extends TestCase {
 			->method('getStdErr')
 			->willReturn('stdErr');
 		$this->ocrMyPdfOutput = '';
-		$this->fileBefore->expects($this->once())
-			->method('getPath')
-			->willReturn('/admin/files/somefile.pdf');
 
 		$thrown = false;
 		$processor = new PdfOcrProcessor($this->command, $this->logger, $this->sidecarFileAccessor, $this->commandLineUtils);
@@ -189,7 +195,7 @@ class PdfOcrProcessorTest extends TestCase {
 		} catch (\Throwable $t) {
 			$thrown = true;
 			$this->assertInstanceOf(OcrResultEmptyException::class, $t);
-			$this->assertEquals('OCRmyPDF did not produce any output for file /admin/files/somefile.pdf', $t->getMessage());
+			$this->assertEquals('OCRmyPDF did not produce any output for file someFileName.pdf', $t->getMessage());
 		}
 
 		$this->assertTrue($thrown);
@@ -271,7 +277,7 @@ class PdfOcrProcessorTest extends TestCase {
 		$this->logger->expects($this->once())
 			->method('info')
 			->with($this->callback(function ($message) {
-				return strpos($message, 'Temporary sidecar file at') !== false && strpos($message, 'was empty') !== false;
+				return $message === 'Recognized text was empty';
 			}));
 
 		$processor = new PdfOcrProcessor($this->command, $this->logger, $this->sidecarFileAccessor, $this->commandLineUtils);
