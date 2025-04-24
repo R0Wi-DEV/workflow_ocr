@@ -37,7 +37,7 @@ class ApiClient implements IApiClient {
 		private LoggerInterface $logger,
 	) {
 	}
-	
+
 	public function processOcr($file, string $fileName, string $ocrMyPdfParameters): OcrResult|ErrorResult {
 		$options = [
 			'multipart' => [
@@ -92,7 +92,7 @@ class ApiClient implements IApiClient {
 			$options ?? []
 		);
 		$this->logger->debug('Response received', ['path' => $path, 'response' => $response]);
-		
+
 		if (is_array($response) || ($throwIfResponseCodeNot200 && $response->getStatusCode() !== 200)) {
 			$this->logger->error('Request failed', ['path' => $path, 'response' => $response]);
 			throw new RuntimeException('Request failed');

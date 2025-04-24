@@ -104,15 +104,15 @@ class Notifier implements INotifier {
 
 		// Only add file info if we have some ...
 		$richParams = false;
-		if ($notification->getObjectType() === 'file' &&
-			($fileId = $notification->getObjectId()) &&
-			($uid = $notification->getUser())) {
+		if ($notification->getObjectType() === 'file'
+			&& ($fileId = $notification->getObjectId())
+			&& ($uid = $notification->getUser())) {
 			$richParams = $this->tryGetRichParamForFile($uid, intval($fileId));
 			if ($richParams !== false) {
 				$notification->setRichSubject($richSubject, $richParams);
 			}
 		}
-		
+
 		// Fallback to generic error message without file link
 		if ($richParams === false) {
 			$notification->setParsedSubject($parsedSubject);

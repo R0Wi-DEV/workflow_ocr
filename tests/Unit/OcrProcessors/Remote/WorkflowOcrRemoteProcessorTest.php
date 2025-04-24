@@ -85,7 +85,6 @@ class WorkflowOcrRemoteProcessorTest extends TestCase {
 
 		$this->assertInstanceOf(OcrProcessorResult::class, $result);
 		$this->assertEquals('file content', $result->getFileContent());
-		$this->assertEquals('pdf', $result->getFileExtension());
 		$this->assertEquals('recognized text', $result->getRecognizedText());
 	}
 

@@ -52,6 +52,7 @@ use Psr\Log\LoggerInterface;
 class OcrService implements IOcrService {
 	private const FILE_VERSION_LABEL_KEY = 'label';
 	private const FILE_VERSION_LABEL_VALUE = 'Before OCR';
+	private const PDF_FILE_EXTENSION = 'pdf';
 
 	/** @var IOcrProcessorFactory */
 	private $ocrProcessorFactory;
@@ -155,7 +156,7 @@ class OcrService implements IOcrService {
 
 			$ocrProcessor = $this->ocrProcessorFactory->create($file->getMimeType());
 			$globalSettings = $this->globalSettingsService->getGlobalSettings();
-			
+
 			try {
 				$result = $ocrProcessor->ocrFile($file, $settings, $globalSettings);
 			} catch (OcrAlreadyDoneException $ex) {
@@ -181,9 +182,9 @@ class OcrService implements IOcrService {
 			throw new \InvalidArgumentException('Argument is not an array in ' . self::class . ' method \'tryParseArguments\'.');
 		}
 
-		$getArgument = fn ($key) => array_key_exists($key, $argument) ?
-			$argument[$key] :
-			throw new \InvalidArgumentException("Argument key '$key' not found in " . self::class . ' method \'tryParseArguments\'.');
+		$getArgument = fn ($key) => array_key_exists($key, $argument)
+			? $argument[$key]
+			: throw new \InvalidArgumentException("Argument key '$key' not found in " . self::class . ' method \'tryParseArguments\'.');
 
 		$jsonSettings = $getArgument('settings');
 		$settings = new WorkflowSettings($jsonSettings);
@@ -222,7 +223,7 @@ class OcrService implements IOcrService {
 		if (count($nodeArr) === 0) {
 			throw new NotFoundException('Could not process file with id \'' . $fileId . '\'. File was not found');
 		}
-		
+
 		$node = array_shift($nodeArr);
 
 		if (!$node instanceof Node || $node->getType() !== FileInfo::TYPE_FILE) {
@@ -263,7 +264,7 @@ class OcrService implements IOcrService {
 	private function createNewFileVersion(string $filePath, string $ocrContent, ?int $fileMtime = null) : void {
 		$dirPath = dirname($filePath);
 		$filename = basename($filePath);
-		
+
 		$this->processingFileAccessor->setCurrentlyProcessedFilePath($filePath);
 
 		try {
@@ -323,7 +324,6 @@ class OcrService implements IOcrService {
 		$fileId = $file->getId();
 		$fileContent = $result->getFileContent();
 		$originalFileExtension = $file->getExtension();
-		$newFileExtension = $result->getFileExtension();
 
 		// Only create a new file version if the file OCR result was not empty #130
 		if ($result->getRecognizedText() !== '') {
@@ -332,7 +332,7 @@ class OcrService implements IOcrService {
 				$this->setFileVersionsLabel($file, $uid, self::FILE_VERSION_LABEL_VALUE);
 			}
 
-			$newFilePath = $this->determineNewFilePath($file, $originalFileExtension, $newFileExtension);
+			$newFilePath = $this->determineNewFilePath($file, $originalFileExtension);
 			$this->createNewFileVersion($newFilePath, $fileContent, $fileMtime);
 		}
 
@@ -349,19 +349,18 @@ class OcrService implements IOcrService {
 	 *
 	 * @param Node $file The original file node for which the OCR processing has been succeeded.
 	 * @param string $originalFileExtension The original file extension.
-	 * @param string $newFileExtension The new file extension to be applied.
 	 * @return string The new file path with the updated extension.
 	 */
-	private function determineNewFilePath(Node $file, string $originalFileExtension, string $newFileExtension): string {
+	private function determineNewFilePath(Node $file, string $originalFileExtension): string {
 		$filePath = $file->getPath();
-		if ($originalFileExtension !== $newFileExtension) {
+		if ($originalFileExtension !== self::PDF_FILE_EXTENSION) {
 			// If the extension changed, will create a new file with the new extension
-			return $filePath . '.' . $newFileExtension;
+			return "$filePath." . self::PDF_FILE_EXTENSION;
 		}
 		if (!$file->isUpdateable()) {
 			// Add suffix '_OCR' if original file cannot be updated
 			$fileInfo = pathinfo($filePath);
-			return $fileInfo['dirname'] . '/' . $fileInfo['filename'] . '_OCR.' . $newFileExtension;
+			return $fileInfo['dirname'] . '/' . $fileInfo['filename'] . '_OCR.' . self::PDF_FILE_EXTENSION;
 		}
 		// By returning the original file path, we will create a new file version of the original file
 		return $filePath;

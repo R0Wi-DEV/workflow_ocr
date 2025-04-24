@@ -41,7 +41,7 @@ use Psr\Container\ContainerInterface;
 class RegisterFlowOperationsListenerTest extends TestCase {
 	/** @var ContainerInterface|MockObject */
 	private $container;
-	
+
 	public function setUp() : void {
 		parent::setUp();
 		$this->container = $this->createMock(ContainerInterface::class);
@@ -88,7 +88,7 @@ class RegisterFlowOperationsListenerTest extends TestCase {
 				$scriptCount++;
 			}
 		}
-		
+
 		$this->assertEquals(2, $scriptCount);
 	}
 

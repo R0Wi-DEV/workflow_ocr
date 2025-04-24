@@ -38,10 +38,10 @@ use Psr\Log\LoggerInterface;
 class ProcessFileJobTest extends TestCase {
 	/** @var LoggerInterface|MockObject */
 	private $logger;
-	
+
 	/** @var IOcrService|MockObject */
 	private $ocrService;
-	
+
 	/** @var JobList */
 	private $jobList;
 
@@ -107,7 +107,7 @@ class ProcessFileJobTest extends TestCase {
 		$this->ocrService->expects($this->once())
 			->method('runOcrProcessWithJobArgument')
 			->with($this->equalTo($this->argument));
-		
+
 		$this->processFileJob->start($this->jobList);
 	}
 }

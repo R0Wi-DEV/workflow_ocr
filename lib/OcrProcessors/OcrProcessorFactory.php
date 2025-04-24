@@ -67,14 +67,14 @@ class OcrProcessorFactory implements IOcrProcessorFactory {
 		*	"singleton per request" which leads to problems regarding the reused Command object
 		*	under the hood.
 		*/
-		$context->registerService(PdfOcrProcessor::class, fn (ContainerInterface $c) =>
-			new PdfOcrProcessor(
+		$context->registerService(PdfOcrProcessor::class, fn (ContainerInterface $c)
+			=> new PdfOcrProcessor(
 				$c->get(ICommand::class),
 				$c->get(LoggerInterface::class),
 				$c->get(ISidecarFileAccessor::class),
 				$c->get(ICommandLineUtils::class)), false);
-		$context->registerService(ImageOcrProcessor::class, fn (ContainerInterface $c) =>
-			new ImageOcrProcessor(
+		$context->registerService(ImageOcrProcessor::class, fn (ContainerInterface $c)
+			=> new ImageOcrProcessor(
 				$c->get(ICommand::class),
 				$c->get(LoggerInterface::class),
 				$c->get(ISidecarFileAccessor::class),

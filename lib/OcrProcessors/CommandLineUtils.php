@@ -44,7 +44,7 @@ class CommandLineUtils implements ICommandLineUtils {
 
 	public function getCommandlineArgs(WorkflowSettings $settings, GlobalSettings $globalSettings, ?string $sidecarFile = null, array $additionalCommandlineArgs = []): string {
 		$isLocalExecution = !$this->ocrBackendInfoService->isRemoteBackend();
-		
+
 		// Default setting is quiet
 		$args = $isLocalExecution ? ['-q'] : [];
 
