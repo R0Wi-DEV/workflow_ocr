@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace OCA\WorkflowOcr\OcrProcessors\Remote;
 
 use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
+use OCA\WorkflowOcr\Exception\OcrResultEmptyException;
 use OCA\WorkflowOcr\Model\GlobalSettings;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCA\WorkflowOcr\OcrProcessors\ICommandLineUtils;
@@ -56,7 +57,14 @@ class WorkflowOcrRemoteProcessor implements IOcrProcessor {
 		$this->logger->debug('OCR result received', ['apiResult' => $apiResult]);
 
 		if ($apiResult instanceof ErrorResult) {
-			throw new OcrNotPossibleException($apiResult->getMessage());
+			$resultMessage = $apiResult->getMessage();
+			$exitCode = $apiResult->getOcrMyPdfExitCode();
+
+			# Gracefully handle OCR_MODE_SKIP_FILE (ExitCode.already_done_ocr)
+			if ($exitCode === 6) {
+				throw new OcrResultEmptyException('OCRmyPDF exited with exit-code ' . $exitCode . ' for file ' . $file->getPath() . ' because it already appears to contain text so it may not need OCR. Message: ' . $resultMessage);
+			}
+			throw new OcrNotPossibleException($resultMessage);
 		}
 
 		return new OcrProcessorResult(

@@ -63,6 +63,10 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 		$exitCode = $this->command->getExitCode();
 
 		if (!$success) {
+			# Gracefully handle OCR_MODE_SKIP_FILE (ExitCode.already_done_ocr)
+			if ($exitCode === 6) {
+				throw new OcrResultEmptyException('OCRmyPDF exited with exit-code ' . $exitCode . ' for file ' . $file->getPath() . ' because it already appears to contain text so it may not need OCR. Message: ' . $errorOutput . ' ' . $stdErr);
+			}
 			throw new OcrNotPossibleException('OCRmyPDF exited abnormally with exit-code ' . $exitCode . ' for file ' . $file->getPath() . '. Message: ' . $errorOutput . ' ' . $stdErr);
 		}
 
