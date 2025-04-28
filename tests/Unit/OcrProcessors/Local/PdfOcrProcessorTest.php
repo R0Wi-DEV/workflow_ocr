@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\Tests\Unit\OcrProcessors\Local;
 
+use OCA\WorkflowOcr\Exception\OcrAlreadyDoneException;
 use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
 use OCA\WorkflowOcr\Exception\OcrResultEmptyException;
 use OCA\WorkflowOcr\Helper\ISidecarFileAccessor;
@@ -384,6 +385,35 @@ class PdfOcrProcessorTest extends TestCase {
 		$workflowSettings = new WorkflowSettings('{"customCliArgs": "--output-type pdf"}');
 		$processor = new PdfOcrProcessor($this->command, $this->logger, $this->sidecarFileAccessor, $this->commandLineUtils);
 		$processor->ocrFile($this->fileBefore, $workflowSettings, $this->defaultGlobalSettings);
+	}
+
+	public function testThrowsOcrAlreadyDoneExceptionIfErrorCodeIsEquals6() {
+		$this->command->expects($this->once())
+			->method('setCommand')
+			->willReturn($this->command);
+		$this->command->expects($this->once())
+			->method('execute')
+			->willReturn(false);
+		$this->command->expects($this->once())
+			->method('getError')
+			->willReturn('error');
+		$this->command->expects($this->once())
+			->method('getStdErr')
+			->willReturn('stdErr');
+		$this->command->expects($this->once())
+			->method('getExitCode')
+			->willReturn(6);
+
+		$thrown = false;
+		try {
+			$processor = new PdfOcrProcessor($this->command, $this->logger, $this->sidecarFileAccessor, $this->commandLineUtils);
+			$processor->ocrFile($this->fileBefore, $this->defaultSettings, $this->defaultGlobalSettings);
+		} catch (\Throwable $t) {
+			$thrown = true;
+			$this->assertInstanceOf(OcrAlreadyDoneException::class, $t);
+		}
+
+		$this->assertTrue($thrown);
 	}
 
 	public static function dataProvider_testAppliesOcrModeParameter() {

@@ -30,7 +30,7 @@ use OC\User\NoUserException;
 use OCA\Files_Versions\Versions\IMetadataVersion;
 use OCA\Files_Versions\Versions\IMetadataVersionBackend;
 use OCA\Files_Versions\Versions\IVersionManager;
-use OCA\WorkflowOcr\Exception\OcrResultEmptyException;
+use OCA\WorkflowOcr\Exception\OcrAlreadyDoneException;
 use OCA\WorkflowOcr\Helper\IProcessingFileAccessor;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCA\WorkflowOcr\OcrProcessors\IOcrProcessorFactory;
@@ -158,7 +158,7 @@ class OcrService implements IOcrService {
 			
 			try {
 				$result = $ocrProcessor->ocrFile($file, $settings, $globalSettings);
-			} catch (OcrResultEmptyException $ex) {
+			} catch (OcrAlreadyDoneException $ex) {
 				// #232: it's okay to have an empty result if the file was skipped due to OCR mode
 				if ($settings->getOcrMode() === WorkflowSettings::OCR_MODE_SKIP_FILE) {
 					$this->logger->debug('Skipping empty OCR result for file with id {fileId} because OCR mode is set to \'skip file\'', ['fileId' => $fileId]);
