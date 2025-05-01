@@ -97,7 +97,7 @@ abstract class BackendTestBase extends TestCase {
 		return $command->getExitCode() === 0;
 	}
 
-	protected function addOperation(string $mimeType) {
+	protected function addOperation(string $mimeType, string $operationJson = '') {
 		// NOTE :: we're creating the workflow operation via
 		// REST API because if we'd use the manager directly, we'd
 		// face some issues because of caching etc (test ist running
@@ -118,10 +118,9 @@ abstract class BackendTestBase extends TestCase {
 					"invalid":false
 				}
 			],
-			"operation":"",
+			"operation":"' . str_replace('"', '\"', $operationJson) . '",
 			"valid":true
 		}';
-		
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_POST, true);
@@ -135,6 +134,18 @@ abstract class BackendTestBase extends TestCase {
 	}
 
 	private function deleteOperation() {
+		// Clear managers cache and operations to ensure "deleteOperation" works
+		$reflection = new \ReflectionClass($this->workflowEngineManager);
+		
+		$operationsByScopeProperty = $reflection->getProperty('operationsByScope');
+		$operationsByScopeProperty->setAccessible(true);
+		$operationsByScope = $operationsByScopeProperty->getValue($this->workflowEngineManager);
+		$operationsByScope->clear();
+
+		$operationsProperty = $reflection->getProperty('operations');
+		$operationsProperty->setAccessible(true);
+		$operationsProperty->setValue($this->workflowEngineManager, []);
+
 		$operations = $this->workflowEngineManager->getOperations($this->operationClass, $this->context);
 		foreach ($operations as $operation) {
 			try {

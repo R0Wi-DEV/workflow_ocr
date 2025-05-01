@@ -22,6 +22,7 @@ declare(strict_types=1);
  */
 namespace OCA\WorkflowOcr\Tests\Unit\OcrProcessors\Remote;
 
+use OCA\WorkflowOcr\Exception\OcrAlreadyDoneException;
 use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
 use OCA\WorkflowOcr\Model\GlobalSettings;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
@@ -103,6 +104,25 @@ class WorkflowOcrRemoteProcessorTest extends TestCase {
 
 		$this->expectException(OcrNotPossibleException::class);
 		$this->expectExceptionMessage('OCR failed');
+
+		$this->processor->ocrFile($this->file, $this->workflowSettings, $this->globalSettings);
+	}
+
+	public function testThrowsOcrAlreadyDoneExceptionIfErrorCodeIsEquals6() {
+		$fileResource = fopen('php://memory', 'rb');
+		$fileName = 'test.pdf';
+		$ocrMyPdfParameters = 'param1';
+		$errorResult = $this->createMock(ErrorResult::class);
+
+		$this->file->method('fopen')->willReturn($fileResource);
+		$this->file->method('getName')->willReturn($fileName);
+		$this->commandLineUtils->method('getCommandlineArgs')->willReturn($ocrMyPdfParameters);
+		$this->apiClient->method('processOcr')->willReturn($errorResult);
+
+		$errorResult->method('getMessage')->willReturn('OCR failed');
+		$errorResult->method('getOcrMyPdfExitCode')->willReturn(6);
+
+		$this->expectException(OcrAlreadyDoneException::class);
 
 		$this->processor->ocrFile($this->file, $this->workflowSettings, $this->globalSettings);
 	}

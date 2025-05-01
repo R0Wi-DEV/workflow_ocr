@@ -23,7 +23,9 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\Tests\Integration;
 
+use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCA\WorkflowOcr\OcrProcessors\Remote\Client\IApiClient;
+use OCA\WorkflowOcr\OcrProcessors\Remote\Client\Model\ErrorResult;
 use OCA\WorkflowOcr\OcrProcessors\Remote\Client\Model\OcrResult;
 
 /**
@@ -54,6 +56,7 @@ class OcrBackendServiceTest extends BackendTestBase {
 		}
 
 		$this->apiClient = $this->container->get(IntegrationTestApiClient::class);
+		$this->apiClient->reset();
 		$this->overwriteService(IApiClient::class, $this->apiClient);
 	}
 
@@ -76,5 +79,23 @@ class OcrBackendServiceTest extends BackendTestBase {
 		$this->assertEquals($requests[0]['fileName'], $ocrResult->getFileName(), 'Expected filename in response to be equal to request');
 		$this->assertEquals('application/pdf', $ocrResult->getContentType(), 'Expected content type in response');
 		$this->assertTrue(strpos($ocrResult->getRecognizedText(), 'This document is ready for OCR') >= 0, 'Expected recognized text in response');
+	}
+
+	public function testWorkflowOcrBackendServiceSkipFile() {
+		$this->addOperation('application/pdf', '{"ocrMode":' . WorkflowSettings::OCR_MODE_SKIP_FILE . '}');
+		$this->uploadTestFile('document-has-ocr.pdf');
+		$this->runOcrBackgroundJob();
+
+		$requests = $this->apiClient->getRequests();
+		$this->assertCount(1, $requests, 'Expected 1 OCR request');
+		$request = $requests[0];
+		$this->assertTrue($request['ocrMyPdfParameters'] === '', 'Expected OCR parameters in request');
+
+		$responses = $this->apiClient->getResponses();
+		$this->assertCount(1, $responses, 'Expected 1 OCR response');
+		$this->assertTrue($responses[0] instanceof ErrorResult, 'Expected ErrorResult instance, type is: ' . get_class($responses[0]));
+		/** @var ErrorResult */
+		$ocrResult = $responses[0];
+		$this->assertEquals($ocrResult->getOcrMyPdfExitCode(), 6, 'Expected ocrmypdf ExitCode 6');
 	}
 }

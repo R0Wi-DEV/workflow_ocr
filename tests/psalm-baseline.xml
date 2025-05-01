@@ -129,7 +129,6 @@
     </InvalidPropertyAssignmentValue>
     <PossiblyUnusedMethod>
       <code><![CDATA[__construct]]></code>
-      <code><![CDATA[getOcrMyPdfExitCode]]></code>
       <code><![CDATA[setMessage]]></code>
       <code><![CDATA[setOcrMyPdfExitCode]]></code>
       <code><![CDATA[toHeaderValue]]></code>
