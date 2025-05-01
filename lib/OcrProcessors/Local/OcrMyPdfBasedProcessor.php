@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\OcrProcessors\Local;
 
+use OCA\WorkflowOcr\Exception\OcrAlreadyDoneException;
 use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
 use OCA\WorkflowOcr\Exception\OcrResultEmptyException;
 use OCA\WorkflowOcr\Helper\ISidecarFileAccessor;
@@ -63,6 +64,10 @@ abstract class OcrMyPdfBasedProcessor implements IOcrProcessor {
 		$exitCode = $this->command->getExitCode();
 
 		if (!$success) {
+			# Gracefully handle OCR_MODE_SKIP_FILE (ExitCode.already_done_ocr)
+			if ($exitCode === 6) {
+				throw new OcrAlreadyDoneException('File ' . $file->getPath() . ' appears to contain text so it may not need OCR. Message: ' . $errorOutput . ' ' . $stdErr);
+			}
 			throw new OcrNotPossibleException('OCRmyPDF exited abnormally with exit-code ' . $exitCode . ' for file ' . $file->getPath() . '. Message: ' . $errorOutput . ' ' . $stdErr);
 		}
 
