@@ -51,9 +51,16 @@ class ImageOcrProcessorTest extends TestCase {
 
 		$processor = new ImageOcrProcessor($command, $logger, $sidecarFileAccessor, $commandLineUtils);
 
+		$file->method('fopen')
+			->willReturnCallback(function ($mode) {
+				$stream = fopen('php://temp', 'r+');
+				fwrite($stream, 'content');
+				rewind($stream);
+				return $stream;
+			});
 		$file->expects($this->once())
-			->method('getContent')
-			->willReturn('content');
+			->method('getName')
+			->willReturn('test.pdf');
 		$command->expects($this->once())
 			->method('setCommand')
 			->with($this->stringContains(' --image-dpi 300 '))
