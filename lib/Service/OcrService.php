@@ -159,7 +159,7 @@ class OcrService implements IOcrService {
 			try {
 				$result = $ocrProcessor->ocrFile($file, $settings, $globalSettings);
 			} catch (OcrAlreadyDoneException $ex) {
-				// #232: it's okay to have an empty result if the file was skipped due to OCR mode
+				// #232: Skip file if OCR was already done
 				if ($settings->getOcrMode() === WorkflowSettings::OCR_MODE_SKIP_FILE) {
 					$this->logger->debug('Skipping empty OCR result for file with id {fileId} because OCR mode is set to \'skip file\'', ['fileId' => $fileId]);
 					return;
