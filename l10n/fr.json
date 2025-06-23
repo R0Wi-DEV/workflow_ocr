@@ -22,6 +22,8 @@
     "Skip file completely" : "Ignorer complètement le fichier",
     "Other settings" : "Autres paramètres",
     "Remove background" : "Retirer l'arrière-plan",
-    "Keep original file version" : "Garder la version originale du fichier"
+    "Keep original file version" : "Garder la version originale du fichier",
+    "Keep original file modification date" : "Conserver la date d'origine du fichier",
+    "Send success notification" : "Envoyer une notification en cas de succès"
 },"pluralForm" :"nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;"
 }
