@@ -104,15 +104,15 @@ class Operation implements ISpecificOperation {
 		$this->logger->debug('onEvent: ' . $eventName);
 
 		// $node and $argsArray will be passed by reference
-		if (!($match = $this->getMatch($ruleMatcher)) ||
-			!$this->tryGetFile($eventName, $event, $node) ||
-			$this->eventTriggeredByOcrProcess($node) ||
-			!$this->tryGetJobArgs($node, $match['operation'], $argsArray)) {
+		if (!($match = $this->getMatch($ruleMatcher))
+			|| !$this->tryGetFile($eventName, $event, $node)
+			|| $this->eventTriggeredByOcrProcess($node)
+			|| !$this->tryGetJobArgs($node, $match['operation'], $argsArray)) {
 			return;
 		}
-	
+
 		$this->logger->debug('Adding file to jobqueue: ' . json_encode($argsArray));
-	
+
 		$this->jobList->add(ProcessFileJob::class, $argsArray);
 	}
 
@@ -140,7 +140,7 @@ class Operation implements ISpecificOperation {
 
 	private function tryGetFileFromGenericEvent(string $eventName, GenericEvent $event, ?Node & $node) : bool {
 		$node = $event->getSubject();
-		
+
 		// Some events have two nodes involved
 		$arrayEvents = [
 			'\OCP\Files::postRename',

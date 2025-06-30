@@ -61,7 +61,7 @@ class NotificationTest extends TestCase {
 
 	protected function setUp() : void {
 		parent::setUp();
-		
+
 		// Use real Notification service to be able to check if notifications get created
 		$this->notificationService = new NotificationService(\OC::$server->get(\OCP\Notification\IManager::class));
 		$this->logger = $this->createMock(LoggerInterface::class);

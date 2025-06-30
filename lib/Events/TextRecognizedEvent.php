@@ -44,7 +44,7 @@ class TextRecognizedEvent extends Event {
 	 */
 	public function __construct(string $recognizedText, File $file) {
 		parent::__construct();
-		
+
 		$this->recognizedText = $recognizedText;
 		$this->file = $file;
 	}

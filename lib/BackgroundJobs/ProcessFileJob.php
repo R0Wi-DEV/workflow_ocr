@@ -39,7 +39,7 @@ class ProcessFileJob extends \OCP\BackgroundJob\QueuedJob {
 	protected $logger;
 	/** @var IOcrService */
 	private $ocrService;
-	
+
 	public function __construct(
 		LoggerInterface $logger,
 		IOcrService $ocrService,
@@ -48,7 +48,7 @@ class ProcessFileJob extends \OCP\BackgroundJob\QueuedJob {
 		$this->logger = $logger;
 		$this->ocrService = $ocrService;
 	}
-	
+
 	/**
 	 * @param mixed $argument
 	 */
