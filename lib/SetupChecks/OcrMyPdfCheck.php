@@ -32,6 +32,7 @@ use OCA\WorkflowOcr\Wrapper\ICommand;
 use OCP\IL10N;
 use OCP\SetupCheck\ISetupCheck;
 use OCP\SetupCheck\SetupResult;
+use Psr\Log\LoggerInterface;
 
 class OcrMyPdfCheck implements ISetupCheck {
 	public function __construct(
@@ -39,6 +40,7 @@ class OcrMyPdfCheck implements ISetupCheck {
 		private ICommand $command,
 		private IOcrBackendInfoService $ocrBackendInfoService,
 		private IApiClient $apiClient,
+		private LoggerInterface $logger,
 	) {
 	}
 
@@ -51,11 +53,12 @@ class OcrMyPdfCheck implements ISetupCheck {
 	}
 
 	public function run(): SetupResult {
-		if ($this->ocrBackendInfoService->isRemoteBackend()) {
-			return $this->apiClient->heartbeat() ?
-				SetupResult::success($this->l10n->t('Workflow OCR Backend is installed.')) :
-				SetupResult::warning($this->l10n->t('Workflow OCR Backend is installed but heartbeat failed.'));
-		}
+		return $this->ocrBackendInfoService->isRemoteBackend() ?
+			$this->runRemoteCheck() :
+			$this->runLocalCheck();
+	}
+
+	private function runLocalCheck(): SetupResult {
 		$this->command->setCommand('ocrmypdf --version')->execute();
 		if ($this->command->getExitCode() === 127) {
 			return SetupResult::error($this->l10n->t('OCRmyPDF CLI is not installed.'), 'https://github.com/R0Wi-DEV/workflow_ocr?tab=readme-ov-file#backend');
@@ -65,5 +68,18 @@ class OcrMyPdfCheck implements ISetupCheck {
 		}
 		$versionOutput = $this->command->getOutput();
 		return SetupResult::success($this->l10n->t('OCRmyPDF is installed and has version %1$s.', [$versionOutput]));
+	}
+
+	private function runRemoteCheck(): SetupResult {
+		try {
+			return $this->apiClient->heartbeat() ?
+				SetupResult::success($this->l10n->t('Workflow OCR Backend is installed.')) :
+				SetupResult::warning($this->l10n->t('Workflow OCR Backend is installed but heartbeat failed.'));
+		} catch (\Exception $e) {
+			$this->logger->error('Error while checking OCRmyPDF backend: ' . $e->getMessage(), [
+				'exception' => $e,
+			]);
+			return SetupResult::error($this->l10n->t('Workflow OCR Backend is not reachable. Error was: %1$s', [$e->getMessage()]));
+		}
 	}
 }

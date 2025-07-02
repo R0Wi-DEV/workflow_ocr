@@ -34,6 +34,7 @@ use OCP\IL10N;
 use OCP\SetupCheck\SetupResult;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 
 class OcrMyPdfCheckTest extends TestCase {
 	/** @var IL10N|MockObject */
@@ -44,6 +45,8 @@ class OcrMyPdfCheckTest extends TestCase {
 	private $ocrBackendInfoService;
 	/** @var IApiClient|MockObject */
 	private $apiClient;
+	/** @var LoggerInterface|MockObject */
+	private $logger;
 	/** @var OcrMyPdfCheck */
 	private $ocrMyPdfCheck;
 
@@ -52,7 +55,8 @@ class OcrMyPdfCheckTest extends TestCase {
 		$this->command = $this->createMock(ICommand::class);
 		$this->ocrBackendInfoService = $this->createMock(IOcrBackendInfoService::class);
 		$this->apiClient = $this->createMock(IApiClient::class);
-		$this->ocrMyPdfCheck = new OcrMyPdfCheck($this->l10n, $this->command, $this->ocrBackendInfoService, $this->apiClient);
+		$this->logger = $this->createMock(LoggerInterface::class);
+		$this->ocrMyPdfCheck = new OcrMyPdfCheck($this->l10n, $this->command, $this->ocrBackendInfoService, $this->apiClient, $this->logger);
 	}
 
 	public function testGetCategory(): void {
@@ -135,5 +139,19 @@ class OcrMyPdfCheckTest extends TestCase {
 		$this->assertInstanceOf(SetupResult::class, $result);
 		$this->assertEquals(SetupResult::WARNING, $result->getSeverity());
 		$this->assertEquals('Workflow OCR Backend is installed but heartbeat failed.', $result->getDescription());
+	}
+
+	public function testRunOcrMyPdfInstalledViaRemoteBackendFailedCatchesException(): void {
+		$this->ocrBackendInfoService->expects($this->once())->method('isRemoteBackend')->willReturn(true);
+		$this->apiClient->expects($this->once())->method('heartbeat')->willThrowException(new \Exception('API error'));
+		$this->l10n->expects($this->once())->method('t')
+			->with('Workflow OCR Backend is not reachable. Error was: %1$s')
+			->willReturn('Workflow OCR Backend is not reachable. Error was: %1$s');
+
+		$result = $this->ocrMyPdfCheck->run();
+
+		$this->assertInstanceOf(SetupResult::class, $result);
+		$this->assertEquals(SetupResult::ERROR, $result->getSeverity());
+		$this->assertEquals('Workflow OCR Backend is not reachable. Error was: %1$s', $result->getDescription());
 	}
 }
