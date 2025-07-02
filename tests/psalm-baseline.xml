@@ -287,14 +287,14 @@
       <code><![CDATA[$version]]></code>
       <code><![CDATA[$version]]></code>
       <code><![CDATA[$versionBackend]]></code>
+      <code><![CDATA[?IVersionManager]]></code>
       <code><![CDATA[IMetadataVersion]]></code>
       <code><![CDATA[IMetadataVersionBackend]]></code>
-      <code><![CDATA[IVersionManager]]></code>
       <code><![CDATA[NoUserException]]></code>
     </UndefinedClass>
     <UndefinedDocblockClass>
       <code><![CDATA[$this->versionManager]]></code>
-      <code><![CDATA[IVersionManager]]></code>
+      <code><![CDATA[?IVersionManager]]></code>
     </UndefinedDocblockClass>
   </file>
   <file src="lib/Settings/GlobalSettings.php">
