@@ -59,7 +59,7 @@ class OcrService implements IOcrService {
 	/** @var IGlobalSettingsService */
 	private $globalSettingsService;
 
-	/** @var IVersionManager */
+	/** @var ?IVersionManager */
 	private $versionManager;
 
 	/** @var ISystemTagObjectMapper */
@@ -95,7 +95,7 @@ class OcrService implements IOcrService {
 	public function __construct(
 		IOcrProcessorFactory $ocrProcessorFactory,
 		IGlobalSettingsService $globalSettingsService,
-		IVersionManager $versionManager,
+		?IVersionManager $versionManager,
 		ISystemTagObjectMapper $systemTagObjectMapper,
 		IUserManager $userManager,
 		IFilesystem $filesystem,
@@ -289,6 +289,11 @@ class OcrService implements IOcrService {
 	 * @param string $label The label to set
 	 */
 	private function setFileVersionsLabel(File $file, string $uid, string $label): void {
+		if ($this->versionManager === null) {
+			$this->logger->debug('Skipping setting file version label because file version app is not active');
+			return;
+		}
+
 		$fileMTime = $file->getMTime();
 		$user = $this->userManager->get($uid);
 		$versions = $this->versionManager->getVersionsForFile($user, $file);
