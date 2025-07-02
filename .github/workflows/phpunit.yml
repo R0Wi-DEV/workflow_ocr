@@ -62,6 +62,7 @@ jobs:
           mkdir data
           ./occ maintenance:install --verbose --database=${{ matrix.databases }} --database-name=nextcloud --database-host=127.0.0.1 --database-port=$DB_PORT --database-user=root --database-pass=rootpassword --admin-user admin --admin-pass password
           ./occ app:enable ${{ env.APP_NAME }}
+          ./occ app:enable files_external
           php -S localhost:8080 &
       - name: PHPUnit
         working-directory: apps/${{ env.APP_NAME }}
@@ -127,6 +128,7 @@ jobs:
           mkdir data
           ./occ maintenance:install --verbose --database=${{ matrix.databases }} --database-name=nextcloud --database-host=127.0.0.1 --database-port=$DB_PORT --database-user=root --database-pass=rootpassword --admin-user admin --admin-pass password
           ./occ app:enable ${{ env.APP_NAME }}
+          ./occ app:enable files_external
           php -S localhost:8080 &
       - name: PHPUnit
         working-directory: apps/${{ env.APP_NAME }}
@@ -194,6 +196,7 @@ jobs:
           mkdir data
           ./occ maintenance:install --verbose --database=${{ matrix.databases }} --database-name=nextcloud --database-host=127.0.0.1 --database-port=$DB_PORT --database-user=root --database-pass=rootpassword --admin-user admin --admin-pass password
           ./occ app:enable ${{ env.APP_NAME }}
+          ./occ app:enable files_external
           php -S localhost:8080 &
       - name: PHPUnit
         working-directory: apps/${{ env.APP_NAME }}

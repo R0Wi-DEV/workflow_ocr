@@ -95,6 +95,7 @@ jobs:
             --database-host=127.0.0.1 --database-port=${{ env.DB_PORT }} --database-user=root --database-pass=${{ env.MYSQL_ROOT_PASSWORD }} \
             --admin-user ${{ env.NEXTCLOUD_USER }} --admin-pass ${{ env.NEXTCLOUD_PASS }}
           ./occ app:enable ${{ env.APP_NAME }}
+          ./occ app:enable files_external
           ./occ maintenance:mimetype:update-db
           php -S localhost:${{ env.NEXTCLOUD_PORT }} &
 
