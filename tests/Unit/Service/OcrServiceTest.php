@@ -749,6 +749,60 @@ class OcrServiceTest extends TestCase {
 		$this->ocrService->runOcrProcess(42, 'usr', $settings);
 	}
 
+	// Related to #307
+	public function testRunOcrProcessWorksWithoutIVersionManager() {
+		$settings = new WorkflowSettings('{"keepOriginalFileVersion": true}');
+		$mimeType = 'application/pdf';
+		$content = 'someFileContent';
+		$ocrContent = 'someOcrProcessedFile';
+		$ocrResult = new OcrProcessorResult($ocrContent, 'pdf', $ocrContent);
+
+		$fileMock = $this->createValidFileMock($mimeType, $content);
+		$this->rootFolderGetById42ReturnValue = [$fileMock];
+
+		$this->ocrProcessor->expects($this->once())
+			->method('ocrFile')
+			->willReturn($ocrResult);
+
+		$viewMock = $this->createMock(IView::class);
+		$this->viewFactory->expects($this->once())
+			->method('create')
+			->willReturn($viewMock);
+
+		$this->eventService->expects($this->once())
+			->method('textRecognized')
+			->with($ocrResult, $fileMock);
+
+		$logged = false;
+		$this->logger->expects($this->atLeast(1))
+			->method('debug')
+			->with($this->callback(function ($message) use (&$logged) {
+				if ($message === 'Skipping setting file version label because file version app is not active') {
+					$logged = true;
+				}
+				return true;
+			}));
+
+		$ocrService = new OcrService(
+			$this->ocrProcessorFactory,
+			$this->globalSettingsService,
+			null, // No IVersionManager
+			$this->systemTagObjectMapper,
+			$this->userManager,
+			$this->filesystem,
+			$this->userSession,
+			$this->rootFolder,
+			$this->eventService,
+			$this->viewFactory,
+			$this->processingFileAccessor,
+			$this->notificationService,
+			$this->logger);
+
+		$ocrService->runOcrProcess(42, 'usr', $settings);
+
+		$this->assertTrue($logged, 'Expected debug log message not found');
+	}
+
 	public static function dataProvider_InvalidNodes() {
 		$folderMockCallable = function (self $testClass) {
 			/** @var MockObject|Node */
