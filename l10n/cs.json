@@ -13,6 +13,7 @@
     "OCRmyPDF is installed and has version %1$s." : "OCRmyPDF je nainstalované a má verzi %1$s.",
     "Workflow OCR Backend is installed." : "Podpůrná vrstva pro Workflow OCR je nainstalovaná.",
     "Workflow OCR Backend is installed but heartbeat failed." : "Podpůrná vrstva pro Workflow OCR je nainstalovaná, ale kontrola stavu se nezdařila.",
+    "Workflow OCR Backend is not reachable. Error was: %1$s" : "Podpůrná vrstva pro Workflow OCR není dosažitelná. Chyba byla: %1$s",
     "Server side OCR processing via workflow engine" : "Zpracování OCR na straně serveru prostřednictvím workflow-engine",
     "This app makes it possible to process various files via OCR algorithms.\n\tThe processing is done via workflow-engine and can therefore easily be customized.\n\tPlease note that you'll have to install the OcrMyPDF CLI on your Nextcloud server to\n\tprocess PDF files. More installation instructions can be found in the docs https://github.com/R0Wi/workflow_ocr/blob/master/README.md." : "Tato aplikace umožňuje zpracovávat různé soubory pomocí algoritmů optického rozpoznávání znaků (OCR).\n\tZpracovávání se děje prostřednictvím workflow-engine a a je ho proto možné snadno přizpůsobit.\n\tMějte na paměti, že aby bylo možné zpracovávat PDF soubory je třeba, aby na vámi využívaném serveru byl nainstalován nástroj OcrMyPDF CLI \n\tDalší pokyny ohledně instalace jsou k dispozici v dokumentaci https://github.com/R0Wi/workflow_ocr/blob/master/README.md.",
     "Select language(s)" : "Vybrat jazyk(y)",
