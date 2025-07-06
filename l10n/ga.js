@@ -15,6 +15,7 @@ OC.L10N.register(
     "OCRmyPDF is installed and has version %1$s." : "Tá OCRmyPDF suiteáilte agus tá leagan aige %1$s.",
     "Workflow OCR Backend is installed." : "Tá Inneall OCR Sreabhadh Oibre suiteáilte.",
     "Workflow OCR Backend is installed but heartbeat failed." : "Tá Inneall OCR Sreabhadh Oibre suiteáilte ach theip ar bhuille croí.",
+    "Workflow OCR Backend is not reachable. Error was: %1$s" : "Ní féidir teacht ar chúltaca OCR an tsreafa oibre. Ba é an earráid: %1$s",
     "Server side OCR processing via workflow engine" : "Próiseáil OCR ar thaobh an fhreastalaí trí inneall sreabhadh oibre",
     "This app makes it possible to process various files via OCR algorithms.\n\tThe processing is done via workflow-engine and can therefore easily be customized.\n\tPlease note that you'll have to install the OcrMyPDF CLI on your Nextcloud server to\n\tprocess PDF files. More installation instructions can be found in the docs https://github.com/R0Wi/workflow_ocr/blob/master/README.md." : "Leis an aip seo is féidir comhaid éagsúla a phróiseáil trí halgartaim OCR.\n\t Déantar an phróiseáil trí inneall sreafa oibre agus mar sin is furasta é a shaincheapadh.\n\t Tabhair faoi deara go mbeidh ort an OcrMyPDF CLI a shuiteáil ar do fhreastalaí Nextcloud chun\n\t comhaid PDF a phróiseáil. Is féidir tuilleadh treoracha suiteála a fháil sna doiciméid https://github.com/R0Wi/workflow_ocr/blob/master/README.md.",
     "Select language(s)" : "Roghnaigh teanga(cha)",
