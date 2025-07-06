@@ -61,4 +61,9 @@ class IntegrationTestApiClient extends ApiClient {
 	public function getResponses(): array {
 		return $this->responses;
 	}
+
+	public function reset(): void {
+		$this->requests = [];
+		$this->responses = [];
+	}
 }

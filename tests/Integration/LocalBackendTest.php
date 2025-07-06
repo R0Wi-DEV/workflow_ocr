@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace OCA\WorkflowOcr\Tests\Integration;
 
 use OCA\WorkflowOcr\Events\TextRecognizedEvent;
+use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCA\WorkflowOcr\OcrProcessors\Remote\Client\IApiClient;
 use OCP\EventDispatcher\IEventDispatcher;
 
@@ -76,6 +77,7 @@ class LocalBackendTest extends BackendTestBase {
 	protected function tearDown(): void {
 		parent::tearDown();
 		$this->dispatcher->removeListener(TextRecognizedEvent::class, $this->eventListener);
+		$this->capturedEvents = [];
 	}
 
 	/**
@@ -91,5 +93,34 @@ class LocalBackendTest extends BackendTestBase {
 		$textRecognizedEvent = $this->capturedEvents[0];
 		$this->assertInstanceOf(TextRecognizedEvent::class, $textRecognizedEvent, 'Expected TextRecognizedEvent instance');
 		$this->assertEquals('This document is ready for OCR', trim($textRecognizedEvent->getRecognizedText()), 'Expected recognized text');
+	}
+
+	/**
+	 * Test processing a file via ocrmypdf CLI where file already contains OCR and mode is set to "skip file".
+	 */
+	public function testWorkflowOcrLocalBackendSkipFile(): void {
+		$this->addOperation('application/pdf', '{"ocrMode":' . WorkflowSettings::OCR_MODE_SKIP_FILE . '}');
+		$this->uploadTestFile('document-has-ocr.pdf');
+		$this->runOcrBackgroundJob();
+
+		$this->assertEmpty($this->apiClient->getRequests(), 'Expected no OCR Backend Service requests');
+		$this->assertEquals(0, count($this->capturedEvents), 'Expected no TextRecognizedEvent');
+	}
+
+	/**
+	 * Test processing a file via ocrmypdf CLI where file already contains OCR and mode is set to "skip text".
+	 */
+	public function testWorkflowOcrLocalBackendSkipText(): void {
+		$this->addOperation('application/pdf', '{"ocrMode":' . WorkflowSettings::OCR_MODE_SKIP_TEXT . '}');
+		$this->uploadTestFile('document-has-ocr.pdf');
+		$this->runOcrBackgroundJob();
+
+		$this->assertEmpty($this->apiClient->getRequests(), 'Expected no OCR Backend Service requests');
+		$this->assertEquals(1, count($this->capturedEvents), 'Expected no TextRecognizedEvent');
+
+		// Ocrmypdf will "recognize" a special text for pages which already have OCR
+		$textRecognizedEvent = $this->capturedEvents[0];
+		$this->assertInstanceOf(TextRecognizedEvent::class, $textRecognizedEvent, 'Expected TextRecognizedEvent instance');
+		$this->assertEquals('[OCR skipped on page(s) 1]', trim($textRecognizedEvent->getRecognizedText()), 'Expected recognized text');
 	}
 }

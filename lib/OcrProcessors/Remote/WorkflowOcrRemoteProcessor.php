@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\OcrProcessors\Remote;
 
+use OCA\WorkflowOcr\Exception\OcrAlreadyDoneException;
 use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
 use OCA\WorkflowOcr\Model\GlobalSettings;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
@@ -45,18 +46,25 @@ class WorkflowOcrRemoteProcessor implements IOcrProcessor {
 	) {
 
 	}
-	 
+
 	public function ocrFile(File $file, WorkflowSettings $settings, GlobalSettings $globalSettings): OcrProcessorResult {
 		$ocrMyPdfParameters = $this->commandLineUtils->getCommandlineArgs($settings, $globalSettings);
 		$fileResource = $file->fopen('rb');
 		$fileName = $file->getName();
-		
+
 		$this->logger->debug('Sending OCR request to remote backend');
 		$apiResult = $this->apiClient->processOcr($fileResource, $fileName, $ocrMyPdfParameters);
 		$this->logger->debug('OCR result received', ['apiResult' => $apiResult]);
 
 		if ($apiResult instanceof ErrorResult) {
-			throw new OcrNotPossibleException($apiResult->getMessage());
+			$resultMessage = $apiResult->getMessage();
+			$exitCode = $apiResult->getOcrMyPdfExitCode();
+
+			# Gracefully handle OCR_MODE_SKIP_FILE (ExitCode.already_done_ocr)
+			if ($exitCode === 6) {
+				throw new OcrAlreadyDoneException('File ' . $file->getPath() . ' appears to contain text so it may not need OCR. Message: ' . $resultMessage);
+			}
+			throw new OcrNotPossibleException($resultMessage);
 		}
 
 		return new OcrProcessorResult(

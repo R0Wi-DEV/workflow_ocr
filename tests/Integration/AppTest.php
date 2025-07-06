@@ -80,7 +80,7 @@ class AppTest extends TestCase {
 
 		// HACK:: reset registrations and simulate request start
 		$this->invokePrivate($bootstrapCoordinator, 'registrationContext', [null]);
-		
+
 		if ($lazy) {
 			$bootstrapCoordinator->runLazyRegistration(Application::APP_NAME);
 		} else {
