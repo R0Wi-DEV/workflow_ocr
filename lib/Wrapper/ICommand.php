@@ -35,7 +35,7 @@ interface ICommand {
 	 * @return ICommand for method chaining
 	 */
 	public function setCommand(string $command) : ICommand;
-	
+
 	/**
 	 * @param string $stdIn If set, the string will be piped to the
 	 *                      command via standard input. This enables the same functionality as
@@ -45,7 +45,7 @@ interface ICommand {
 	 * @return ICommand for method chaining
 	 */
 	public function setStdIn(string $stdIn) : ICommand;
-	
+
 	/**
 	 * Execute the command
 	 *
@@ -53,26 +53,26 @@ interface ICommand {
 	 *              can be obtained from getError(), getStdErr() and getExitCode().
 	 */
 	public function execute() : bool;
-	
+
 	/**
 	 * @param bool $trim whether to `trim()` the return value. The default is `true`.
 	 * @return string the command output (stdout). Empty if none.
 	 */
 	public function getOutput(bool $trim = true) : string;
-	
+
 	/**
 	 * @param bool $trim whether to `trim()` the return value. The default is `true`.
 	 * @return string the error message, either stderr or an internal message.
 	 *                Empty string if none.
 	 */
 	public function getError(bool $trim = true) : string;
-	 
+
 	/**
 	 * @param bool $trim whether to `trim()` the return value. The default is `true`.
 	 * @return string the stderr output. Empty if none.
 	 */
 	public function getStdErr(bool $trim = true) : string;
-	
+
 	/**
 	 * @return int|null the exit code or null if command was not executed yet
 	 */

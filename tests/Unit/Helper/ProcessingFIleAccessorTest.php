@@ -33,7 +33,7 @@ class ProcessingFileAccessorTest extends TestCase {
 
 		$this->assertTrue($o1 === $o2);
 	}
-	
+
 	public function testGetSet() {
 		$o = ProcessingFileAccessor::getInstance();
 		$o ->setCurrentlyProcessedFilePath('/someuser/files/somefile.pdf');

@@ -191,7 +191,7 @@ class OcrBackendInfoServiceTest extends TestCase {
 			->method('getExApp')
 			->with('workflow_ocr_backend')
 			->willReturn(['enabled' => true]);
-			
+
 		$this->apiClient->expects($this->once())
 			->method('getLanguages')
 			->willReturn(['eng', 'deu', 'chi']);

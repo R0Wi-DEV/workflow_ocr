@@ -52,9 +52,9 @@ class OcrMyPdfCheck implements ISetupCheck {
 
 	public function run(): SetupResult {
 		if ($this->ocrBackendInfoService->isRemoteBackend()) {
-			return $this->apiClient->heartbeat() ?
-				SetupResult::success($this->l10n->t('Workflow OCR Backend is installed.')) :
-				SetupResult::warning($this->l10n->t('Workflow OCR Backend is installed but heartbeat failed.'));
+			return $this->apiClient->heartbeat()
+				? SetupResult::success($this->l10n->t('Workflow OCR Backend is installed.'))
+				: SetupResult::warning($this->l10n->t('Workflow OCR Backend is installed but heartbeat failed.'));
 		}
 		$this->command->setCommand('ocrmypdf --version')->execute();
 		if ($this->command->getExitCode() === 127) {

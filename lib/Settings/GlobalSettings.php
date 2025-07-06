@@ -37,11 +37,11 @@ class GlobalSettings implements ISettings {
 	public function getForm() : TemplateResponse {
 		return new TemplateResponse(Application::APP_NAME, 'globalSettings', [], 'blank');
 	}
-	
+
 	public function getSection(): string {
 		return 'workflow';
 	}
-	
+
 	public function getPriority(): int {
 		return 75;
 	}
