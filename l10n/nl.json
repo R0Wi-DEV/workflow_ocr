@@ -13,6 +13,7 @@
     "OCRmyPDF is installed and has version %1$s." : "OCRmyPDF is geïnstalleerd en heeft versie %1$s.",
     "Workflow OCR Backend is installed." : "Workflow OCR-backend is geïnstalleerd.",
     "Workflow OCR Backend is installed but heartbeat failed." : "Workflow OCR-backend is geïnstalleerd, maar reageert niet.",
+    "Workflow OCR Backend is not reachable. Error was: %1$s" : "Workflow OCR back-end is niet bereikbaar. Fout: %1$s",
     "Server side OCR processing via workflow engine" : "OCR-verwerking aan de serverzijde via Workflow-engine",
     "This app makes it possible to process various files via OCR algorithms.\n\tThe processing is done via workflow-engine and can therefore easily be customized.\n\tPlease note that you'll have to install the OcrMyPDF CLI on your Nextcloud server to\n\tprocess PDF files. More installation instructions can be found in the docs https://github.com/R0Wi/workflow_ocr/blob/master/README.md." : "Deze app maakt het mogelijk om verschillende bestanden te verwerken via OCR-algoritmes.\n\tDe verwerking geschiedt via de Workflow-engine en kan dus eenvoudig worden aangepast.\n\tHoud er rekening mee dat u de OcrMyPDF CLI op uw Nextcloud-server moet installeren\nom pdf-bestanden te verwerken. Meer installatie-instructies vindt u in de documentatie https://github.com/R0Wi/workflow_ocr/blob/master/README.md.",
     "Select language(s)" : "Selecteer taal(en)",
