@@ -15,6 +15,7 @@ OC.L10N.register(
     "OCRmyPDF is installed and has version %1$s." : "OCRmyPDF está instalado y tiene la versión %1$s.",
     "Workflow OCR Backend is installed." : "El backend de Flujo de trabajo OCR está instalado.",
     "Workflow OCR Backend is installed but heartbeat failed." : "El backend de Flujo de trabajo OCR está instalado, pero la verificación de ejecución falló.",
+    "Workflow OCR Backend is not reachable. Error was: %1$s" : "El backend de Flujo de trabajo OCR no puede ser alcanzado. El error fue: %1$s",
     "Server side OCR processing via workflow engine" : "Procesamiento OCR del lado del servidor vía workflow-engine",
     "This app makes it possible to process various files via OCR algorithms.\n\tThe processing is done via workflow-engine and can therefore easily be customized.\n\tPlease note that you'll have to install the OcrMyPDF CLI on your Nextcloud server to\n\tprocess PDF files. More installation instructions can be found in the docs https://github.com/R0Wi/workflow_ocr/blob/master/README.md." : "Esta app hace posible el procesamiento de múltiples archivos a través de algoritmos de OCR.\n\tEl procesamiento se realiza a través de workflow-engine y por tanto puede ser fácilmente personalizado.\n\tTenga en cuenta que tiene que instalar la CLI de OcrMyPDF en su servidor Nextcloud para\n\tprocesar archivos PDF. Puede encontrar instrucciones adicionales de instalación en la documentación https://github.com/R0Wi/workflow_ocr/blob/master/README.md.",
     "Select language(s)" : "Seleccione el/los lenguaje(s)",
