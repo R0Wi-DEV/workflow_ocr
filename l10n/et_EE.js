@@ -11,7 +11,7 @@ OC.L10N.register(
     "OCRmyPDF is installed and has version %1$s." : "OCRmyPDF-i versioon %1$s on paigaldatud.",
     "Workflow OCR Backend is installed." : "Töövoo optilise tekstituvastuse taustateenus on paigaldatud.",
     "Workflow OCR Backend is installed but heartbeat failed." : "Töövoo optilise tekstituvastuse taustateenus on paigaldatud, aga kontrolltukse ei toiminud.",
-    "Workflow OCR Backend is not reachable. Error was: %1$s" : "Töövoo optilise tekstituvastuse taustateenus pole leitav Veateade: %1$s",
+    "Workflow OCR Backend is not reachable. Error was: %1$s" : "Töövoo optilise tekstituvastuse taustateenus pole leitav. Veateade: %1$s",
     "Select language(s)" : "Vali keel(ed)",
     "OCR language" : "Optilise tekstituvastuse keel",
     "The language(s) to be used for OCR processing" : "Tekstituvastusel kasutatavad keeled",
