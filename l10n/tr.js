@@ -27,7 +27,7 @@ OC.L10N.register(
     "These tags will be removed from the file after OCR processing has finished" : "Karakter tanıma işlemi tamamlandığında dosyadan bu etiketler kaldırılır",
     "OCR mode" : "Karakter tanıma kipi",
     "Apply this mode if file already has OCR content" : "Dosyada zaten karakter tanıma içeriği varsa bu kip uygulanır",
-    "Skip text" : "Metni atla",
+    "Skip text" : "Yazıyı atla",
     "Redo OCR" : "Karakterleri yeniden tanı",
     "Force OCR" : "Karakter tanımayı dayat",
     "Skip file completely" : "Dosya tümüyle atlansın",
