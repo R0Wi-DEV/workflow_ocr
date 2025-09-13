@@ -15,6 +15,7 @@ OC.L10N.register(
     "OCRmyPDF is installed and has version %1$s." : "OCRmyPDF oʻrnatilgan va uning %1$sversiyasi mavjud.",
     "Workflow OCR Backend is installed." : "Ish jarayoni OCR Backend o'rnatildi.",
     "Workflow OCR Backend is installed but heartbeat failed." : "Ish jarayoni OCR Backend oʻrnatildi, lekin tizim ishini boshlah muvaffaqiyatsiz tugadi.",
+    "Workflow OCR Backend is not reachable. Error was: %1$s" : "Ish oqimi OCR Backend bilan bog‘lanib bo‘lmaydi. Xato: %1$s",
     "Server side OCR processing via workflow engine" : "Ish oqimi mexanizmi orqali server tomoni OCR ishlovi",
     "This app makes it possible to process various files via OCR algorithms.\n\tThe processing is done via workflow-engine and can therefore easily be customized.\n\tPlease note that you'll have to install the OcrMyPDF CLI on your Nextcloud server to\n\tprocess PDF files. More installation instructions can be found in the docs https://github.com/R0Wi/workflow_ocr/blob/master/README.md." : "Ushbu ilova OCR algoritmlari orqali turli fayllarni qayta ishlash imkonini beradi.\n\tQayta ishlash ish oqimi mexanizmi orqali amalga oshiriladi va shuning uchun uni osongina sozlash mumkin.\n\tIltimos, shuni yodda tutingki, OcrMyPDF CLI-ni Nextcloud serveringizga oʻrnatishingiz kerak.\n\tPDF fayllarni qayta ishlash. Batafsil oʻrnatish yoʻriqnomalarini https://github.com/R0Wi/workflow_ocr/blob/master/README.md hujjatlarda topish mumkin.",
     "Select language(s)" : "Til(lar)ni tanlang",
