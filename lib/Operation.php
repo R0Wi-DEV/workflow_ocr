@@ -46,32 +46,15 @@ use OCP\WorkflowEngine\ISpecificOperation;
 use Psr\Log\LoggerInterface;
 
 class Operation implements ISpecificOperation {
-	/** @var IJobList */
-	private $jobList;
-	/** @var IL10N */
-	private $l;
-	/** @var LoggerInterface */
-	private $logger;
-	/** @var IURLGenerator */
-	private $urlGenerator;
-	/** @var IProcessingFileAccessor */
-	private $processingFileAccessor;
-	/** @var IRootFolder */
-	private $rootFolder;
 
 	public function __construct(
-		IJobList $jobList,
-		IL10N $l,
-		LoggerInterface $logger,
-		IURLGenerator $urlGenerator,
-		IProcessingFileAccessor $processingFileAccessor,
-		IRootFolder $rootFolder) {
-		$this->jobList = $jobList;
-		$this->l = $l;
-		$this->logger = $logger;
-		$this->urlGenerator = $urlGenerator;
-		$this->processingFileAccessor = $processingFileAccessor;
-		$this->rootFolder = $rootFolder;
+		private IJobList $jobList,
+		private IL10N $l,
+		private LoggerInterface $logger,
+		private IURLGenerator $urlGenerator,
+		private IProcessingFileAccessor $processingFileAccessor,
+		private IRootFolder $rootFolder
+	) {
 	}
 
 	/**
@@ -178,8 +161,10 @@ class Operation implements ISpecificOperation {
 			return false;
 		}
 
-		$files = $this->rootFolder->getById($fileId);
-		if (empty($files) || !($files[0] instanceof \OCP\Files\File)) {
+		// #324: The root folder object can potentially return multiple nodes with the same id when using 'getById'.
+		// Threfore we use 'getFirstNodeById' here to ensure we only get one node which belongs to the current user.
+		$file = $this->rootFolder->getFirstNodeById($fileId);
+		if (!$file || !($file instanceof \OCP\Files\File)) {
 			$this->logger->warning(
 				'Not processing event {eventname} because node with id  \'{fileid}\' could not be found or is not a file.',
 				['eventname' => $eventName],
@@ -187,7 +172,7 @@ class Operation implements ISpecificOperation {
 			return false;
 		}
 
-		$node = $files[0];
+		$node = $file;
 		return true;
 	}
 
