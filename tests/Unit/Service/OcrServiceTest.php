@@ -94,7 +94,7 @@ class OcrServiceTest extends TestCase {
 	/** @var INotificationService|MockObject */
 	private $notificationService;
 	/** @var File[] */
-	private $rootFolderGetById42ReturnValue;
+	private $rootFolderGetFirstNodeById42ReturnValue;
 	/** @var OcrService */
 	private $ocrService;
 	/** @var File|MockObject */
@@ -124,12 +124,12 @@ class OcrServiceTest extends TestCase {
 
 		/** @var MockObject|IRootFolder */
 		$this->rootFolder = $this->createMock(IRootFolder::class);
-		$this->rootFolderGetById42ReturnValue = [$this->createValidFileMock()];
+		$this->rootFolderGetFirstNodeById42ReturnValue = $this->createValidFileMock();
 		$this->rootFolder->expects($this->any())
-			->method('getById')
+			->method('getFirstNodeById')
 			->with(42)
 			->willReturnCallback(function () {
-				return $this->rootFolderGetById42ReturnValue;
+				return $this->rootFolderGetFirstNodeById42ReturnValue;
 			});
 
 		/** @var MockObject|IUserManager */
@@ -348,7 +348,7 @@ class OcrServiceTest extends TestCase {
 	public function testCallsGetOnRootFolder() {
 		$settings = new WorkflowSettings();
 		$this->rootFolder->expects($this->once())
-			->method('getById')
+			->method('getFirstNodeById')
 			->with(42);
 
 		$this->ocrService->runOcrProcess(42, 'usr', $settings);
@@ -361,7 +361,7 @@ class OcrServiceTest extends TestCase {
 		$mimeType = 'application/pdf';
 		$content = 'someFileContent';
 		$fileMock = $this->createValidFileMock($mimeType, $content);
-		$this->rootFolderGetById42ReturnValue = [$fileMock];
+		$this->rootFolderGetFirstNodeById42ReturnValue = $fileMock;
 
 		$this->globalSettingsService->expects($this->once())
 			->method('getGlobalSettings')
@@ -385,7 +385,7 @@ class OcrServiceTest extends TestCase {
 		$ocrResult = new OcrProcessorResult($ocrContent, 'pdf', $ocrContent); // Extend this cases if we add new OCR processors
 		$originalFileMock = $this->createValidFileMock($mimeType, $content, $rootFolderPath, $originalFilename);
 
-		$this->rootFolderGetById42ReturnValue = [$originalFileMock];
+		$this->rootFolderGetFirstNodeById42ReturnValue = $originalFileMock;
 
 		$this->ocrProcessor->expects($this->once())
 			->method('ocrFile')
@@ -410,17 +410,18 @@ class OcrServiceTest extends TestCase {
 
 	public function testThrowsNotFoundExceptionWhenFileNotFound() {
 		$settings = new WorkflowSettings();
-		$this->rootFolderGetById42ReturnValue = [];
+		$this->rootFolderGetFirstNodeById42ReturnValue = null;
 
 		$this->expectException(NotFoundException::class);
 		$this->ocrService->runOcrProcess(42, 'usr', $settings);
 	}
 
-	#[DataProvider('dataProvider_InvalidNodes')]
-	public function testDoesNotCallOcr_OnNonFile(callable $invalidNodeCallback) {
-		$invalidNode = $invalidNodeCallback($this);
+	public function testDoesNotCallOcr_OnNonFile() {
+		$invalidNode = $this->createMock(Node::class);
+		$invalidNode->method('getType')
+				->willReturn(FileInfo::TYPE_FOLDER);
 		$settings = new WorkflowSettings();
-		$this->rootFolderGetById42ReturnValue = [$invalidNode];
+		$this->rootFolderGetFirstNodeById42ReturnValue = $invalidNode;
 
 		$this->ocrProcessor->expects($this->never())
 			->method('ocrFile');
@@ -473,7 +474,7 @@ class OcrServiceTest extends TestCase {
 		$filePath = '/admin/files/somefile.pdf';
 		$ocrResult = new OcrProcessorResult($ocrContent, 'pdf', $ocrContent); // Extend this cases if we add new OCR processors
 
-		$this->rootFolderGetById42ReturnValue = [$this->createValidFileMock($mimeType, $content)];
+		$this->rootFolderGetFirstNodeById42ReturnValue = $this->createValidFileMock($mimeType, $content);
 
 		$this->ocrProcessor->expects($this->once())
 			->method('ocrFile')
@@ -517,10 +518,12 @@ class OcrServiceTest extends TestCase {
 		$ocrResult = new OcrProcessorResult($ocrContent, 'pdf', $ocrContent);
 		$fileId = 42;
 
+		$this->rootFolder->expects($this->never())->method('getById');
+			
 		$this->rootFolder->expects($this->once())
-			->method('getById')
+			->method('getFirstNodeById')
 			->with($fileId)
-			->willReturn([$this->createValidFileMock($mimeType, $content)]);
+			->willReturn($this->createValidFileMock($mimeType, $content));
 
 		$this->ocrProcessor->expects($this->once())
 			->method('ocrFile')
@@ -600,7 +603,7 @@ class OcrServiceTest extends TestCase {
 		$ocrResult = new OcrProcessorResult($ocrContent, 'pdf', $ocrContent); // Extend this cases if we add new OCR processors
 
 		$fileMock = $this->createValidFileMock($mimeType, $content);
-		$this->rootFolderGetById42ReturnValue = [$fileMock];
+		$this->rootFolderGetFirstNodeById42ReturnValue = $fileMock;
 
 		$this->ocrProcessor->expects($this->once())
 			->method('ocrFile')
@@ -648,7 +651,8 @@ class OcrServiceTest extends TestCase {
 	}
 
 	public function testRunOcrProcessWithJobArgumentLogsErrorAndSendsNotificationOnNotFound() {
-		$this->rootFolder->method('getById')
+		// This will never be thrown in real live, it's just to test the error handling
+		$this->rootFolder->method('getFirstNodeById')
 			->willThrowException(new NotFoundException('File was not found'));
 		$this->logger->expects($this->once())
 			->method('error')
@@ -681,7 +685,7 @@ class OcrServiceTest extends TestCase {
 		$ocrResult = new OcrProcessorResult($ocrContent, 'pdf', $ocrContent); // Extend this cases if we add new OCR processors
 
 		$fileMock = $this->createValidFileMock($mimeType, $content, '/admin/files', 'somefile.pdf', false);
-		$this->rootFolderGetById42ReturnValue = [$fileMock];
+		$this->rootFolderGetFirstNodeById42ReturnValue = $fileMock;
 
 		$this->ocrProcessor->expects($this->once())
 			->method('ocrFile')
@@ -707,8 +711,8 @@ class OcrServiceTest extends TestCase {
 		$ocrResult = new OcrProcessorResult($ocrContent, 'pdf', $ocrContent);
 
 		$fileMock = $this->createValidFileMock($mimeType, $content);
-		$this->rootFolderGetById42ReturnValue = [$fileMock];
-
+		$this->rootFolderGetFirstNodeById42ReturnValue = $fileMock;
+	
 		$this->ocrProcessor->expects($this->once())
 			->method('ocrFile')
 			->willReturn($ocrResult);
@@ -756,7 +760,7 @@ class OcrServiceTest extends TestCase {
 		$content = 'someFileContent';
 
 		$fileMock = $this->createValidFileMock($mimeType, $content);
-		$this->rootFolderGetById42ReturnValue = [$fileMock];
+		$this->rootFolderGetFirstNodeById42ReturnValue = $fileMock;
 
 		$ex = new OcrAlreadyDoneException('oops');
 		$this->ocrProcessor->expects($this->once())
@@ -777,7 +781,7 @@ class OcrServiceTest extends TestCase {
 		$ocrResult = new OcrProcessorResult($ocrContent, 'pdf', $ocrContent);
 
 		$fileMock = $this->createValidFileMock($mimeType, $content);
-		$this->rootFolderGetById42ReturnValue = [$fileMock];
+		$this->rootFolderGetFirstNodeById42ReturnValue = $fileMock;
 
 		$this->ocrProcessor->expects($this->once())
 			->method('ocrFile')
@@ -820,24 +824,6 @@ class OcrServiceTest extends TestCase {
 		$ocrService->runOcrProcess(42, 'usr', $settings);
 
 		$this->assertTrue($logged, 'Expected debug log message not found');
-	}
-
-	public static function dataProvider_InvalidNodes() {
-		$folderMockCallable = function (self $testClass) {
-			/** @var MockObject|Node */
-			$folderMock = $testClass->createMock(Node::class);
-			$folderMock->method('getType')
-				->willReturn(FileInfo::TYPE_FOLDER);
-			return $folderMock;
-		};
-		$fileInfoMockCallable = fn (self $testClass) => $testClass->createMock(FileInfo::class);
-		$arr = [
-			[$folderMockCallable],
-			[$fileInfoMockCallable],
-			[fn () => null],
-			[fn () => (object)['someField' => 'someValue']]
-		];
-		return $arr;
 	}
 
 	public static function dataProvider_OcrModesThrowOnEmptyResult() {
