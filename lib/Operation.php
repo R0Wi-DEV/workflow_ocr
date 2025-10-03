@@ -53,7 +53,7 @@ class Operation implements ISpecificOperation {
 		private LoggerInterface $logger,
 		private IURLGenerator $urlGenerator,
 		private IProcessingFileAccessor $processingFileAccessor,
-		private IRootFolder $rootFolder
+		private IRootFolder $rootFolder,
 	) {
 	}
 

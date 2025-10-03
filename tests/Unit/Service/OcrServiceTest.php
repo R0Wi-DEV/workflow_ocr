@@ -419,7 +419,7 @@ class OcrServiceTest extends TestCase {
 	public function testDoesNotCallOcr_OnNonFile() {
 		$invalidNode = $this->createMock(Node::class);
 		$invalidNode->method('getType')
-				->willReturn(FileInfo::TYPE_FOLDER);
+			->willReturn(FileInfo::TYPE_FOLDER);
 		$settings = new WorkflowSettings();
 		$this->rootFolderGetFirstNodeById42ReturnValue = $invalidNode;
 
@@ -519,7 +519,7 @@ class OcrServiceTest extends TestCase {
 		$fileId = 42;
 
 		$this->rootFolder->expects($this->never())->method('getById');
-			
+
 		$this->rootFolder->expects($this->once())
 			->method('getFirstNodeById')
 			->with($fileId)
@@ -712,7 +712,7 @@ class OcrServiceTest extends TestCase {
 
 		$fileMock = $this->createValidFileMock($mimeType, $content);
 		$this->rootFolderGetFirstNodeById42ReturnValue = $fileMock;
-	
+
 		$this->ocrProcessor->expects($this->once())
 			->method('ocrFile')
 			->willReturn($ocrResult);
