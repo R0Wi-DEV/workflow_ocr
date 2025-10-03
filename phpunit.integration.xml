@@ -5,7 +5,12 @@
          colors="true"
          timeoutForSmallTests="900"
          timeoutForMediumTests="900"
-         timeoutForLargeTests="900">
+         timeoutForLargeTests="900"
+         displayDetailsOnTestsThatTriggerDeprecations="true"
+         displayDetailsOnTestsThatTriggerErrors="true"
+         displayDetailsOnTestsThatTriggerNotices="true"
+         displayDetailsOnTestsThatTriggerWarnings="true"
+         displayDetailsOnPhpunitDeprecations="true">
   <testsuite name="integration">
     <directory>./tests/Integration</directory>
   </testsuite>

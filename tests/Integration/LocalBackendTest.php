@@ -76,7 +76,9 @@ class LocalBackendTest extends BackendTestBase {
 
 	protected function tearDown(): void {
 		parent::tearDown();
-		$this->dispatcher->removeListener(TextRecognizedEvent::class, $this->eventListener);
+		if (isset($this->dispatcher) && isset($this->eventListener)) {
+			$this->dispatcher->removeListener(TextRecognizedEvent::class, $this->eventListener);
+		}
 		$this->capturedEvents = [];
 	}
 
