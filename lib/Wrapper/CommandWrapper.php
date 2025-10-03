@@ -50,21 +50,21 @@ class CommandWrapper implements ICommand {
 		$this->command->setStdIn($stdIn);
 		return $this;
 	}
-	
+
 	/**
 	 * @inheritdoc
 	 */
 	public function execute() : bool {
 		return (bool)$this->command->execute();
 	}
-	
+
 	/**
 	 * @inheritdoc
 	 */
 	public function getOutput(bool $trim = true) : string {
 		return (string)$this->command->getOutput($trim);
 	}
-	
+
 	/**
 	 * @inheritdoc
 	 */
@@ -78,7 +78,7 @@ class CommandWrapper implements ICommand {
 	public function getStdErr(bool $trim = true) : string {
 		return (string)$this->command->getStdErr($trim);
 	}
-	
+
 	/**
 	 * @inheritdoc
 	 */

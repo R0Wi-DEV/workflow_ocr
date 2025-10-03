@@ -46,12 +46,12 @@ class WorkflowOcrRemoteProcessor implements IOcrProcessor {
 	) {
 
 	}
-	 
+
 	public function ocrFile(File $file, WorkflowSettings $settings, GlobalSettings $globalSettings): OcrProcessorResult {
 		$ocrMyPdfParameters = $this->commandLineUtils->getCommandlineArgs($settings, $globalSettings);
 		$fileResource = $file->fopen('rb');
 		$fileName = $file->getName();
-		
+
 		$this->logger->debug('Sending OCR request to remote backend');
 		$apiResult = $this->apiClient->processOcr($fileResource, $fileName, $ocrMyPdfParameters);
 		$this->logger->debug('OCR result received', ['apiResult' => $apiResult]);

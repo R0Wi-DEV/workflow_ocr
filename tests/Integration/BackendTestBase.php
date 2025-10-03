@@ -136,7 +136,7 @@ abstract class BackendTestBase extends TestCase {
 	private function deleteOperation() {
 		// Clear managers cache and operations to ensure "deleteOperation" works
 		$reflection = new \ReflectionClass($this->workflowEngineManager);
-		
+
 		$operationsByScopeProperty = $reflection->getProperty('operationsByScope');
 		$operationsByScopeProperty->setAccessible(true);
 		$operationsByScope = $operationsByScopeProperty->getValue($this->workflowEngineManager);
@@ -154,7 +154,7 @@ abstract class BackendTestBase extends TestCase {
 				// ignore
 			}
 		}
-		
+
 	}
 
 	protected function uploadTestFile(string $testFile) {
@@ -181,7 +181,7 @@ abstract class BackendTestBase extends TestCase {
 			curl_setopt($ch, CURLOPT_URL, $this->getNextcloudWebdavUrl() . basename($localFile));
 			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	
+
 			$this->executeCurl($ch, [404]);
 		}
 		$this->uploadedFiles = [];

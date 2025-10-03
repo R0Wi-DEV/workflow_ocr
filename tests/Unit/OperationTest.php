@@ -66,7 +66,7 @@ class OperationTest extends TestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
-		
+
 		$this->jobList = $this->createMock(IJobList::class);
 		$this->l = $this->createMock(IL10N::class);
 		$this->logger = $this->createMock(LoggerInterface::class);
@@ -275,9 +275,9 @@ class OperationTest extends TestCase {
 		$this->logger->expects($this->once())
 			->method('warning')
 			->withAnyParameters();
-		
+
 		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
-		
+
 		$operation->onEvent($eventName, $event, $this->ruleMatcher);
 	}
 
@@ -290,9 +290,9 @@ class OperationTest extends TestCase {
 		$this->logger->expects($this->once())
 			->method('warning')
 			->withAnyParameters();
-		
+
 		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
-		
+
 		$operation->onEvent($eventName, $event, $this->ruleMatcher);
 	}
 
@@ -305,9 +305,9 @@ class OperationTest extends TestCase {
 		$this->logger->expects($this->once())
 			->method('warning')
 			->withAnyParameters();
-		
+
 		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
-		
+
 		$operation->onEvent($eventName, $event, $this->ruleMatcher);
 	}
 
@@ -326,9 +326,9 @@ class OperationTest extends TestCase {
 			->method('getById')
 			->with(42)
 			->willReturn([]);
-		
+
 		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
-		
+
 		$operation->onEvent($eventName, $event, $this->ruleMatcher);
 	}
 
@@ -347,9 +347,9 @@ class OperationTest extends TestCase {
 			->method('getById')
 			->with(42)
 			->willReturn([$this->createMock(Folder::class)]);
-		
+
 		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
-		
+
 		$operation->onEvent($eventName, $event, $this->ruleMatcher);
 	}
 
@@ -381,7 +381,7 @@ class OperationTest extends TestCase {
 			->willReturn([$fileMock]);
 
 		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $rootFolder);
-		
+
 		$operation->onEvent($eventName, $event, $this->ruleMatcher);
 	}
 

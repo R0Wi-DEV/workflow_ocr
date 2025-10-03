@@ -53,9 +53,9 @@ class OcrMyPdfCheck implements ISetupCheck {
 	}
 
 	public function run(): SetupResult {
-		return $this->ocrBackendInfoService->isRemoteBackend() ?
-			$this->runRemoteCheck() :
-			$this->runLocalCheck();
+		return $this->ocrBackendInfoService->isRemoteBackend()
+			? $this->runRemoteCheck()
+			: $this->runLocalCheck();
 	}
 
 	private function runLocalCheck(): SetupResult {
@@ -72,9 +72,9 @@ class OcrMyPdfCheck implements ISetupCheck {
 
 	private function runRemoteCheck(): SetupResult {
 		try {
-			return $this->apiClient->heartbeat() ?
-				SetupResult::success($this->l10n->t('Workflow OCR Backend is installed.')) :
-				SetupResult::warning($this->l10n->t('Workflow OCR Backend is installed but heartbeat failed.'));
+			return $this->apiClient->heartbeat()
+				? SetupResult::success($this->l10n->t('Workflow OCR Backend is installed.'))
+				: SetupResult::warning($this->l10n->t('Workflow OCR Backend is installed but heartbeat failed.'));
 		} catch (\Exception $e) {
 			$this->logger->error('Error while checking OCRmyPDF backend: ' . $e->getMessage(), [
 				'exception' => $e,
