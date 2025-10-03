@@ -73,7 +73,7 @@ class PdfOcrProcessorTest extends TestCase {
 		$this->sidecarFileAccessor = $this->createMock(ISidecarFileAccessor::class);
 		$this->ocrBackendInfoService = $this->createMock(IOcrBackendInfoService::class);
 		$this->commandLineUtils = new CommandLineUtils($this->ocrBackendInfoService, $this->logger);
-		
+
 		$this->defaultSettings = new WorkflowSettings();
 		$this->defaultGlobalSettings = new GlobalSettings();
 		$this->fileBefore = $this->createMock(File::class);
@@ -156,10 +156,10 @@ class PdfOcrProcessorTest extends TestCase {
 			->with(
 				'OCRmyPDF succeeded with warning(s): {stdErr}, {errorOutput}',
 				$this->callback(function ($paramsArray) {
-					return is_array($paramsArray) &&
-							count($paramsArray) === 2 &&
-							$paramsArray['stdErr'] === 'stdErrOutput' &&
-							$paramsArray['errorOutput'] === 'getErrorOutput';
+					return is_array($paramsArray)
+							&& count($paramsArray) === 2
+							&& $paramsArray['stdErr'] === 'stdErrOutput'
+							&& $paramsArray['errorOutput'] === 'getErrorOutput';
 				}));
 
 		$processor = new PdfOcrProcessor($this->command, $this->logger, $this->sidecarFileAccessor, $this->commandLineUtils);

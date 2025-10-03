@@ -181,7 +181,7 @@ class NotifierTest extends TestCase {
 			->willReturn('http://localhost/index.php/apps/files/?file=123');
 
 		$preparedNotification = $this->notifier->prepare($notification, 'en');
-		
+
 		$richSubject = $preparedNotification->getRichSubject();
 		$richSubjectParams = $preparedNotification->getRichSubjectParameters();
 
@@ -227,7 +227,7 @@ class NotifierTest extends TestCase {
 			->method('linkToRouteAbsolute');
 
 		$preparedNotification = $this->notifier->prepare($notification, 'en');
-		
+
 		$this->assertEmpty($preparedNotification->getRichSubject());
 		$this->assertEmpty($preparedNotification->getRichSubjectParameters());
 		$this->assertEquals('<translated> Workflow OCR error', $preparedNotification->getParsedSubject());
