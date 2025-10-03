@@ -326,7 +326,7 @@ class OperationTest extends TestCase {
 			->method('getFirstNodeById')
 			->with(42)
 			->willReturn(null);
-		
+
 		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
 
 		$operation->onEvent($eventName, $event, $this->ruleMatcher);
