@@ -8,7 +8,7 @@
         "phpunit/phpcov": "^10.0",
         "nextcloud/coding-standard": "^1.3",
         "vimeo/psalm": "6.4.*",
-        "nextcloud/ocp": "dev-master"
+        "nextcloud/ocp": "dev-stable32"
     },
     "config": {
         "optimize-autoloader": true,
