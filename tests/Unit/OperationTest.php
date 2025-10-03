@@ -323,9 +323,9 @@ class OperationTest extends TestCase {
 		/** @var MockObject|IRootFolder */
 		$this->rootFolder = $this->createMock(IRootFolder::class);
 		$this->rootFolder->expects($this->once())
-			->method('getById')
+			->method('getFirstNodeById')
 			->with(42)
-			->willReturn([]);
+			->willReturn(null);
 
 		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
 
@@ -344,9 +344,9 @@ class OperationTest extends TestCase {
 		/** @var MockObject|IRootFolder */
 		$this->rootFolder = $this->createMock(IRootFolder::class);
 		$this->rootFolder->expects($this->once())
-			->method('getById')
+			->method('getFirstNodeById')
 			->with(42)
-			->willReturn([$this->createMock(Folder::class)]);
+			->willReturn($this->createMock(Folder::class));
 
 		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $this->rootFolder);
 
@@ -375,10 +375,11 @@ class OperationTest extends TestCase {
 			->willReturn($fileId);
 		/** @var MockObject|IRootFolder */
 		$rootFolder = $this->createMock(IRootFolder::class);
+		$rootFolder->expects($this->never())->method('getById');
 		$rootFolder->expects($this->once())
-			->method('getById')
+			->method('getFirstNodeById')
 			->with($fileId)
-			->willReturn([$fileMock]);
+			->willReturn($fileMock);
 
 		$operation = new Operation($this->jobList, $this->l, $this->logger, $this->urlGenerator, $this->processingFileAccessor, $rootFolder);
 
