@@ -207,8 +207,7 @@
   <file src="lib/Operation.php">
     <MissingDependency>
       <code><![CDATA[$this->rootFolder]]></code>
-      <code><![CDATA[IRootFolder]]></code>
-      <code><![CDATA[IRootFolder]]></code>
+      <code><![CDATA[private]]></code>
     </MissingDependency>
     <NullReference>
       <code><![CDATA[$argsArray]]></code>
@@ -216,14 +215,6 @@
     <PossiblyUnusedMethod>
       <code><![CDATA[__construct]]></code>
     </PossiblyUnusedMethod>
-    <PossiblyUnusedParam>
-      <code><![CDATA[$jobList]]></code>
-      <code><![CDATA[$l]]></code>
-      <code><![CDATA[$logger]]></code>
-      <code><![CDATA[$processingFileAccessor]]></code>
-      <code><![CDATA[$rootFolder]]></code>
-      <code><![CDATA[$urlGenerator]]></code>
-    </PossiblyUnusedParam>
     <UndefinedClass>
       <code><![CDATA[File]]></code>
     </UndefinedClass>
