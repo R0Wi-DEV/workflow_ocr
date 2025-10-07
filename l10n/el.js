@@ -15,6 +15,7 @@ OC.L10N.register(
     "OCRmyPDF is installed and has version %1$s." : "Το OCRmyPDF είναι εγκατεστημένο και έχει έκδοση %1$s.",
     "Workflow OCR Backend is installed." : "Το Backend ροής εργασιών OCR είναι εγκατεστημένο.",
     "Workflow OCR Backend is installed but heartbeat failed." : "Το Backend ροής εργασιών OCR είναι εγκατεστημένο, αλλά η επικοινωνία απέτυχε.",
+    "Workflow OCR Backend is not reachable. Error was: %1$s" : "Το σύστημα υποστήριξης OCR ροής εργασιών δεν είναι προσβάσιμο. Σφάλμα: %1$s",
     "Server side OCR processing via workflow engine" : "Επεξεργασία OCR στην πλευρά του διακομιστή μέσω μηχανής ροής εργασιών",
     "This app makes it possible to process various files via OCR algorithms.\n\tThe processing is done via workflow-engine and can therefore easily be customized.\n\tPlease note that you'll have to install the OcrMyPDF CLI on your Nextcloud server to\n\tprocess PDF files. More installation instructions can be found in the docs https://github.com/R0Wi/workflow_ocr/blob/master/README.md." : "Αυτή η εφαρμογή καθιστά δυνατή την επεξεργασία διαφόρων αρχείων μέσω αλγορίθμων OCR.\n\tΗ επεξεργασία γίνεται μέσω μηχανής ροής εργασιών και επομένως μπορεί εύκολα να προσαρμοστεί.\n\tΠαρακαλώ σημειώστε ότι θα πρέπει να εγκαταστήσετε το OCRmyPDF CLI στον διακομιστή Nextcloud σας για να\n\tεπεξεργαστείτε αρχεία PDF. Περισσότερες οδηγίες εγκατάστασης μπορείτε να βρείτε στην τεκμηρίωση https://github.com/R0Wi/workflow_ocr/blob/master/README.md.",
     "Select language(s)" : "Επιλογή γλώσσας/γλωσσών",
