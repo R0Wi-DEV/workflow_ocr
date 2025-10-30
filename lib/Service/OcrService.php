@@ -155,7 +155,7 @@ class OcrService implements IOcrService {
 
 			$ocrProcessor = $this->ocrProcessorFactory->create($file->getMimeType());
 			$globalSettings = $this->globalSettingsService->getGlobalSettings();
-			
+
 			try {
 				$result = $ocrProcessor->ocrFile($file, $settings, $globalSettings);
 			} catch (OcrAlreadyDoneException $ex) {
@@ -181,9 +181,9 @@ class OcrService implements IOcrService {
 			throw new \InvalidArgumentException('Argument is not an array in ' . self::class . ' method \'tryParseArguments\'.');
 		}
 
-		$getArgument = fn ($key) => array_key_exists($key, $argument) ?
-			$argument[$key] :
-			throw new \InvalidArgumentException("Argument key '$key' not found in " . self::class . ' method \'tryParseArguments\'.');
+		$getArgument = fn ($key) => array_key_exists($key, $argument)
+			? $argument[$key]
+			: throw new \InvalidArgumentException("Argument key '$key' not found in " . self::class . ' method \'tryParseArguments\'.');
 
 		$jsonSettings = $getArgument('settings');
 		$settings = new WorkflowSettings($jsonSettings);
@@ -222,7 +222,7 @@ class OcrService implements IOcrService {
 		if (count($nodeArr) === 0) {
 			throw new NotFoundException('Could not process file with id \'' . $fileId . '\'. File was not found');
 		}
-		
+
 		$node = array_shift($nodeArr);
 
 		if (!$node instanceof Node || $node->getType() !== FileInfo::TYPE_FILE) {
@@ -263,7 +263,7 @@ class OcrService implements IOcrService {
 	private function createNewFileVersion(string $filePath, string $ocrContent, ?int $fileMtime = null) : void {
 		$dirPath = dirname($filePath);
 		$filename = basename($filePath);
-		
+
 		$this->processingFileAccessor->setCurrentlyProcessedFilePath($filePath);
 
 		try {
