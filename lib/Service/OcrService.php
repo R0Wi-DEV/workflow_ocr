@@ -217,13 +217,13 @@ class OcrService implements IOcrService {
 	}
 
 	private function getNode(int $fileId) : Node {
-		/** @var File[] */
-		$nodeArr = $this->rootFolder->getById($fileId);
-		if (count($nodeArr) === 0) {
+		// #324: The root folder object can potentially return multiple nodes with the same id when using 'getById'.
+		// Therefore we use 'getFirstNodeById' here to ensure we only get one node which belongs to the current user.
+		$node = $this->rootFolder->getFirstNodeById($fileId);
+
+		if ($node === null) {
 			throw new NotFoundException('Could not process file with id \'' . $fileId . '\'. File was not found');
 		}
-
-		$node = array_shift($nodeArr);
 
 		if (!$node instanceof Node || $node->getType() !== FileInfo::TYPE_FILE) {
 			throw new \InvalidArgumentException('Skipping process for file with id \'' . $fileId . '\'. It is not a file');
