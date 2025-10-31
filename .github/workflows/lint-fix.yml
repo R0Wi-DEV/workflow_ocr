@@ -14,7 +14,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         ref: ${{ github.head_ref }}
 
@@ -30,6 +30,6 @@ jobs:
     - name: Run coding standard formatter
       run: composer run cs:fix
 
-    - uses: stefanzweifel/git-auto-commit-action@v4
+    - uses: stefanzweifel/git-auto-commit-action@v7
       with:
         commit_message: Apply php-cs-fixer changes

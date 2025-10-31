@@ -20,7 +20,7 @@ jobs:
 
     name: php${{ matrix.php-versions }}-LINT
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set up php ${{ matrix.php-versions }}
         uses: shivammathur/setup-php@v2

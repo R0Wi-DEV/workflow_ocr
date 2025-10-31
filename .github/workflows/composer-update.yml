@@ -1,0 +1,30 @@
+name: Composer update
+
+on:
+  workflow_dispatch:
+  schedule:
+     - cron: '0 0 * * 5'  # Runs every Friday at midnight
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.WORKFLOW_OCR_COMPOSER_DEPS_AUTO_UPDATE }} # To be able to trigger workflows in case of git push
+
+      - name: Set up php 8.4
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.4
+          extensions: mbstring, iconv, fileinfo, intl, sqlite, pdo_sqlite, gd, zip, imagick
+          coverage: none
+
+      - name: Update dependencies
+        run: composer update --with-all-dependencies
+
+      - uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: Update composer dependencies
