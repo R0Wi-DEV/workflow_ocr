@@ -4,54 +4,43 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\Tests\Unit\OcrProcessors;
 
+use OCA\WorkflowOcr\Helper\ISidecarFileAccessor;
+use OCA\WorkflowOcr\Model\GlobalSettings;
+use OCA\WorkflowOcr\Model\WorkflowSettings;
+use OCA\WorkflowOcr\OcrProcessors\ICommandLineUtils;
+
+use OCA\WorkflowOcr\OcrProcessors\Local\OcrMyPdfBasedProcessor;
 use OCA\WorkflowOcr\OcrProcessors\OcrProcessorBase;
+use OCA\WorkflowOcr\Wrapper\ICommand;
+use OCA\WorkflowOcr\Wrapper\IPhpNativeFunctions;
 use OCP\Files\File;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
-// If the Imagick extension is not available in the test environment, provide
-// a lightweight stub to emulate the methods used by the class under test.
-if (!class_exists('Imagick')) {
-	class Imagick {
-		public const ALPHACHANNEL_REMOVE = 1;
-		public const LAYERMETHOD_FLATTEN = 2;
+class BadReadStreamWrapper {
+	public $context;
+	public function stream_open($path, $mode, $options, &$opened_path) {
+		return true;
+	}
 
-		private bool $hasAlpha = false;
+	public function stream_read($count) {
+		return false; // simulate read failure
+	}
 
-		public function readImageFile($resource, $fileName) {
-			$contents = stream_get_contents($resource);
-			rewind($resource);
-			$this->hasAlpha = strpos($contents, 'has_alpha') !== false;
-		}
+	public function stream_eof() {
+		return false; // not EOF, so read failure is treated as a read error
+	}
 
-		public function getImageAlphaChannel() {
-			return $this->hasAlpha ? 1 : 0;
-		}
-
-		public function setImageAlphaChannel($flag) {
-			// noop for stub
-		}
-
-		public function mergeImageLayers($method) {
-			// noop for stub
-		}
-
-		public function getImageBlob() {
-			return $this->hasAlpha ? 'flattened_blob' : '';
-		}
-
-		public function clear() {
-		}
-
-		public function destroy() {
-		}
+	public function stream_stat() {
+		return false;
 	}
 }
 
-use OCA\WorkflowOcr\Model\GlobalSettings;
-use OCA\WorkflowOcr\Model\WorkflowSettings;
-
 class TestOcrProcessor extends OcrProcessorBase {
+	public function __construct($logger, IPhpNativeFunctions $phpNative) {
+		parent::__construct($logger, $phpNative);
+	}
+
 	protected function doOcrProcessing($fileResource, string $fileName, $settings, $globalSettings): array {
 		// Return the preprocessed file bytes so tests can inspect preprocessing result
 		$contents = '';
@@ -63,10 +52,28 @@ class TestOcrProcessor extends OcrProcessorBase {
 	}
 }
 
+class TestableOcrMyPdfBasedProcessor extends OcrMyPdfBasedProcessor {
+	public function __construct($command, $logger, $sidecar, $cmdUtils, $phpNative) {
+		parent::__construct($command, $logger, $sidecar, $cmdUtils, $phpNative);
+	}
+
+	public function runCallToDoOcrProcessing($fileResource, string $fileName, $settings, $globalSettings): array {
+		return $this->doOcrProcessing($fileResource, $fileName, $settings, $globalSettings);
+	}
+
+	protected function getAdditionalCommandlineArgs($settings, $globalSettings): array {
+		return [];
+	}
+}
+
 class OcrProcessorBaseTest extends TestCase {
 	public function testRemoveAlphaChannelFromImage_RemovesAlphaAndReturnsNewStream(): void {
 		$logger = $this->createMock(LoggerInterface::class);
-		$processor = new TestOcrProcessor($logger);
+		$phpNative = $this->createMock(IPhpNativeFunctions::class);
+		$phpNative->method('fopen')->willReturnCallback(fn ($file, $mode) => fopen($file, $mode));
+		$phpNative->method('streamGetContents')->willReturnCallback(fn ($h) => stream_get_contents($h));
+
+		$processor = new TestOcrProcessor($logger, $phpNative);
 
 		$originalStream = $this->createPngStream(true);
 
@@ -99,9 +106,45 @@ class OcrProcessorBaseTest extends TestCase {
 		$this->assertNotEquals(6, $procColorType, 'Processed image should not have RGBA color type');
 	}
 
+	public function testDoOcrProcessingReturnsErrorIfInputFileCannotBeRead(): void {
+		$logger = $this->createMock(LoggerInterface::class);
+
+		// Create mocks for constructor dependencies
+		$command = $this->createMock(ICommand::class);
+		$sidecar = $this->createMock(ISidecarFileAccessor::class);
+		$cmdUtils = $this->createMock(ICommandLineUtils::class);
+		$phpNative = $this->createMock(IPhpNativeFunctions::class);
+
+		// Mock that "stream_get_contents" fails
+		$phpNative->method('streamGetContents')->willReturn(false);
+
+		$processor = new TestableOcrMyPdfBasedProcessor($command, $logger, $sidecar, $cmdUtils, $phpNative);
+
+		$settings = $this->createMock(WorkflowSettings::class);
+		$globalSettings = $this->createMock(GlobalSettings::class);
+
+		$badStream = fopen('php://temp', 'r');
+		try {
+			$result = $processor->runCallToDoOcrProcessing($badStream, 'unreadable.pdf', $settings, $globalSettings);
+		} finally {
+			if (is_resource($badStream)) {
+				fclose($badStream);
+			}
+		}
+
+		$this->assertIsArray($result);
+		$this->assertFalse($result[0], 'Expected processing to indicate failure');
+		$this->assertSame(-1, $result[3], 'Expected exit code -1 for read failure');
+		$this->assertStringContainsString('Failed to read file content', (string)$result[4]);
+	}
+
 	public function testRemoveAlphaChannelFromImage_NoAlpha_ReturnsOriginalResource(): void {
 		$logger = $this->createMock(LoggerInterface::class);
-		$processor = new TestOcrProcessor($logger);
+		$phpNative = $this->createMock(IPhpNativeFunctions::class);
+		$phpNative->method('fopen')->willReturnCallback(fn ($file, $mode) => fopen($file, $mode));
+		$phpNative->method('streamGetContents')->willReturnCallback(fn ($h) => stream_get_contents($h));
+
+		$processor = new TestOcrProcessor($logger, $phpNative);
 
 		$originalStream = $this->createPngStream(false);
 
@@ -125,6 +168,31 @@ class OcrProcessorBaseTest extends TestCase {
 
 		// For no-alpha images the preprocessed bytes should equal the original
 		$this->assertEquals($originalBytes, $processed);
+	}
+
+	public function testThrowsRuntimeExceptionIfOpeningTempFails(): void {
+		$logger = $this->createMock(LoggerInterface::class);
+		$phpNative = $this->createMock(IPhpNativeFunctions::class);
+
+		// Simulate failure when opening the temporary stream for alpha removal
+		$phpNative->method('fopen')->with('php://temp', 'r+')->willReturn(false);
+
+		$processor = new TestOcrProcessor($logger, $phpNative);
+
+		$originalStream = $this->createPngStream(true);
+
+		$file = $this->createMock(File::class);
+		$file->method('getMimeType')->willReturn('image/png');
+		$file->method('fopen')->with('rb')->willReturn($originalStream);
+		$file->method('getName')->willReturn('test.png');
+
+		$settings = $this->createMock(WorkflowSettings::class);
+		$globalSettings = $this->createMock(GlobalSettings::class);
+
+		$this->expectException(\RuntimeException::class);
+		$this->expectExceptionMessage('Failed to create temporary stream for alpha channel removal');
+
+		$processor->ocrFile($file, $settings, $globalSettings);
 	}
 
 	private function createPngStream(bool $withAlpha) {

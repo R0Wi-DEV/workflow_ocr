@@ -29,6 +29,7 @@ use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCA\WorkflowOcr\OcrProcessors\ICommandLineUtils;
 use OCA\WorkflowOcr\OcrProcessors\OcrProcessorBase;
 use OCA\WorkflowOcr\Wrapper\ICommand;
+use OCA\WorkflowOcr\Wrapper\IPhpNativeFunctions;
 use Psr\Log\LoggerInterface;
 
 abstract class OcrMyPdfBasedProcessor extends OcrProcessorBase {
@@ -37,8 +38,9 @@ abstract class OcrMyPdfBasedProcessor extends OcrProcessorBase {
 		protected LoggerInterface $logger,
 		private ISidecarFileAccessor $sidecarFileAccessor,
 		private ICommandLineUtils $commandLineUtils,
+		IPhpNativeFunctions $phpNativeFunctions,
 	) {
-		parent::__construct($logger);
+		parent::__construct($logger, $phpNativeFunctions);
 	}
 
 	protected function doOcrProcessing($fileResource, string $fileName, WorkflowSettings $settings, GlobalSettings $globalSettings): array {
@@ -46,7 +48,10 @@ abstract class OcrMyPdfBasedProcessor extends OcrProcessorBase {
 		$sidecarFile = $this->sidecarFileAccessor->getOrCreateSidecarFile();
 		$commandStr = 'ocrmypdf ' . $this->commandLineUtils->getCommandlineArgs($settings, $globalSettings, $sidecarFile, $additionalCommandlineArgs) . ' - - || exit $? ; cat';
 
-		$inputFileContent = stream_get_contents($fileResource);
+		$inputFileContent = $this->phpNative->streamGetContents($fileResource);
+		if ($inputFileContent === false) {
+			return [false, null, null, -1, 'Failed to read file content from stream'];
+		}
 
 		$this->command
 			->setCommand($commandStr)

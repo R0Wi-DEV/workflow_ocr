@@ -39,8 +39,9 @@ class WorkflowOcrRemoteProcessor extends OcrProcessorBase {
 		private IApiClient $apiClient,
 		private ICommandLineUtils $commandLineUtils,
 		protected LoggerInterface $logger,
+		\OCA\WorkflowOcr\Wrapper\IPhpNativeFunctions $phpNative,
 	) {
-		parent::__construct($logger);
+		parent::__construct($logger, $phpNative);
 	}
 
 	protected function doOcrProcessing($fileResource, string $fileName, WorkflowSettings $settings, GlobalSettings $globalSettings): array {

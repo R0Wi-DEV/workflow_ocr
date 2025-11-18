@@ -46,6 +46,8 @@ class WorkflowOcrRemoteProcessorTest extends TestCase {
 	private $workflowSettings;
 	private $globalSettings;
 	private $processor;
+	/** @var \OCA\WorkflowOcr\Wrapper\IPhpNativeFunctions|MockObject */
+	private $phpNative;
 
 	protected function setUp(): void {
 		$this->apiClient = $this->createMock(IApiClient::class);
@@ -55,10 +57,13 @@ class WorkflowOcrRemoteProcessorTest extends TestCase {
 		$this->workflowSettings = $this->createMock(WorkflowSettings::class);
 		$this->globalSettings = $this->createMock(GlobalSettings::class);
 
+		$this->phpNative = $this->createMock(\OCA\WorkflowOcr\Wrapper\IPhpNativeFunctions::class);
+
 		$this->processor = new WorkflowOcrRemoteProcessor(
 			$this->apiClient,
 			$this->commandLineUtils,
-			$this->logger
+			$this->logger,
+			$this->phpNative
 		);
 	}
 

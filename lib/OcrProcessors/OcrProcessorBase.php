@@ -28,6 +28,7 @@ use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
 use OCA\WorkflowOcr\Exception\OcrResultEmptyException;
 use OCA\WorkflowOcr\Model\GlobalSettings;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
+use OCA\WorkflowOcr\Wrapper\IPhpNativeFunctions;
 use OCP\Files\File;
 use Psr\Log\LoggerInterface;
 
@@ -37,6 +38,7 @@ use Psr\Log\LoggerInterface;
 abstract class OcrProcessorBase implements IOcrProcessor {
 	public function __construct(
 		protected LoggerInterface $logger,
+		protected IPhpNativeFunctions $phpNative,
 	) {
 	}
 
@@ -60,13 +62,13 @@ abstract class OcrProcessorBase implements IOcrProcessor {
 	}
 
 	/**
-	 * Perform the actual OCR processing. Implementation is specific to the OCR processor. Might me local or remote.
+	 * Perform the actual OCR processing. Implementation is specific to the OCR processor. Might be local or remote.
 	 * Should return [$success, $fileContent, $recognizedText, $exitCode, $errorMessage]
 	 * @param resource $fileResource
 	 * @param string $fileName
 	 * @param WorkflowSettings $settings
 	 * @param GlobalSettings $globalSettings
-	 * @return array
+	 * @return array{bool, string|null, string|null, int, string|null} [$success, $fileContent, $recognizedText, $exitCode, $errorMessage]
 	 */
 	abstract protected function doOcrProcessing($fileResource, string $fileName, WorkflowSettings $settings, GlobalSettings $globalSettings): array;
 
@@ -74,7 +76,7 @@ abstract class OcrProcessorBase implements IOcrProcessor {
 	 * @return resource|false
 	 */
 	private function doFilePreprocessing(File $file) {
-		return $file->getMimeType() != 'image/png' ? $file->fopen('rb') : $this->removeAlphaChannelFromImage($file);
+		return $file->getMimeType() !== 'image/png' ? $file->fopen('rb') : $this->removeAlphaChannelFromImage($file);
 	}
 
 	/**
@@ -101,7 +103,10 @@ abstract class OcrProcessorBase implements IOcrProcessor {
 			$image->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE);
 			$image->mergeImageLayers(\Imagick::LAYERMETHOD_FLATTEN);
 			$imageBlob = $image->getImageBlob();
-			$stream = fopen('php://temp', 'r+');
+			$stream = $this->phpNative->fopen('php://temp', 'r+');
+			if ($stream === false) {
+				throw new \RuntimeException('Failed to create temporary stream for alpha channel removal');
+			}
 			fwrite($stream, $imageBlob);
 			rewind($stream);
 			$destroyImageResource = true;
