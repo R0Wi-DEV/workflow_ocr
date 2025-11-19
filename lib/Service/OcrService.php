@@ -378,7 +378,7 @@ class OcrService implements IOcrService {
 
 	/**
 	 * Creates a persistent sidecar text file next to the OCR processed file.
-	 * 
+	 *
 	 * @param Node $originalFile The original file node
 	 * @param string $recognizedText The OCR recognized text content
 	 * @param string $newFilePath The path of the new/updated OCR processed file
