@@ -56,7 +56,9 @@ use OCA\WorkflowOcr\Wrapper\Filesystem;
 use OCA\WorkflowOcr\Wrapper\IAppApiWrapper;
 use OCA\WorkflowOcr\Wrapper\ICommand;
 use OCA\WorkflowOcr\Wrapper\IFilesystem;
+use OCA\WorkflowOcr\Wrapper\IPhpNativeFunctions;
 use OCA\WorkflowOcr\Wrapper\IViewFactory;
+use OCA\WorkflowOcr\Wrapper\PhpNativeFunctions;
 use OCA\WorkflowOcr\Wrapper\ViewFactory;
 use OCP\AppFramework\App;
 use OCP\AppFramework\Bootstrap\IBootContext;
@@ -93,6 +95,7 @@ class Application extends App implements IBootstrap {
 		$context->registerServiceAlias(INotificationService::class, NotificationService::class);
 		$context->registerServiceAlias(IApiClient::class, ApiClient::class);
 		$context->registerServiceAlias(ICommandLineUtils::class, CommandLineUtils::class);
+		$context->registerServiceAlias(IPhpNativeFunctions::class, PhpNativeFunctions::class);
 		$context->registerServiceAlias(IAppApiWrapper::class, AppApiWrapper::class);
 
 		// BUG #43

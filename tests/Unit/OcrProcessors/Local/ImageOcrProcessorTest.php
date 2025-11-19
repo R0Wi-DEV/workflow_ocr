@@ -35,6 +35,8 @@ use Psr\Log\LoggerInterface;
 use Test\TestCase;
 
 class ImageOcrProcessorTest extends TestCase {
+	/** @var \OCA\WorkflowOcr\Wrapper\IPhpNativeFunctions|MockObject */
+	private $phpNative;
 	public function testOcrFileSetsImageDpi() {
 		/** @var ICommand|MockObject $command */
 		$command = $this->createMock(ICommand::class);
@@ -49,11 +51,22 @@ class ImageOcrProcessorTest extends TestCase {
 		$commandLineUtils->method('getCommandlineArgs')
 			->willReturnCallback(fn ($settings, $globalSettings, $sidecarFile, $additionalCommandlineArgs) => implode(' ', $additionalCommandlineArgs));
 
-		$processor = new ImageOcrProcessor($command, $logger, $sidecarFileAccessor, $commandLineUtils);
+		$phpNative = $this->createMock(\OCA\WorkflowOcr\Wrapper\IPhpNativeFunctions::class);
+		$phpNative->method('fopen')->willReturnCallback(fn ($file, $mode) => fopen($file, $mode));
+		$phpNative->method('streamGetContents')->willReturnCallback(fn ($h) => stream_get_contents($h));
 
+		$processor = new ImageOcrProcessor($command, $logger, $sidecarFileAccessor, $commandLineUtils, $phpNative);
+
+		$file->method('fopen')
+			->willReturnCallback(function ($mode) {
+				$stream = fopen('php://temp', 'r+');
+				fwrite($stream, 'content');
+				rewind($stream);
+				return $stream;
+			});
 		$file->expects($this->once())
-			->method('getContent')
-			->willReturn('content');
+			->method('getName')
+			->willReturn('test.pdf');
 		$command->expects($this->once())
 			->method('setCommand')
 			->with($this->stringContains(' --image-dpi 300 '))
