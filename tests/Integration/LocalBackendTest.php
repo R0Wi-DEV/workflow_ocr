@@ -26,6 +26,8 @@ namespace OCA\WorkflowOcr\Tests\Integration;
 use OCA\WorkflowOcr\Events\TextRecognizedEvent;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCA\WorkflowOcr\OcrProcessors\Remote\Client\IApiClient;
+use OCA\WorkflowOcr\Tests\Integration\TestUtils\BackendTestBase;
+use OCA\WorkflowOcr\Tests\Integration\TestUtils\IntegrationTestApiClient;
 use OCP\EventDispatcher\IEventDispatcher;
 
 /**
@@ -148,5 +150,18 @@ class LocalBackendTest extends BackendTestBase {
 		$textRecognizedEvent = $this->capturedEvents[0];
 		$this->assertInstanceOf(TextRecognizedEvent::class, $textRecognizedEvent, 'Expected TextRecognizedEvent instance');
 		$this->assertEquals('PNG without alpha channel', trim($textRecognizedEvent->getRecognizedText()), 'Expected recognized text');
+	}
+
+	public function testWorkflowOcrCreatesSidecarFile(): void {
+		$localFile = 'document-ready-for-ocr.pdf';
+		$this->addOperation('application/pdf', json_encode(['createSidecarFile' => true]));
+		$this->uploadTestFile($localFile);
+		$this->runOcrBackgroundJob();
+
+		$sidecarName = pathinfo($localFile, PATHINFO_FILENAME) . '.txt';
+		$sidecarFileContent = $this->downloadFile($sidecarName);
+		$this->filesToDelete[] = $sidecarName;
+
+		$this->assertStringContainsString('This document is ready for OCR', $sidecarFileContent, 'Expected recognized text in sidecar file');
 	}
 }
