@@ -30,23 +30,16 @@ class OcrProcessorResult {
 	/** @var string */
 	private $fileContent;
 	/** @var string */
-	private $fileExtension;
-	/** @var string */
 	private $recognizedText;
 
 
-	public function __construct(string $fileContent, string $fileExtension, string $recognizedText) {
+	public function __construct(string $fileContent, string $recognizedText) {
 		$this->fileContent = $fileContent;
-		$this->fileExtension = $fileExtension;
 		$this->recognizedText = $recognizedText;
 	}
 
 	public function getFileContent(): string {
 		return $this->fileContent;
-	}
-
-	public function getFileExtension(): string {
-		return $this->fileExtension;
 	}
 
 	public function getRecognizedText(): string {

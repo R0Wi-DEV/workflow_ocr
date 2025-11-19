@@ -382,7 +382,7 @@ class OcrServiceTest extends TestCase {
 		$mimeType = 'application/pdf';
 		$content = 'someFileContent';
 		$ocrContent = 'someOcrProcessedFile';
-		$ocrResult = new OcrProcessorResult($ocrContent, 'pdf', $ocrContent); // Extend this cases if we add new OCR processors
+		$ocrResult = new OcrProcessorResult($ocrContent, $ocrContent); // Extend this cases if we add new OCR processors
 		$originalFileMock = $this->createValidFileMock($mimeType, $content, $rootFolderPath, $originalFilename);
 
 		$this->rootFolderGetFirstNodeById42ReturnValue = $originalFileMock;
@@ -472,7 +472,7 @@ class OcrServiceTest extends TestCase {
 		$content = 'someFileContent';
 		$ocrContent = 'someOcrProcessedFile';
 		$filePath = '/admin/files/somefile.pdf';
-		$ocrResult = new OcrProcessorResult($ocrContent, 'pdf', $ocrContent); // Extend this cases if we add new OCR processors
+		$ocrResult = new OcrProcessorResult($ocrContent, $ocrContent); // Extend this cases if we add new OCR processors
 
 		$this->rootFolderGetFirstNodeById42ReturnValue = $this->createValidFileMock($mimeType, $content);
 
@@ -515,7 +515,7 @@ class OcrServiceTest extends TestCase {
 		$mimeType = 'application/pdf';
 		$content = 'someFileContent';
 		$ocrContent = '';
-		$ocrResult = new OcrProcessorResult($ocrContent, 'pdf', $ocrContent);
+		$ocrResult = new OcrProcessorResult($ocrContent, $ocrContent);
 		$fileId = 42;
 
 		$this->rootFolder->expects($this->never())->method('getById');
@@ -600,7 +600,7 @@ class OcrServiceTest extends TestCase {
 		$mimeType = 'application/pdf';
 		$content = 'someFileContent';
 		$ocrContent = 'someOcrProcessedFile';
-		$ocrResult = new OcrProcessorResult($ocrContent, 'pdf', $ocrContent); // Extend this cases if we add new OCR processors
+		$ocrResult = new OcrProcessorResult($ocrContent, $ocrContent); // Extend this cases if we add new OCR processors
 
 		$fileMock = $this->createValidFileMock($mimeType, $content);
 		$this->rootFolderGetFirstNodeById42ReturnValue = $fileMock;
@@ -682,7 +682,7 @@ class OcrServiceTest extends TestCase {
 		$mimeType = 'application/pdf';
 		$content = 'someFileContent';
 		$ocrContent = 'someOcrProcessedFile';
-		$ocrResult = new OcrProcessorResult($ocrContent, 'pdf', $ocrContent); // Extend this cases if we add new OCR processors
+		$ocrResult = new OcrProcessorResult($ocrContent, $ocrContent); // Extend this cases if we add new OCR processors
 
 		$fileMock = $this->createValidFileMock($mimeType, $content, '/admin/files', 'somefile.pdf', false);
 		$this->rootFolderGetFirstNodeById42ReturnValue = $fileMock;

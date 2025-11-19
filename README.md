@@ -217,6 +217,8 @@ For processing PDF files, the external command line tool [`OCRmyPDF`](https://gi
 ### Images
 For processing single images (currently `jpg` and `png` are supported), `ocrmypdf` converts the image to a PDF. The converted PDF file will then be OCR processed and saved as a new file with the original filename and the extension `.pdf` (for example `myImage.jpg` will be saved to `myImage.jpg.pdf`). The original image fill will remain untouched.
 
+Note about PNG alpha channel: The OCR processing will remove (flatten) the alpha/transparency channel from PNG images before conversion. Transparent areas are filled with a white background to make the OCR process possible with `ocmypdf`. This behavior applies automatically to PNG images processed by the app. See [this issue](https://github.com/R0Wi-DEV/workflow_ocr/issues/295) for details.
+
 ## Troubleshooting
 
 ### Generic troubleshooting guide

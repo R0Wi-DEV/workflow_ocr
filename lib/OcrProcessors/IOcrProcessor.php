@@ -23,7 +23,9 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\OcrProcessors;
 
+use OCA\WorkflowOcr\Exception\OcrAlreadyDoneException;
 use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
+use OCA\WorkflowOcr\Exception\OcrResultEmptyException;
 use OCA\WorkflowOcr\Model\GlobalSettings;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCP\Files\File;
@@ -35,6 +37,8 @@ interface IOcrProcessor {
 	 * @param WorkflowSettings $settings The settings to be used for this specific workflow
 	 * @param GlobalSettings $globalSettings The global settings configured for all OCR workflows on this system
 	 * @return OcrProcessorResult
+	 * @throws OcrAlreadyDoneException
+	 * @throws OcrResultEmptyException
 	 * @throws OcrNotPossibleException
 	 */
 	public function ocrFile(File $file, WorkflowSettings $settings, GlobalSettings $globalSettings) : OcrProcessorResult;

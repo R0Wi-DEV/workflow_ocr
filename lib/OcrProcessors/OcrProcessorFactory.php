@@ -30,6 +30,7 @@ use OCA\WorkflowOcr\OcrProcessors\Local\PdfOcrProcessor;
 use OCA\WorkflowOcr\OcrProcessors\Remote\WorkflowOcrRemoteProcessor;
 use OCA\WorkflowOcr\Service\IOcrBackendInfoService;
 use OCA\WorkflowOcr\Wrapper\ICommand;
+use OCA\WorkflowOcr\Wrapper\IPhpNativeFunctions;
 use OCP\AppFramework\Bootstrap\IRegistrationContext;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
@@ -72,13 +73,15 @@ class OcrProcessorFactory implements IOcrProcessorFactory {
 				$c->get(ICommand::class),
 				$c->get(LoggerInterface::class),
 				$c->get(ISidecarFileAccessor::class),
-				$c->get(ICommandLineUtils::class)), false);
+				$c->get(ICommandLineUtils::class),
+				$c->get(IPhpNativeFunctions::class)), false);
 		$context->registerService(ImageOcrProcessor::class, fn (ContainerInterface $c)
 			=> new ImageOcrProcessor(
 				$c->get(ICommand::class),
 				$c->get(LoggerInterface::class),
 				$c->get(ISidecarFileAccessor::class),
-				$c->get(ICommandLineUtils::class)), false);
+				$c->get(ICommandLineUtils::class),
+				$c->get(IPhpNativeFunctions::class)), false);
 	}
 
 	/** @inheritdoc */
