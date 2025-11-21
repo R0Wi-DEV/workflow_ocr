@@ -104,6 +104,11 @@
 					type="switch">
 					{{ t('workflow_ocr', 'Send success notification') }}
 				</NcCheckboxRadioSwitch>
+				<NcCheckboxRadioSwitch ref="createSidecarFile"
+					:checked.sync="model.createSidecarFile"
+					type="switch">
+					{{ t('workflow_ocr', 'Create sidecar text file') }}
+				</NcCheckboxRadioSwitch>
 			</div>
 		</SettingsItem>
 		<div>
@@ -149,11 +154,12 @@ export default {
 			 *   tagsToAddAfterOcr: [1, 2, 3],
 			 *   tagsToRemoveAfterOcr: [42, 43],
 			 *   removeBackground: true,
-			 *	 keepOriginalFileVersion: true,
+			 *   keepOriginalFileVersion: true,
 			 *   keepOriginalFileDate: true,
 			 *   sendSuccessNotification: true,
 			 *   ocrMode: 0,
 			 *   customCliArgs: '--rotate-pages-threshold 8',
+			 *   createSidecarFile: false,
 			 * }
 			 * It's initially set after component creation by 'created'-hook.
 			 */
@@ -167,6 +173,7 @@ export default {
 				sendSuccessNotification: false,
 				ocrMode: 0,
 				customCliArgs: '',
+				createSidecarFile: false,
 			},
 		}
 	},
