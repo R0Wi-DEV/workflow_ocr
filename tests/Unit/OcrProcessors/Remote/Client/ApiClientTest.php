@@ -22,9 +22,11 @@ declare(strict_types=1);
  */
 namespace OCA\WorkflowOcr\Tests\Unit\OcrProcessors\Remote\Client;
 
+use OCA\WorkflowOcr\Model\GlobalSettings;
 use OCA\WorkflowOcr\OcrProcessors\Remote\Client\ApiClient;
 use OCA\WorkflowOcr\OcrProcessors\Remote\Client\Model\ErrorResult;
 use OCA\WorkflowOcr\OcrProcessors\Remote\Client\Model\OcrResult;
+use OCA\WorkflowOcr\Service\IGlobalSettingsService;
 use OCA\WorkflowOcr\Wrapper\IAppApiWrapper;
 use OCP\Http\Client\IResponse;
 use PHPUnit\Framework\TestCase;
@@ -35,11 +37,17 @@ class ApiClientTest extends TestCase {
 	private ApiClient $apiClient;
 	private $appApiWrapper;
 	private $logger;
+	private $globalSettingsService;
 
 	protected function setUp(): void {
 		$this->appApiWrapper = $this->createMock(IAppApiWrapper::class);
 		$this->logger = $this->createMock(LoggerInterface::class);
-		$this->apiClient = new ApiClient($this->appApiWrapper, $this->logger);
+		$this->globalSettingsService = $this->createMock(IGlobalSettingsService::class);
+
+		$settings = new GlobalSettings();
+		$this->globalSettingsService->method('getGlobalSettings')->willReturn($settings);
+
+		$this->apiClient = new ApiClient($this->appApiWrapper, $this->logger, $this->globalSettingsService);
 	}
 
 	public function testProcessOcrSuccess(): void {
@@ -113,5 +121,110 @@ class ApiClientTest extends TestCase {
 		$this->appApiWrapper->method('exAppRequest')->willReturn($response);
 
 		$this->assertFalse($this->apiClient->heartbeat());
+	}
+
+	public function testProcessOcrUsesConfiguredTimeout(): void {
+		$settings = new GlobalSettings();
+		$settings->timeout = '120';
+
+		$globalSettingsService = $this->createMock(IGlobalSettingsService::class);
+		$globalSettingsService->method('getGlobalSettings')->willReturn($settings);
+
+		$apiClient = new ApiClient($this->appApiWrapper, $this->logger, $globalSettingsService);
+
+		$response = $this->createMock(IResponse::class);
+		$response->method('getStatusCode')->willReturn(200);
+		$response->method('getBody')->willReturn(json_encode(['result' => 'success']));
+
+		$this->appApiWrapper->expects($this->once())
+			->method('exAppRequest')
+			->with(
+				$this->anything(),
+				$this->anything(),
+				$this->anything(),
+				$this->anything(),
+				$this->anything(),
+				$this->callback(function ($options) {
+					return isset($options['timeout']) && $options['timeout'] === 120;
+				})
+			)
+			->willReturn($response);
+
+		$apiClient->processOcr('file_content', 'file.pdf', 'parameters');
+	}
+
+	public function testProcessOcrUsesDefaultTimeoutWhenNotConfigured(): void {
+		$settings = new GlobalSettings();
+
+		$globalSettingsService = $this->createMock(IGlobalSettingsService::class);
+		$globalSettingsService->method('getGlobalSettings')->willReturn($settings);
+
+		$apiClient = new ApiClient($this->appApiWrapper, $this->logger, $globalSettingsService);
+
+		$response = $this->createMock(IResponse::class);
+		$response->method('getStatusCode')->willReturn(200);
+		$response->method('getBody')->willReturn(json_encode(['result' => 'success']));
+
+		$this->appApiWrapper->expects($this->once())
+			->method('exAppRequest')
+			->with(
+				$this->anything(),
+				$this->anything(),
+				$this->anything(),
+				$this->anything(),
+				$this->anything(),
+				$this->callback(function ($options) {
+					return isset($options['timeout']) && $options['timeout'] === 60;
+				})
+			)
+			->willReturn($response);
+
+		$apiClient->processOcr('file_content', 'file.pdf', 'parameters');
+	}
+
+	public function testGetTimeoutUsesDefaultWhenNotSet(): void {
+		$settings = new GlobalSettings();
+
+		$apiClient = $this->createMock(ApiClient::class);
+
+		// instantiate a real ApiClient to test private method via reflection
+		$appApiWrapper = $this->getMockBuilder('OCA\\WorkflowOcr\\Wrapper\\IAppApiWrapper')->disableOriginalConstructor()->getMock();
+		$logger = $this->getMockBuilder('Psr\\Log\\LoggerInterface')->getMock();
+		$globalSettingsService = $this->getMockBuilder('OCA\\WorkflowOcr\\Service\\IGlobalSettingsService')->getMock();
+
+		$realClient = new ApiClient($appApiWrapper, $logger, $globalSettingsService);
+
+		$ref = new \ReflectionClass($realClient);
+		$method = $ref->getMethod('getTimeout');
+		$method->setAccessible(true);
+
+		$this->assertEquals(60, $method->invoke($realClient, $settings));
+	}
+
+	public function testGetTimeoutParsesValuesCorrectly(): void {
+		$appApiWrapper = $this->getMockBuilder('OCA\\WorkflowOcr\\Wrapper\\IAppApiWrapper')->disableOriginalConstructor()->getMock();
+		$logger = $this->getMockBuilder('Psr\\Log\\LoggerInterface')->getMock();
+		$globalSettingsService = $this->getMockBuilder('OCA\\WorkflowOcr\\Service\\IGlobalSettingsService')->getMock();
+
+		$realClient = new ApiClient($appApiWrapper, $logger, $globalSettingsService);
+		$ref = new \ReflectionClass($realClient);
+		$method = $ref->getMethod('getTimeout');
+		$method->setAccessible(true);
+
+		$settings = new GlobalSettings();
+		$settings->timeout = '';
+		$this->assertEquals(60, $method->invoke($realClient, $settings));
+
+		$settings->timeout = '120';
+		$this->assertEquals(120, $method->invoke($realClient, $settings));
+
+		$settings->timeout = '0';
+		$this->assertEquals(60, $method->invoke($realClient, $settings));
+
+		$settings->timeout = '-10';
+		$this->assertEquals(60, $method->invoke($realClient, $settings));
+
+		$settings->timeout = '3600';
+		$this->assertEquals(3600, $method->invoke($realClient, $settings));
 	}
 }
