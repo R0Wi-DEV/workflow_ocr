@@ -79,6 +79,15 @@
     <InvalidReturnType>
       <code><![CDATA[OcrResult|ErrorResult]]></code>
     </InvalidReturnType>
+    <MixedArgument>
+      <code><![CDATA[$settings->timeout]]></code>
+    </MixedArgument>
+    <MixedAssignment>
+      <code><![CDATA[$timeoutInt]]></code>
+    </MixedAssignment>
+    <MixedPropertyFetch>
+      <code><![CDATA[$settings->timeout]]></code>
+    </MixedPropertyFetch>
     <NullableReturnStatement>
       <code><![CDATA[ObjectSerializer::deserialize(json_decode($response->getBody(), false, 512, JSON_THROW_ON_ERROR), $class)]]></code>
     </NullableReturnStatement>
