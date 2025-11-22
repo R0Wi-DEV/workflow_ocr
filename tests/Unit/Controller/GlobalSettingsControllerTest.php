@@ -78,12 +78,13 @@ class GlobalSettingsControllerTest extends TestCase {
 	public function testSetSettingsCallsService() {
 		$settings = [
 			'processorCount' => 42,
+			'timeout' => 120,
 		];
 
 		$this->globalSettingsService->expects($this->once())
 			->method('setGlobalSettings')
 			->with($this->callback(function (GlobalSettings $settings) {
-				return $settings->processorCount === 42;
+				return $settings->processorCount === 42 && $settings->timeout === 120;
 			}));
 
 		$this->controller->setGlobalSettings($settings);
@@ -104,5 +105,19 @@ class GlobalSettingsControllerTest extends TestCase {
 		$this->assertInstanceOf(JSONResponse::class, $result);
 		$this->assertEquals(500, $result->getStatus());
 		$this->assertEquals(['error' => 'test'], $result->getData());
+	}
+
+	public function testSetSettingsWithoutTimeout() {
+		$settings = [
+			'processorCount' => 42,
+		];
+
+		$this->globalSettingsService->expects($this->once())
+			->method('setGlobalSettings')
+			->with($this->callback(function (GlobalSettings $settings) {
+				return $settings->processorCount === 42 && $settings->timeout === null;
+			}));
+
+		$this->controller->setGlobalSettings($settings);
 	}
 }

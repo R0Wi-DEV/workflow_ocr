@@ -44,24 +44,39 @@ class GlobalSettingsServiceTest extends TestCase {
 	}
 
 	public function testGetSettings_ReturnsCorrectSettings() {
-		$this->config->expects($this->once())
+		$this->config->expects($this->any())
 			->method('getValueString')
-			->with(Application::APP_NAME, 'processorCount')
-			->willReturn('2');
+			->willReturnMap([
+				[Application::APP_NAME, 'processorCount', '2'],
+				[Application::APP_NAME, 'timeout', '30'],
+			]);
 
 		$settings = $this->globalSettingsService->getGlobalSettings();
 
 		$this->assertInstanceOf(GlobalSettings::class, $settings);
 		$this->assertEquals(2, $settings->processorCount);
+		$this->assertEquals(30, $settings->timeout);
 	}
 
 	public function testSetSettings_CallsConfigSetAppValue() {
 		$settings = new GlobalSettings();
 		$settings->processorCount = '2';
+		$settings->timeout = '30';
 
-		$this->config->expects($this->once())
+		$this->config->expects($this->any())
 			->method('setValueString')
-			->with(Application::APP_NAME, 'processorCount', '2');
+			->willReturnCallback(
+				function (string $appName, string $key, string $value) use ($settings) {
+					if ($key === 'processorCount') {
+						$this->assertEquals($settings->processorCount, $value);
+					} elseif ($key === 'timeout') {
+						$this->assertEquals($settings->timeout, $value);
+					} else {
+						$this->fail("Unexpected key: $key");
+					}
+					return true;
+				}
+			);
 
 		$this->globalSettingsService->setGlobalSettings($settings);
 	}
