@@ -38,6 +38,22 @@
 						@input="save">
 				</div>
 			</div>
+			<div class="div-table-row">
+				<div class="div-table-col div-table-col-left">
+					<span class="leftcol">{{ translate('Request timeout (seconds):') }}</span>
+					<br>
+					<em>{{ translate('Maximum time in seconds to wait for OCR processing to complete. Default is 60 seconds. Increase this value for slow systems or large files.') }}</em>
+					<br>
+					<em><strong>{{ translate('Note:') }}</strong> {{ translate('This setting only applies when using the workflow_ocr_backend app.') }}</em>
+				</div>
+				<div class="div-table-col">
+					<input v-model="settings.timeout"
+						name="timeout"
+						type="number"
+						min="1"
+						@input="save">
+				</div>
+			</div>
 		</NcSettingsSection>
 	</div>
 </template>

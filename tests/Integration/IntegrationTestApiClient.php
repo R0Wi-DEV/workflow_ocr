@@ -26,6 +26,7 @@ namespace OCA\WorkflowOcr\Tests\Integration;
 use OCA\WorkflowOcr\OcrProcessors\Remote\Client\ApiClient;
 use OCA\WorkflowOcr\OcrProcessors\Remote\Client\Model\ErrorResult;
 use OCA\WorkflowOcr\OcrProcessors\Remote\Client\Model\OcrResult;
+use OCA\WorkflowOcr\Service\IGlobalSettingsService;
 use OCA\WorkflowOcr\Wrapper\IAppApiWrapper;
 use Psr\Log\LoggerInterface;
 
@@ -39,8 +40,9 @@ class IntegrationTestApiClient extends ApiClient {
 	public function __construct(
 		private IAppApiWrapper $appApiWrapper,
 		private LoggerInterface $logger,
+		private IGlobalSettingsService $globalSettingsService,
 	) {
-		parent::__construct($appApiWrapper, $logger);
+		parent::__construct($appApiWrapper, $logger, $globalSettingsService);
 	}
 
 	public function processOcr($file, string $fileName, string $ocrMyPdfParameters): OcrResult|ErrorResult {
