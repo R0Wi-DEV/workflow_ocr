@@ -26,19 +26,24 @@ namespace OCA\WorkflowOcr\OcrProcessors\Remote\Client;
 use OCA\WorkflowOcr\AppInfo\Application;
 use OCA\WorkflowOcr\OcrProcessors\Remote\Client\Model\ErrorResult;
 use OCA\WorkflowOcr\OcrProcessors\Remote\Client\Model\OcrResult;
+use OCA\WorkflowOcr\Service\IGlobalSettingsService;
 use OCA\WorkflowOcr\Wrapper\IAppApiWrapper;
 use OCP\Http\Client\IResponse;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 
 class ApiClient implements IApiClient {
+	private const DEFAULT_TIMEOUT = 60;
 	public function __construct(
 		private IAppApiWrapper $appApiWrapper,
 		private LoggerInterface $logger,
+		private IGlobalSettingsService $globalSettingsService,
 	) {
 	}
 
 	public function processOcr($file, string $fileName, string $ocrMyPdfParameters): OcrResult|ErrorResult {
+		$settings = $this->globalSettingsService->getGlobalSettings();
+		$timeout = $this->getTimeout($settings);
 		$options = [
 			'multipart' => [
 				[
@@ -51,7 +56,7 @@ class ApiClient implements IApiClient {
 					'contents' => $ocrMyPdfParameters
 				]
 			],
-			'timeout' => 60
+			'timeout' => $timeout
 		];
 
 		$response = $this->exAppRequest('/process_ocr', $options, 'POST');
@@ -99,5 +104,19 @@ class ApiClient implements IApiClient {
 		}
 
 		return $response;
+	}
+
+	/**
+	 * Parse timeout from GlobalSettings and return the effective timeout
+	 */
+	private function getTimeout(object $settings): int {
+		$timeout = self::DEFAULT_TIMEOUT;
+		if (isset($settings->timeout) && $settings->timeout !== null && $settings->timeout !== '') {
+			$timeoutInt = (int)$settings->timeout;
+			if ($timeoutInt > 0) {
+				$timeout = $timeoutInt;
+			}
+		}
+		return $timeout;
 	}
 }

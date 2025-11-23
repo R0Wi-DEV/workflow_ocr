@@ -60,6 +60,7 @@ class GlobalSettingsController extends ControllerBase {
 		return $this->tryExecute(function () use ($globalSettings) {
 			$globalSettingsObject = new GlobalSettings();
 			$globalSettingsObject->processorCount = $globalSettings['processorCount'];
+			$globalSettingsObject->timeout = $globalSettings['timeout'] ?? null;
 
 			$this->globalSettingsService->setGlobalSettings($globalSettingsObject);
 			return $this->globalSettingsService->getGlobalSettings();

@@ -72,6 +72,11 @@
       <code><![CDATA[__construct]]></code>
     </PossiblyUnusedMethod>
   </file>
+  <file src="lib/Model/GlobalSettings.php">
+    <PossiblyUnusedProperty>
+      <code><![CDATA[$timeout]]></code>
+    </PossiblyUnusedProperty>
+  </file>
   <file src="lib/OcrProcessors/Remote/Client/ApiClient.php">
     <InvalidReturnStatement>
       <code><![CDATA[ObjectSerializer::deserialize(json_decode($response->getBody(), false, 512, JSON_THROW_ON_ERROR), $class)]]></code>
