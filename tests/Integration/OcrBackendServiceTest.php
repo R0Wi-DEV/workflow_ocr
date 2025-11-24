@@ -27,6 +27,8 @@ use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCA\WorkflowOcr\OcrProcessors\Remote\Client\IApiClient;
 use OCA\WorkflowOcr\OcrProcessors\Remote\Client\Model\ErrorResult;
 use OCA\WorkflowOcr\OcrProcessors\Remote\Client\Model\OcrResult;
+use OCA\WorkflowOcr\Tests\Integration\TestUtils\BackendTestBase;
+use OCA\WorkflowOcr\Tests\Integration\TestUtils\IntegrationTestApiClient;
 
 /**
  * Full test case for registering new OCR Workflow, uploading file and
@@ -97,5 +99,18 @@ class OcrBackendServiceTest extends BackendTestBase {
 		/** @var ErrorResult */
 		$ocrResult = $responses[0];
 		$this->assertEquals($ocrResult->getOcrMyPdfExitCode(), 6, 'Expected ocrmypdf ExitCode 6');
+	}
+
+	public function testWorkflowOcrCreatesSidecarFile() {
+		$localFile = 'document-ready-for-ocr.pdf';
+		$this->addOperation('application/pdf', json_encode(['createSidecarFile' => true]));
+		$this->uploadTestFile($localFile);
+		$this->runOcrBackgroundJob();
+
+		$sidecarName = pathinfo($localFile, PATHINFO_FILENAME) . '.txt';
+		$sidecarFileContent = $this->downloadFile($sidecarName);
+		$this->filesToDelete[] = $sidecarName;
+
+		$this->assertStringContainsString('This document is ready for OCR', $sidecarFileContent, 'Expected recognized text in sidecar file');
 	}
 }

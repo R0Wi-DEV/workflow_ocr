@@ -167,6 +167,8 @@ Keep original file modification date | Restore the modification date of the orig
 Send success notification | Usually the workflow would only send a notification to the user if the OCR process failed. If this option is activated, the user will also be notified if a document has been processed successfully via OCR. |
 Remove background\* | If the switch is set, the OCR processor will try to remove the background of the document before processing and instead set a white background. For PDF files this setting corresponds to the [`--remove-background`](https://ocrmypdf.readthedocs.io/en/latest/cookbook.html?highlight=remove-background#image-processing) parameter of `ocrmypdf`.<br/>:warning: Please note that this flag will currently only work with **`ocrmypdf` versions prior to 13**. It might be added in future versions again. See [here](https://github.com/ocrmypdf/OCRmyPDF/issues/884) for details. :warning:|
 Custom ocrMyPdf CLI arguments | If you want to pass custom arguments to the `ocrmypdf` CLI, you can do so here. Please note that the arguments will be passed as they are to the CLI, so make sure to use the correct syntax. Check the [official docs](https://ocrmypdf.readthedocs.io/en/latest/cookbook.html) for more information. |
+Create sidecar text file | If this option is set, the workflow will create a text file next to the OCR processed file containing the extracted text. The file will be named like the OCR processed file but with a `.txt` file extension. For example, if your file was named `my-file.pdf`, the sidecar file will be named `my-file.txt` and will be created within the same folder. For an image file `photo.jpg` that gets converted to `photo.jpg.pdf`, the sidecar file will be `photo.jpg.txt`. |
+
 
 
 \* *For `ocrmypdf` the parameter `--remove-background` is [incompatible with `--redo-ocr`](https://github.com/ocrmypdf/OCRmyPDF/blob/110c75cba25121dcca7e2b91644206cce29e8430/src/ocrmypdf/_validation.py#L104).*
@@ -184,6 +186,7 @@ Currently the following settings can be applied globally:
 Name | Description
 -----|------------
 Processor cores | Defines the number of processor cores to use for OCR processing. When the input is a PDF file, this corresponds to the [`ocrmypdf` CPU limit](https://ocrmypdf.readthedocs.io/en/latest/pdfsecurity.html?highlight=%22-j%22#limiting-cpu-usage). This setting can be especially useful if you have a small backend system which has only limited power.
+Request timeout | Defines a global timeout (in seconds) when using the `workflow_ocr_backend` app. Use this to limit how long the app will wait for OCR responses. Default value is 60 seconds. |
 
 ### Testing your configuration
 

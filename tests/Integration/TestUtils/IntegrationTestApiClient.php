@@ -21,7 +21,7 @@ declare(strict_types=1);
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OCA\WorkflowOcr\Tests\Integration;
+namespace OCA\WorkflowOcr\Tests\Integration\TestUtils;
 
 use OCA\WorkflowOcr\OcrProcessors\Remote\Client\ApiClient;
 use OCA\WorkflowOcr\OcrProcessors\Remote\Client\Model\ErrorResult;
