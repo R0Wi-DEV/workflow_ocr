@@ -21,7 +21,7 @@ declare(strict_types=1);
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace OCA\WorkflowOcr\Tests\Integration;
+namespace OCA\WorkflowOcr\Tests\Integration\TestUtils;
 
 use CurlHandle;
 use DomainException;
@@ -47,6 +47,7 @@ abstract class BackendTestBase extends TestCase {
 	private $operationClass = Operation::class;
 	private array $uploadedFiles = [];
 
+	protected array $filesToDelete = [];
 	protected ContainerInterface $container;
 
 	protected function setUp(): void {
@@ -158,7 +159,7 @@ abstract class BackendTestBase extends TestCase {
 	}
 
 	protected function uploadTestFile(string $testFile) {
-		$localFile = __DIR__ . '/testdata/' . $testFile;
+		$localFile = __DIR__ . '/../testdata/' . $testFile;
 		$this->uploadedFiles[] = $localFile;
 		$file = fopen($localFile, 'r');
 
@@ -174,17 +175,34 @@ abstract class BackendTestBase extends TestCase {
 		fclose($file);
 	}
 
+	protected function downloadFile(string $fileName) : string {
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $this->getNextcloudWebdavUrl() . basename($fileName));
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+		return $this->executeCurl($ch);
+	}
+
 	private function deleteTestFilesIfExist() {
 		foreach ($this->uploadedFiles as $localFile) {
-			$ch = curl_init();
-
-			curl_setopt($ch, CURLOPT_URL, $this->getNextcloudWebdavUrl() . basename($localFile));
-			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-			$this->executeCurl($ch, [404]);
+			$this->deleteFileIfExists($localFile);
 		}
 		$this->uploadedFiles = [];
+
+		foreach ($this->filesToDelete as $fileName) {
+			$this->deleteFileIfExists($fileName);
+		}
+		$this->filesToDelete = [];
+	}
+
+	private function deleteFileIfExists(string $fileName) {
+		$ch = curl_init();
+
+		curl_setopt($ch, CURLOPT_URL, $this->getNextcloudWebdavUrl() . basename($fileName));
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+		$this->executeCurl($ch, [404]);
 	}
 
 	private function executeCurl(CurlHandle $ch, array $allowedNonSuccessResponseCodes = []) : string|bool {

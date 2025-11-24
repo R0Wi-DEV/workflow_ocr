@@ -339,6 +339,11 @@ class OcrService implements IOcrService {
 
 			$newFilePath = $this->determineNewFilePath($file, $originalFileExtension);
 			$this->createNewFileVersion($newFilePath, $fileContent, $fileMtime);
+
+			// Create persistent sidecar text file if enabled
+			if ($settings->getCreateSidecarFile()) {
+				$this->createSidecarTextFile($result->getRecognizedText(), $newFilePath);
+			}
 		}
 
 		$this->eventService->textRecognized($result, $file);
@@ -369,5 +374,30 @@ class OcrService implements IOcrService {
 		}
 		// By returning the original file path, we will create a new file version of the original file
 		return $filePath;
+	}
+
+	/**
+	 * Creates a persistent sidecar text file next to the OCR processed file.
+	 *
+	 * @param string $recognizedText The OCR recognized text content
+	 * @param string $newFilePath The path of the new/updated OCR processed file
+	 */
+	private function createSidecarTextFile(string $recognizedText, string $newFilePath): void {
+		// Determine the sidecar file path based on the new file path
+		$fileInfo = pathinfo($newFilePath);
+		$sidecarFilePath = $fileInfo['dirname'] . '/' . $fileInfo['filename'] . '.txt';
+
+		$this->logger->debug('Creating sidecar text file at path: {path}', ['path' => $sidecarFilePath]);
+
+		try {
+			$view = $this->viewFactory->create($fileInfo['dirname']);
+			$view->file_put_contents(basename($sidecarFilePath), $recognizedText);
+			$this->logger->info('Successfully created sidecar text file at path: {path}', ['path' => $sidecarFilePath]);
+		} catch (\Exception $ex) {
+			$this->logger->error('Failed to create sidecar text file at path: {path}. Error: {error}', [
+				'path' => $sidecarFilePath,
+				'error' => $ex->getMessage()
+			]);
+		}
 	}
 }

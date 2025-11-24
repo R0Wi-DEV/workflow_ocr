@@ -42,6 +42,21 @@ class WorkflowSettingsTest extends TestCase {
 		new WorkflowSettings('{');
 	}
 
+	public function testCreateSidecarFileDefaultsToFalse() {
+		$workflowSettings = new WorkflowSettings('{}');
+		$this->assertFalse($workflowSettings->getCreateSidecarFile());
+	}
+
+	public function testCreateSidecarFileCanBeSetToTrue() {
+		$workflowSettings = new WorkflowSettings('{"createSidecarFile":true}');
+		$this->assertTrue($workflowSettings->getCreateSidecarFile());
+	}
+
+	public function testCreateSidecarFileCanBeSetToFalse() {
+		$workflowSettings = new WorkflowSettings('{"createSidecarFile":false}');
+		$this->assertFalse($workflowSettings->getCreateSidecarFile());
+	}
+
 	public static function dataProvider_testConstruction() {
 		return [
 			[

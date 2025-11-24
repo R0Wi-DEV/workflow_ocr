@@ -930,4 +930,212 @@ class OcrServiceTest extends TestCase {
 			->willReturn($updatable);
 		return $fileMock;
 	}
+
+	public function testCreatesSidecarTextFileWhenEnabled() {
+		$settings = new WorkflowSettings('{"createSidecarFile":true}');
+
+		$rootFolderPath = '/usr/files';
+		$mimeType = 'application/pdf';
+		$content = 'someFileContent';
+		$ocrContent = 'someOcrProcessedFile';
+		$recognizedText = 'Recognized text from OCR';
+		$ocrResult = new OcrProcessorResult($ocrContent, $recognizedText);
+		$originalFileMock = $this->createValidFileMock($mimeType, $content, $rootFolderPath, 'document.pdf');
+
+		$this->rootFolderGetFirstNodeById42ReturnValue = $originalFileMock;
+
+		$this->ocrProcessor->expects($this->once())
+			->method('ocrFile')
+			->willReturn($ocrResult);
+
+		/** @var MockObject|IView */
+		$viewMock = $this->createMock(IView::class);
+		// Expect two calls: one for the PDF and one for the sidecar file
+		$viewMock->expects($this->exactly(2))
+			->method('file_put_contents')
+			->willReturnCallback(function ($filename, $fileContent) use ($ocrContent, $recognizedText) {
+				if ($filename === 'document.pdf') {
+					$this->assertEquals($ocrContent, $fileContent);
+				} elseif ($filename === 'document.txt') {
+					$this->assertEquals($recognizedText, $fileContent);
+				} else {
+					$this->fail("Unexpected filename: $filename");
+				}
+				return true;
+			});
+
+		$this->viewFactory->expects($this->exactly(2))
+			->method('create')
+			->with($rootFolderPath)
+			->willReturn($viewMock);
+
+		$this->eventService->expects($this->once())
+			->method('textRecognized')
+			->with($ocrResult, $originalFileMock);
+
+		$this->ocrService->runOcrProcess(42, 'usr', $settings);
+	}
+
+	public function testDoesNotCreateSidecarTextFileWhenDisabled() {
+		$settings = new WorkflowSettings('{"createSidecarFile":false}');
+
+		$rootFolderPath = '/usr/files';
+		$mimeType = 'application/pdf';
+		$content = 'someFileContent';
+		$ocrContent = 'someOcrProcessedFile';
+		$recognizedText = 'Recognized text from OCR';
+		$ocrResult = new OcrProcessorResult($ocrContent, $recognizedText);
+		$originalFileMock = $this->createValidFileMock($mimeType, $content, $rootFolderPath, 'document.pdf');
+
+		$this->rootFolderGetFirstNodeById42ReturnValue = $originalFileMock;
+
+		$this->ocrProcessor->expects($this->once())
+			->method('ocrFile')
+			->willReturn($ocrResult);
+
+		/** @var MockObject|IView */
+		$viewMock = $this->createMock(IView::class);
+		// Expect only one call for the PDF, not for sidecar file
+		$viewMock->expects($this->once())
+			->method('file_put_contents')
+			->with('document.pdf', $ocrContent);
+
+		$this->viewFactory->expects($this->once())
+			->method('create')
+			->with($rootFolderPath)
+			->willReturn($viewMock);
+
+		$this->eventService->expects($this->once())
+			->method('textRecognized')
+			->with($ocrResult, $originalFileMock);
+
+		$this->ocrService->runOcrProcess(42, 'usr', $settings);
+	}
+
+	public function testCreatesSidecarTextFileWithCorrectNameForConvertedFile() {
+		$settings = new WorkflowSettings('{"createSidecarFile":true}');
+
+		$rootFolderPath = '/usr/files';
+		$mimeType = 'image/jpeg';
+		$content = 'someImageContent';
+		$ocrContent = 'someOcrProcessedFile';
+		$recognizedText = 'Recognized text from image';
+		$ocrResult = new OcrProcessorResult($ocrContent, $recognizedText);
+		$originalFileMock = $this->createValidFileMock($mimeType, $content, $rootFolderPath, 'image.jpg');
+
+		$this->rootFolderGetFirstNodeById42ReturnValue = $originalFileMock;
+
+		$this->ocrProcessor->expects($this->once())
+			->method('ocrFile')
+			->willReturn($ocrResult);
+
+		/** @var MockObject|IView */
+		$viewMock = $this->createMock(IView::class);
+		// Expect two calls: one for the converted PDF and one for the sidecar file
+		$viewMock->expects($this->exactly(2))
+			->method('file_put_contents')
+			->willReturnCallback(function ($filename, $fileContent) use ($ocrContent, $recognizedText) {
+				if ($filename === 'image.jpg.pdf') {
+					$this->assertEquals($ocrContent, $fileContent);
+				} elseif ($filename === 'image.jpg.txt') {
+					$this->assertEquals($recognizedText, $fileContent);
+				} else {
+					$this->fail("Unexpected filename: $filename");
+				}
+				return true;
+			});
+
+		$this->viewFactory->expects($this->exactly(2))
+			->method('create')
+			->with($rootFolderPath)
+			->willReturn($viewMock);
+
+		$this->eventService->expects($this->once())
+			->method('textRecognized')
+			->with($ocrResult, $originalFileMock);
+
+		$this->ocrService->runOcrProcess(42, 'usr', $settings);
+	}
+
+	public function testDoesNotCreateSidecarTextFileWhenRecognizedTextIsEmpty() {
+		$settings = new WorkflowSettings('{"createSidecarFile":true}');
+
+		$rootFolderPath = '/usr/files';
+		$mimeType = 'application/pdf';
+		$content = 'someFileContent';
+		$ocrContent = 'someOcrProcessedFile';
+		$recognizedText = '';  // Empty recognized text
+		$ocrResult = new OcrProcessorResult($ocrContent, $recognizedText);
+		$originalFileMock = $this->createValidFileMock($mimeType, $content, $rootFolderPath, 'document.pdf');
+
+		$this->rootFolderGetFirstNodeById42ReturnValue = $originalFileMock;
+
+		$this->ocrProcessor->expects($this->once())
+			->method('ocrFile')
+			->willReturn($ocrResult);
+
+		/** @var MockObject|IView */
+		$viewMock = $this->createMock(IView::class);
+		// Should not create any file when recognized text is empty
+		$viewMock->expects($this->never())
+			->method('file_put_contents');
+
+		$this->viewFactory->expects($this->never())
+			->method('create');
+
+		$this->eventService->expects($this->once())
+			->method('textRecognized')
+			->with($ocrResult, $originalFileMock);
+
+		$this->ocrService->runOcrProcess(42, 'usr', $settings);
+	}
+
+	public function testLogsErrorWhenCreatingSidecarTextFileFails() {
+		$settings = new WorkflowSettings('{"createSidecarFile":true}');
+
+		$rootFolderPath = '/usr/files';
+		$mimeType = 'application/pdf';
+		$content = 'someFileContent';
+		$ocrContent = 'someOcrProcessedFile';
+		$recognizedText = 'Recognized text from OCR';
+		$ocrResult = new OcrProcessorResult($ocrContent, $recognizedText);
+		$originalFileMock = $this->createValidFileMock($mimeType, $content, $rootFolderPath, 'document.pdf');
+
+		$this->rootFolderGetFirstNodeById42ReturnValue = $originalFileMock;
+
+		$this->ocrProcessor->expects($this->once())
+			->method('ocrFile')
+			->willReturn($ocrResult);
+
+		/** @var MockObject|IView */
+		$viewMock = $this->createMock(IView::class);
+		// First call (pdf) succeeds, second call (sidecar) throws
+		$viewMock->expects($this->exactly(2))
+			->method('file_put_contents')
+			->willReturnCallback(function ($filename, $fileContent) use ($ocrContent, $recognizedText) {
+				if ($filename === 'document.pdf') {
+					return true;
+				} elseif ($filename === 'document.txt') {
+					throw new \Exception('disk full');
+				}
+				return true;
+			});
+
+		$this->viewFactory->expects($this->exactly(2))
+			->method('create')
+			->with($rootFolderPath)
+			->willReturn($viewMock);
+
+		$this->logger->expects($this->once())
+			->method('error')
+			->with($this->stringContains('Failed to create sidecar text file at path'), $this->callback(function ($arg) {
+				return is_array($arg) && array_key_exists('path', $arg) && array_key_exists('error', $arg);
+			}));
+
+		$this->eventService->expects($this->once())
+			->method('textRecognized')
+			->with($ocrResult, $originalFileMock);
+
+		$this->ocrService->runOcrProcess(42, 'usr', $settings);
+	}
 }
