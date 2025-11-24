@@ -12,8 +12,8 @@ env:
   NEXTCLOUD_PORT: 8080
   NEXTCLOUD_USER: "admin"
   NEXTCLOUD_PASS: "password"
-  NC_HAPROXY_PASSWORD: "some_secure_password"
-  NC_HAPROXY_PORT: 2375
+  NEXTCLOUD_NGINX_PORT: 80
+  HP_SHARED_KEY: "some_secure_password"
   DB_PORT: 4444
   MYSQL_ROOT_PASSWORD: "rootpassword"
 
@@ -22,15 +22,6 @@ jobs:
   github-php-integrationtests:
     runs-on: ubuntu-24.04
     services:
-      docker-socket-proxy:
-        image: ghcr.io/nextcloud/nextcloud-appapi-dsp:release
-        env:
-          NC_HAPROXY_PASSWORD: "some_secure_password"
-        options: --privileged 
-        volumes:
-          - /var/run/docker.sock:/var/run/docker.sock
-        ports:
-          - 2375:2375
       mysql:
         image: mariadb:10.5
         ports:
@@ -91,13 +82,30 @@ jobs:
       - name: Set up Nextcloud
         run: |
           mkdir data
-          ./occ maintenance:install --verbose --database=${{ matrix.databases }} --database-name=nextcloud \
-            --database-host=127.0.0.1 --database-port=${{ env.DB_PORT }} --database-user=root --database-pass=${{ env.MYSQL_ROOT_PASSWORD }} \
-            --admin-user ${{ env.NEXTCLOUD_USER }} --admin-pass ${{ env.NEXTCLOUD_PASS }}
+          ./occ maintenance:install --verbose \
+            --database=${{ matrix.databases }} \
+            --database-name=nextcloud \
+            --database-host=127.0.0.1 \
+            --database-port=${{ env.DB_PORT }} \
+            --database-user=root \
+            --database-pass=${{ env.MYSQL_ROOT_PASSWORD }} \
+            --admin-user ${{ env.NEXTCLOUD_USER }} \
+            --admin-pass ${{ env.NEXTCLOUD_PASS }}
           ./occ app:enable ${{ env.APP_NAME }}
           ./occ app:enable files_external
           ./occ maintenance:mimetype:update-db
           php -S localhost:${{ env.NEXTCLOUD_PORT }} &
+
+      - name: Start nginx Proxy
+        if: matrix.backend == 'remote'
+        run: |
+          docker run \
+            --name nc_nginx_proxy \
+            --network host \
+            -v ./apps/${{ env.APP_NAME }}/tests/nginx-harp-test.conf.template:/etc/nginx/templates/default.conf.template \
+            -e NEXTCLOUD_NGINX_PORT=${{ env.NEXTCLOUD_NGINX_PORT }} \
+            -e NEXTCLOUD_PORT=${{ env.NEXTCLOUD_PORT }} \
+            -d nginx:latest
 
       - name: Checkout AppApi
         uses: actions/checkout@v5
@@ -107,15 +115,53 @@ jobs:
           ref: ${{ matrix.server-versions == 'master' && 'main' || matrix.server-versions }}
           path: apps/app_api
 
-      - name: Set up AppApi/ExApp infrastructure
+      - name: Start AppApi HaRP container 
+        if: matrix.backend == 'remote'
+        run: |
+          docker run \
+            --network host \
+            -e HP_SHARED_KEY="${{ env.HP_SHARED_KEY }}" \
+            -e NC_INSTANCE_URL="http://localhost:${{ env.NEXTCLOUD_NGINX_PORT }}" \
+            -e HP_BLACKLIST_COUNT=10000 \
+            -e HP_BLACKLIST_WINDOW=1 \
+            -e HP_LOG_LEVEL=DEBUG \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            --name nc_harp_proxy \
+            -d ghcr.io/nextcloud/nextcloud-appapi-harp:release
+          echo "Waiting for nc_harp_proxy to report healthy..."
+          times=30
+          until [ "$(docker inspect --format='{{.State.Health.Status}}' nc_harp_proxy 2>/dev/null || echo unknown)" = "healthy" ]; do
+            if [ "$times" -le 0 ]; then
+              echo "Timed out waiting for nc_harp_proxy to become healthy"
+              echo "==== nc_harp_proxy logs ===="
+              docker logs nc_harp_proxy || true
+              exit 1
+            fi
+            echo "."
+            sleep 2
+            times=$((times - 1))
+          done
+          echo "nc_harp_proxy is healthy"
+
+      - name: Set up AppApi/ExApp infrastructure and deploy OCR Backend
         if: matrix.backend == 'remote'
         run: |
           ./occ app:enable app_api
-          ./occ app_api:daemon:register local_docker "docker-socket-proxy" \
-            "docker-install" "http" "localhost:${{ env.NC_HAPROXY_PORT }}" "http://localhost:${{ env.NEXTCLOUD_PORT }}" \
-            --set-default --haproxy_password="${{ env.NC_HAPROXY_PASSWORD }}"
+          ./occ config:app:set --value 5 --type string app_api init_timeout
+          ./occ app_api:daemon:register \
+            --set-default \
+            --harp \
+            --harp_frp_address "localhost:8782" \
+            --harp_shared_key "${{ env.HP_SHARED_KEY }}" \
+            --harp_docker_socket_port 24000 \
+            --net host \
+            "harp_proxy_docker" \
+            "HaRP Proxy (Docker)" \
+            "docker-install" \
+            "http" \
+            "localhost:8780" \
+            "http://localhost:${{ env.NEXTCLOUD_NGINX_PORT }}"
           ./occ app_api:app:register workflow_ocr_backend \
-            --wait-finish \
             --info-xml https://raw.githubusercontent.com/R0Wi-DEV/workflow_ocr_backend/refs/heads/${{ matrix.server-versions }}/appinfo/info.xml
 
       - name: PHPUnit
@@ -124,16 +170,17 @@ jobs:
           GITHUB_MATRIX_BACKEND: ${{ matrix.backend }}
         run: make php-integrationtest
 
-      - name: Write OCR Backend logs to file
+      - name: Output logs
         if: failure() && matrix.backend == 'remote'
         run: |
-          docker logs nc_app_workflow_ocr_backend > data/ocr_backend.log
-
-      - name: Upload logs
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: logs-integrationtests-${{ matrix.backend }}
-          path: data/*.log
-
+          echo "#### Logs ####"
+          echo ""
+          echo "==== ocr_backend logs ===="
+          docker logs nc_app_workflow_ocr_backend  || echo "Failed to get ocr_backend logs"
+          echo "==== harp_proxy logs ===="
+          docker logs nc_harp_proxy  || echo "Failed to get harp_proxy logs"
+          echo "==== nginx_proxy logs ===="
+          docker logs nc_nginx_proxy  || echo "Failed to get nginx_proxy logs"
+          echo "==== nextcloud logs ===="
+          cat data/nextcloud.log || echo "Failed to get nextcloud logs"
 
