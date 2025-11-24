@@ -64,6 +64,9 @@ class WorkflowSettings {
 	/** @var bool */
 	private $createSidecarFile = false;
 
+	/** @var bool */
+	private $skipOcrErrors = false;
+
 	/**
 	 * @param string $json The serialized JSON string used in frontend as input for the Vue component
 	 */
@@ -142,6 +145,13 @@ class WorkflowSettings {
 	}
 
 	/**
+	 * @return bool
+	 */
+	public function getSkipOcrErrors(): bool {
+		return $this->skipOcrErrors;
+	}
+
+	/**
 	 * Checks if a new WorkflowSettings object can be constructed from the given JSON string
 	 * @param string $json The serialized JSON string used in frontend as input for the Vue component
 	 * @return bool True if the JSON string is valid, false otherwise
@@ -177,6 +187,7 @@ class WorkflowSettings {
 		$this->setProperty($this->sendSuccessNotification, $data, 'sendSuccessNotification', fn ($value) => is_bool($value));
 		$this->setProperty($this->customCliArgs, $data, 'customCliArgs', fn ($value) => is_string($value));
 		$this->setProperty($this->createSidecarFile, $data, 'createSidecarFile', fn ($value) => is_bool($value));
+		$this->setProperty($this->skipOcrErrors, $data, 'skipOcrErrors', fn ($value) => is_bool($value));
 	}
 
 	private function setProperty(array|bool|int|string & $property, array $jsonData, string $key, ?callable $dataCheck = null): void {

@@ -109,6 +109,11 @@
 					type="switch">
 					{{ t('workflow_ocr', 'Create sidecar text file') }}
 				</NcCheckboxRadioSwitch>
+				<NcCheckboxRadioSwitch ref="skipOcrErrors"
+					:checked.sync="model.skipOcrErrors"
+					type="switch">
+					{{ t('workflow_ocr', 'Skip PDFs that cannot be processed') }}
+				</NcCheckboxRadioSwitch>
 			</div>
 		</SettingsItem>
 		<div>
@@ -160,6 +165,7 @@ export default {
 			 *   ocrMode: 0,
 			 *   customCliArgs: '--rotate-pages-threshold 8',
 			 *   createSidecarFile: false,
+			 *   skipOcrErrors: false,
 			 * }
 			 * It's initially set after component creation by 'created'-hook.
 			 */
@@ -174,6 +180,7 @@ export default {
 				ocrMode: 0,
 				customCliArgs: '',
 				createSidecarFile: false,
+				skipOcrErrors: false,
 			},
 		}
 	},
