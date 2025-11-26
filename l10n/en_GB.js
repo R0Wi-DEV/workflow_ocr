@@ -36,6 +36,7 @@ OC.L10N.register(
     "Keep original file version" : "Keep original file version",
     "Keep original file modification date" : "Keep original file's modification date",
     "Send success notification" : "Send success notification",
+    "Create sidecar text file" : "Create sidecar text file",
     "Custom ocrMyPdf CLI arguments" : "Custom ocrMyPdf CLI arguments"
 },
 "nplurals=2; plural=(n != 1);");
