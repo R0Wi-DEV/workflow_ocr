@@ -36,6 +36,7 @@ OC.L10N.register(
     "Keep original file version" : "Ponechat původní verzi souboru",
     "Keep original file modification date" : "Ponechat datum změny jako u původního souboru",
     "Send success notification" : "Odeslat upozornění na úspěch",
+    "Create sidecar text file" : "Vytvořit postranní textový soubor",
     "Custom ocrMyPdf CLI arguments" : "Uživatelsky určené argumenty pro příkazový řádek s ocrMyPdf"
 },
 "nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n <= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;");

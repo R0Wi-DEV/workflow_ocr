@@ -34,6 +34,7 @@
     "Keep original file version" : "Coinnigh leagan bunaidh an chomhaid",
     "Keep original file modification date" : "Coinnigh dáta modhnaithe an chomhaid bhunaidh",
     "Send success notification" : "Seol fógra ratha",
+    "Create sidecar text file" : "Cruthaigh comhad téacs taobhcharr",
     "Custom ocrMyPdf CLI arguments" : "Argóintí CLI saincheaptha ocrMyPdf"
 },"pluralForm" :"nplurals=5; plural=(n==1 ? 0 : n==2 ? 1 : n<7 ? 2 : n<11 ? 3 : 4);"
 }
