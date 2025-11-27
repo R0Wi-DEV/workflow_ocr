@@ -53,6 +53,7 @@ class WorkflowOcrRemoteProcessor extends OcrProcessorBase {
 
 		if ($apiResult instanceof ErrorResult) {
 			$resultMessage = $apiResult->getMessage();
+			// Default to exit code 1 (generic error) if not provided, since this is an error case
 			$exitCode = $apiResult->getOcrMyPdfExitCode() ?? 1;
 
 			return [false, null, null, $exitCode, $resultMessage];
