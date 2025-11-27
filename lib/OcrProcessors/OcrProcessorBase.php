@@ -43,7 +43,7 @@ abstract class OcrProcessorBase implements IOcrProcessor {
 		$fileName = $file->getName();
 		$fileResource = $this->doFilePreprocessing($file);
 		try {
-			[$success, $fileContent, $recognizedText, $exitCode, $errorMessage] = $this->doOcrProcessing($fileResource, $fileName, $settings, $globalSettings);
+			[, $fileContent, $recognizedText, $exitCode, $errorMessage] = $this->doOcrProcessing($fileResource, $fileName, $settings, $globalSettings);
 			if (!$recognizedText) {
 				$this->logger->info('Recognized text was empty');
 			}

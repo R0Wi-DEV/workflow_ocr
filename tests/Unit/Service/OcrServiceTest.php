@@ -743,7 +743,7 @@ class OcrServiceTest extends TestCase {
 		$mimeType = 'application/pdf';
 		$content = 'someFileContent';
 		$ocrContent = 'someOcrProcessedFile';
-		$ocrResult = new OcrProcessorResult($ocrContent, 'pdf', $ocrContent);
+		$ocrResult = new OcrProcessorResult($ocrContent, $ocrContent);
 
 		$fileMock = $this->createValidFileMock($mimeType, $content);
 		$this->rootFolderGetFirstNodeById42ReturnValue = $fileMock;
@@ -813,7 +813,7 @@ class OcrServiceTest extends TestCase {
 		$mimeType = 'application/pdf';
 		$content = 'someFileContent';
 		$ocrContent = 'someOcrProcessedFile';
-		$ocrResult = new OcrProcessorResult($ocrContent, 'pdf', $ocrContent);
+		$ocrResult = new OcrProcessorResult($ocrContent, $ocrContent);
 
 		$fileMock = $this->createValidFileMock($mimeType, $content);
 		$this->rootFolderGetFirstNodeById42ReturnValue = $fileMock;

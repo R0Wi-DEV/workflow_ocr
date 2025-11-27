@@ -59,8 +59,4 @@ class OcrProcessorResult {
 	public function getErrorMessage(): ?string {
 		return $this->errorMessage;
 	}
-
-	public function isSuccess(): bool {
-		return $this->exitCode === 0;
-	}
 }
