@@ -1,0 +1,9 @@
+OC.L10N.register(
+    "workflow_ocr",
+    {
+    "Assign tags after OCR" : "Atribuir etiquetas após o OCR",
+    "These tags will be assigned to the file after OCR processing has finished" : "Estas etiquetas serão atribuídas ao ficheiro após a conclusão do processamento de OCR",
+    "Remove tags after OCR" : "Remover as etiquetas após o OCR",
+    "These tags will be removed from the file after OCR processing has finished" : "Estas etiquetas serão removidas do ficheiro após a conclusão do processamento de OCR"
+},
+"nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;");
