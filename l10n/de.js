@@ -36,6 +36,7 @@ OC.L10N.register(
     "Keep original file version" : "Ursprüngliche Dateiversion beibehalten",
     "Keep original file modification date" : "Ursprüngliches Dateiänderungsdatum beibehalten",
     "Send success notification" : "Erfolgsbenachrichtigung senden",
+    "Create sidecar text file" : "Filialdatei erstellen",
     "Custom ocrMyPdf CLI arguments" : "Benutzerdefinierte ocrMyPdf Komandozeilen-Argumente"
 },
 "nplurals=2; plural=(n != 1);");
