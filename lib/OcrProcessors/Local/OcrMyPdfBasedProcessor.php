@@ -62,7 +62,7 @@ abstract class OcrMyPdfBasedProcessor extends OcrProcessorBase {
 		$success = $this->command->execute();
 		$errorOutput = $this->command->getError();
 		$stdErr = $this->command->getStdErr();
-		$exitCode = $this->command->getExitCode();
+		$exitCode = $this->command->getExitCode() ?? 0;
 
 		if (!$success) {
 			return [false, null, null, $exitCode, $errorOutput . ' ' . $stdErr];

@@ -153,7 +153,7 @@ describe('Language settings tests', () => {
 
 		const inputEvent = wrapper.emitted().input
 		expect(inputEvent).toBeTruthy()
-		expect(inputEvent[0][0]).toBe('{"languages":["de","en"],"tagsToAddAfterOcr":[],"tagsToRemoveAfterOcr":[],"removeBackground":true,"keepOriginalFileVersion":false,"keepOriginalFileDate":false,"sendSuccessNotification":false,"ocrMode":0,"customCliArgs":"","createSidecarFile":false}')
+		expect(inputEvent[0][0]).toBe('{"languages":["de","en"],"tagsToAddAfterOcr":[],"tagsToRemoveAfterOcr":[],"removeBackground":true,"keepOriginalFileVersion":false,"keepOriginalFileDate":false,"sendSuccessNotification":false,"ocrMode":0,"customCliArgs":"","createSidecarFile":false,"skipOcrErrors":false}')
 		
 	})
 })
@@ -182,7 +182,7 @@ describe('Add/remove tags tests', () => {
 
 		const inputEvent = wrapper.emitted().input
 		expect(inputEvent).toBeTruthy()
-		expect(inputEvent[0][0]).toBe('{"languages":["de"],"tagsToAddAfterOcr":[1,2],"tagsToRemoveAfterOcr":[],"removeBackground":true,"keepOriginalFileVersion":false,"keepOriginalFileDate":false,"sendSuccessNotification":false,"ocrMode":0,"customCliArgs":"","createSidecarFile":false}')
+		expect(inputEvent[0][0]).toBe('{"languages":["de"],"tagsToAddAfterOcr":[1,2],"tagsToRemoveAfterOcr":[],"removeBackground":true,"keepOriginalFileVersion":false,"keepOriginalFileDate":false,"sendSuccessNotification":false,"ocrMode":0,"customCliArgs":"","createSidecarFile":false,"skipOcrErrors":false}')
 	})
 
 	test('User input for removeTagsAfterOcr is applied correctly on empty component', async () => {
@@ -202,7 +202,7 @@ describe('Add/remove tags tests', () => {
 
 		const inputEvent = wrapper.emitted().input
 		expect(inputEvent).toBeTruthy()
-		expect(inputEvent[0][0]).toBe('{"languages":["de"],"tagsToAddAfterOcr":[],"tagsToRemoveAfterOcr":[1,2],"removeBackground":true,"keepOriginalFileVersion":false,"keepOriginalFileDate":false,"sendSuccessNotification":false,"ocrMode":0,"customCliArgs":"","createSidecarFile":false}')
+		expect(inputEvent[0][0]).toBe('{"languages":["de"],"tagsToAddAfterOcr":[],"tagsToRemoveAfterOcr":[1,2],"removeBackground":true,"keepOriginalFileVersion":false,"keepOriginalFileDate":false,"sendSuccessNotification":false,"ocrMode":0,"customCliArgs":"","createSidecarFile":false,"skipOcrErrors":false}')
 	})
 })
 
@@ -239,7 +239,7 @@ describe('Remove background tests', () => {
 
 		const inputEvent = wrapper.emitted().input
 		expect(inputEvent).toBeTruthy()
-		expect(inputEvent[0][0]).toBe('{"languages":["de"],"tagsToAddAfterOcr":[],"tagsToRemoveAfterOcr":[],"removeBackground":false,"keepOriginalFileVersion":false,"keepOriginalFileDate":false,"sendSuccessNotification":false,"ocrMode":0,"customCliArgs":"","createSidecarFile":false}')
+		expect(inputEvent[0][0]).toBe('{"languages":["de"],"tagsToAddAfterOcr":[],"tagsToRemoveAfterOcr":[],"removeBackground":false,"keepOriginalFileVersion":false,"keepOriginalFileDate":false,"sendSuccessNotification":false,"ocrMode":0,"customCliArgs":"","createSidecarFile":false,"skipOcrErrors":false}')
 	})
 })
 
@@ -340,7 +340,7 @@ describe('Custom CLI args test', () => {
 
 		const inputEvent = wrapper.emitted().input
 		expect(inputEvent).toBeTruthy()
-		expect(inputEvent[0][0]).toBe('{"languages":[],"tagsToAddAfterOcr":[],"tagsToRemoveAfterOcr":[],"removeBackground":false,"keepOriginalFileVersion":false,"keepOriginalFileDate":false,"sendSuccessNotification":false,"ocrMode":0,"customCliArgs":"--dpi 300","createSidecarFile":false}')
+		expect(inputEvent[0][0]).toBe('{"languages":[],"tagsToAddAfterOcr":[],"tagsToRemoveAfterOcr":[],"removeBackground":false,"keepOriginalFileVersion":false,"keepOriginalFileDate":false,"sendSuccessNotification":false,"ocrMode":0,"customCliArgs":"--dpi 300","createSidecarFile":false,"skipOcrErrors":false}')
 	})
 })
 
@@ -396,5 +396,38 @@ describe('Sidecar file switch test', () => {
 		const inputEvent = wrapper.emitted().input
 		expect(inputEvent).toBeTruthy()
 		expect(inputEvent[0][0]).toContain('"createSidecarFile":true')
+	})
+})
+
+describe('Skip OCR errors switch test', () => {
+	test('Should set skipOcrErrors to false by default', () => {
+		const wrapper = mount(WorkflowOcr, {
+			propsData: {
+				value: '{}',
+			},
+		})
+
+		const switchComponent = wrapper.findComponent({ ref: 'skipOcrErrors' })
+		expect(switchComponent.vm.checked).toBe(false)
+	})
+
+	test('Should set skipOcrErrors to true when toggled', async () => {
+		const wrapper = mount(WorkflowOcr, {
+			propsData: {
+				value: '{}',
+			},
+		})
+
+		const switchComponent = wrapper.findComponent({ ref: 'skipOcrErrors' })
+		expect(switchComponent.vm.checked).toBe(false)
+
+		// Simulate user input
+		switchComponent.vm.$emit('update:checked', true)
+
+		await wrapper.vm.$nextTick()
+
+		const inputEvent = wrapper.emitted().input
+		expect(inputEvent).toBeTruthy()
+		expect(inputEvent[0][0]).toContain('"skipOcrErrors":true')
 	})
 })

@@ -113,4 +113,30 @@ class OcrBackendServiceTest extends BackendTestBase {
 
 		$this->assertStringContainsString('This document is ready for OCR', $sidecarFileContent, 'Expected recognized text in sidecar file');
 	}
+
+	/**
+	 * Test that signed PDFs are skipped when skipOcrErrors is enabled.
+	 * Signed PDFs cause ocrmypdf exit code 2 (DigitalSignatureError).
+	 * With skipOcrErrors=true, the file should be silently skipped without error notifications.
+	 */
+	public function testWorkflowOcrSkipsSignedPdfWithSkipOcrErrors() {
+		// Enable skipOcrErrors setting
+		$this->addOperation('application/pdf', '{"skipOcrErrors":true}');
+		$this->uploadTestFile('document-signed.pdf');
+		$this->runOcrBackgroundJob();
+
+		$requests = $this->apiClient->getRequests();
+		$this->assertCount(1, $requests, 'Expected 1 OCR request');
+
+		$responses = $this->apiClient->getResponses();
+		$this->assertCount(1, $responses, 'Expected 1 OCR response');
+		$this->assertTrue($responses[0] instanceof ErrorResult, 'Expected ErrorResult instance, type is: ' . get_class($responses[0]));
+		/** @var ErrorResult */
+		$errorResult = $responses[0];
+		// Exit code 2 indicates DigitalSignatureError (signed PDF cannot be processed)
+		$this->assertEquals(2, $errorResult->getOcrMyPdfExitCode(), 'Expected ocrmypdf ExitCode 2 for signed PDF');
+		// The error message should contain information about the digital signature
+		$errorMessage = $errorResult->getMessage();
+		$this->assertNotEmpty($errorMessage, 'Expected error message to be non-empty');
+	}
 }

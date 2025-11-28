@@ -57,6 +57,21 @@ class WorkflowSettingsTest extends TestCase {
 		$this->assertFalse($workflowSettings->getCreateSidecarFile());
 	}
 
+	public function testSkipOcrErrorsDefaultsToFalse() {
+		$workflowSettings = new WorkflowSettings('{}');
+		$this->assertFalse($workflowSettings->getSkipOcrErrors());
+	}
+
+	public function testSkipOcrErrorsCanBeSetToTrue() {
+		$workflowSettings = new WorkflowSettings('{"skipOcrErrors":true}');
+		$this->assertTrue($workflowSettings->getSkipOcrErrors());
+	}
+
+	public function testSkipOcrErrorsCanBeSetToFalse() {
+		$workflowSettings = new WorkflowSettings('{"skipOcrErrors":false}');
+		$this->assertFalse($workflowSettings->getSkipOcrErrors());
+	}
+
 	public static function dataProvider_testConstruction() {
 		return [
 			[

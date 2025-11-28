@@ -23,9 +23,7 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\Tests\Unit\OcrProcessors\Local;
 
-use OCA\WorkflowOcr\Exception\OcrAlreadyDoneException;
 use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
-use OCA\WorkflowOcr\Exception\OcrResultEmptyException;
 use OCA\WorkflowOcr\Helper\ISidecarFileAccessor;
 use OCA\WorkflowOcr\Model\GlobalSettings;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
@@ -185,7 +183,7 @@ class PdfOcrProcessorTest extends TestCase {
 		$processor->ocrFile($this->fileBefore, $this->defaultSettings, $this->defaultGlobalSettings);
 	}
 
-	public function testThrowsErrorIfOcrFileWasEmpty() {
+	public function testReturnsEmptyResultIfOcrFileWasEmpty() {
 		$this->command->expects($this->once())
 			->method('execute')
 			->willReturn(true);
@@ -197,18 +195,12 @@ class PdfOcrProcessorTest extends TestCase {
 			->willReturn('stdErr');
 		$this->ocrMyPdfOutput = '';
 
-		$thrown = false;
 		$processor = new PdfOcrProcessor($this->command, $this->logger, $this->sidecarFileAccessor, $this->commandLineUtils, $this->phpNative);
 
-		try {
-			$processor->ocrFile($this->fileBefore, $this->defaultSettings, $this->defaultGlobalSettings);
-		} catch (\Throwable $t) {
-			$thrown = true;
-			$this->assertInstanceOf(OcrResultEmptyException::class, $t);
-			$this->assertEquals('OCRmyPDF did not produce any output for file someFileName.pdf', $t->getMessage());
-		}
+		$result = $processor->ocrFile($this->fileBefore, $this->defaultSettings, $this->defaultGlobalSettings);
 
-		$this->assertTrue($thrown);
+		$this->assertNull($result->getFileContent());
+		$this->assertEquals(0, $result->getExitCode());
 	}
 
 	public function testLanguageSettingsAreSetCorrectly() {
@@ -403,7 +395,7 @@ class PdfOcrProcessorTest extends TestCase {
 		$processor->ocrFile($this->fileBefore, $workflowSettings, $this->defaultGlobalSettings);
 	}
 
-	public function testThrowsOcrAlreadyDoneExceptionIfErrorCodeIsEquals6() {
+	public function testReturnsExitCode6IfErrorCodeIsEquals6() {
 		$this->command->expects($this->once())
 			->method('setCommand')
 			->willReturn($this->command);
@@ -420,16 +412,11 @@ class PdfOcrProcessorTest extends TestCase {
 			->method('getExitCode')
 			->willReturn(6);
 
-		$thrown = false;
-		try {
-			$processor = new PdfOcrProcessor($this->command, $this->logger, $this->sidecarFileAccessor, $this->commandLineUtils, $this->phpNative);
-			$processor->ocrFile($this->fileBefore, $this->defaultSettings, $this->defaultGlobalSettings);
-		} catch (\Throwable $t) {
-			$thrown = true;
-			$this->assertInstanceOf(OcrAlreadyDoneException::class, $t);
-		}
+		$processor = new PdfOcrProcessor($this->command, $this->logger, $this->sidecarFileAccessor, $this->commandLineUtils, $this->phpNative);
+		$result = $processor->ocrFile($this->fileBefore, $this->defaultSettings, $this->defaultGlobalSettings);
 
-		$this->assertTrue($thrown);
+		$this->assertEquals(6, $result->getExitCode());
+		$this->assertNotNull($result->getErrorMessage());
 	}
 
 	public static function dataProvider_testAppliesOcrModeParameter() {
