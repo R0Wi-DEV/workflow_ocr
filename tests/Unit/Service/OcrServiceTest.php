@@ -31,10 +31,8 @@ use OCA\Files_Versions\Versions\IMetadataVersionBackend;
 use OCA\Files_Versions\Versions\IVersion;
 use OCA\Files_Versions\Versions\IVersionBackend;
 use OCA\Files_Versions\Versions\IVersionManager;
-use OCA\WorkflowOcr\Exception\OcrAlreadyDoneException;
 use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
 use OCA\WorkflowOcr\Exception\OcrProcessorNotFoundException;
-use OCA\WorkflowOcr\Exception\OcrResultEmptyException;
 use OCA\WorkflowOcr\Helper\IProcessingFileAccessor;
 use OCA\WorkflowOcr\Model\GlobalSettings;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
@@ -186,7 +184,8 @@ class OcrServiceTest extends TestCase {
 
 		$this->ocrProcessor->expects($this->once())
 			->method('ocrFile')
-			->with($this->fileInput, $settings, $globalSettings);
+			->with($this->fileInput, $settings, $globalSettings)
+			->willReturn(new OcrProcessorResult(true, $content, 'some recognized text'));
 
 		$this->ocrService->runOcrProcess(42, 'usr', $settings);
 	}
@@ -212,6 +211,11 @@ class OcrServiceTest extends TestCase {
 			->method('create')
 			->with($mime)
 			->willReturn($this->ocrProcessor);
+
+		$this->ocrProcessor->expects($this->once())
+			->method('ocrFile')
+			->with($this->fileInput, $settings, $globalSettings)
+			->willReturn(new OcrProcessorResult(true, $content, 'some recognized text'));
 
 		// Check call for function:
 		// unassignTags(string $objId, string $objectType, $tagIds);
@@ -262,7 +266,8 @@ class OcrServiceTest extends TestCase {
 
 		$this->ocrProcessor->expects($this->once())
 			->method('ocrFile')
-			->with($this->fileInput, $settings, $globalSettings);
+			->with($this->fileInput, $settings, $globalSettings)
+			->willReturn(new OcrProcessorResult(true, $content, 'some recognized text'));
 
 		$this->notificationService->expects($this->once())
 			->method('createSuccessNotification')
@@ -292,6 +297,11 @@ class OcrServiceTest extends TestCase {
 			->method('create')
 			->with($mime)
 			->willReturn($this->ocrProcessor);
+
+		$this->ocrProcessor->expects($this->once())
+			->method('ocrFile')
+			->with($this->fileInput, $settings, $globalSettings)
+			->willReturn(new OcrProcessorResult(true, $content, 'some recognized text'));
 
 		$this->systemTagObjectMapper->expects($this->once())
 			->method('unassignTags')
@@ -342,6 +352,10 @@ class OcrServiceTest extends TestCase {
 			->method('init')
 			->with('usr', '/usr/files');
 
+		$this->ocrProcessor->expects($this->any())
+			->method('ocrFile')
+			->willReturn(new OcrProcessorResult(true, 'some file content', 'some recognized text'));
+
 		$this->ocrService->runOcrProcess(42, 'usr', $settings);
 	}
 
@@ -350,6 +364,10 @@ class OcrServiceTest extends TestCase {
 		$this->rootFolder->expects($this->once())
 			->method('getFirstNodeById')
 			->with(42);
+
+		$this->ocrProcessor->expects($this->any())
+			->method('ocrFile')
+			->willReturn(new OcrProcessorResult(true, 'some file content', 'some recognized text'));
 
 		$this->ocrService->runOcrProcess(42, 'usr', $settings);
 	}
@@ -369,7 +387,8 @@ class OcrServiceTest extends TestCase {
 
 		$this->ocrProcessor->expects($this->once())
 			->method('ocrFile')
-			->with($fileMock, $settings, $globalSettings);
+			->with($fileMock, $settings, $globalSettings)
+			->willReturn(new OcrProcessorResult(true, $content, 'some recognized text'));
 
 		$this->ocrService->runOcrProcess(42, 'usr', $settings);
 	}
@@ -382,7 +401,7 @@ class OcrServiceTest extends TestCase {
 		$mimeType = 'application/pdf';
 		$content = 'someFileContent';
 		$ocrContent = 'someOcrProcessedFile';
-		$ocrResult = new OcrProcessorResult($ocrContent, $ocrContent); // Extend this cases if we add new OCR processors
+		$ocrResult = new OcrProcessorResult(true, $ocrContent, 'some text recognized'); // Extend this cases if we add new OCR processors
 		$originalFileMock = $this->createValidFileMock($mimeType, $content, $rootFolderPath, $originalFilename);
 
 		$this->rootFolderGetFirstNodeById42ReturnValue = $originalFileMock;
@@ -472,7 +491,7 @@ class OcrServiceTest extends TestCase {
 		$content = 'someFileContent';
 		$ocrContent = 'someOcrProcessedFile';
 		$filePath = '/admin/files/somefile.pdf';
-		$ocrResult = new OcrProcessorResult($ocrContent, $ocrContent); // Extend this cases if we add new OCR processors
+		$ocrResult = new OcrProcessorResult(true, $ocrContent, $ocrContent); // Extend this cases if we add new OCR processors
 
 		$this->rootFolderGetFirstNodeById42ReturnValue = $this->createValidFileMock($mimeType, $content);
 
@@ -515,7 +534,7 @@ class OcrServiceTest extends TestCase {
 		$mimeType = 'application/pdf';
 		$content = 'someFileContent';
 		$ocrContent = '';
-		$ocrResult = new OcrProcessorResult($ocrContent, $ocrContent);
+		$ocrResult = new OcrProcessorResult(true, $ocrContent, $ocrContent); // Both file content and recognized text are empty
 		$fileId = 42;
 
 		$this->rootFolder->expects($this->never())->method('getById');
@@ -537,8 +556,9 @@ class OcrServiceTest extends TestCase {
 		$this->processingFileAccessor->expects($this->never())
 			->method('setCurrentlyProcessedFilePath');
 
-		$this->eventService->expects($this->once())
-			->method('textRecognized');
+		$this->eventService->expects($this->never())
+			->method('textRecognized')
+			->with($ocrResult, $this->anything());
 
 		$this->ocrService->runOcrProcess($fileId, $user, $settings);
 	}
@@ -547,14 +567,16 @@ class OcrServiceTest extends TestCase {
 		$fileId = 42;
 		$settings = new WorkflowSettings('{"ocrMode": ' . WorkflowSettings::OCR_MODE_SKIP_FILE . '}');
 
+		$result = new OcrProcessorResult(true, null, null, 6, 'File appears to contain text');
 		$this->ocrProcessor->expects($this->once())
 			->method('ocrFile')
-			->willThrowException(new OcrAlreadyDoneException('oops'));
+			->willReturn($result);
 		$loggedSkipMessage = false;
 		$this->logger->expects($this->atLeastOnce())
 			->method('debug')
 			->willReturnCallback(function ($message, $params) use (&$loggedSkipMessage, $fileId) {
-				if (str_contains($message, 'Skipping empty OCR result for file with id')
+				if (str_contains($message, 'Skipping file with id')
+					&& str_contains($message, 'exit code 6')
 					&& isset($params['fileId']) && $params['fileId'] === $fileId) {
 					$loggedSkipMessage = true;
 				}
@@ -569,30 +591,93 @@ class OcrServiceTest extends TestCase {
 		$this->assertTrue($loggedSkipMessage);
 	}
 
-	#[DataProvider('dataProvider_OcrModesThrowOnEmptyResult')]
-	public function testOcrEmptyExceptionIsThrown(int $ocrMode) {
+	public function testOcrSkippedIfExitCode2AndSkipNotificationsOnInvalidPdf() {
 		$fileId = 42;
-		$settings = new WorkflowSettings('{"ocrMode": ' . $ocrMode . '}');
-		$ex = new OcrResultEmptyException('oops');
+		$settings = new WorkflowSettings('{"skipNotificationsOnInvalidPdf": true}');
 
+		$result = new OcrProcessorResult(true, null, null, 2, 'InvalidPdfError: PDF has digital signature');
 		$this->ocrProcessor->expects($this->once())
 			->method('ocrFile')
-			->willThrowException($ex);
+			->willReturn($result);
+		$loggedSkipMessage = false;
 		$this->logger->expects($this->atLeastOnce())
-			->method('debug');
+			->method('debug')
+			->willReturnCallback(function ($message, $params) use (&$loggedSkipMessage, $fileId) {
+				if (str_contains($message, 'Skipping OCR for file with id')
+					&& str_contains($message, 'exit code 2')
+					&& isset($params['fileId']) && $params['fileId'] === $fileId) {
+					$loggedSkipMessage = true;
+				}
+			});
 		$this->viewFactory->expects($this->never())
 			->method('create');
 		$this->eventService->expects($this->never())
 			->method('textRecognized');
 
-		$thrown = false;
-		try {
-			$this->ocrService->runOcrProcess($fileId, 'usr', $settings);
-		} catch (OcrResultEmptyException $e) {
-			$this->assertEquals($ex, $e);
-			$thrown = true;
-		}
-		$this->assertTrue($thrown);
+		$this->ocrService->runOcrProcess($fileId, 'usr', $settings);
+
+		$this->assertTrue($loggedSkipMessage);
+	}
+
+	public function testOcrSkippedIfExitCode8AndSkipNotificationsOnEncryptedPdf() {
+		$fileId = 42;
+		$settings = new WorkflowSettings('{"skipNotificationsOnEncryptedPdf": true}');
+
+		$result = new OcrProcessorResult(true, null, null, 8, 'EncryptedPdfError: The input PDF is encrypted');
+		$this->ocrProcessor->expects($this->once())
+			->method('ocrFile')
+			->willReturn($result);
+		$loggedSkipMessage = false;
+		$this->logger->expects($this->atLeastOnce())
+			->method('debug')
+			->willReturnCallback(function ($message, $params) use (&$loggedSkipMessage, $fileId) {
+				if (str_contains($message, 'Skipping OCR for file with id')
+					&& str_contains($message, 'exit code 8')
+					&& isset($params['fileId']) && $params['fileId'] === $fileId) {
+					$loggedSkipMessage = true;
+				}
+			});
+		$this->viewFactory->expects($this->never())
+			->method('create');
+		$this->eventService->expects($this->never())
+			->method('textRecognized');
+
+		$this->ocrService->runOcrProcess($fileId, 'usr', $settings);
+
+		$this->assertTrue($loggedSkipMessage);
+	}
+
+	public function testOcrThrowsExceptionIfExitCode8AndSkipNotificationsOnEncryptedPdfDisabled() {
+		$fileId = 42;
+		$settings = new WorkflowSettings('{"skipNotificationsOnEncryptedPdf": false}');
+
+		$result = new OcrProcessorResult(true, null, null, 8, 'EncryptedPdfError: The input PDF is encrypted');
+		$this->ocrProcessor->expects($this->once())
+			->method('ocrFile')
+			->willReturn($result);
+
+		$this->expectException(OcrNotPossibleException::class);
+
+		$this->ocrService->runOcrProcess($fileId, 'usr', $settings);
+	}
+
+	#[DataProvider('dataProvider_OcrModesThrowOnEmptyResult')]
+	public function testOcrSkipsFileWhenResultIsEmpty(int $ocrMode) {
+		$fileId = 42;
+		$settings = new WorkflowSettings('{"ocrMode": ' . $ocrMode . '}');
+
+		$result = new OcrProcessorResult(true, null, null, 0, null);
+		$this->ocrProcessor->expects($this->once())
+			->method('ocrFile')
+			->willReturn($result);
+		$this->logger->expects($this->atLeastOnce())
+			->method('info');
+		$this->viewFactory->expects($this->never())
+			->method('create');
+		$this->eventService->expects($this->never())
+			->method('textRecognized');
+
+		$this->ocrService->runOcrProcess($fileId, 'usr', $settings);
 	}
 
 	public function testRestoreOriginalFileModificationDate() {
@@ -600,7 +685,7 @@ class OcrServiceTest extends TestCase {
 		$mimeType = 'application/pdf';
 		$content = 'someFileContent';
 		$ocrContent = 'someOcrProcessedFile';
-		$ocrResult = new OcrProcessorResult($ocrContent, $ocrContent); // Extend this cases if we add new OCR processors
+		$ocrResult = new OcrProcessorResult(true, $ocrContent, $ocrContent); // Extend this cases if we add new OCR processors
 
 		$fileMock = $this->createValidFileMock($mimeType, $content);
 		$this->rootFolderGetFirstNodeById42ReturnValue = $fileMock;
@@ -682,7 +767,7 @@ class OcrServiceTest extends TestCase {
 		$mimeType = 'application/pdf';
 		$content = 'someFileContent';
 		$ocrContent = 'someOcrProcessedFile';
-		$ocrResult = new OcrProcessorResult($ocrContent, $ocrContent); // Extend this cases if we add new OCR processors
+		$ocrResult = new OcrProcessorResult(true, $ocrContent, $ocrContent); // Extend this cases if we add new OCR processors
 
 		$fileMock = $this->createValidFileMock($mimeType, $content, '/admin/files', 'somefile.pdf', false);
 		$this->rootFolderGetFirstNodeById42ReturnValue = $fileMock;
@@ -708,7 +793,7 @@ class OcrServiceTest extends TestCase {
 		$mimeType = 'application/pdf';
 		$content = 'someFileContent';
 		$ocrContent = 'someOcrProcessedFile';
-		$ocrResult = new OcrProcessorResult($ocrContent, 'pdf', $ocrContent);
+		$ocrResult = new OcrProcessorResult(true, $ocrContent, $ocrContent);
 
 		$fileMock = $this->createValidFileMock($mimeType, $content);
 		$this->rootFolderGetFirstNodeById42ReturnValue = $fileMock;
@@ -754,7 +839,7 @@ class OcrServiceTest extends TestCase {
 		$this->ocrService->runOcrProcess(42, 'usr', $settings);
 	}
 
-	public function testRunOcrProcessThrowsNonOcrAlreadyDoneExceptionIfModeIsNotSkip() {
+	public function testRunOcrProcessThrowsExceptionIfExitCode6AndModeIsNotSkip() {
 		$settings = new WorkflowSettings('{"ocrMode": ' . WorkflowSettings::OCR_MODE_FORCE_OCR . '}');
 		$mimeType = 'application/pdf';
 		$content = 'someFileContent';
@@ -762,12 +847,12 @@ class OcrServiceTest extends TestCase {
 		$fileMock = $this->createValidFileMock($mimeType, $content);
 		$this->rootFolderGetFirstNodeById42ReturnValue = $fileMock;
 
-		$ex = new OcrAlreadyDoneException('oops');
+		$result = new OcrProcessorResult(true, null, null, 6, 'File appears to contain text');
 		$this->ocrProcessor->expects($this->once())
 			->method('ocrFile')
-			->willThrowException($ex);
+			->willReturn($result);
 
-		$this->expectException(OcrAlreadyDoneException::class);
+		$this->expectException(OcrNotPossibleException::class);
 
 		$this->ocrService->runOcrProcess(42, 'usr', $settings);
 	}
@@ -778,7 +863,7 @@ class OcrServiceTest extends TestCase {
 		$mimeType = 'application/pdf';
 		$content = 'someFileContent';
 		$ocrContent = 'someOcrProcessedFile';
-		$ocrResult = new OcrProcessorResult($ocrContent, 'pdf', $ocrContent);
+		$ocrResult = new OcrProcessorResult(true, $ocrContent, $ocrContent);
 
 		$fileMock = $this->createValidFileMock($mimeType, $content);
 		$this->rootFolderGetFirstNodeById42ReturnValue = $fileMock;
@@ -854,7 +939,6 @@ class OcrServiceTest extends TestCase {
 			[new OcrNotPossibleException('Ocr not possible')],
 			[new OcrProcessorNotFoundException('audio/mpeg', false)],
 			[new OcrProcessorNotFoundException('audio/mpeg', true)],
-			[new OcrResultEmptyException('Ocr result was empty')],
 			[new Exception('Some exception')]
 		];
 	}
@@ -939,7 +1023,7 @@ class OcrServiceTest extends TestCase {
 		$content = 'someFileContent';
 		$ocrContent = 'someOcrProcessedFile';
 		$recognizedText = 'Recognized text from OCR';
-		$ocrResult = new OcrProcessorResult($ocrContent, $recognizedText);
+		$ocrResult = new OcrProcessorResult(true, $ocrContent, $recognizedText);
 		$originalFileMock = $this->createValidFileMock($mimeType, $content, $rootFolderPath, 'document.pdf');
 
 		$this->rootFolderGetFirstNodeById42ReturnValue = $originalFileMock;
@@ -984,7 +1068,7 @@ class OcrServiceTest extends TestCase {
 		$content = 'someFileContent';
 		$ocrContent = 'someOcrProcessedFile';
 		$recognizedText = 'Recognized text from OCR';
-		$ocrResult = new OcrProcessorResult($ocrContent, $recognizedText);
+		$ocrResult = new OcrProcessorResult(true, $ocrContent, $recognizedText);
 		$originalFileMock = $this->createValidFileMock($mimeType, $content, $rootFolderPath, 'document.pdf');
 
 		$this->rootFolderGetFirstNodeById42ReturnValue = $originalFileMock;
@@ -1020,7 +1104,7 @@ class OcrServiceTest extends TestCase {
 		$content = 'someImageContent';
 		$ocrContent = 'someOcrProcessedFile';
 		$recognizedText = 'Recognized text from image';
-		$ocrResult = new OcrProcessorResult($ocrContent, $recognizedText);
+		$ocrResult = new OcrProcessorResult(true, $ocrContent, $recognizedText);
 		$originalFileMock = $this->createValidFileMock($mimeType, $content, $rootFolderPath, 'image.jpg');
 
 		$this->rootFolderGetFirstNodeById42ReturnValue = $originalFileMock;
@@ -1065,7 +1149,7 @@ class OcrServiceTest extends TestCase {
 		$content = 'someFileContent';
 		$ocrContent = 'someOcrProcessedFile';
 		$recognizedText = '';  // Empty recognized text
-		$ocrResult = new OcrProcessorResult($ocrContent, $recognizedText);
+		$ocrResult = new OcrProcessorResult(true, $ocrContent, $recognizedText);
 		$originalFileMock = $this->createValidFileMock($mimeType, $content, $rootFolderPath, 'document.pdf');
 
 		$this->rootFolderGetFirstNodeById42ReturnValue = $originalFileMock;
@@ -1098,7 +1182,7 @@ class OcrServiceTest extends TestCase {
 		$content = 'someFileContent';
 		$ocrContent = 'someOcrProcessedFile';
 		$recognizedText = 'Recognized text from OCR';
-		$ocrResult = new OcrProcessorResult($ocrContent, $recognizedText);
+		$ocrResult = new OcrProcessorResult(true, $ocrContent, $recognizedText);
 		$originalFileMock = $this->createValidFileMock($mimeType, $content, $rootFolderPath, 'document.pdf');
 
 		$this->rootFolderGetFirstNodeById42ReturnValue = $originalFileMock;

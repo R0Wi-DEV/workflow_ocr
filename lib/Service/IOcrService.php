@@ -36,7 +36,6 @@ interface IOcrService {
 	 *
 	 * @throws \OCA\WorkflowOcr\Exception\OcrNotPossibleException
 	 * @throws \OCA\WorkflowOcr\Exception\OcrProcessorNotFoundException
-	 * @throws \OCA\WorkflowOcr\Exception\OcrResultEmptyException
 	 * @throws \InvalidArgumentException
 	 */
 	public function runOcrProcessWithJobArgument($argument) : void;
@@ -50,7 +49,6 @@ interface IOcrService {
 	 *
 	 * @throws \OCA\WorkflowOcr\Exception\OcrNotPossibleException
 	 * @throws \OCA\WorkflowOcr\Exception\OcrProcessorNotFoundException
-	 * @throws \OCA\WorkflowOcr\Exception\OcrResultEmptyException
 	 * @throws \InvalidArgumentException
 	 */
 	public function runOcrProcess(int $fileId, string $uid, WorkflowSettings $settings) : void;

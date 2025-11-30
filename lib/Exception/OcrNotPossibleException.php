@@ -26,7 +26,7 @@ namespace OCA\WorkflowOcr\Exception;
 use Exception;
 
 class OcrNotPossibleException extends Exception {
-	public function __construct(string $message) {
-		$this->message = $message;
+	public function __construct(?string $message) {
+		$this->message = 'OCR not possible: ' . ($message ?? 'unknown error');
 	}
 }

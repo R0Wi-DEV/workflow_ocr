@@ -57,6 +57,36 @@ class WorkflowSettingsTest extends TestCase {
 		$this->assertFalse($workflowSettings->getCreateSidecarFile());
 	}
 
+	public function testSkipNotificationsOnInvalidPdfDefaultsToFalse() {
+		$workflowSettings = new WorkflowSettings('{}');
+		$this->assertFalse($workflowSettings->getSkipNotificationsOnInvalidPdf());
+	}
+
+	public function testSkipNotificationsOnInvalidPdfCanBeSetToTrue() {
+		$workflowSettings = new WorkflowSettings('{"skipNotificationsOnInvalidPdf":true}');
+		$this->assertTrue($workflowSettings->getSkipNotificationsOnInvalidPdf());
+	}
+
+	public function testSkipNotificationsOnInvalidPdfCanBeSetToFalse() {
+		$workflowSettings = new WorkflowSettings('{"skipNotificationsOnInvalidPdf":false}');
+		$this->assertFalse($workflowSettings->getSkipNotificationsOnInvalidPdf());
+	}
+
+	public function testSkipNotificationsOnEncryptedPdfDefaultsToFalse() {
+		$workflowSettings = new WorkflowSettings('{}');
+		$this->assertFalse($workflowSettings->getSkipNotificationsOnEncryptedPdf());
+	}
+
+	public function testSkipNotificationsOnEncryptedPdfCanBeSetToTrue() {
+		$workflowSettings = new WorkflowSettings('{"skipNotificationsOnEncryptedPdf":true}');
+		$this->assertTrue($workflowSettings->getSkipNotificationsOnEncryptedPdf());
+	}
+
+	public function testSkipNotificationsOnEncryptedPdfCanBeSetToFalse() {
+		$workflowSettings = new WorkflowSettings('{"skipNotificationsOnEncryptedPdf":false}');
+		$this->assertFalse($workflowSettings->getSkipNotificationsOnEncryptedPdf());
+	}
+
 	public static function dataProvider_testConstruction() {
 		return [
 			[

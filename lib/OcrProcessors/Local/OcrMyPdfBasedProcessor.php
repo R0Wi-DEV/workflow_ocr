@@ -28,6 +28,7 @@ use OCA\WorkflowOcr\Model\GlobalSettings;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCA\WorkflowOcr\OcrProcessors\ICommandLineUtils;
 use OCA\WorkflowOcr\OcrProcessors\OcrProcessorBase;
+use OCA\WorkflowOcr\OcrProcessors\OcrProcessorResult;
 use OCA\WorkflowOcr\Wrapper\ICommand;
 use OCA\WorkflowOcr\Wrapper\IPhpNativeFunctions;
 use Psr\Log\LoggerInterface;
@@ -43,14 +44,14 @@ abstract class OcrMyPdfBasedProcessor extends OcrProcessorBase {
 		parent::__construct($logger, $phpNativeFunctions);
 	}
 
-	protected function doOcrProcessing($fileResource, string $fileName, WorkflowSettings $settings, GlobalSettings $globalSettings): array {
+	protected function doOcrProcessing($fileResource, string $fileName, WorkflowSettings $settings, GlobalSettings $globalSettings): OcrProcessorResult {
 		$additionalCommandlineArgs = $this->getAdditionalCommandlineArgs($settings, $globalSettings);
 		$sidecarFile = $this->sidecarFileAccessor->getOrCreateSidecarFile();
 		$commandStr = 'ocrmypdf ' . $this->commandLineUtils->getCommandlineArgs($settings, $globalSettings, $sidecarFile, $additionalCommandlineArgs) . ' - - || exit $? ; cat';
 
 		$inputFileContent = $this->phpNative->streamGetContents($fileResource);
 		if ($inputFileContent === false) {
-			return [false, null, null, -1, 'Failed to read file content from stream'];
+			return new OcrProcessorResult(false, null, null, -1, 'Failed to read file content from stream');
 		}
 
 		$this->command
@@ -65,7 +66,7 @@ abstract class OcrMyPdfBasedProcessor extends OcrProcessorBase {
 		$exitCode = $this->command->getExitCode();
 
 		if (!$success) {
-			return [false, null, null, $exitCode, $errorOutput . ' ' . $stdErr];
+			return new OcrProcessorResult(false, null, null, $exitCode, $errorOutput . ' ' . $stdErr);
 		}
 
 		if ($stdErr !== '' || $errorOutput !== '') {
@@ -79,7 +80,7 @@ abstract class OcrMyPdfBasedProcessor extends OcrProcessorBase {
 		$ocrFileContent = $this->command->getOutput();
 		$recognizedText = $this->sidecarFileAccessor->getSidecarFileContent();
 
-		return [true, $ocrFileContent, $recognizedText, $exitCode, null];
+		return new OcrProcessorResult(true, $ocrFileContent, $recognizedText, $exitCode, null);
 	}
 
 	/**

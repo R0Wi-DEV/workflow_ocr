@@ -30,7 +30,7 @@ use OC\User\NoUserException;
 use OCA\Files_Versions\Versions\IMetadataVersion;
 use OCA\Files_Versions\Versions\IMetadataVersionBackend;
 use OCA\Files_Versions\Versions\IVersionManager;
-use OCA\WorkflowOcr\Exception\OcrAlreadyDoneException;
+use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
 use OCA\WorkflowOcr\Helper\IProcessingFileAccessor;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCA\WorkflowOcr\OcrProcessors\IOcrProcessorFactory;
@@ -157,15 +157,44 @@ class OcrService implements IOcrService {
 			$ocrProcessor = $this->ocrProcessorFactory->create($file->getMimeType());
 			$globalSettings = $this->globalSettingsService->getGlobalSettings();
 
-			try {
-				$result = $ocrProcessor->ocrFile($file, $settings, $globalSettings);
-			} catch (OcrAlreadyDoneException $ex) {
+			$result = $ocrProcessor->ocrFile($file, $settings, $globalSettings);
+
+			$exitCode = $result->getExitCode();
+			$success = $result->isSuccess();
+
+			// Exit code 6: File appears to contain text so it may not need OCR
+			if ($exitCode === 6) {
 				// #232: Skip file if OCR was already done
 				if ($settings->getOcrMode() === WorkflowSettings::OCR_MODE_SKIP_FILE) {
-					$this->logger->debug('Skipping empty OCR result for file with id {fileId} because OCR mode is set to \'skip file\'', ['fileId' => $fileId]);
+					$this->logger->debug('Skipping file with id {fileId} because OCR mode is set to \'skip file\' and file already contains text (exit code 6)', ['fileId' => $fileId]);
 					return;
 				}
-				throw $ex;
+				throw new OcrNotPossibleException('File appears to contain text so it may not need OCR. Message: ' . ($result->getErrorMessage() ?? 'No error message provided'));
+			}
+
+			// Exit code 2: Various conditions prevent OCR (encrypted PDF, tagged PDF, digital signature, etc.)
+			// See: https://ocrmypdf.readthedocs.io/en/latest/advanced.html#return-code-policy
+			if ($exitCode === 2 && $settings->getSkipNotificationsOnInvalidPdf()) {
+				$this->logger->debug('Skipping OCR for file with id {fileId}: PDF condition prevents OCR (exit code 2). Message: {message}', ['fileId' => $fileId, 'message' => $result->getErrorMessage()]);
+				return;
+			}
+
+			// Exit code 8: The input PDF is encrypted
+			// See: https://ocrmypdf.readthedocs.io/en/latest/advanced.html#return-code-policy
+			if ($exitCode === 8 && $settings->getSkipNotificationsOnEncryptedPdf()) {
+				$this->logger->debug('Skipping OCR for file with id {fileId}: PDF is encrypted (exit code 8). Message: {message}', ['fileId' => $fileId, 'message' => $result->getErrorMessage()]);
+				return;
+			}
+
+			// Any other non-zero exit code is an error
+			if ($exitCode !== 0 || !$success) {
+				throw new OcrNotPossibleException($result->getErrorMessage());
+			}
+
+			// Check if result is empty
+			if (!$result->getFileContent()) {
+				$this->logger->info('OCRmyPDF did not produce any output for file with id {fileId}', ['fileId' => $fileId]);
+				return;
 			}
 
 			$this->doPostProcessing($file, $uid, $settings, $result, $fileMtime);

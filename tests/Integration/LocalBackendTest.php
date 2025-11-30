@@ -29,6 +29,7 @@ use OCA\WorkflowOcr\OcrProcessors\Remote\Client\IApiClient;
 use OCA\WorkflowOcr\Tests\Integration\TestUtils\BackendTestBase;
 use OCA\WorkflowOcr\Tests\Integration\TestUtils\IntegrationTestApiClient;
 use OCP\EventDispatcher\IEventDispatcher;
+use PHPUnit\Framework\Attributes\Depends;
 
 /**
  * Full test case for registering new OCR Workflow, uploading file and
@@ -163,5 +164,23 @@ class LocalBackendTest extends BackendTestBase {
 		$this->filesToDelete[] = $sidecarName;
 
 		$this->assertStringContainsString('This document is ready for OCR', $sidecarFileContent, 'Expected recognized text in sidecar file');
+	}
+
+	public function testWorkflowOcrSkipsNotificationOnInvalidPdf(): void {
+		$this->runTestWorkflowOcrSkipsNotificationOnInvalidPdf();
+	}
+
+	#[Depends('testWorkflowOcrSkipsNotificationOnInvalidPdf')]
+	public function testWorkflowOcrSendsErrorNotificationOnInvalidPdf(): void {
+		$this->runTestWorkflowOcrSendsErrorNotificationOnInvalidPdf();
+	}
+
+	public function testWorkflowOcrSkipsNotificationOnEncryptedPdf(): void {
+		$this->runTestWorkflowOcrSkipsNotificationOnEncryptedPdf();
+	}
+
+	#[Depends('testWorkflowOcrSkipsNotificationOnEncryptedPdf')]
+	public function testWorkflowOcrSendsErrorNotificationOnEncryptedPdf(): void {
+		$this->runTestWorkflowOcrSendsErrorNotificationOnEncryptedPdf();
 	}
 }

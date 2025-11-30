@@ -103,7 +103,7 @@ class NotificationTest extends TestCase {
 		$notification = $notifications[0];
 		$this->assertEquals('workflow_ocr', $notification->getApp());
 		$this->assertEquals('ocr_error', $notification->getSubject());
-		$this->assertEquals('An error occured while executing the OCR process (Some error). Please have a look at your servers logfile for more details.', $notification->getSubjectParameters()['message']);
+		$this->assertEquals('An error occured while executing the OCR process (OCR not possible: Some error). Please have a look at your servers logfile for more details.', $notification->getSubjectParameters()['message']);
 	}
 
 	public function testCreateSuccessNotification() {

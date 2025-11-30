@@ -27,22 +27,33 @@ namespace OCA\WorkflowOcr\OcrProcessors;
  * Represents a file which was processed via OCR.
  */
 class OcrProcessorResult {
-	/** @var string */
-	private $fileContent;
-	/** @var string */
-	private $recognizedText;
 
-
-	public function __construct(string $fileContent, string $recognizedText) {
-		$this->fileContent = $fileContent;
-		$this->recognizedText = $recognizedText;
+	public function __construct(
+		private bool $success,
+		private ?string $fileContent,
+		private ?string $recognizedText,
+		private int $exitCode = 0,
+		private ?string $errorMessage = null,
+	) {
 	}
 
-	public function getFileContent(): string {
+	public function isSuccess(): bool {
+		return $this->success;
+	}
+
+	public function getFileContent(): ?string {
 		return $this->fileContent;
 	}
 
-	public function getRecognizedText(): string {
+	public function getRecognizedText(): ?string {
 		return $this->recognizedText;
+	}
+
+	public function getExitCode(): int {
+		return $this->exitCode;
+	}
+
+	public function getErrorMessage(): ?string {
+		return $this->errorMessage;
 	}
 }

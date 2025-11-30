@@ -27,6 +27,7 @@ use OCA\WorkflowOcr\Model\GlobalSettings;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCA\WorkflowOcr\OcrProcessors\ICommandLineUtils;
 use OCA\WorkflowOcr\OcrProcessors\OcrProcessorBase;
+use OCA\WorkflowOcr\OcrProcessors\OcrProcessorResult;
 use OCA\WorkflowOcr\OcrProcessors\Remote\Client\IApiClient;
 use OCA\WorkflowOcr\OcrProcessors\Remote\Client\Model\ErrorResult;
 use Psr\Log\LoggerInterface;
@@ -44,7 +45,7 @@ class WorkflowOcrRemoteProcessor extends OcrProcessorBase {
 		parent::__construct($logger, $phpNative);
 	}
 
-	protected function doOcrProcessing($fileResource, string $fileName, WorkflowSettings $settings, GlobalSettings $globalSettings): array {
+	protected function doOcrProcessing($fileResource, string $fileName, WorkflowSettings $settings, GlobalSettings $globalSettings): OcrProcessorResult {
 		$ocrMyPdfParameters = $this->commandLineUtils->getCommandlineArgs($settings, $globalSettings);
 
 		$this->logger->debug('Sending OCR request to remote backend');
@@ -55,9 +56,9 @@ class WorkflowOcrRemoteProcessor extends OcrProcessorBase {
 			$resultMessage = $apiResult->getMessage();
 			$exitCode = $apiResult->getOcrMyPdfExitCode();
 
-			return [false, null, null, $exitCode, $resultMessage];
+			return new OcrProcessorResult(false, null, null, $exitCode, $resultMessage);
 		}
 
-		return [true, base64_decode($apiResult->getFileContent()), $apiResult->getRecognizedText(), 0, null];
+		return new OcrProcessorResult(true, base64_decode($apiResult->getFileContent()), $apiResult->getRecognizedText(), 0, null);
 	}
 }
