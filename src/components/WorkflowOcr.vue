@@ -78,9 +78,9 @@
 					</NcCheckboxRadioSwitch>
 				</HelpTextWrapper>
 				<HelpTextWrapper class="nccb-info-wrapper"
-					:help-text="t('workflow_ocr', 'Skip notifications for ocrmypdf error code 8 (for example password protected PDFs)')">
-					<NcCheckboxRadioSwitch ref="skipNotificationsOnEncryptedPdf"
-						:checked.sync="model.skipNotificationsOnEncryptedPdf" type="switch">
+					:help-text="t('workflow_ocr', 'Send a notification when OCR processing completes successfully.')">
+					<NcCheckboxRadioSwitch ref="sendSuccessNotification"
+						:checked.sync="model.sendSuccessNotification" type="switch">
 						{{ t('workflow_ocr', 'Send success notification') }}
 					</NcCheckboxRadioSwitch>
 				</HelpTextWrapper>
