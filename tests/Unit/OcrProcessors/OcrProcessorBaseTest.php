@@ -11,6 +11,7 @@ use OCA\WorkflowOcr\OcrProcessors\ICommandLineUtils;
 
 use OCA\WorkflowOcr\OcrProcessors\Local\OcrMyPdfBasedProcessor;
 use OCA\WorkflowOcr\OcrProcessors\OcrProcessorBase;
+use OCA\WorkflowOcr\OcrProcessors\OcrProcessorResult;
 use OCA\WorkflowOcr\Wrapper\ICommand;
 use OCA\WorkflowOcr\Wrapper\IPhpNativeFunctions;
 use OCP\Files\File;
@@ -41,14 +42,14 @@ class TestOcrProcessor extends OcrProcessorBase {
 		parent::__construct($logger, $phpNative);
 	}
 
-	protected function doOcrProcessing($fileResource, string $fileName, $settings, $globalSettings): array {
+	protected function doOcrProcessing($fileResource, string $fileName, $settings, $globalSettings): OcrProcessorResult {
 		// Return the preprocessed file bytes so tests can inspect preprocessing result
 		$contents = '';
 		if (is_resource($fileResource)) {
 			rewind($fileResource);
 			$contents = stream_get_contents($fileResource);
 		}
-		return [true, $contents, 'recognized', 0, ''];
+		return new OcrProcessorResult(true, $contents, 'recognized', 0, '');
 	}
 }
 
@@ -57,7 +58,7 @@ class TestableOcrMyPdfBasedProcessor extends OcrMyPdfBasedProcessor {
 		parent::__construct($command, $logger, $sidecar, $cmdUtils, $phpNative);
 	}
 
-	public function runCallToDoOcrProcessing($fileResource, string $fileName, $settings, $globalSettings): array {
+	public function runCallToDoOcrProcessing($fileResource, string $fileName, $settings, $globalSettings): OcrProcessorResult {
 		return $this->doOcrProcessing($fileResource, $fileName, $settings, $globalSettings);
 	}
 
@@ -132,10 +133,10 @@ class OcrProcessorBaseTest extends TestCase {
 			}
 		}
 
-		$this->assertIsArray($result);
-		$this->assertFalse($result[0], 'Expected processing to indicate failure');
-		$this->assertSame(-1, $result[3], 'Expected exit code -1 for read failure');
-		$this->assertStringContainsString('Failed to read file content', (string)$result[4]);
+		$this->assertInstanceOf(OcrProcessorResult::class, $result);
+		$this->assertFalse($result->isSuccess(), 'Expected processing to indicate failure');
+		$this->assertSame(-1, $result->getExitCode(), 'Expected exit code -1 for read failure');
+		$this->assertStringContainsString('Failed to read file content', (string)$result->getErrorMessage());
 	}
 
 	public function testRemoveAlphaChannelFromImage_NoAlpha_ReturnsOriginalResource(): void {

@@ -77,6 +77,9 @@ class ImageOcrProcessorTest extends TestCase {
 		$command->expects($this->once())
 			->method('getOutput')
 			->willReturn('output');
+		$command->expects($this->once())
+			->method('getExitCode')
+			->willReturn(0);
 
 		$processor->ocrFile($file, new WorkflowSettings(), new GlobalSettings());
 	}

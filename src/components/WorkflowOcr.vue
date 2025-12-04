@@ -24,96 +24,89 @@
 	<div>
 		<SettingsItem :label="t('workflow_ocr', 'OCR language')"
 			:info-text="t('workflow_ocr', 'The language(s) to be used for OCR processing')">
-			<NcSelect v-model="selectedLanguages"
-				track-by="langCode"
-				:labelOutside="true"
-				:tag-width="80"
-				:placeholder="selectedLanguagesPlaceholder"
-				:multiple="true"
-				:options="availableLanguages" />
+			<NcSelect v-model="selectedLanguages" track-by="langCode" :labelOutside="true" :tag-width="80"
+				:placeholder="selectedLanguagesPlaceholder" :multiple="true" :options="availableLanguages" />
 		</SettingsItem>
 		<SettingsItem :label="t('workflow_ocr', 'Assign tags after OCR')"
 			:info-text="t('workflow_ocr', 'These tags will be assigned to the file after OCR processing has finished')">
-			<NcSelectTags v-model="model.tagsToAddAfterOcr"
-				:labelOutside="true"
-				:multiple="true">
+			<NcSelectTags v-model="model.tagsToAddAfterOcr" :labelOutside="true" :multiple="true">
 				{{ model.tagsToAddAfterOcr }}
 			</NcSelectTags>
 		</SettingsItem>
 		<SettingsItem :label="t('workflow_ocr', 'Remove tags after OCR')"
 			:info-text="t('workflow_ocr', 'These tags will be removed from the file after OCR processing has finished')">
-			<NcSelectTags v-model="model.tagsToRemoveAfterOcr"
-				:labelOutside="true"
-				:multiple="true">
+			<NcSelectTags v-model="model.tagsToRemoveAfterOcr" :labelOutside="true" :multiple="true">
 				{{ model.tagsToRemoveAfterOcr }}
 			</NcSelectTags>
 		</SettingsItem>
 		<SettingsItem :label="t('workflow_ocr', 'OCR mode')"
 			:info-text="t('workflow_ocr', 'Apply this mode if file already has OCR content')">
 			<div>
-				<NcCheckboxRadioSwitch ref="ocrMode0"
-					:checked.sync="ocrMode"
-					type="radio"
-					name="ocr_mode_radio"
+				<NcCheckboxRadioSwitch ref="ocrMode0" :checked.sync="ocrMode" type="radio" name="ocr_mode_radio"
 					value="0">
 					{{ t('workflow_ocr', 'Skip text') }}
 				</NcCheckboxRadioSwitch>
-				<NcCheckboxRadioSwitch ref="ocrMode1"
-					:checked.sync="ocrMode"
-					type="radio"
-					name="ocr_mode_radio"
+				<NcCheckboxRadioSwitch ref="ocrMode1" :checked.sync="ocrMode" type="radio" name="ocr_mode_radio"
 					value="1">
 					{{ t('workflow_ocr', 'Redo OCR') }}
 				</NcCheckboxRadioSwitch>
-				<NcCheckboxRadioSwitch ref="ocrMode2"
-					:checked.sync="ocrMode"
-					type="radio"
-					name="ocr_mode_radio"
+				<NcCheckboxRadioSwitch ref="ocrMode2" :checked.sync="ocrMode" type="radio" name="ocr_mode_radio"
 					value="2">
 					{{ t('workflow_ocr', 'Force OCR') }}
 				</NcCheckboxRadioSwitch>
-				<NcCheckboxRadioSwitch ref="ocrMode3"
-					:checked.sync="ocrMode"
-					type="radio"
-					name="ocr_mode_radio"
+				<NcCheckboxRadioSwitch ref="ocrMode3" :checked.sync="ocrMode" type="radio" name="ocr_mode_radio"
 					value="3">
 					{{ t('workflow_ocr', 'Skip file completely') }}
 				</NcCheckboxRadioSwitch>
 			</div>
 		</SettingsItem>
+		<SettingsItem :label="t('workflow_ocr', 'Notifications')"
+			:info-text="t('workflow_ocr', 'The asynchronous OCR process will send Nextcloud notifications. Use these settings to control them.')">
+			<div>
+				<HelpTextWrapper class="nccb-info-wrapper"
+					:help-text="t('workflow_ocr', 'Skip notifications for ocrmypdf error code 2 (for example digitally signed PDFs)')">
+					<NcCheckboxRadioSwitch ref="skipNotificationsOnInvalidPdf"
+						:checked.sync="model.skipNotificationsOnInvalidPdf" type="switch">
+						{{ t('workflow_ocr', 'Skip for invalid PDFs') }}
+					</NcCheckboxRadioSwitch>
+				</HelpTextWrapper>
+				<HelpTextWrapper class="nccb-info-wrapper"
+					:help-text="t('workflow_ocr', 'Skip notifications for ocrmypdf error code 8 (for example password protected PDFs)')">
+					<NcCheckboxRadioSwitch ref="skipNotificationsOnEncryptedPdf"
+						:checked.sync="model.skipNotificationsOnEncryptedPdf" type="switch">
+						{{ t('workflow_ocr', 'Skip for encrypted PDFs') }}
+					</NcCheckboxRadioSwitch>
+				</HelpTextWrapper>
+				<HelpTextWrapper class="nccb-info-wrapper"
+					:help-text="t('workflow_ocr', 'Send a notification when OCR processing completes successfully.')">
+					<NcCheckboxRadioSwitch ref="sendSuccessNotification"
+						:checked.sync="model.sendSuccessNotification" type="switch">
+						{{ t('workflow_ocr', 'Send success notification') }}
+					</NcCheckboxRadioSwitch>
+				</HelpTextWrapper>
+			</div>
+		</SettingsItem>
 		<SettingsItem :label="t('workflow_ocr', 'Other settings')">
 			<div>
-				<NcCheckboxRadioSwitch ref="removeBackgroundSwitch"
-					:disabled="removeBackgroundDisabled"
-					:checked.sync="model.removeBackground"
-					type="switch">
+				<NcCheckboxRadioSwitch ref="removeBackgroundSwitch" :disabled="removeBackgroundDisabled"
+					:checked.sync="model.removeBackground" type="switch">
 					{{ t('workflow_ocr', 'Remove background') }}
 				</NcCheckboxRadioSwitch>
-				<NcCheckboxRadioSwitch ref="keepOriginalFileVersion"
-					:checked.sync="model.keepOriginalFileVersion"
+				<NcCheckboxRadioSwitch ref="keepOriginalFileVersion" :checked.sync="model.keepOriginalFileVersion"
 					type="switch">
 					{{ t('workflow_ocr', 'Keep original file version') }}
 				</NcCheckboxRadioSwitch>
-				<NcCheckboxRadioSwitch ref="keepOriginalFileDate"
-					:checked.sync="model.keepOriginalFileDate"
+				<NcCheckboxRadioSwitch ref="keepOriginalFileDate" :checked.sync="model.keepOriginalFileDate"
 					type="switch">
 					{{ t('workflow_ocr', 'Keep original file modification date') }}
 				</NcCheckboxRadioSwitch>
-				<NcCheckboxRadioSwitch ref="sendSuccessNotification"
-					:checked.sync="model.sendSuccessNotification"
-					type="switch">
-					{{ t('workflow_ocr', 'Send success notification') }}
-				</NcCheckboxRadioSwitch>
-				<NcCheckboxRadioSwitch ref="createSidecarFile"
-					:checked.sync="model.createSidecarFile"
-					type="switch">
+				<NcCheckboxRadioSwitch ref="createSidecarFile" :checked.sync="model.createSidecarFile" type="switch">
 					{{ t('workflow_ocr', 'Create sidecar text file') }}
 				</NcCheckboxRadioSwitch>
 			</div>
 		</SettingsItem>
 		<div>
-			<NcTextField :value.sync="model.customCliArgs"
-				:label="t('workflow_ocr', 'Custom ocrMyPdf CLI arguments')"
+			<NcTextField :value.sync="model.customCliArgs" :label="t('workflow_ocr', 'Custom ocrMyPdf CLI arguments')"
 				ref="customCliArgs">
 			</NcTextField>
 		</div>
@@ -125,7 +118,9 @@
 import { tesseractLanguageMapping } from '../constants.js'
 import { getInstalledLanguages } from '../service/ocrBackendInfoService.js'
 import SettingsItem from './SettingsItem.vue'
-import { NcSelect, NcSelectTags, NcCheckboxRadioSwitch, NcTextField } from '@nextcloud/vue'
+import HelpTextWrapper from './HelpTextWrapper.vue'
+import { NcSelect, NcSelectTags, NcCheckboxRadioSwitch, NcTextField, NcPopover } from '@nextcloud/vue'
+import HelpCircleIcon from 'vue-material-design-icons/HelpCircle.vue'
 
 export default {
 	name: 'WorkflowOcr',
@@ -135,6 +130,9 @@ export default {
 		NcCheckboxRadioSwitch: NcCheckboxRadioSwitch,
 		NcTextField: NcTextField,
 		SettingsItem: SettingsItem,
+		NcPopover: NcPopover,
+		HelpCircleIcon: HelpCircleIcon,
+		HelpTextWrapper: HelpTextWrapper,
 	},
 	props: {
 		// Will be set by the parent (serialized JSON value)
@@ -160,6 +158,8 @@ export default {
 			 *   ocrMode: 0,
 			 *   customCliArgs: '--rotate-pages-threshold 8',
 			 *   createSidecarFile: false,
+			 *   skipNotificationsOnInvalidPdf: false,
+			 *   skipNotificationsOnEncryptedPdf: false,
 			 * }
 			 * It's initially set after component creation by 'created'-hook.
 			 */
@@ -174,6 +174,8 @@ export default {
 				ocrMode: 0,
 				customCliArgs: '',
 				createSidecarFile: false,
+				skipNotificationsOnInvalidPdf: false,
+				skipNotificationsOnEncryptedPdf: false,
 			},
 		}
 	},
@@ -240,5 +242,9 @@ export default {
 		max-width: 300px;
 		margin: auto;
 		text-align: center;
+	}
+
+	.nccb-info-wrapper {
+		max-width: 300px;
 	}
 </style>

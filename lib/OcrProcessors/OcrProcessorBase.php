@@ -23,9 +23,6 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\OcrProcessors;
 
-use OCA\WorkflowOcr\Exception\OcrAlreadyDoneException;
-use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
-use OCA\WorkflowOcr\Exception\OcrResultEmptyException;
 use OCA\WorkflowOcr\Model\GlobalSettings;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCA\WorkflowOcr\Wrapper\IPhpNativeFunctions;
@@ -46,14 +43,7 @@ abstract class OcrProcessorBase implements IOcrProcessor {
 		$fileName = $file->getName();
 		$fileResource = $this->doFilePreprocessing($file);
 		try {
-			[$success, $fileContent, $recognizedText, $exitCode, $errorMessage] = $this->doOcrProcessing($fileResource, $fileName, $settings, $globalSettings);
-			if (!$success) {
-				$this->throwException($errorMessage, $exitCode);
-			}
-			if (!$recognizedText) {
-				$this->logger->info('Recognized text was empty');
-			}
-			return $fileContent ? new OcrProcessorResult($fileContent, $recognizedText) : throw new OcrResultEmptyException('OCRmyPDF did not produce any output for file ' . $fileName);
+			return $this->doOcrProcessing($fileResource, $fileName, $settings, $globalSettings);
 		} finally {
 			if (is_resource($fileResource)) {
 				fclose($fileResource);
@@ -68,9 +58,9 @@ abstract class OcrProcessorBase implements IOcrProcessor {
 	 * @param string $fileName
 	 * @param WorkflowSettings $settings
 	 * @param GlobalSettings $globalSettings
-	 * @return array{bool, string|null, string|null, int, string|null} [$success, $fileContent, $recognizedText, $exitCode, $errorMessage]
+	 * @return OcrProcessorResult
 	 */
-	abstract protected function doOcrProcessing($fileResource, string $fileName, WorkflowSettings $settings, GlobalSettings $globalSettings): array;
+	abstract protected function doOcrProcessing($fileResource, string $fileName, WorkflowSettings $settings, GlobalSettings $globalSettings): OcrProcessorResult;
 
 	/**
 	 * @return resource|false
@@ -123,13 +113,4 @@ abstract class OcrProcessorBase implements IOcrProcessor {
 		}
 	}
 
-	/**
-	 * Throws an appropriate exception based on the error message and exit code.
-	 */
-	private function throwException($errorMessage, $exitCode) {
-		if ($exitCode === 6) {
-			throw new OcrAlreadyDoneException('File appears to contain text so it may not need OCR. Message: ' . $errorMessage);
-		}
-		throw new OcrNotPossibleException($errorMessage);
-	}
 }

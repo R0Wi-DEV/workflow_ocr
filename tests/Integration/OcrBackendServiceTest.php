@@ -29,6 +29,7 @@ use OCA\WorkflowOcr\OcrProcessors\Remote\Client\Model\ErrorResult;
 use OCA\WorkflowOcr\OcrProcessors\Remote\Client\Model\OcrResult;
 use OCA\WorkflowOcr\Tests\Integration\TestUtils\BackendTestBase;
 use OCA\WorkflowOcr\Tests\Integration\TestUtils\IntegrationTestApiClient;
+use PHPUnit\Framework\Attributes\Depends;
 
 /**
  * Full test case for registering new OCR Workflow, uploading file and
@@ -37,7 +38,6 @@ use OCA\WorkflowOcr\Tests\Integration\TestUtils\IntegrationTestApiClient;
  */
 class OcrBackendServiceTest extends BackendTestBase {
 	private IntegrationTestApiClient $apiClient;
-
 
 	protected function setUp(): void {
 		parent::setUp();
@@ -112,5 +112,23 @@ class OcrBackendServiceTest extends BackendTestBase {
 		$this->filesToDelete[] = $sidecarName;
 
 		$this->assertStringContainsString('This document is ready for OCR', $sidecarFileContent, 'Expected recognized text in sidecar file');
+	}
+
+	public function testWorkflowOcrSkipsNotificationOnInvalidPdf(): void {
+		$this->runTestWorkflowOcrSkipsNotificationOnInvalidPdf();
+	}
+
+	#[Depends('testWorkflowOcrSkipsNotificationOnInvalidPdf')]
+	public function testWorkflowOcrSendsErrorNotificationOnInvalidPdf(): void {
+		$this->runTestWorkflowOcrSendsErrorNotificationOnInvalidPdf();
+	}
+
+	public function testWorkflowOcrSkipsNotificationOnEncryptedPdf(): void {
+		$this->runTestWorkflowOcrSkipsNotificationOnEncryptedPdf();
+	}
+
+	#[Depends('testWorkflowOcrSkipsNotificationOnEncryptedPdf')]
+	public function testWorkflowOcrSendsErrorNotificationOnEncryptedPdf(): void {
+		$this->runTestWorkflowOcrSendsErrorNotificationOnEncryptedPdf();
 	}
 }

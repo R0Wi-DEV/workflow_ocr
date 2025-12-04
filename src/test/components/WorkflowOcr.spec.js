@@ -153,7 +153,7 @@ describe('Language settings tests', () => {
 
 		const inputEvent = wrapper.emitted().input
 		expect(inputEvent).toBeTruthy()
-		expect(inputEvent[0][0]).toBe('{"languages":["de","en"],"tagsToAddAfterOcr":[],"tagsToRemoveAfterOcr":[],"removeBackground":true,"keepOriginalFileVersion":false,"keepOriginalFileDate":false,"sendSuccessNotification":false,"ocrMode":0,"customCliArgs":"","createSidecarFile":false}')
+		expect(inputEvent[0][0]).toBe('{"languages":["de","en"],"tagsToAddAfterOcr":[],"tagsToRemoveAfterOcr":[],"removeBackground":true,"keepOriginalFileVersion":false,"keepOriginalFileDate":false,"sendSuccessNotification":false,"ocrMode":0,"customCliArgs":"","createSidecarFile":false,"skipNotificationsOnInvalidPdf":false,"skipNotificationsOnEncryptedPdf":false}')
 		
 	})
 })
@@ -182,7 +182,7 @@ describe('Add/remove tags tests', () => {
 
 		const inputEvent = wrapper.emitted().input
 		expect(inputEvent).toBeTruthy()
-		expect(inputEvent[0][0]).toBe('{"languages":["de"],"tagsToAddAfterOcr":[1,2],"tagsToRemoveAfterOcr":[],"removeBackground":true,"keepOriginalFileVersion":false,"keepOriginalFileDate":false,"sendSuccessNotification":false,"ocrMode":0,"customCliArgs":"","createSidecarFile":false}')
+		expect(inputEvent[0][0]).toBe('{"languages":["de"],"tagsToAddAfterOcr":[1,2],"tagsToRemoveAfterOcr":[],"removeBackground":true,"keepOriginalFileVersion":false,"keepOriginalFileDate":false,"sendSuccessNotification":false,"ocrMode":0,"customCliArgs":"","createSidecarFile":false,"skipNotificationsOnInvalidPdf":false,"skipNotificationsOnEncryptedPdf":false}')
 	})
 
 	test('User input for removeTagsAfterOcr is applied correctly on empty component', async () => {
@@ -202,7 +202,7 @@ describe('Add/remove tags tests', () => {
 
 		const inputEvent = wrapper.emitted().input
 		expect(inputEvent).toBeTruthy()
-		expect(inputEvent[0][0]).toBe('{"languages":["de"],"tagsToAddAfterOcr":[],"tagsToRemoveAfterOcr":[1,2],"removeBackground":true,"keepOriginalFileVersion":false,"keepOriginalFileDate":false,"sendSuccessNotification":false,"ocrMode":0,"customCliArgs":"","createSidecarFile":false}')
+		expect(inputEvent[0][0]).toBe('{"languages":["de"],"tagsToAddAfterOcr":[],"tagsToRemoveAfterOcr":[1,2],"removeBackground":true,"keepOriginalFileVersion":false,"keepOriginalFileDate":false,"sendSuccessNotification":false,"ocrMode":0,"customCliArgs":"","createSidecarFile":false,"skipNotificationsOnInvalidPdf":false,"skipNotificationsOnEncryptedPdf":false}')
 	})
 })
 
@@ -239,7 +239,7 @@ describe('Remove background tests', () => {
 
 		const inputEvent = wrapper.emitted().input
 		expect(inputEvent).toBeTruthy()
-		expect(inputEvent[0][0]).toBe('{"languages":["de"],"tagsToAddAfterOcr":[],"tagsToRemoveAfterOcr":[],"removeBackground":false,"keepOriginalFileVersion":false,"keepOriginalFileDate":false,"sendSuccessNotification":false,"ocrMode":0,"customCliArgs":"","createSidecarFile":false}')
+		expect(inputEvent[0][0]).toBe('{"languages":["de"],"tagsToAddAfterOcr":[],"tagsToRemoveAfterOcr":[],"removeBackground":false,"keepOriginalFileVersion":false,"keepOriginalFileDate":false,"sendSuccessNotification":false,"ocrMode":0,"customCliArgs":"","createSidecarFile":false,"skipNotificationsOnInvalidPdf":false,"skipNotificationsOnEncryptedPdf":false}')
 	})
 })
 
@@ -340,7 +340,7 @@ describe('Custom CLI args test', () => {
 
 		const inputEvent = wrapper.emitted().input
 		expect(inputEvent).toBeTruthy()
-		expect(inputEvent[0][0]).toBe('{"languages":[],"tagsToAddAfterOcr":[],"tagsToRemoveAfterOcr":[],"removeBackground":false,"keepOriginalFileVersion":false,"keepOriginalFileDate":false,"sendSuccessNotification":false,"ocrMode":0,"customCliArgs":"--dpi 300","createSidecarFile":false}')
+		expect(inputEvent[0][0]).toBe('{"languages":[],"tagsToAddAfterOcr":[],"tagsToRemoveAfterOcr":[],"removeBackground":false,"keepOriginalFileVersion":false,"keepOriginalFileDate":false,"sendSuccessNotification":false,"ocrMode":0,"customCliArgs":"--dpi 300","createSidecarFile":false,"skipNotificationsOnInvalidPdf":false,"skipNotificationsOnEncryptedPdf":false}')
 	})
 })
 
@@ -397,4 +397,69 @@ describe('Sidecar file switch test', () => {
 		expect(inputEvent).toBeTruthy()
 		expect(inputEvent[0][0]).toContain('"createSidecarFile":true')
 	})
+})
+
+describe('Notifications switches tests', () => {
+	test('Notification switches default to false', () => {
+ 		const wrapper = mount(WorkflowOcr, {
+ 			propsData: { value: '{}' }
+ 		})
+
+ 		const invalidPdfSwitch = wrapper.findComponent({ ref: 'skipNotificationsOnInvalidPdf' })
+ 		expect(invalidPdfSwitch.vm.checked).toBe(false)
+
+ 		const encryptedPdfSwitch = wrapper.findComponent({ ref: 'skipNotificationsOnEncryptedPdf' })
+ 		expect(encryptedPdfSwitch.vm.checked).toBe(false)
+
+ 		const successNotificationSwitch = wrapper.findComponent({ ref: 'sendSuccessNotification' })
+ 		expect(successNotificationSwitch.vm.checked).toBe(false)
+ 	})
+
+	test('Should set skipNotificationsOnInvalidPdf to true when toggled', async () => {
+ 		const wrapper = mount(WorkflowOcr, { propsData: { value: '{}' } })
+
+ 		const switchComponent = wrapper.findComponent({ ref: 'skipNotificationsOnInvalidPdf' })
+ 		expect(switchComponent.vm.checked).toBe(false)
+
+ 		// Simulate user input
+ 		switchComponent.vm.$emit('update:checked', true)
+
+ 		await wrapper.vm.$nextTick()
+
+ 		const inputEvent = wrapper.emitted().input
+ 		expect(inputEvent).toBeTruthy()
+ 		expect(inputEvent[0][0]).toContain('"skipNotificationsOnInvalidPdf":true')
+ 	})
+
+	test('Should set skipNotificationsOnEncryptedPdf to true when toggled', async () => {
+ 		const wrapper = mount(WorkflowOcr, { propsData: { value: '{}' } })
+
+ 		const switchComponent = wrapper.findComponent({ ref: 'skipNotificationsOnEncryptedPdf' })
+ 		expect(switchComponent.vm.checked).toBe(false)
+
+ 		// Simulate user input
+ 		switchComponent.vm.$emit('update:checked', true)
+
+ 		await wrapper.vm.$nextTick()
+
+ 		const inputEvent = wrapper.emitted().input
+ 		expect(inputEvent).toBeTruthy()
+ 		expect(inputEvent[0][0]).toContain('"skipNotificationsOnEncryptedPdf":true')
+ 	})
+
+	test('Should set sendSuccessNotification to true when toggled', async () => {
+ 		const wrapper = mount(WorkflowOcr, { propsData: { value: '{}' } })
+
+ 		const switchComponent = wrapper.findComponent({ ref: 'sendSuccessNotification' })
+ 		expect(switchComponent.vm.checked).toBe(false)
+
+ 		// Simulate user input
+ 		switchComponent.vm.$emit('update:checked', true)
+
+ 		await wrapper.vm.$nextTick()
+
+ 		const inputEvent = wrapper.emitted().input
+ 		expect(inputEvent).toBeTruthy()
+ 		expect(inputEvent[0][0]).toContain('"sendSuccessNotification":true')
+ 	})
 })

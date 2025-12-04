@@ -31,10 +31,13 @@ use OCA\WorkflowOcr\AppInfo\Application;
 use OCA\WorkflowOcr\BackgroundJobs\ProcessFileJob;
 use OCA\WorkflowOcr\Operation;
 use OCA\WorkflowOcr\Service\IOcrBackendInfoService;
+use OCA\WorkflowOcr\Tests\Integration\Notification\AppFake;
 use OCA\WorkflowOcr\Wrapper\CommandWrapper;
 use OCP\AppFramework\App;
 use OCP\BackgroundJob\IJobList;
 use OCP\IConfig;
+use OCP\Log\IFileBased;
+use OCP\Log\ILogFactory;
 use OCP\WorkflowEngine\IManager;
 use Psr\Container\ContainerInterface;
 use Test\TestCase;
@@ -49,6 +52,7 @@ abstract class BackendTestBase extends TestCase {
 
 	protected array $filesToDelete = [];
 	protected ContainerInterface $container;
+	protected AppFake $notificationReceiverApp;
 
 	protected function setUp(): void {
 		parent::setUp();
@@ -58,6 +62,8 @@ abstract class BackendTestBase extends TestCase {
 		$this->config = $this->container->get(IConfig::class);
 		$this->workflowEngineManager = $this->container->get(Manager::class);
 		$this->context = new ScopeContext(IManager::SCOPE_ADMIN);
+		$this->notificationReceiverApp = $this->container->get(AppFake::class);
+		$this->notificationReceiverApp->resetNotifications();
 
 		$this->setNextcloudLogLevel();
 		$this->deleteOperation();
@@ -69,6 +75,115 @@ abstract class BackendTestBase extends TestCase {
 		$this->deleteOperation();
 		parent::tearDown();
 	}
+
+	// -----------------------------------------------------
+	// Tests which can run on both local and remote backend
+	// -----------------------------------------------------
+
+	protected function runTestWorkflowOcrSkipsNotificationOnInvalidPdf() {
+		$localFile = 'document-signed.pdf';
+		$this->addOperation('application/pdf', json_encode(['skipNotificationsOnInvalidPdf' => true]));
+		$this->uploadTestFile($localFile);
+		$this->runOcrBackgroundJob();
+
+		$signatureErrorLogs = $this->getDigitalSignatureErrorLogs();
+
+		$this->assertEquals(0, count($signatureErrorLogs), 'Expected no digital signature error logs');
+	}
+
+	protected function runTestWorkflowOcrSendsErrorNotificationOnInvalidPdf() {
+		$localFile = 'document-signed.pdf';
+		$this->addOperation('application/pdf', json_encode(['skipNotificationsOnInvalidPdf' => false]));
+		$this->uploadTestFile($localFile);
+		$dateBeforeJobRun = time();
+		$this->runOcrBackgroundJob();
+		$dateAfterRun = time();
+
+		$signatureErrorLogs = $this->getDigitalSignatureErrorLogs();
+
+		$this->assertEquals(1, count($signatureErrorLogs), 'Expected 1 digital signature error log');
+		$notifications = $this->notificationReceiverApp->getNotifications();
+		$filteredNotifications = array_filter(
+			$notifications,
+			function ($notification) use ($dateBeforeJobRun, $dateAfterRun) {
+				$notificationTime = $notification->getDateTime()->getTimestamp();
+				return $notification->getApp() === 'workflow_ocr'
+					&& $notification->getSubject() === 'ocr_error'
+					&& str_contains($notification->getSubjectParameters()['message'], 'OCR not possible:')
+					&& str_contains($notification->getSubjectParameters()['message'], 'DigitalSignatureError')
+					&& $notificationTime >= $dateBeforeJobRun
+					&& $notificationTime <= $dateAfterRun;
+			}
+		);
+		$this->assertCount(1, $filteredNotifications, 'Expected 1 notification for digital signature error');
+	}
+
+	protected function runTestWorkflowOcrSkipsNotificationOnEncryptedPdf() {
+		$localFile = 'document-encrypted.pdf';
+		$this->addOperation('application/pdf', json_encode(['skipNotificationsOnEncryptedPdf' => true]));
+		$this->uploadTestFile($localFile);
+		$this->runOcrBackgroundJob();
+
+		$encryptedPdfErrorLogs = $this->getEncryptedPdfErrorLogs();
+
+		$this->assertEquals(0, count($encryptedPdfErrorLogs), 'Expected no encrypted PDF error logs');
+		$this->assertCount(0, $this->notificationReceiverApp->getNotifications(), 'Expected no notifications for encrypted PDF error');
+	}
+
+	protected function runTestWorkflowOcrSendsErrorNotificationOnEncryptedPdf() {
+		$localFile = 'document-encrypted.pdf';
+		$this->addOperation('application/pdf', json_encode(['skipNotificationsOnEncryptedPdf' => false]));
+		$this->uploadTestFile($localFile);
+		$dateBeforeJobRun = time();
+		$this->runOcrBackgroundJob();
+		$dateAfterRun = time();
+
+		$encryptedPdfErrorLogs = $this->getEncryptedPdfErrorLogs();
+
+		$this->assertEquals(1, count($encryptedPdfErrorLogs), 'Expected 1 encrypted PDF error log');
+		$notifications = $this->notificationReceiverApp->getNotifications();
+		$filteredNotifications = array_filter(
+			$notifications,
+			function ($notification) use ($dateBeforeJobRun, $dateAfterRun) {
+				$notificationTime = $notification->getDateTime()->getTimestamp();
+				return $notification->getApp() === 'workflow_ocr'
+					&& $notification->getSubject() === 'ocr_error'
+					&& str_contains($notification->getSubjectParameters()['message'], 'OCR not possible:')
+					&& str_contains($notification->getSubjectParameters()['message'], 'EncryptedPdfError')
+					&& $notificationTime >= $dateBeforeJobRun
+					&& $notificationTime <= $dateAfterRun;
+			}
+		);
+		$this->assertCount(1, $filteredNotifications, 'Expected 1 notification for encrypted PDF error');
+	}
+
+	private function getDigitalSignatureErrorLogs(): array {
+		return array_filter(
+			$this->readLogEntries(),
+			function ($entry) {
+				return $entry->app === 'workflow_ocr'
+					&& $entry->level === 3
+					&& str_contains($entry->message, 'OCR not possible:')
+					&& str_contains($entry->message, 'DigitalSignatureError')
+					&& strtotime($entry->time) > (time() - 30); // only consider logs from last 30s
+			}
+		);
+	}
+
+	private function getEncryptedPdfErrorLogs(): array {
+		return array_filter(
+			$this->readLogEntries(),
+			function ($entry) {
+				return $entry->app === 'workflow_ocr'
+					&& $entry->level === 3
+					&& str_contains($entry->message, 'OCR not possible:')
+					&& str_contains($entry->message, 'EncryptedPdfError')
+					&& strtotime($entry->time) > (time() - 30); // only consider logs from last 30s
+			}
+		);
+	}
+
+	// -----------------------------------------------------
 
 	protected function setNextcloudLogLevel() : void {
 		$this->oldLogLevel = $this->config->getSystemValue('loglevel', 3);
@@ -134,30 +249,6 @@ abstract class BackendTestBase extends TestCase {
 		$this->executeCurl($ch);
 	}
 
-	private function deleteOperation() {
-		// Clear managers cache and operations to ensure "deleteOperation" works
-		$reflection = new \ReflectionClass($this->workflowEngineManager);
-
-		$operationsByScopeProperty = $reflection->getProperty('operationsByScope');
-		$operationsByScopeProperty->setAccessible(true);
-		$operationsByScope = $operationsByScopeProperty->getValue($this->workflowEngineManager);
-		$operationsByScope->clear();
-
-		$operationsProperty = $reflection->getProperty('operations');
-		$operationsProperty->setAccessible(true);
-		$operationsProperty->setValue($this->workflowEngineManager, []);
-
-		$operations = $this->workflowEngineManager->getOperations($this->operationClass, $this->context);
-		foreach ($operations as $operation) {
-			try {
-				$this->workflowEngineManager->deleteOperation($operation['id'], $this->context);
-			} catch (DomainException) {
-				// ignore
-			}
-		}
-
-	}
-
 	protected function uploadTestFile(string $testFile) {
 		$localFile = __DIR__ . '/../testdata/' . $testFile;
 		$this->uploadedFiles[] = $localFile;
@@ -181,6 +272,13 @@ abstract class BackendTestBase extends TestCase {
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
 		return $this->executeCurl($ch);
+	}
+
+	protected function readLogEntries(int $limit = 50, int $offset = 0) : array {
+		$logFactory = $this->container->get(ILogFactory::class);
+		/** @var IFileBased */
+		$logReader = $logFactory->get('file');
+		return $logReader->getEntries($limit, $offset);
 	}
 
 	private function deleteTestFilesIfExist() {
@@ -220,9 +318,28 @@ abstract class BackendTestBase extends TestCase {
 			$this->fail('cURL HTTP Error ' . $responseCode . ': ' . $responseBody);
 		}
 
-		curl_close($ch);
-
 		return $result;
+	}
+
+	private function deleteOperation() {
+		// Clear managers cache and operations to ensure "deleteOperation" works
+		$reflection = new \ReflectionClass($this->workflowEngineManager);
+
+		$operationsByScopeProperty = $reflection->getProperty('operationsByScope');
+		$operationsByScope = $operationsByScopeProperty->getValue($this->workflowEngineManager);
+		$operationsByScope->clear();
+
+		$operationsProperty = $reflection->getProperty('operations');
+		$operationsProperty->setValue($this->workflowEngineManager, []);
+
+		$operations = $this->workflowEngineManager->getOperations($this->operationClass, $this->context);
+		foreach ($operations as $operation) {
+			try {
+				$this->workflowEngineManager->deleteOperation($operation['id'], $this->context);
+			} catch (DomainException) {
+				// ignore
+			}
+		}
 	}
 
 	private function getNextcloudWebdavUrl() : string {
