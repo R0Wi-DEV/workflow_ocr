@@ -52,14 +52,7 @@ abstract class BackendTestBase extends TestCase {
 
 	protected array $filesToDelete = [];
 	protected ContainerInterface $container;
-
-	/** @var AppFake */
-	private static $notificationReceiverApp;
-	public static function setUpBeforeClass() : void {
-		// We use a faked notification receiver app to keep track of any notifications created
-		\OC::$server->get(\OCP\Notification\IManager::class)->registerApp(AppFake::class);
-		self::$notificationReceiverApp = \OC::$server->get(AppFake::class);
-	}
+	protected AppFake $notificationReceiverApp;
 
 	protected function setUp(): void {
 		parent::setUp();
@@ -69,6 +62,8 @@ abstract class BackendTestBase extends TestCase {
 		$this->config = $this->container->get(IConfig::class);
 		$this->workflowEngineManager = $this->container->get(Manager::class);
 		$this->context = new ScopeContext(IManager::SCOPE_ADMIN);
+		$this->notificationReceiverApp = $this->container->get(AppFake::class);
+		$this->notificationReceiverApp->resetNotifications();
 
 		$this->setNextcloudLogLevel();
 		$this->deleteOperation();
@@ -78,7 +73,6 @@ abstract class BackendTestBase extends TestCase {
 		$this->restoreNextcloudLogLevel();
 		$this->deleteTestFilesIfExist();
 		$this->deleteOperation();
-		self::$notificationReceiverApp->resetNotifications();
 		parent::tearDown();
 	}
 
@@ -101,18 +95,27 @@ abstract class BackendTestBase extends TestCase {
 		$localFile = 'document-signed.pdf';
 		$this->addOperation('application/pdf', json_encode(['skipNotificationsOnInvalidPdf' => false]));
 		$this->uploadTestFile($localFile);
+		$dateBeforeJobRun = time();
 		$this->runOcrBackgroundJob();
+		$dateAfterRun = time();
 
 		$signatureErrorLogs = $this->getDigitalSignatureErrorLogs();
 
 		$this->assertEquals(1, count($signatureErrorLogs), 'Expected 1 digital signature error log');
-		$notifications = self::$notificationReceiverApp->getNotifications();
-		$this->assertCount(1, $notifications, 'Expected 1 notification for digital signature error');
-		$notification = $notifications[0];
-		$this->assertEquals('workflow_ocr', $notification->getApp());
-		$this->assertEquals('ocr_error', $notification->getSubject());
-		$this->assertStringContainsString('OCR not possible:', $notification->getSubjectParameters()['message']);
-		$this->assertStringContainsString('DigitalSignatureError', $notification->getSubjectParameters()['message']);
+		$notifications = $this->notificationReceiverApp->getNotifications();
+		$filteredNotifications = array_filter(
+			$notifications,
+			function ($notification) use ($dateBeforeJobRun, $dateAfterRun) {
+				$notificationTime = $notification->getDateTime()->getTimestamp();
+				return $notification->getApp() === 'workflow_ocr'
+					&& $notification->getSubject() === 'ocr_error'
+					&& str_contains($notification->getSubjectParameters()['message'], 'OCR not possible:')
+					&& str_contains($notification->getSubjectParameters()['message'], 'DigitalSignatureError')
+					&& $notificationTime >= $dateBeforeJobRun
+					&& $notificationTime <= $dateAfterRun;
+			}
+		);
+		$this->assertCount(1, $filteredNotifications, 'Expected 1 notification for digital signature error');
 	}
 
 	protected function runTestWorkflowOcrSkipsNotificationOnEncryptedPdf() {
@@ -124,25 +127,34 @@ abstract class BackendTestBase extends TestCase {
 		$encryptedPdfErrorLogs = $this->getEncryptedPdfErrorLogs();
 
 		$this->assertEquals(0, count($encryptedPdfErrorLogs), 'Expected no encrypted PDF error logs');
-		$this->assertCount(0, self::$notificationReceiverApp->getNotifications(), 'Expected no notifications for encrypted PDF error');
+		$this->assertCount(0, $this->notificationReceiverApp->getNotifications(), 'Expected no notifications for encrypted PDF error');
 	}
 
 	protected function runTestWorkflowOcrSendsErrorNotificationOnEncryptedPdf() {
 		$localFile = 'document-encrypted.pdf';
 		$this->addOperation('application/pdf', json_encode(['skipNotificationsOnEncryptedPdf' => false]));
 		$this->uploadTestFile($localFile);
+		$dateBeforeJobRun = time();
 		$this->runOcrBackgroundJob();
+		$dateAfterRun = time();
 
 		$encryptedPdfErrorLogs = $this->getEncryptedPdfErrorLogs();
 
 		$this->assertEquals(1, count($encryptedPdfErrorLogs), 'Expected 1 encrypted PDF error log');
-		$notifications = self::$notificationReceiverApp->getNotifications();
-		$this->assertCount(1, $notifications, 'Expected 1 notification for encrypted PDF error');
-		$notification = $notifications[0];
-		$this->assertEquals('workflow_ocr', $notification->getApp());
-		$this->assertEquals('ocr_error', $notification->getSubject());
-		$this->assertStringContainsString('OCR not possible:', $notification->getSubjectParameters()['message']);
-		$this->assertStringContainsString('EncryptedPdfError', $notification->getSubjectParameters()['message']);
+		$notifications = $this->notificationReceiverApp->getNotifications();
+		$filteredNotifications = array_filter(
+			$notifications,
+			function ($notification) use ($dateBeforeJobRun, $dateAfterRun) {
+				$notificationTime = $notification->getDateTime()->getTimestamp();
+				return $notification->getApp() === 'workflow_ocr'
+					&& $notification->getSubject() === 'ocr_error'
+					&& str_contains($notification->getSubjectParameters()['message'], 'OCR not possible:')
+					&& str_contains($notification->getSubjectParameters()['message'], 'EncryptedPdfError')
+					&& $notificationTime >= $dateBeforeJobRun
+					&& $notificationTime <= $dateAfterRun;
+			}
+		);
+		$this->assertCount(1, $filteredNotifications, 'Expected 1 notification for encrypted PDF error');
 	}
 
 	private function getDigitalSignatureErrorLogs(): array {

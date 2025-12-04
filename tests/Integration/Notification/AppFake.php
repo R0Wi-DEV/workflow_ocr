@@ -21,12 +21,24 @@
 
 namespace OCA\WorkflowOcr\Tests\Integration\Notification;
 
+use OCP\IDBConnection;
 use OCP\Notification\IApp;
+use OCP\Notification\IManager;
 use OCP\Notification\INotification;
 
+// We use a faked notification receiver app to keep track of any notifications created
 class AppFake implements IApp {
 	private $notifications = [];
 	private $processed = [];
+
+	private static $registered = false;
+
+	public function __construct() {
+		if (!self::$registered) {
+			\OC::$server->get(IManager::class)->registerApp(AppFake::class);
+			self::$registered = true;
+		}
+	}
 
 	public function notify(INotification $notification): void {
 		$this->notifications[] = $notification;
@@ -40,15 +52,33 @@ class AppFake implements IApp {
 		return 0;
 	}
 
-	public function getNotifications() {
+	/**
+	 * @return INotification[]
+	 */
+	public function getNotifications() : array {
 		return $this->notifications;
 	}
 
-	public function getProcessed() {
+	/**
+	 * @return INotification[]
+	 */
+	public function getProcessed() : array {
 		return $this->processed;
 	}
 
 	public function resetNotifications() {
 		$this->notifications = [];
+		$dbConnection = \OC::$server->get(IDBConnection::class);
+		try {
+			if (!$dbConnection->tableExists('notifications')) {
+				return;
+			}
+			$sql = $dbConnection->getQueryBuilder();
+			$sql->delete('notifications')
+				->where($sql->expr()->eq('app', $sql->createNamedParameter('workflow_ocr')));
+			$sql->executeStatement();
+		} finally {
+			$dbConnection->close();
+		}
 	}
 }

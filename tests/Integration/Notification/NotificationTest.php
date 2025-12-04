@@ -33,9 +33,9 @@ use OCA\WorkflowOcr\Service\OcrService;
 use OCA\WorkflowOcr\Wrapper\IFilesystem;
 use OCA\WorkflowOcr\Wrapper\IViewFactory;
 use OCP\Files\IRootFolder;
-use OCP\IDBConnection;
 use OCP\IUserManager;
 use OCP\IUserSession;
+use OCP\Notification\IManager;
 use OCP\Notification\INotification;
 use OCP\SystemTag\ISystemTagObjectMapper;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -51,22 +51,17 @@ class NotificationTest extends TestCase {
 	/** @var INotificationService */
 	private $notificationService;
 	/** @var AppFake */
-	private static $appFake;
-
-	public static function setUpBeforeClass() : void {
-		// We use a faked notification receiver app to keep track of any notifications created
-		\OC::$server->get(\OCP\Notification\IManager::class)->registerApp(AppFake::class);
-		self::$appFake = \OC::$server->get(AppFake::class);
-	}
+	private $appFake;
 
 	protected function setUp() : void {
 		parent::setUp();
 
 		// Use real Notification service to be able to check if notifications get created
-		$this->notificationService = new NotificationService(\OC::$server->get(\OCP\Notification\IManager::class));
+		$this->notificationService = new NotificationService(\OC::$server->get(IManager::class));
 		$this->logger = $this->createMock(LoggerInterface::class);
 
-		$this->cleanupExistingNotifications();
+		$this->appFake = \OC::$server->get(AppFake::class);
+		$this->appFake->resetNotifications();
 	}
 
 	public function testOcrServiceCreatesErrorNotificationIfOcrFailed() {
@@ -97,7 +92,7 @@ class NotificationTest extends TestCase {
 			'settings' => '{}'
 		]);
 
-		$notifications = self::$appFake->getNotifications();
+		$notifications = $this->appFake->getNotifications();
 		$this->assertCount(1, $notifications);
 
 		$notification = $notifications[0];
@@ -110,7 +105,7 @@ class NotificationTest extends TestCase {
 		$randomFileId = rand(1, 1000);
 		$this->notificationService->createSuccessNotification('someuser', $randomFileId);
 
-		$notifications = self::$appFake->getNotifications();
+		$notifications = $this->appFake->getNotifications();
 		$this->assertCount(1, $notifications);
 
 		/** @var INotification */
@@ -121,21 +116,5 @@ class NotificationTest extends TestCase {
 		$this->assertEquals('someuser', $notification->getUser());
 		$this->assertEquals('file', $notification->getObjectType());
 		$this->assertEquals([], $notification->getSubjectParameters());
-	}
-
-	private function cleanupExistingNotifications() {
-		self::$appFake->resetNotifications();
-		$dbConnection = \OC::$server->get(IDBConnection::class);
-		try {
-			if (!$dbConnection->tableExists('notifications')) {
-				return;
-			}
-			$sql = $dbConnection->getQueryBuilder();
-			$sql->delete('notifications')
-				->where($sql->expr()->eq('app', $sql->createNamedParameter('workflow_ocr')));
-			$sql->executeStatement();
-		} finally {
-			$dbConnection->close();
-		}
 	}
 }
