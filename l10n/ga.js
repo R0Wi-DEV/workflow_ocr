@@ -31,11 +31,11 @@ OC.L10N.register(
     "Redo OCR" : "Athdhéan OCR",
     "Force OCR" : "Cuir OCR i bhfeidhm",
     "Skip file completely" : "Scipeáil an comhad go hiomlán",
+    "Send success notification" : "Seol fógra ratha",
     "Other settings" : "Socruithe eile",
     "Remove background" : "Bain an cúlra",
     "Keep original file version" : "Coinnigh leagan bunaidh an chomhaid",
     "Keep original file modification date" : "Coinnigh dáta modhnaithe an chomhaid bhunaidh",
-    "Send success notification" : "Seol fógra ratha",
     "Create sidecar text file" : "Cruthaigh comhad téacs taobhcharr",
     "Custom ocrMyPdf CLI arguments" : "Argóintí CLI saincheaptha ocrMyPdf"
 },

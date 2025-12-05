@@ -31,11 +31,11 @@ OC.L10N.register(
     "Redo OCR" : "Vrátit zpět rozpoznávání znaků",
     "Force OCR" : "Vynutit rozpoznání znaků",
     "Skip file completely" : "Soubor zcela přeskočit",
+    "Send success notification" : "Odeslat upozornění na úspěch",
     "Other settings" : "Ostatní nastavení",
     "Remove background" : "Odebrat obrázek na pozadí",
     "Keep original file version" : "Ponechat původní verzi souboru",
     "Keep original file modification date" : "Ponechat datum změny jako u původního souboru",
-    "Send success notification" : "Odeslat upozornění na úspěch",
     "Create sidecar text file" : "Vytvořit postranní textový soubor",
     "Custom ocrMyPdf CLI arguments" : "Uživatelsky určené argumenty pro příkazový řádek s ocrMyPdf"
 },

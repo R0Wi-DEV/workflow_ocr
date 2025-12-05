@@ -31,11 +31,12 @@ OC.L10N.register(
     "Redo OCR" : "OCR opnieuw uitvoeren",
     "Force OCR" : "OCR forceren",
     "Skip file completely" : "Bestand helemaal overslaan",
+    "Notifications" : "Meldingen",
+    "Send success notification" : "Succesmelding versturen",
     "Other settings" : "Overige instellingen",
     "Remove background" : "Achtergrond verwijderen",
     "Keep original file version" : "Oorspronkelijke bestandsversie behouden",
     "Keep original file modification date" : "Oorspronkelijke datum van bestandswijziging behouden",
-    "Send success notification" : "Succesmelding versturen",
     "Custom ocrMyPdf CLI arguments" : "Aangepaste argumenten voor ocrMyPdf CLI"
 },
 "nplurals=2; plural=(n != 1);");

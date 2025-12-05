@@ -1,6 +1,7 @@
 OC.L10N.register(
     "workflow_ocr",
     {
+    "Notifications" : "Obvestila",
     "Other settings" : "Druge nastavitve",
     "Remove background" : "Odstrani ozadje"
 },

@@ -25,11 +25,11 @@ OC.L10N.register(
     "Redo OCR" : "Korda optilist tekstituvastust",
     "Force OCR" : "Sundkorras optiline tekstituvastus",
     "Skip file completely" : "Jäta fail vahele",
+    "Send success notification" : "Saada õnnestumise kohta teavitus",
     "Other settings" : "Muud seadistused",
     "Remove background" : "Eemalda taust",
     "Keep original file version" : "Säilita algne fail",
     "Keep original file modification date" : "Säilita algne faili muutmise kuupäev",
-    "Send success notification" : "Saada õnnestumise kohta teavitus",
     "Custom ocrMyPdf CLI arguments" : "OCRmyPDF CLI argumendid"
 },
 "nplurals=2; plural=(n != 1);");
