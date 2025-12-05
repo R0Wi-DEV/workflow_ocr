@@ -30,11 +30,11 @@ OC.L10N.register(
     "Redo OCR" : "Gentag OCR",
     "Force OCR" : "Tving OCR",
     "Skip file completely" : "Spring fil helt over",
+    "Send success notification" : "Send succesmeddelelse",
     "Other settings" : "Andre indstillinger",
     "Remove background" : "Fjern baggrund",
     "Keep original file version" : "Behold den originale filversion",
     "Keep original file modification date" : "Behold oprindelig filændringsdato",
-    "Send success notification" : "Send succesmeddelelse",
     "Custom ocrMyPdf CLI arguments" : "Brugerdefineret MyPdf CLI argumenter"
 },
 "nplurals=2; plural=(n != 1);");

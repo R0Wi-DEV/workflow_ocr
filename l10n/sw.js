@@ -31,11 +31,12 @@ OC.L10N.register(
     "Redo OCR" : "Redo OCR",
     "Force OCR" : "Lazimisha OCR",
     "Skip file completely" : "Ruka faili kabisa",
+    "Notifications" : "Arifa",
+    "Send success notification" : "Tuma arifa ya mafanikio",
     "Other settings" : "Mipangilio mingine",
     "Remove background" : "Ondoa mandharinyuma",
     "Keep original file version" : "Hifadhi toleo asili la faili ",
     "Keep original file modification date" : "Weka tarehe asili ya kurekebisha faili",
-    "Send success notification" : "Tuma arifa ya mafanikio",
     "Custom ocrMyPdf CLI arguments" : "Hoja maalum za ocrMyPdf CLI"
 },
 "nplurals=2; plural=(n != 1);");

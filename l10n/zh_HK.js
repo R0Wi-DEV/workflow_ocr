@@ -31,11 +31,12 @@ OC.L10N.register(
     "Redo OCR" : "重做 OCR",
     "Force OCR" : "強制 OCR",
     "Skip file completely" : "完全跳過檔案",
+    "Notifications" : "通知",
+    "Send success notification" : "傳送成功通知",
     "Other settings" : "其他設定",
     "Remove background" : "移除背景",
     "Keep original file version" : "保留原始檔案版本",
     "Keep original file modification date" : "保留原先的檔案的修改日期",
-    "Send success notification" : "傳送成功通知",
     "Create sidecar text file" : "建立附屬文字檔",
     "Custom ocrMyPdf CLI arguments" : "自訂 ocrMyPdf CLI 參數"
 },

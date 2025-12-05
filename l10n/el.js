@@ -31,11 +31,11 @@ OC.L10N.register(
     "Redo OCR" : "Επανάληψη OCR",
     "Force OCR" : "Εξαναγκασμός OCR",
     "Skip file completely" : "Παράλειψη αρχείου εντελώς",
+    "Send success notification" : "Αποστολή ειδοποίησης επιτυχίας",
     "Other settings" : "Άλλες ρυθμίσεις",
     "Remove background" : "Αφαίρεση φόντου",
     "Keep original file version" : "Διατήρηση αρχικής έκδοσης αρχείου",
     "Keep original file modification date" : "Διατήρηση αρχικής ημερομηνίας τροποποίησης αρχείου",
-    "Send success notification" : "Αποστολή ειδοποίησης επιτυχίας",
     "Custom ocrMyPdf CLI arguments" : "Προσαρμοσμένα ορίσματα CLI για το ocrMyPdf"
 },
 "nplurals=2; plural=(n != 1);");

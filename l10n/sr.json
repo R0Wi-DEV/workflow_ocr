@@ -29,11 +29,12 @@
     "Redo OCR" : "Понови OCR",
     "Force OCR" : "Форсирај OCR",
     "Skip file completely" : "У потпуности прескочи фајл",
+    "Notifications" : "Упозорења",
+    "Send success notification" : "Пошаљи обавештење о успеху",
     "Other settings" : "Остала подешавања",
     "Remove background" : "Уклони позадину",
     "Keep original file version" : "Задржи оригиналну верзију фајла",
     "Keep original file modification date" : "Задржи оригинални датум измене фајла",
-    "Send success notification" : "Пошаљи обавештење о успеху",
     "Custom ocrMyPdf CLI arguments" : "Произвољни ocrMyPdf CLI аргументи"
 },"pluralForm" :"nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);"
 }

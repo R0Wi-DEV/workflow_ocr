@@ -30,11 +30,12 @@ OC.L10N.register(
     "Redo OCR" : "Vrátiť späť OCR",
     "Force OCR" : "Vynútiť OCR",
     "Skip file completely" : "Preskočiť súbor úplne",
+    "Notifications" : "Upozornenia",
+    "Send success notification" : "Upozornenie na úspešné odoslanie",
     "Other settings" : "Ďalšie nastavenia",
     "Remove background" : "Odstrániť pozadie",
     "Keep original file version" : "Ponechať originálnu verziu súboru",
     "Keep original file modification date" : "Ponechať originálny dátum zmeny súboru",
-    "Send success notification" : "Upozornenie na úspešné odoslanie",
     "Custom ocrMyPdf CLI arguments" : "Uživateľské parametre pre ocrMyPdf CLI"
 },
 "nplurals=4; plural=(n % 1 == 0 && n == 1 ? 0 : n % 1 == 0 && n >= 2 && n <= 4 ? 1 : n % 1 != 0 ? 2: 3);");

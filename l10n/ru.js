@@ -31,11 +31,12 @@ OC.L10N.register(
     "Redo OCR" : "Повторить OCR",
     "Force OCR" : "Принудительное OCR",
     "Skip file completely" : "Полностью пропустить файл",
+    "Notifications" : "Уведомления",
+    "Send success notification" : "Отправить уведомление об окончании",
     "Other settings" : "Прочие настройки",
     "Remove background" : "Удалить фон",
     "Keep original file version" : "Оставить исходную версию файла",
     "Keep original file modification date" : "Оставить исходную дату модификации файла",
-    "Send success notification" : "Отправить уведомление об окончании",
     "Custom ocrMyPdf CLI arguments" : "Пользовательские аргументы OCRmyPDF CLI"
 },
 "nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);");

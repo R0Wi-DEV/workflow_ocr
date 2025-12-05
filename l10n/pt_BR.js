@@ -31,11 +31,12 @@ OC.L10N.register(
     "Redo OCR" : "Refazer OCR",
     "Force OCR" : "Forçar OCR",
     "Skip file completely" : "Pular arquivo completamente",
+    "Notifications" : "Notificações",
+    "Send success notification" : "Enviar notificação de sucesso",
     "Other settings" : "Outras configurações",
     "Remove background" : "Remover plano de fundo",
     "Keep original file version" : "Manter a versão original do arquivo",
     "Keep original file modification date" : "Manter a data original de modificação do arquivo",
-    "Send success notification" : "Enviar notificação de sucesso",
     "Create sidecar text file" : "Criar arquivo de texto sidecar",
     "Custom ocrMyPdf CLI arguments" : "Argumentos personalizados da ILC do ocrMyPdf"
 },

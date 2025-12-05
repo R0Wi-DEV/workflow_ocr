@@ -29,11 +29,11 @@
     "Redo OCR" : "Refaire l'OCR",
     "Force OCR" : "Forcer l'OCR",
     "Skip file completely" : "Ignorer complètement le fichier",
+    "Send success notification" : "Envoyer une notification en cas de succès",
     "Other settings" : "Autres paramètres",
     "Remove background" : "Retirer l'arrière-plan",
     "Keep original file version" : "Conserver la version originale du fichier",
     "Keep original file modification date" : "Conserver la date de modification du fichier d'origine",
-    "Send success notification" : "Envoyer une notification en cas de succès",
     "Custom ocrMyPdf CLI arguments" : "Arguments ligne de commande ocrMyPdf personnalisés"
 },"pluralForm" :"nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;"
 }
