@@ -88,27 +88,43 @@
 		</SettingsItem>
 		<SettingsItem :label="t('workflow_ocr', 'Other settings')">
 			<div>
-				<NcCheckboxRadioSwitch ref="removeBackgroundSwitch" :disabled="removeBackgroundDisabled"
-					:checked.sync="model.removeBackground" type="switch">
-					{{ t('workflow_ocr', 'Remove background') }}
-				</NcCheckboxRadioSwitch>
-				<NcCheckboxRadioSwitch ref="keepOriginalFileVersion" :checked.sync="model.keepOriginalFileVersion"
-					type="switch">
-					{{ t('workflow_ocr', 'Keep original file version') }}
-				</NcCheckboxRadioSwitch>
-				<NcCheckboxRadioSwitch ref="keepOriginalFileDate" :checked.sync="model.keepOriginalFileDate"
-					type="switch">
-					{{ t('workflow_ocr', 'Keep original file modification date') }}
-				</NcCheckboxRadioSwitch>
-				<NcCheckboxRadioSwitch ref="createSidecarFile" :checked.sync="model.createSidecarFile" type="switch">
-					{{ t('workflow_ocr', 'Create sidecar text file') }}
-				</NcCheckboxRadioSwitch>
+				<HelpTextWrapper class="nccb-info-wrapper"
+					:help-text="t('workflow_ocr', 'Try to remove colored backgrounds before OCR. Compatible only with ocrmypdf versions prior to 13 and incompatible with redo OCR mode.')">
+					<NcCheckboxRadioSwitch ref="removeBackgroundSwitch" :disabled="removeBackgroundDisabled"
+						:checked.sync="model.removeBackground" type="switch">
+						{{ t('workflow_ocr', 'Remove background') }}
+					</NcCheckboxRadioSwitch>
+				</HelpTextWrapper>
+				<HelpTextWrapper class="nccb-info-wrapper"
+					:help-text="t('workflow_ocr', 'Keep the original file as a version labeled Before OCR and exclude it from automatic expiration.')">
+					<NcCheckboxRadioSwitch ref="keepOriginalFileVersion" :checked.sync="model.keepOriginalFileVersion"
+						type="switch">
+						{{ t('workflow_ocr', 'Keep original file version') }}
+					</NcCheckboxRadioSwitch>
+				</HelpTextWrapper>
+				<HelpTextWrapper class="nccb-info-wrapper"
+					:help-text="t('workflow_ocr', 'Restore the original modification date on the new file version for consistent sorting.')">
+					<NcCheckboxRadioSwitch ref="keepOriginalFileDate" :checked.sync="model.keepOriginalFileDate"
+						type="switch">
+						{{ t('workflow_ocr', 'Keep original file modification date') }}
+					</NcCheckboxRadioSwitch>
+				</HelpTextWrapper>
+				<HelpTextWrapper class="nccb-info-wrapper"
+					:help-text="t('workflow_ocr', 'Create a .txt sidecar file next to the OCR processed file containing the extracted text.')">
+					<NcCheckboxRadioSwitch ref="createSidecarFile" :checked.sync="model.createSidecarFile" type="switch">
+						{{ t('workflow_ocr', 'Create sidecar text file') }}
+					</NcCheckboxRadioSwitch>
+				</HelpTextWrapper>
 			</div>
 		</SettingsItem>
 		<div>
-			<NcTextField :value.sync="model.customCliArgs" :label="t('workflow_ocr', 'Custom ocrMyPdf CLI arguments')"
-				ref="customCliArgs">
-			</NcTextField>
+			<HelpTextWrapper class="nccb-info-wrapper"
+				:help-text="t('workflow_ocr', 'Pass additional ocrmypdf arguments here. They are forwarded to the CLI exactly as entered.')">
+				<NcTextField :value.sync="model.customCliArgs"
+					:label="t('workflow_ocr', 'Custom ocrMyPdf CLI arguments')"
+					ref="customCliArgs">
+				</NcTextField>
+			</HelpTextWrapper>
 		</div>
 	</div>
 </template>
