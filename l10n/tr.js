@@ -31,11 +31,12 @@ OC.L10N.register(
     "Redo OCR" : "Karakterleri yeniden tanı",
     "Force OCR" : "Karakter tanımayı dayat",
     "Skip file completely" : "Dosya tümüyle atlansın",
+    "Notifications" : "Bildirimler",
+    "Send success notification" : "Gönderildi bildirimi",
     "Other settings" : "Diğer ayarlar",
     "Remove background" : "Arka planı kaldır",
     "Keep original file version" : "Özgün dosya sürümü korunsun",
     "Keep original file modification date" : "Özgün dosya değiştirilme tarihi korunsun",
-    "Send success notification" : "Gönderildi bildirimi",
     "Custom ocrMyPdf CLI arguments" : "Özel ocrMyPdf komut satırı parametreleri"
 },
 "nplurals=2; plural=(n > 1);");

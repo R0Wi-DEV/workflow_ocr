@@ -1,6 +1,7 @@
 OC.L10N.register(
     "workflow_ocr",
     {
+    "Notifications" : "Powiadomienia",
     "Other settings" : "Ustawienia pozostałe",
     "Remove background" : "Usuń tło"
 },

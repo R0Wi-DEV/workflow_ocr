@@ -28,11 +28,11 @@
     "Redo OCR" : "إعادة إجراء عملية التحويل من صورة إلى نص",
     "Force OCR" : "فرض التحويل من صورة إلى نص",
     "Skip file completely" : "تجاهل الملف بالكامل",
+    "Send success notification" : "أرسل إشعاراً بنجاح الإجراء",
     "Other settings" : "اعدادات اخرى",
     "Remove background" : "حذف الخلفية",
     "Keep original file version" : "الاحتفاظ بنسخة من الملف الأصلي",
     "Keep original file modification date" : "أبقِ على تاريخ آخر تعديل للملف الأصلي",
-    "Send success notification" : "أرسل إشعاراً بنجاح الإجراء",
     "Custom ocrMyPdf CLI arguments" : "بارامترات مخصصة للأمر السطري ocrMyPdf  "
 },"pluralForm" :"nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;"
 }

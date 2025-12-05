@@ -31,11 +31,11 @@ OC.L10N.register(
     "Redo OCR" : "Redo OCR",
     "Force OCR" : "Force OCR",
     "Skip file completely" : "Skip file completely",
+    "Send success notification" : "Send success notification",
     "Other settings" : "Other settings",
     "Remove background" : "Remove background",
     "Keep original file version" : "Keep original file version",
     "Keep original file modification date" : "Keep original file's modification date",
-    "Send success notification" : "Send success notification",
     "Create sidecar text file" : "Create sidecar text file",
     "Custom ocrMyPdf CLI arguments" : "Custom ocrMyPdf CLI arguments"
 },
