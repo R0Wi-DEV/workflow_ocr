@@ -30,6 +30,7 @@ OC.L10N.register(
     "Redo OCR" : "Gentag OCR",
     "Force OCR" : "Tving OCR",
     "Skip file completely" : "Spring fil helt over",
+    "Notifications" : "Påmindelser",
     "Send success notification" : "Send succesmeddelelse",
     "Other settings" : "Andre indstillinger",
     "Remove background" : "Fjern baggrund",
