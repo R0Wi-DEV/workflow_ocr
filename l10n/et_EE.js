@@ -25,6 +25,7 @@ OC.L10N.register(
     "Redo OCR" : "Korda optilist tekstituvastust",
     "Force OCR" : "Sundkorras optiline tekstituvastus",
     "Skip file completely" : "Jäta fail vahele",
+    "Notifications" : "Teavitused",
     "Send success notification" : "Saada õnnestumise kohta teavitus",
     "Other settings" : "Muud seadistused",
     "Remove background" : "Eemalda taust",
