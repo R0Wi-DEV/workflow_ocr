@@ -30,6 +30,7 @@ OC.L10N.register(
     "Redo OCR" : "إعادة إجراء عملية التحويل من صورة إلى نص",
     "Force OCR" : "فرض التحويل من صورة إلى نص",
     "Skip file completely" : "تجاهل الملف بالكامل",
+    "Notifications" : "الإشعارات",
     "Send success notification" : "أرسل إشعاراً بنجاح الإجراء",
     "Other settings" : "اعدادات اخرى",
     "Remove background" : "حذف الخلفية",

@@ -31,6 +31,7 @@ OC.L10N.register(
     "Redo OCR" : "Επανάληψη OCR",
     "Force OCR" : "Εξαναγκασμός OCR",
     "Skip file completely" : "Παράλειψη αρχείου εντελώς",
+    "Notifications" : "Ειδοποιήσεις",
     "Send success notification" : "Αποστολή ειδοποίησης επιτυχίας",
     "Other settings" : "Άλλες ρυθμίσεις",
     "Remove background" : "Αφαίρεση φόντου",

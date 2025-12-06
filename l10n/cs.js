@@ -31,6 +31,7 @@ OC.L10N.register(
     "Redo OCR" : "Vrátit zpět rozpoznávání znaků",
     "Force OCR" : "Vynutit rozpoznání znaků",
     "Skip file completely" : "Soubor zcela přeskočit",
+    "Notifications" : "Upozornění",
     "Send success notification" : "Odeslat upozornění na úspěch",
     "Other settings" : "Ostatní nastavení",
     "Remove background" : "Odebrat obrázek na pozadí",
