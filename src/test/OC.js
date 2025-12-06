@@ -1,21 +1,21 @@
 export default {
 
-	getLanguage() {
+	getLanguage: function() {
 		return 'en-GB'
 	},
 
-	getLocale() {
+	getLocale: function() {
 		return 'en_GB'
 	},
 
-	isUserAdmin() {
+	isUserAdmin: function() {
 		return true
 	},
 
 	Util: {
-		naturalSortCompare(a, b) {
+		naturalSortCompare: function(a, b) {
 			return 0
-		}
+		},
 	},
 
 	coreApps: [
@@ -34,7 +34,7 @@ export default {
 		spreed: '/apps/spreed',
 	},
 
-    config: {
-        
-    }
+	config: {
+
+	},
 }

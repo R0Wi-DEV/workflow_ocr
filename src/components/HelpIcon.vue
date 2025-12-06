@@ -21,12 +21,15 @@
   -->
 
 <template>
-    <NcPopover :triggers="['hover']">
-        <template #trigger>
-            <HelpCircleIcon class="info" :size="20" decorative title="" />
-        </template>
-        <p>{{ infoText }}</p>
-    </NcPopover>
+	<NcPopover :triggers="['hover']">
+		<template #trigger>
+			<HelpCircleIcon class="info"
+				:size="20"
+				decorative
+				title="" />
+		</template>
+		<p>{{ infoText }}</p>
+	</NcPopover>
 </template>
 
 <script>

@@ -60,9 +60,10 @@
 
 <script>
 
-const { appId } = require('../constants.js')
 import { NcSettingsSection } from '@nextcloud/vue'
 import { getGlobalSettings, setGlobalSettings } from '../service/globalSettingsService.js'
+import { translate as t } from '@nextcloud/l10n'
+const { appId } = require('../constants.js')
 
 export default {
 	name: 'GlobalSettings',

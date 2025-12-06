@@ -1,7 +1,5 @@
-import Vue from 'vue'
-import GlobalSettings from './components/GlobalSettings'
+import { createApp } from 'vue'
+import GlobalSettings from './components/GlobalSettings.vue'
 
-Vue.prototype.t = t
-const App = Vue.extend(GlobalSettings)
-const appInstance = new App()
-appInstance.$mount('#workflow_ocr_globalsettings')
+const app = createApp(GlobalSettings)
+app.mount('#workflow_ocr_globalsettings')
