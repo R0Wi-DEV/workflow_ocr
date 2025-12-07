@@ -31,6 +31,7 @@ OC.L10N.register(
     "Redo OCR" : "Refaire l'OCR",
     "Force OCR" : "Forcer l'OCR",
     "Skip file completely" : "Ignorer complètement le fichier",
+    "Notifications" : "Notifications",
     "Send success notification" : "Envoyer une notification en cas de succès",
     "Other settings" : "Autres paramètres",
     "Remove background" : "Retirer l'arrière-plan",
