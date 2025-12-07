@@ -30,7 +30,7 @@
     "Force OCR" : "Texterkennung (OCR) erzwingen",
     "Skip file completely" : "Datei komplett überspringen",
     "Notifications" : "Benachrichtigungen",
-    "The asynchronous OCR process will send Nextcloud notifications. Use these settings to control them." : "Der asynchrone OCR-Prozess sendet Nextcloud-Benachrichtigungen. Diese Einstellungen verwenden, um diese zu steuern.",
+    "The asynchronous OCR process will send Nextcloud notifications. Use these settings to control them." : "Der asynchrone OCR-Prozess sendet Nextcloud-Benachrichtigungen. Diese Einstellungen verwenden, um die Benachrichtigungen zu steuern.",
     "Skip notifications for ocrmypdf error code 2 (for example digitally signed PDFs)" : "Benachrichtigungen für den ocrmypdf-Fehlercode 2 (z. B. digital signierte PDFs) überspringen",
     "Skip for invalid PDFs" : "Überspringen für ungültige PDFs",
     "Skip notifications for ocrmypdf error code 8 (for example password protected PDFs)" : "Benachrichtigungen für den ocrmypdf-Fehlercode 8 überspringen (z. B. passwortgeschützte PDFs)",
