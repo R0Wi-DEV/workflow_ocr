@@ -4,8 +4,15 @@ import GlobalSettings from '../../components/GlobalSettings.vue'
 
 jest.mock('../../service/globalSettingsService')
 
+const mountOptions = {
+	global: {
+		mocks: {
+			t: (app, key) => key,
+		},
+	},
+}
+
 beforeEach(() => {
-	global.t = jest.fn()
 	jest.resetAllMocks()
 })
 
@@ -14,7 +21,7 @@ describe('Init tests', () => {
 		const mockSettings = { processorCount: null }
 		getGlobalSettings.mockResolvedValueOnce(mockSettings)
 
-		const wrapper = mount(GlobalSettings)
+		const wrapper = mount(GlobalSettings, mountOptions)
 		await new Promise(process.nextTick)
 
 		expect(getGlobalSettings).toHaveBeenCalledTimes(1)
@@ -27,7 +34,7 @@ describe('Init tests', () => {
 		const mockSettings = { processorCount: 42 }
 		getGlobalSettings.mockResolvedValueOnce(mockSettings)
 
-		const wrapper = mount(GlobalSettings)
+		const wrapper = mount(GlobalSettings, mountOptions)
 		await new Promise(process.nextTick)
 
 		expect(getGlobalSettings).toHaveBeenCalledTimes(1)
@@ -42,20 +49,21 @@ describe('Interaction tests', () => {
 		const initialMockSettings = { processorCount: '2' }
 		getGlobalSettings.mockResolvedValueOnce(initialMockSettings)
 
-		const afterSaveMockSettings = { processorCount: '42' }
+		const afterSaveMockSettings = { processorCount: 42 }
 		setGlobalSettings.mockResolvedValueOnce(afterSaveMockSettings)
 
-		const wrapper = mount(GlobalSettings)
+		const wrapper = mount(GlobalSettings, mountOptions)
 		await new Promise(process.nextTick)
 
 		const processorCount = wrapper.find('input[name="processorCount"]')
 		processorCount.element.value = '42'
 		await processorCount.trigger('input')
 
-		expect(wrapper.vm.settings.processorCount).toBe('42')
+		// v-model on type="number" input converts to number
+		expect(wrapper.vm.settings.processorCount).toBe(42)
 		expect(setGlobalSettings).toHaveBeenCalledTimes(1)
 		expect(setGlobalSettings).toHaveBeenCalledWith(expect.objectContaining({
-			processorCount: '42',
+			processorCount: 42,
 		}))
 	})
 })

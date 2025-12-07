@@ -21,7 +21,6 @@
  */
 
 import OC from './OC.js'
-import 'regenerator-runtime/runtime'
 
 global.OC = OC
 

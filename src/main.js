@@ -1,17 +1,18 @@
-import WorkflowOcr from './components/WorkflowOcr'
+import { defineCustomElement } from 'vue'
 import { translate as t } from '@nextcloud/l10n'
-import Vue from 'vue'
+import WorkflowOcr from './components/WorkflowOcr.vue'
 
-Vue.mixin({
-	methods: {
-		t,
-	},
+const WorkflowOcrComponent = defineCustomElement(WorkflowOcr, {
+	shadowRoot: false,
 })
+const customElementId = 'oca-workflow-ocr-settings'
+globalThis.customElements.define(customElementId, WorkflowOcrComponent)
 
-window.OCA.WorkflowEngine.registerOperator({
+globalThis.OCA.WorkflowEngine.registerOperator({
 	id: 'OCA\\WorkflowOcr\\Operation',
-	name: t('workflow_ocr'),
-	description: t('workflow_ocr'),
+	name: t('workflow_ocr', 'OCR file'),
+	description: t('workflow_ocr', 'OCR processing via workflow'),
 	operation: '',
-	options: WorkflowOcr,
+	element: customElementId,
+	options: WorkflowOcr, // backward compatibility
 })

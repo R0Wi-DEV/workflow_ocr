@@ -21,12 +21,12 @@
   -->
 
 <template>
-    <NcPopover :triggers="['hover']">
-        <template #trigger>
-            <slot />
-        </template>
-        {{ helpText }}
-    </NcPopover>
+	<NcPopover :triggers="['hover']" no-focus-trap>
+		<template #trigger>
+			<slot />
+		</template>
+		{{ helpText }}
+	</NcPopover>
 </template>
 
 <script>

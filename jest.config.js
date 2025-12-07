@@ -1,5 +1,8 @@
 // These modules will be transformed to commonjs modules
 const ignorePatterns = [
+	'@nextcloud/.*',
+	'@vueuse/.*',
+	'floating-vue',
 	'ansi-regex',
 	'@mdi/svg',
 	'bail',
@@ -37,6 +40,8 @@ const ignorePatterns = [
 module.exports = {
 	collectCoverage: true,
 
+	coverageProvider: 'v8',
+
 	collectCoverageFrom: [
 		'src/**/*.{js,vue}',
 		'!src/test/**',
@@ -44,7 +49,7 @@ module.exports = {
 	],
 
 	coverageReporters: [
-		'text-summary',
+		'text',
 		'json',
 		'lcov',
 		'html',
@@ -70,10 +75,14 @@ module.exports = {
 
 	moduleNameMapper: {
 		'\\.(css|scss)$': 'jest-transform-stub',
+		'^@nextcloud/axios$': '<rootDir>/src/test/__mocks__/@nextcloud/axios.js',
+		'^@nextcloud/router$': '<rootDir>/src/test/__mocks__/@nextcloud/router.js',
+		'^@nextcloud/l10n$': '<rootDir>/src/test/__mocks__/@nextcloud/l10n.js',
+		'^@vue/test-utils$': '<rootDir>/node_modules/@vue/test-utils/dist/vue-test-utils.cjs.js',
 	},
 
 	transform: {
 		'\\.js$': 'babel-jest',
-		'\\.vue$': '@vue/vue2-jest',
+		'\\.vue$': '@vue/vue3-jest',
 	},
 }
