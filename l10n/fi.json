@@ -1,4 +1,5 @@
 { "translations": {
+    "Notifications" : "Ilmoitukset",
     "Other settings" : "Muut asetukset",
     "Remove background" : "Poista taustakuva"
 },"pluralForm" :"nplurals=2; plural=(n != 1);"
