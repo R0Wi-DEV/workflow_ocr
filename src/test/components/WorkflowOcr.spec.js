@@ -79,7 +79,7 @@ describe('Init tests', () => {
 				},
 			},
 		})
-		expect(wrapper.vm.value).toEqual('')
+		expect(wrapper.props().modelValue).toEqual('')
 		expect(getInstalledLanguages).toHaveBeenCalledTimes(1)
 	})
 })
@@ -98,7 +98,7 @@ describe('Language settings tests', () => {
 			...mountOptions,
 			...mountOptions,
 			props: {
-				value: '{ "languages": [ "deu" ], "removeBackground": true }',
+				modelValue: '{ "languages": [ "deu" ], "removeBackground": true }',
 			},
 		})
 		await new Promise(process.nextTick)
@@ -118,7 +118,7 @@ describe('Language settings tests', () => {
 			...mountOptions,
 			...mountOptions,
 			props: {
-				value: null,
+				modelValue: null,
 			},
 		})
 		await new Promise(process.nextTick)
@@ -131,7 +131,7 @@ describe('Language settings tests', () => {
 			...mountOptions,
 			...mountOptions,
 			props: {
-				value: '{ "languages": [ "nonExistend" ], "removeBackground": true }',
+				modelValue: '{ "languages": [ "nonExistend" ], "removeBackground": true }',
 			},
 		})
 		await new Promise(process.nextTick)
@@ -144,7 +144,7 @@ describe('Language settings tests', () => {
 			...mountOptions,
 			...mountOptions,
 			props: {
-				value: '{ "languages": null }',
+				modelValue: '{ "languages": null }',
 			},
 		})
 		await new Promise(process.nextTick)
@@ -157,7 +157,7 @@ describe('Language settings tests', () => {
 			...mountOptions,
 			...mountOptions,
 			props: {
-				value: '{ "languages": [ "de" ], "removeBackground": true }',
+				modelValue: '{ "languages": [ "de" ], "removeBackground": true }',
 			},
 		})
 		await new Promise(process.nextTick)
@@ -169,7 +169,7 @@ describe('Language settings tests', () => {
 			{ label: 'English', langCode: 'en' },
 		])
 
-		const inputEvent = wrapper.emitted().input
+		const inputEvent = wrapper.emitted()['update:modelValue']
 		expect(inputEvent).toBeTruthy()
 		expect(inputEvent[0][0]).toBe('{"languages":["de","en"],"tagsToAddAfterOcr":[],"tagsToRemoveAfterOcr":[],"removeBackground":true,"keepOriginalFileVersion":false,"keepOriginalFileDate":false,"sendSuccessNotification":false,"ocrMode":0,"customCliArgs":"","createSidecarFile":false,"skipNotificationsOnInvalidPdf":false,"skipNotificationsOnEncryptedPdf":false}')
 
@@ -188,7 +188,7 @@ describe('Add/remove tags tests', () => {
 			...mountOptions,
 			...mountOptions,
 			props: {
-				value: '{ "languages": [ "de" ], "removeBackground": true }',
+				modelValue: '{ "languages": [ "de" ], "removeBackground": true }',
 			},
 		})
 
@@ -200,7 +200,7 @@ describe('Add/remove tags tests', () => {
 
 		await wrapper.vm.$nextTick()
 
-		const inputEvent = wrapper.emitted().input
+		const inputEvent = wrapper.emitted()['update:modelValue']
 		expect(inputEvent).toBeTruthy()
 		expect(inputEvent[0][0]).toBe('{"languages":["de"],"tagsToAddAfterOcr":[1,2],"tagsToRemoveAfterOcr":[],"removeBackground":true,"keepOriginalFileVersion":false,"keepOriginalFileDate":false,"sendSuccessNotification":false,"ocrMode":0,"customCliArgs":"","createSidecarFile":false,"skipNotificationsOnInvalidPdf":false,"skipNotificationsOnEncryptedPdf":false}')
 	})
@@ -210,7 +210,7 @@ describe('Add/remove tags tests', () => {
 			...mountOptions,
 			...mountOptions,
 			props: {
-				value: '{ "languages": [ "de" ], "removeBackground": true }',
+				modelValue: '{ "languages": [ "de" ], "removeBackground": true }',
 			},
 		})
 
@@ -222,7 +222,7 @@ describe('Add/remove tags tests', () => {
 
 		await wrapper.vm.$nextTick()
 
-		const inputEvent = wrapper.emitted().input
+		const inputEvent = wrapper.emitted()['update:modelValue']
 		expect(inputEvent).toBeTruthy()
 		expect(inputEvent[0][0]).toBe('{"languages":["de"],"tagsToAddAfterOcr":[],"tagsToRemoveAfterOcr":[1,2],"removeBackground":true,"keepOriginalFileVersion":false,"keepOriginalFileDate":false,"sendSuccessNotification":false,"ocrMode":0,"customCliArgs":"","createSidecarFile":false,"skipNotificationsOnInvalidPdf":false,"skipNotificationsOnEncryptedPdf":false}')
 	})
@@ -239,7 +239,7 @@ describe('Remove background tests', () => {
 			...mountOptions,
 			...mountOptions,
 			props: {
-				value: '{ "languages": [ "de" ] }',
+				modelValue: '{ "languages": [ "de" ] }',
 			},
 		})
 		expect(wrapper.vm.model.removeBackground).toBe(false)
@@ -250,7 +250,7 @@ describe('Remove background tests', () => {
 			...mountOptions,
 			...mountOptions,
 			props: {
-				value: '{ "languages": [ "de" ], "removeBackground": true }',
+				modelValue: '{ "languages": [ "de" ], "removeBackground": true }',
 			},
 		})
 
@@ -261,7 +261,7 @@ describe('Remove background tests', () => {
 
 		await wrapper.vm.$nextTick()
 
-		const inputEvent = wrapper.emitted().input
+		const inputEvent = wrapper.emitted()['update:modelValue']
 		expect(inputEvent).toBeTruthy()
 		expect(inputEvent[0][0]).toBe('{"languages":["de"],"tagsToAddAfterOcr":[],"tagsToRemoveAfterOcr":[],"removeBackground":false,"keepOriginalFileVersion":false,"keepOriginalFileDate":false,"sendSuccessNotification":false,"ocrMode":0,"customCliArgs":"","createSidecarFile":false,"skipNotificationsOnInvalidPdf":false,"skipNotificationsOnEncryptedPdf":false}')
 	})
@@ -278,7 +278,7 @@ describe('OCR mode tests', () => {
 			...mountOptions,
 			props: {
 				// simulate that ocr mode is currently set to something diffferent
-				value: `{ "ocrMode": ${mode + 1 % 3}}`,
+				modelValue: `{ "ocrMode": ${mode + 1 % 3}}`,
 			},
 		})
 		const radioButton = wrapper.findComponent({ ref: `ocrMode${mode}` })
@@ -288,7 +288,7 @@ describe('OCR mode tests', () => {
 
 		await wrapper.vm.$nextTick()
 
-		const inputEvent = wrapper.emitted().input
+		const inputEvent = wrapper.emitted()['update:modelValue']
 		expect(inputEvent).toBeTruthy()
 		expect(inputEvent[0][0]).toContain(`"ocrMode":${mode}`)
 	})
@@ -297,7 +297,7 @@ describe('OCR mode tests', () => {
 		const wrapper = mount(WorkflowOcr, {
 			...mountOptions,
 			props: {
-				value: '{ "languages": [ "de" ], "removeBackground": true, "ocrMode": 0 }',
+				modelValue: '{ "languages": [ "de" ], "removeBackground": true, "ocrMode": 0 }',
 			},
 		})
 
@@ -308,7 +308,7 @@ describe('OCR mode tests', () => {
 
 		await wrapper.vm.$nextTick()
 
-		const inputEvent = wrapper.emitted().input
+		const inputEvent = wrapper.emitted()['update:modelValue']
 		expect(inputEvent).toBeTruthy()
 		expect(inputEvent[0][0]).toContain('"ocrMode":1')
 		expect(inputEvent[0][0]).toContain('"removeBackground":false')
@@ -320,7 +320,7 @@ describe('OCR mode tests', () => {
 		const wrapper = mount(WorkflowOcr, {
 			...mountOptions,
 			props: {
-				value: '{ "removeBackground": false, "ocrMode": 1 }',
+				modelValue: '{ "removeBackground": false, "ocrMode": 1 }',
 			},
 		})
 
@@ -334,7 +334,7 @@ describe('OCR mode tests', () => {
 
 		await wrapper.vm.$nextTick()
 
-		const inputEvent = wrapper.emitted().input
+		const inputEvent = wrapper.emitted()['update:modelValue']
 		expect(inputEvent).toBeTruthy()
 		expect(inputEvent[0][0]).toContain(`"ocrMode":${mode}`)
 
@@ -352,7 +352,7 @@ describe('Custom CLI args test', () => {
 		const wrapper = mount(WorkflowOcr, {
 			...mountOptions,
 			props: {
-				value: '{}',
+				modelValue: '{}',
 			},
 		})
 
@@ -363,7 +363,7 @@ describe('Custom CLI args test', () => {
 
 		await wrapper.vm.$nextTick()
 
-		const inputEvent = wrapper.emitted().input
+		const inputEvent = wrapper.emitted()['update:modelValue']
 		expect(inputEvent).toBeTruthy()
 		expect(inputEvent[0][0]).toBe('{"languages":[],"tagsToAddAfterOcr":[],"tagsToRemoveAfterOcr":[],"removeBackground":false,"keepOriginalFileVersion":false,"keepOriginalFileDate":false,"sendSuccessNotification":false,"ocrMode":0,"customCliArgs":"--dpi 300","createSidecarFile":false,"skipNotificationsOnInvalidPdf":false,"skipNotificationsOnEncryptedPdf":false}')
 	})
@@ -374,7 +374,7 @@ describe('Original file switches test', () => {
 		const wrapper = mount(WorkflowOcr, {
 			...mountOptions,
 			props: {
-				value: '{}',
+				modelValue: '{}',
 			},
 		})
 
@@ -385,7 +385,7 @@ describe('Original file switches test', () => {
 
 		await wrapper.vm.$nextTick()
 
-		const inputEvent = wrapper.emitted().input
+		const inputEvent = wrapper.emitted()['update:modelValue']
 		expect(inputEvent).toBeTruthy()
 		expect(inputEvent[0][0]).toContain(`"${ref}":true`)
 	})
@@ -396,7 +396,7 @@ describe('Sidecar file switch test', () => {
 		const wrapper = mount(WorkflowOcr, {
 			...mountOptions,
 			props: {
-				value: '{}',
+				modelValue: '{}',
 			},
 		})
 
@@ -418,7 +418,7 @@ describe('Sidecar file switch test', () => {
 
 		await wrapper.vm.$nextTick()
 
-		const inputEvent = wrapper.emitted().input
+		const inputEvent = wrapper.emitted()['update:modelValue']
 		expect(inputEvent).toBeTruthy()
 		expect(inputEvent[0][0]).toContain('"createSidecarFile":true')
 	})
@@ -428,7 +428,7 @@ describe('Notifications switches tests', () => {
 	test('Notification switches default to false', () => {
 		const wrapper = mount(WorkflowOcr, {
 			...mountOptions,
-			props: { value: '{}' },
+			props: { modelValue: '{}' },
 		})
 
 		// Test the model values directly instead of trying to find components inside HelpTextWrapper slots
@@ -439,7 +439,7 @@ describe('Notifications switches tests', () => {
 	})
 
 	test('Should set skipNotificationsOnInvalidPdf to true when toggled', async () => {
-		const wrapper = mount(WorkflowOcr, { ...mountOptions, props: { value: '{}' } })
+		const wrapper = mount(WorkflowOcr, { ...mountOptions, props: { modelValue: '{}' } })
 
 		// Test by directly manipulating the model value (simulates user interaction)
 		expect(wrapper.vm.model.skipNotificationsOnInvalidPdf).toBe(false)
@@ -448,13 +448,13 @@ describe('Notifications switches tests', () => {
 		wrapper.vm.model.skipNotificationsOnInvalidPdf = true
 		await wrapper.vm.$nextTick()
 
-		const inputEvent = wrapper.emitted().input
+		const inputEvent = wrapper.emitted()['update:modelValue']
 		expect(inputEvent).toBeTruthy()
 		expect(inputEvent[0][0]).toContain('"skipNotificationsOnInvalidPdf":true')
 	})
 
 	test('Should set skipNotificationsOnEncryptedPdf to true when toggled', async () => {
-		const wrapper = mount(WorkflowOcr, { ...mountOptions, props: { value: '{}' } })
+		const wrapper = mount(WorkflowOcr, { ...mountOptions, props: { modelValue: '{}' } })
 
 		// Test by directly manipulating the model value (simulates user interaction)
 		expect(wrapper.vm.model.skipNotificationsOnEncryptedPdf).toBe(false)
@@ -463,13 +463,14 @@ describe('Notifications switches tests', () => {
 		wrapper.vm.model.skipNotificationsOnEncryptedPdf = true
 		await wrapper.vm.$nextTick()
 
-		const inputEvent = wrapper.emitted().input
+		const inputEvent = wrapper.emitted()['update:modelValue']
 		expect(inputEvent).toBeTruthy()
 		expect(inputEvent[0][0]).toContain('"skipNotificationsOnEncryptedPdf":true')
 	})
 
 	test('Should set sendSuccessNotification to true when toggled', async () => {
-		const wrapper = mount(WorkflowOcr, { ...mountOptions, props: { value: '{}' } })
+
+		const wrapper = mount(WorkflowOcr, { ...mountOptions, props: { modelValue: '{}' } })
 
 		// Test by directly manipulating the model value (simulates user interaction)
 		expect(wrapper.vm.model.sendSuccessNotification).toBe(false)
@@ -478,7 +479,7 @@ describe('Notifications switches tests', () => {
 		wrapper.vm.model.sendSuccessNotification = true
 		await wrapper.vm.$nextTick()
 
-		const inputEvent = wrapper.emitted().input
+		const inputEvent = wrapper.emitted()['update:modelValue']
 		expect(inputEvent).toBeTruthy()
 		expect(inputEvent[0][0]).toContain('"sendSuccessNotification":true')
 	})

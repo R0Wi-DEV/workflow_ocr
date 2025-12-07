@@ -75,9 +75,9 @@ module.exports = {
 
 	moduleNameMapper: {
 		'\\.(css|scss)$': 'jest-transform-stub',
-		'^@nextcloud/axios$': '<rootDir>/__mocks__/@nextcloud/axios.js',
-		'^@nextcloud/router$': '<rootDir>/__mocks__/@nextcloud/router.js',
-		'^@nextcloud/l10n$': '<rootDir>/__mocks__/@nextcloud/l10n.js',
+		'^@nextcloud/axios$': '<rootDir>/src/test/__mocks__/@nextcloud/axios.js',
+		'^@nextcloud/router$': '<rootDir>/src/test/__mocks__/@nextcloud/router.js',
+		'^@nextcloud/l10n$': '<rootDir>/src/test/__mocks__/@nextcloud/l10n.js',
 		'^@vue/test-utils$': '<rootDir>/node_modules/@vue/test-utils/dist/vue-test-utils.cjs.js',
 	},
 

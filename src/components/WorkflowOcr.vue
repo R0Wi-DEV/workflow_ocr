@@ -156,7 +156,7 @@ import { getInstalledLanguages } from '../service/ocrBackendInfoService.js'
 import SettingsItem from './SettingsItem.vue'
 import HelpTextWrapper from './HelpTextWrapper.vue'
 import { NcSelect, NcSelectTags, NcCheckboxRadioSwitch, NcTextField } from '@nextcloud/vue'
-import { translate as t } from '@nextcloud/l10n'
+import { t } from '@nextcloud/l10n'
 
 export default {
 	name: 'WorkflowOcr',
@@ -169,12 +169,13 @@ export default {
 		HelpTextWrapper: HelpTextWrapper,
 	},
 	props: {
-		// Will be set by the parent (serialized JSON value)
-		value: {
+		// Will be set by the parent (serialized JSON value) via `v-model`
+		modelValue: {
 			type: String,
 			default: '',
 		},
 	},
+	emits: ['update:modelValue'],
 	data: function() {
 		return {
 			availableLanguages: [],
@@ -228,7 +229,7 @@ export default {
 		},
 		ocrMode: {
 			get: function() {
-				return '' + (this.model.ocrMode ?? 0)
+				return '' + this.model.ocrMode
 			},
 			set: function(mode) {
 				this.model.ocrMode = Number.parseInt(mode)
@@ -246,7 +247,7 @@ export default {
 		},
 	},
 	watch: {
-		value: {
+		modelValue: {
 			immediate: true,
 			handler: function(newValue) {
 				if (newValue) {
@@ -258,8 +259,9 @@ export default {
 		model: {
 			deep: true,
 			handler: function(newValue) {
-				// Publish serialized model to parent
-				this.$emit('input', JSON.stringify(this.model))
+				const serialized = JSON.stringify(this.model)
+				// Publish serialized model to parent via Vue 3 v-model
+				this.$emit('update:modelValue', serialized)
 			},
 		},
 	},
@@ -268,9 +270,7 @@ export default {
 		this.availableLanguages = tesseractLanguageMapping.filter(lang => installedLanguagesCodes.includes(lang.langCode))
 	},
 	methods: {
-		t: function(appId, text) {
-			return t(appId, text)
-		},
+		t,
 	},
 }
 </script>

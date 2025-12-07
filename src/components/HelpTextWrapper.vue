@@ -21,7 +21,7 @@
   -->
 
 <template>
-	<NcPopover :triggers="['hover']">
+	<NcPopover :triggers="['hover']" no-focus-trap>
 		<template #trigger>
 			<slot />
 		</template>
