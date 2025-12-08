@@ -40,10 +40,14 @@ OC.L10N.register(
     "Send a notification when OCR processing completes successfully." : "Seol fógra nuair a bheidh próiseáil OCR críochnaithe go rathúil.",
     "Send success notification" : "Seol fógra ratha",
     "Other settings" : "Socruithe eile",
+    "Try to remove colored backgrounds before OCR. Compatible only with ocrmypdf versions prior to 13 and incompatible with redo OCR mode." : "Déan iarracht cúlraí daite a bhaint roimh OCR. Ní chomhoiriúnach ach le leaganacha ocrmypdf roimh 13 agus ní chomhoiriúnach le mód athdhéanta OCR.",
     "Remove background" : "Bain an cúlra",
     "Keep original file version" : "Coinnigh leagan bunaidh an chomhaid",
+    "Restore the original modification date on the new file version for consistent sorting." : "Athchóirigh an dáta modhnaithe bunaidh ar an leagan nua den chomhad le haghaidh sórtáil chomhsheasmhach.",
     "Keep original file modification date" : "Coinnigh dáta modhnaithe an chomhaid bhunaidh",
+    "Create a .txt sidecar file next to the OCR processed file containing the extracted text." : "Cruthaigh comhad taobhlíne .txt in aice leis an gcomhad próiseáilte OCR ina bhfuil an téacs eastósctha.",
     "Create sidecar text file" : "Cruthaigh comhad téacs taobhcharr",
+    "Pass additional ocrmypdf arguments here. They are forwarded to the CLI exactly as entered." : "Cuir argóintí ocrmypdf breise anseo. Seoltar ar aghaidh chuig an CLI iad díreach mar a iontráladh iad.",
     "Custom ocrMyPdf CLI arguments" : "Argóintí CLI saincheaptha ocrMyPdf"
 },
 "nplurals=5; plural=(n==1 ? 0 : n==2 ? 1 : n<7 ? 2 : n<11 ? 3 : 4);");
