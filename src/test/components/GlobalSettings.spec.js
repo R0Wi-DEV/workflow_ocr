@@ -1,8 +1,9 @@
+import { vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { getGlobalSettings, setGlobalSettings } from '../../service/globalSettingsService.js'
 import GlobalSettings from '../../components/GlobalSettings.vue'
 
-jest.mock('../../service/globalSettingsService')
+vi.mock('../../service/globalSettingsService')
 
 const mountOptions = {
 	global: {
@@ -13,7 +14,7 @@ const mountOptions = {
 }
 
 beforeEach(() => {
-	jest.resetAllMocks()
+	vi.resetAllMocks()
 })
 
 describe('Init tests', () => {

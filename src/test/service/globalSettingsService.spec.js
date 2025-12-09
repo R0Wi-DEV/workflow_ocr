@@ -1,8 +1,9 @@
+import { vi } from 'vitest'
 import axios from '@nextcloud/axios'
 import { getGlobalSettings, setGlobalSettings } from '../../service/globalSettingsService.js'
 
 afterEach(() => {
-	jest.resetAllMocks()
+	vi.resetAllMocks()
 })
 
 test('getGlobalSettings returns correct data from server', async () => {
