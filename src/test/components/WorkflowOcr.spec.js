@@ -1,3 +1,4 @@
+import { vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { getInstalledLanguages } from '../../service/ocrBackendInfoService.js'
 import WorkflowOcr from '../../components/WorkflowOcr.vue'
@@ -51,7 +52,7 @@ const systemTagsXml = `<?xml version="1.0"?>
 </d:multistatus>
 `
 
-jest.mock('../../service/ocrBackendInfoService')
+vi.mock('../../service/ocrBackendInfoService')
 
 const mountOptions = {
 	global: {
@@ -65,7 +66,7 @@ beforeEach(() => {
 	global.NextcloudVueDocs = {
 		tags: systemTagsXml,
 	}
-	jest.resetAllMocks()
+	vi.resetAllMocks()
 	getInstalledLanguages.mockImplementation(() => installedLanguages)
 })
 

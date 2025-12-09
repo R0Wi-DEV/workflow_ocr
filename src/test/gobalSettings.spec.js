@@ -1,7 +1,8 @@
+import { vi } from 'vitest'
 import axios from '@nextcloud/axios'
 
 beforeEach(() => {
-	global.t = jest.fn()
+	global.t = vi.fn()
 
 	// Create the element that Vue will mount to
 	const element = document.createElement('div')

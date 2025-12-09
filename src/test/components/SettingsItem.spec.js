@@ -1,8 +1,9 @@
+import { vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import SettingsItem from '../../components/SettingsItem.vue'
 
 beforeEach(() => {
-	jest.resetAllMocks()
+	vi.resetAllMocks()
 })
 
 describe('SettingsItem', () => {

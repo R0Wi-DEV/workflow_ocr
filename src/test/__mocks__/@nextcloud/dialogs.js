@@ -1,6 +1,8 @@
+import { vi } from 'vitest'
+
 // Mock for @nextcloud/dialogs
-export const showError = jest.fn()
-export const showWarning = jest.fn()
-export const showInfo = jest.fn()
-export const showSuccess = jest.fn()
-export const showMessage = jest.fn()
+export const showError = vi.fn()
+export const showWarning = vi.fn()
+export const showInfo = vi.fn()
+export const showSuccess = vi.fn()
+export const showMessage = vi.fn()
