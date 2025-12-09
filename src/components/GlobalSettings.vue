@@ -22,7 +22,8 @@
 
 <template>
 	<div>
-		<NcSettingsSection name="Workflow OCR"
+		<NcSettingsSection
+			name="Workflow OCR"
 			:description="description"
 			doc-url="https://github.com/R0Wi/workflow_ocr/blob/master/README.md#global-settings">
 			<div class="div-table-row">
@@ -32,7 +33,8 @@
 					<em>{{ translate('Number of CPU cores to be used for OCR processing. If not set all cores on the system will be used.') }}</em>
 				</div>
 				<div class="div-table-col">
-					<input v-model="settings.processorCount"
+					<input
+						v-model="settings.processorCount"
 						name="processorCount"
 						type="number"
 						@input="save">
@@ -47,7 +49,8 @@
 					<em><strong>{{ translate('Note:') }}</strong> {{ translate('This setting only applies when using the workflow_ocr_backend app.') }}</em>
 				</div>
 				<div class="div-table-col">
-					<input v-model="settings.timeout"
+					<input
+						v-model="settings.timeout"
 						name="timeout"
 						type="number"
 						min="1"
@@ -60,48 +63,56 @@
 
 <script>
 
-import { NcSettingsSection } from '@nextcloud/vue'
-import { getGlobalSettings, setGlobalSettings } from '../service/globalSettingsService.js'
 import { showError } from '@nextcloud/dialogs'
 import { translate as t } from '@nextcloud/l10n'
-const { appId } = require('../constants.js')
+import { NcSettingsSection } from '@nextcloud/vue'
+import { appId } from '../constants.js'
+import { getGlobalSettings, setGlobalSettings } from '../service/globalSettingsService.js'
 
 export default {
 	name: 'GlobalSettings',
 	components: {
-		NcSettingsSection: NcSettingsSection,
+		NcSettingsSection,
 	},
+
 	data: () => ({
 		settings: {},
 	}),
+
 	computed: {
 		description: function() {
 			return this.translate('Global settings applied to all OCR workflows.')
 		},
 	},
+
 	mounted: function() {
 		this.loadSettings()
 	},
+
 	methods: {
 		save: async function() {
 			try {
 				this.settings = await setGlobalSettings(this.settings)
 			} catch (error) {
+				/* eslint-disable-next-line no-console */
 				console.error('Failed to save global settings:', error)
 				const errorMessage = error?.response?.data?.error || error.message || 'Unknown error'
 				showError(t(appId, 'Failed to save settings: {error}', { error: errorMessage }))
 			}
 		},
+
 		loadSettings: async function() {
 			try {
 				this.settings = await getGlobalSettings()
 			} catch (error) {
+				/* eslint-disable-next-line no-console */
 				console.error('Failed to fetch global settings:', error)
 				const errorMessage = error?.response?.data?.error || error.message || 'Unknown error'
 				showError(t(appId, 'Failed to load global settings: {error}', { error: errorMessage }))
 				// Keep the default empty settings object
 			}
 		},
+
 		translate: function(str) {
 			return t(appId, str)
 		},

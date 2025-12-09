@@ -1,5 +1,5 @@
-import { vi } from 'vitest'
 import axios from '@nextcloud/axios'
+import { vi } from 'vitest'
 import { getGlobalSettings, setGlobalSettings } from '../../service/globalSettingsService.js'
 
 afterEach(() => {

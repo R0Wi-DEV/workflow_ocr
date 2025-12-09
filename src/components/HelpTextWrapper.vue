@@ -36,8 +36,9 @@ import { NcPopover } from '@nextcloud/vue'
 export default {
 	name: 'HelpTextWrapper',
 	components: {
-		NcPopover: NcPopover,
+		NcPopover,
 	},
+
 	props: {
 		helpText: {
 			type: String,

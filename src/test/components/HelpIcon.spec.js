@@ -1,5 +1,5 @@
-import { vi } from 'vitest'
 import { mount } from '@vue/test-utils'
+import { vi } from 'vitest'
 import HelpIcon from '../../components/HelpIcon.vue'
 
 // Mock focus-trap to prevent errors when popover opens
@@ -21,7 +21,7 @@ describe('HelpIcon tests', () => {
 		const infoText = 'This is some help text'
 		const wrapper = mount(HelpIcon, {
 			props: {
-				infoText: infoText,
+				infoText,
 			},
 		})
 
@@ -41,7 +41,7 @@ describe('HelpIcon tests', () => {
 
 		const wrapper = mount(HelpIcon, {
 			props: {
-				infoText: infoText,
+				infoText,
 			},
 			attachTo: document.body,
 		})

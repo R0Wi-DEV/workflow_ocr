@@ -5,6 +5,6 @@ export function captureConsole(method = 'error') {
 	console[method] = spy
 	return {
 		get calls() { return calls },
-		restore() { console[method] = original }
+		restore() { console[method] = original },
 	}
 }
