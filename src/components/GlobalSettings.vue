@@ -62,6 +62,7 @@
 
 import { NcSettingsSection } from '@nextcloud/vue'
 import { getGlobalSettings, setGlobalSettings } from '../service/globalSettingsService.js'
+import { showError } from '@nextcloud/dialogs'
 import { translate as t } from '@nextcloud/l10n'
 const { appId } = require('../constants.js')
 
@@ -83,10 +84,23 @@ export default {
 	},
 	methods: {
 		save: async function() {
-			this.settings = await setGlobalSettings(this.settings)
+			try {
+				this.settings = await setGlobalSettings(this.settings)
+			} catch (error) {
+				console.error('Failed to save global settings:', error)
+				const errorMessage = error?.response?.data?.error || error.message || 'Unknown error'
+				showError(t(appId, 'Failed to save settings: {error}', { error: errorMessage }))
+			}
 		},
 		loadSettings: async function() {
-			this.settings = await getGlobalSettings()
+			try {
+				this.settings = await getGlobalSettings()
+			} catch (error) {
+				console.error('Failed to fetch global settings:', error)
+				const errorMessage = error?.response?.data?.error || error.message || 'Unknown error'
+				showError(t(appId, 'Failed to load global settings: {error}', { error: errorMessage }))
+				// Keep the default empty settings object
+			}
 		},
 		translate: function(str) {
 			return t(appId, str)

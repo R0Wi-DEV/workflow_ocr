@@ -26,7 +26,7 @@ import axios from '@nextcloud/axios'
 const relativeUrl = '/apps/workflow_ocr/globalSettings'
 
 /**
- * Create a new appointment config in the backend
+ * Get global settings for workflow OCR app from the backend
  *
  * @return {Promise} Global settings for workflow OCR app
  */
