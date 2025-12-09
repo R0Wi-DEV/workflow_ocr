@@ -38,10 +38,15 @@
     "Send a notification when OCR processing completes successfully." : "OCR 處理成功時傳送通知",
     "Send success notification" : "傳送成功通知",
     "Other settings" : "其他設定",
+    "Try to remove colored backgrounds before OCR. Compatible only with ocrmypdf versions prior to 13 and incompatible with redo OCR mode." : "請在執行OCR前移除彩色背景。僅相容於 13 版之前的 ocrmypdf 版本，且與重新執行 OCR 模式不相容。",
     "Remove background" : "移除背景",
+    "Keep the original file as a version labeled Before OC and exclude it from automatic expiration." : "保留原始檔案作為標記為「OC 前」的版本，並將其排除於自動過期機制之外。",
     "Keep original file version" : "保留原始檔案版本",
+    "Restore the original modification date on the new file version for consistent sorting." : "還原新檔案版本的原始修改日期，以確保排序一致性。",
     "Keep original file modification date" : "保留原始檔案修改日期",
+    "Create a .txt sidecar file next to the OCR processed file containing the extracted text." : "在 OCR 處理過的檔案旁建立一個 .txt 副檔名檔案，該檔案應包含已擷取的文字內容。",
     "Create sidecar text file" : "建立附屬文字檔",
+    "Pass additional ocrmypdf arguments here. They are forwarded to the CLI exactly as entered." : "在此處傳遞額外的 ocrmypdf 引數。這些引數將完全按照輸入的內容轉發至命令列介面。",
     "Custom ocrMyPdf CLI arguments" : "自訂 ocrMyPdf CLI 引數"
 },"pluralForm" :"nplurals=1; plural=0;"
 }
