@@ -156,6 +156,7 @@ import { getInstalledLanguages } from '../service/ocrBackendInfoService.js'
 import SettingsItem from './SettingsItem.vue'
 import HelpTextWrapper from './HelpTextWrapper.vue'
 import { NcSelect, NcSelectTags, NcCheckboxRadioSwitch, NcTextField } from '@nextcloud/vue'
+import { showError } from '@nextcloud/dialogs'
 import { t } from '@nextcloud/l10n'
 
 export default {
@@ -266,8 +267,16 @@ export default {
 		},
 	},
 	beforeMount: async function() {
-		const installedLanguagesCodes = await getInstalledLanguages()
-		this.availableLanguages = tesseractLanguageMapping.filter(lang => installedLanguagesCodes.includes(lang.langCode))
+		try {
+			const installedLanguagesCodes = await getInstalledLanguages()
+			this.availableLanguages = tesseractLanguageMapping.filter(lang => installedLanguagesCodes.includes(lang.langCode))
+		} catch (error) {
+			console.error('Failed to fetch installed languages:', error)
+			const errorMessage = error?.response?.data?.error || error.message || 'Unknown error'
+			showError(t('workflow_ocr', 'Failed to load installed OCR languages: {error}', { error: errorMessage }))
+			// Set empty array to avoid UI issues
+			this.availableLanguages = []
+		}
 	},
 	methods: {
 		t,
