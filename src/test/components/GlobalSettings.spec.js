@@ -2,6 +2,8 @@ import { vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { getGlobalSettings, setGlobalSettings } from '../../service/globalSettingsService.js'
 import GlobalSettings from '../../components/GlobalSettings.vue'
+import { showError } from '@nextcloud/dialogs'
+import { captureConsole } from '../utils/consoleCapture.js'
 
 vi.mock('../../service/globalSettingsService')
 
@@ -66,5 +68,54 @@ describe('Interaction tests', () => {
 		expect(setGlobalSettings).toHaveBeenCalledWith(expect.objectContaining({
 			processorCount: 42,
 		}))
+	})
+
+	test('Should show error when save fails', async () => {
+		const initialMockSettings = { processorCount: '2' }
+		getGlobalSettings.mockResolvedValueOnce(initialMockSettings)
+
+		setGlobalSettings.mockRejectedValueOnce(new Error('save-failed'))
+
+		const wrapper = mount(GlobalSettings, mountOptions)
+		await new Promise(process.nextTick)
+
+		// trigger change which calls save()
+		const processorCount = wrapper.find('input[name="processorCount"]')
+		processorCount.element.value = '3'
+		const cap = captureConsole('error')
+		await processorCount.trigger('input')
+
+		expect(setGlobalSettings).toHaveBeenCalledTimes(1)
+		expect(showError).toHaveBeenCalled()
+		expect(cap.calls.length).toBeGreaterThan(0)
+		expect(cap.calls[0][0]).toBe('Failed to save global settings:')
+		expect(cap.calls[0][1]).toBeInstanceOf(Error)
+		cap.restore()
+	})
+
+	test('Should show error when loadSettings fails', async () => {
+		getGlobalSettings.mockRejectedValueOnce(new Error('load-failed'))
+
+		const cap = captureConsole('error')
+
+		const wrapper = mount(GlobalSettings, mountOptions)
+		await new Promise(process.nextTick)
+
+		expect(getGlobalSettings).toHaveBeenCalledTimes(1)
+		expect(showError).toHaveBeenCalled()
+		expect(cap.calls.length).toBeGreaterThan(0)
+		expect(cap.calls[0][0]).toBe('Failed to fetch global settings:')
+		expect(cap.calls[0][1]).toBeInstanceOf(Error)
+		cap.restore()
+	})
+
+	test('translate() should call t and return value', async () => {
+		getGlobalSettings.mockResolvedValueOnce({})
+
+		const wrapper = mount(GlobalSettings, mountOptions)
+		await new Promise(process.nextTick)
+
+		const constants = require('../../constants.js')
+		expect(wrapper.vm.translate('anything')).toBe(constants.appId)
 	})
 })

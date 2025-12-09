@@ -53,6 +53,8 @@ const systemTagsXml = `<?xml version="1.0"?>
 `
 
 vi.mock('../../service/ocrBackendInfoService')
+import { showError } from '@nextcloud/dialogs'
+import { captureConsole } from '../utils/consoleCapture.js'
 
 const mountOptions = {
 	global: {
@@ -483,5 +485,24 @@ describe('Notifications switches tests', () => {
 		const inputEvent = wrapper.emitted()['update:modelValue']
 		expect(inputEvent).toBeTruthy()
 		expect(inputEvent[0][0]).toContain('"sendSuccessNotification":true')
+	})
+})
+
+describe('Error handling tests', () => {
+	test('Should handle getInstalledLanguages error and showError', async () => {
+		installedLanguages = []
+		getInstalledLanguages.mockRejectedValueOnce(new Error('nope'))
+
+		const cap = captureConsole('error')
+		const wrapper = mount(WorkflowOcr, mountOptions)
+		await new Promise(process.nextTick)
+
+		expect(getInstalledLanguages).toHaveBeenCalledTimes(1)
+		expect(showError).toHaveBeenCalled()
+		expect(cap.calls.length).toBeGreaterThan(0)
+		expect(cap.calls[0][0]).toBe('Failed to fetch installed languages:')
+		expect(cap.calls[0][1]).toBeInstanceOf(Error)
+		expect(wrapper.vm.availableLanguages).toEqual([])
+		cap.restore()
 	})
 })
