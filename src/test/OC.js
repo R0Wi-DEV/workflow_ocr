@@ -13,7 +13,7 @@ export default {
 	},
 
 	Util: {
-		naturalSortCompare: function(a, b) {
+		naturalSortCompare: function() {
 			return 0
 		},
 	},

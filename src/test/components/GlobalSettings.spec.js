@@ -1,8 +1,8 @@
-import { vi } from 'vitest'
-import { mount } from '@vue/test-utils'
-import { getGlobalSettings, setGlobalSettings } from '../../service/globalSettingsService.js'
-import GlobalSettings from '../../components/GlobalSettings.vue'
 import { showError } from '@nextcloud/dialogs'
+import { mount } from '@vue/test-utils'
+import { vi } from 'vitest'
+import GlobalSettings from '../../components/GlobalSettings.vue'
+import { getGlobalSettings, setGlobalSettings } from '../../service/globalSettingsService.js'
 import { captureConsole } from '../utils/consoleCapture.js'
 
 vi.mock('../../service/globalSettingsService')
@@ -98,7 +98,7 @@ describe('Interaction tests', () => {
 
 		const cap = captureConsole('error')
 
-		const wrapper = mount(GlobalSettings, mountOptions)
+		mount(GlobalSettings, mountOptions)
 		await new Promise(process.nextTick)
 
 		expect(getGlobalSettings).toHaveBeenCalledTimes(1)

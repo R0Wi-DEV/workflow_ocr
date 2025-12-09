@@ -1,9 +1,9 @@
-import { vi } from 'vitest'
-import { mount } from '@vue/test-utils'
-import { getInstalledLanguages } from '../../service/ocrBackendInfoService.js'
-import WorkflowOcr from '../../components/WorkflowOcr.vue'
-import SettingsItem from '../../components/SettingsItem.vue'
 import { NcSelect, NcSelectTags } from '@nextcloud/vue'
+import { mount } from '@vue/test-utils'
+import { vi } from 'vitest'
+import SettingsItem from '../../components/SettingsItem.vue'
+import WorkflowOcr from '../../components/WorkflowOcr.vue'
+import { getInstalledLanguages } from '../../service/ocrBackendInfoService.js'
 
 let installedLanguages = []
 
@@ -175,7 +175,6 @@ describe('Language settings tests', () => {
 		const inputEvent = wrapper.emitted()['update:modelValue']
 		expect(inputEvent).toBeTruthy()
 		expect(inputEvent[0][0]).toBe('{"languages":["de","en"],"tagsToAddAfterOcr":[],"tagsToRemoveAfterOcr":[],"removeBackground":true,"keepOriginalFileVersion":false,"keepOriginalFileDate":false,"sendSuccessNotification":false,"ocrMode":0,"customCliArgs":"","createSidecarFile":false,"skipNotificationsOnInvalidPdf":false,"skipNotificationsOnEncryptedPdf":false}')
-
 	})
 })
 
@@ -472,7 +471,6 @@ describe('Notifications switches tests', () => {
 	})
 
 	test('Should set sendSuccessNotification to true when toggled', async () => {
-
 		const wrapper = mount(WorkflowOcr, { ...mountOptions, props: { modelValue: '{}' } })
 
 		// Test by directly manipulating the model value (simulates user interaction)

@@ -1,5 +1,5 @@
-import { vi } from 'vitest'
 import { mount } from '@vue/test-utils'
+import { vi } from 'vitest'
 import SettingsItem from '../../components/SettingsItem.vue'
 
 beforeEach(() => {

@@ -1,5 +1,5 @@
-import { vi } from 'vitest'
 import axios from '@nextcloud/axios'
+import { vi } from 'vitest'
 import { getInstalledLanguages } from '../../service/ocrBackendInfoService.js'
 
 afterEach(() => {

@@ -42,19 +42,22 @@ import HelpIcon from './HelpIcon.vue'
 export default {
 	name: 'SettingsItem',
 	components: {
-		HelpIcon: HelpIcon,
+		HelpIcon,
 	},
+
 	props: {
 		label: {
 			type: String,
 			required: true,
 		},
+
 		infoText: {
 			type: String,
 			required: false,
 			default: null,
 		},
 	},
+
 	computed: {
 		hasInfoText: function() {
 			return this.infoText !== null
@@ -77,7 +80,7 @@ export default {
 		width: 44px;
 		height: 44px;
 		margin: -14px;
-		margin-left: -10px;
+		margin-inline-start: -10px;
 		opacity: .7;
 
 		&:hover, &:focus, &:active {

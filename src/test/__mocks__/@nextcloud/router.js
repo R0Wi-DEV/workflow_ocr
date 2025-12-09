@@ -1,4 +1,4 @@
 // Mock for @nextcloud/router
-export const generateUrl = (path) => {
-    return path;
+export function generateUrl(path) {
+	return path
 }
