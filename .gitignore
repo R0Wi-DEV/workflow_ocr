@@ -3,6 +3,7 @@ vendor
 coverage*.xml
 coverage*.html
 coverage_html
+coverage_php
 build
 .phpunit.result.cache
 *.cov
