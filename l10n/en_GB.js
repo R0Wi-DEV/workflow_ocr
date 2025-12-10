@@ -42,9 +42,13 @@ OC.L10N.register(
     "Other settings" : "Other settings",
     "Try to remove colored backgrounds before OCR. Compatible only with ocrmypdf versions prior to 13 and incompatible with redo OCR mode." : "Make sure to remove coloured backgrounds before performing OCR. This feature is only compatible with ocrmypdf versions prior to 13 and is not compatible with the redo OCR mode.",
     "Remove background" : "Remove background",
+    "Keep the original file as a version labeled Before OC and exclude it from automatic expiration." : "Keep the original file as a version labeled Before OC and exclude it from automatic expiration.",
     "Keep original file version" : "Keep original file version",
+    "Restore the original modification date on the new file version for consistent sorting." : "Restore the original modification date on the new file version for consistent sorting.",
     "Keep original file modification date" : "Keep original file's modification date",
+    "Create a .txt sidecar file next to the OCR processed file containing the extracted text." : "Create a .txt sidecar file next to the OCR processed file containing the extracted text.",
     "Create sidecar text file" : "Create sidecar text file",
+    "Pass additional ocrmypdf arguments here. They are forwarded to the CLI exactly as entered." : "Pass additional ocrmypdf arguments here. They are forwarded to the CLI exactly as entered.",
     "Custom ocrMyPdf CLI arguments" : "Custom ocrMyPdf CLI arguments"
 },
 "nplurals=2; plural=(n != 1);");
