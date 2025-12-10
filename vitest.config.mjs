@@ -22,12 +22,12 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/test/setup-vitest.js'],
-    include: ['src/test/**/*.spec.js'],
+    include: ['src/test/**/*.spec.js', 'src/integration-test/**/*.spec.js'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'lcov', 'html'],
       include: ['src/**/*.{js,vue}'],
-      exclude: ['src/test/**', 'node_modules/**'],
+      exclude: ['src/test/**', 'src/integration-test/**', 'node_modules/**'],
     },
   },
 })

@@ -229,6 +229,7 @@ lint-fix: composer npm-install
 .PHONY: js-test
 js-test: npm-install
 	npm run test:unit
+	npm run test:integration
 
 .PHONY: test
 test: php-test js-test

@@ -17,6 +17,7 @@
 		"dev": "rspack build --env development",
 		"watch": "rspack build --env development --watch",
 		"test:unit": "vitest run --coverage",
+		"test:integration": "vitest run src/integration-test",
 		"test:debug": "vitest --watch",
 		"lint": "eslint \"src/**/*.{js,vue}\" && stylelint \"src/**\/*.{css,scss,vue}\"",
 		"lint:fix": "eslint \"src/**/*.{js,vue}\" --fix && stylelint \"src/**\/*.{css,scss,vue}\" --fix"
