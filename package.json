@@ -52,6 +52,7 @@
 		"vitest": "^1.6.1",
 		"@vitest/coverage-v8": "^1.6.1",
 		"css-loader": "^7.1.2",
+		"jsdom": "^25.0.1",
 		"regenerator-runtime": "^0.14.1",
 		"sass": "^1.94.2",
 		"sass-loader": "^16.0.6",
