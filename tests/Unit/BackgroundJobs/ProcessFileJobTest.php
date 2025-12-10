@@ -31,6 +31,7 @@ use OCP\DB\QueryBuilder\IExpressionBuilder;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IConfig;
 use OCP\IDBConnection;
+use OCP\Snowflake\IGenerator;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -41,6 +42,9 @@ class ProcessFileJobTest extends TestCase {
 
 	/** @var IOcrService|MockObject */
 	private $ocrService;
+
+	/** @var IGenerator|MockObject */
+	private $generator;
 
 	/** @var JobList */
 	private $jobList;
@@ -65,7 +69,7 @@ class ProcessFileJobTest extends TestCase {
 			$this->ocrService,
 			$this->createMock(ITimeFactory::class)
 		);
-		$this->processFileJob->setId(111);
+		$this->processFileJob->setId('111');
 
 		/** @var IConfig */
 		$configMock = $this->createMock(IConfig::class);
@@ -76,6 +80,7 @@ class ProcessFileJobTest extends TestCase {
 		/** @var MockObject|IQueryBuilder */
 		$queryBuilderMock = $this->createMock(IQueryBuilder::class);
 		$expressionBuilderMock = $this->createMock(IExpressionBuilder::class);
+		$this->generator = $this->createMock(IGenerator::class);
 
 		$queryBuilderMock->method('delete')
 			->withAnyParameters()
@@ -97,7 +102,8 @@ class ProcessFileJobTest extends TestCase {
 			$connectionMock,
 			$configMock,
 			$timeFactoryMock,
-			$this->logger
+			$this->logger,
+			$this->generator
 		);
 
 		$this->processFileJob->setArgument($this->argument);

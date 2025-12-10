@@ -23,7 +23,8 @@
 <template>
 	<NcPopover :triggers="['hover']" no-focus-trap>
 		<template #trigger>
-			<HelpCircleIcon class="info"
+			<HelpCircleIcon
+				class="info"
 				:size="20"
 				decorative
 				title="" />
@@ -40,9 +41,10 @@ import HelpCircleIcon from 'vue-material-design-icons/HelpCircle.vue'
 export default {
 	name: 'HelpIcon',
 	components: {
-		NcPopover: NcPopover,
-		HelpCircleIcon: HelpCircleIcon,
+		NcPopover,
+		HelpCircleIcon,
 	},
+
 	props: {
 		infoText: {
 			type: String,

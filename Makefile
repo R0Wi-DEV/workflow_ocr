@@ -201,6 +201,9 @@ coverage-php:
 	XDEBUG_MODE=coverage $(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.xml --coverage-php coverage/coverage_unittests.cov
 	XDEBUG_MODE=coverage $(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.integration.xml --coverage-php coverage/coverage_integrationtests.cov
 	XDEBUG_MODE=coverage $(CURDIR)/vendor/phpunit/phpcov/phpcov merge --clover ./coverage/php-coverage.xml ./coverage
+# Use dedicated PHP coverage folder which does not intersect with JS coverage (vitest will recreate coverage folder)
+	rm -rf ./coverage_php
+	mv ./coverage ./coverage_php 
 
 .PHONY: html-coverage
 html-coverage: composer coverage-php
@@ -209,6 +212,8 @@ html-coverage: composer coverage-php
 # Coverage PHP and JS + merge coverage
 .PHONY: coverage-all
 coverage-all: composer npm-install coverage-php js-test
+	cp -r ./coverage_php/* ./coverage
+	rm -rf ./coverage_php
 
 .PHONY: lint
 lint: composer npm-install
@@ -224,6 +229,7 @@ lint-fix: composer npm-install
 .PHONY: js-test
 js-test: npm-install
 	npm run test:unit
+	npm run test:integration
 
 .PHONY: test
 test: php-test js-test
