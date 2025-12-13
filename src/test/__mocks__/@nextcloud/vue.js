@@ -1,59 +1,30 @@
-// Mock for @nextcloud/vue components
-import { defineComponent, h } from 'vue'
+import { h } from 'vue'
 
-// Create simple mock components that render a div with the component name
-const createMockComponent = (name, additionalProps = {}) => defineComponent({
-	name,
-	props: Object.assign({
-		modelValue: {},
-		value: {},
-	}, additionalProps),
-	emits: ['update:modelValue', 'update:value', 'input'],
-	setup(props, { slots, attrs, emit }) {
-		return () => h('div', { 
-			class: name, 
-			...attrs,
-			'data-test-id': name 
-		}, slots.default ? slots.default() : null)
+function make(name) {
+	return {
+		name,
+		render() {
+			return h('div', this.$slots.default ? this.$slots.default() : [])
+		},
 	}
-})
+}
 
-export const NcSettingsSection = createMockComponent('NcSettingsSection')
-export const NcSelect = createMockComponent('NcSelect')
-export const NcSelectTags = createMockComponent('NcSelectTags')
-export const NcCheckboxRadioSwitch = defineComponent({
-	name: 'NcCheckboxRadioSwitch',
-	props: {
-		modelValue: {},
-		type: { type: String },
-		value: {},
-		disabled: { type: Boolean, default: false },
-	},
-	emits: ['update:modelValue'],
-	computed: {
-		checked() {
-			return this.modelValue
-		}
-	},
-	render() {
-		return h('div', {
-			class: 'NcCheckboxRadioSwitch',
-			'data-test-id': 'NcCheckboxRadioSwitch'
-		}, this.$slots.default ? this.$slots.default() : null)
-	}
-})
-export const NcTextField = defineComponent({
-	name: 'NcTextField',
-	props: {
-		value: {},
-		label: { type: String },
-	},
-	emits: ['update:value'],
-	render() {
-		return h('div', {
-			class: 'NcTextField',
-			'data-test-id': 'NcTextField'
-		}, this.$slots.default ? this.$slots.default() : null)
-	}
-})
-export const NcPopover = createMockComponent('NcPopover')
+export const NcPopover = make('NcPopover')
+export const NcSettingsSection = make('NcSettingsSection')
+export const NcSelect = make('NcSelect')
+export const NcSelectTags = make('NcSelectTags')
+export const NcCheckboxRadioSwitch = make('NcCheckboxRadioSwitch')
+export const NcTextField = make('NcTextField')
+export const NcColorPicker = make('NcColorPicker')
+export const NcDateTimePicker = make('NcDateTimePicker')
+
+export default {
+	NcPopover,
+	NcSettingsSection,
+	NcSelect,
+	NcSelectTags,
+	NcCheckboxRadioSwitch,
+	NcTextField,
+	NcColorPicker,
+	NcDateTimePicker,
+}

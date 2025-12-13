@@ -1,13 +1,9 @@
 import axios from '@nextcloud/axios'
+import { vi } from 'vitest'
 import { getGlobalSettings, setGlobalSettings } from '../../service/globalSettingsService.js'
 
-jest.mock('@nextcloud/axios')
-jest.mock('@nextcloud/router', () => ({
-	generateUrl: url => url,
-}))
-
 afterEach(() => {
-	jest.resetAllMocks()
+	vi.resetAllMocks()
 })
 
 test('getGlobalSettings returns correct data from server', async () => {

@@ -1,5 +1,5 @@
-import { defineCustomElement } from 'vue'
 import { translate as t } from '@nextcloud/l10n'
+import { defineCustomElement } from 'vue'
 import WorkflowOcr from './components/WorkflowOcr.vue'
 
 const WorkflowOcrComponent = defineCustomElement(WorkflowOcr, {

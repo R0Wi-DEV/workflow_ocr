@@ -1,18 +1,19 @@
 import { mount } from '@vue/test-utils'
+import { vi } from 'vitest'
 import HelpIcon from '../../components/HelpIcon.vue'
 
 // Mock focus-trap to prevent errors when popover opens
-jest.mock('focus-trap', () => ({
+vi.mock('focus-trap', () => ({
 	createFocusTrap: () => ({
-		activate: jest.fn(),
-		deactivate: jest.fn(),
-		pause: jest.fn(),
-		unpause: jest.fn(),
+		activate: vi.fn(),
+		deactivate: vi.fn(),
+		pause: vi.fn(),
+		unpause: vi.fn(),
 	}),
 }))
 
 beforeEach(() => {
-	jest.resetAllMocks()
+	vi.resetAllMocks()
 })
 
 describe('HelpIcon tests', () => {
@@ -20,7 +21,7 @@ describe('HelpIcon tests', () => {
 		const infoText = 'This is some help text'
 		const wrapper = mount(HelpIcon, {
 			props: {
-				infoText: infoText,
+				infoText,
 			},
 		})
 
@@ -40,7 +41,7 @@ describe('HelpIcon tests', () => {
 
 		const wrapper = mount(HelpIcon, {
 			props: {
-				infoText: infoText,
+				infoText,
 			},
 			attachTo: document.body,
 		})

@@ -1,6 +1,8 @@
+import { vi } from 'vitest'
+
 beforeEach(() => {
-	global.OCA = { WorkflowEngine: { registerOperator: jest.fn() } }
-	global.t = jest.fn()
+	global.OCA = { WorkflowEngine: { registerOperator: vi.fn() } }
+	global.t = vi.fn()
 })
 
 test('main registers component at workflow engine', async () => {

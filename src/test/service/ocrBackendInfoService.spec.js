@@ -1,13 +1,9 @@
 import axios from '@nextcloud/axios'
+import { vi } from 'vitest'
 import { getInstalledLanguages } from '../../service/ocrBackendInfoService.js'
 
-jest.mock('@nextcloud/axios')
-jest.mock('@nextcloud/router', () => ({
-	generateUrl: url => url,
-}))
-
 afterEach(() => {
-	jest.resetAllMocks()
+	vi.resetAllMocks()
 })
 
 test('getInstalledLanguages returns correct data from server', async () => {

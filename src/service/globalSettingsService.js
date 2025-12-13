@@ -17,16 +17,15 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
-import { generateUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'
+import { generateUrl } from '@nextcloud/router'
 
 const relativeUrl = '/apps/workflow_ocr/globalSettings'
 
 /**
- * Create a new appointment config in the backend
+ * Get global settings for workflow OCR app from the backend
  *
  * @return {Promise} Global settings for workflow OCR app
  */
@@ -44,6 +43,6 @@ export async function getGlobalSettings() {
  */
 export async function setGlobalSettings(globalSettings) {
 	const url = generateUrl(relativeUrl)
-	const axiosResponse = await axios.put(url, { globalSettings: globalSettings })
+	const axiosResponse = await axios.put(url, { globalSettings })
 	return axiosResponse.data
 }
