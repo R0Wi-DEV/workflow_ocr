@@ -42,6 +42,7 @@ OC.L10N.register(
     "Other settings" : "Socruithe eile",
     "Try to remove colored backgrounds before OCR. Compatible only with ocrmypdf versions prior to 13 and incompatible with redo OCR mode." : "Déan iarracht cúlraí daite a bhaint roimh OCR. Ní chomhoiriúnach ach le leaganacha ocrmypdf roimh 13 agus ní chomhoiriúnach le mód athdhéanta OCR.",
     "Remove background" : "Bain an cúlra",
+    "Keep the original file as a version labeled Before OC and exclude it from automatic expiration." : "Coinnigh an comhad bunaidh mar leagan atá lipéadaithe Roimh OC agus eisiamh é ó dhul in éag uathoibríoch.",
     "Keep original file version" : "Coinnigh leagan bunaidh an chomhaid",
     "Restore the original modification date on the new file version for consistent sorting." : "Athchóirigh an dáta modhnaithe bunaidh ar an leagan nua den chomhad le haghaidh sórtáil chomhsheasmhach.",
     "Keep original file modification date" : "Coinnigh dáta modhnaithe an chomhaid bhunaidh",
