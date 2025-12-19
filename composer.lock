@@ -1829,12 +1829,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/nextcloud-deps/ocp.git",
-                "reference": "d42bd36d0413b881b7459b220e1328bc57e48b38"
+                "reference": "4a157cd2b3b339cc2529de578bddc1d2e4b77507"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nextcloud-deps/ocp/zipball/d42bd36d0413b881b7459b220e1328bc57e48b38",
-                "reference": "d42bd36d0413b881b7459b220e1328bc57e48b38",
+                "url": "https://api.github.com/repos/nextcloud-deps/ocp/zipball/4a157cd2b3b339cc2529de578bddc1d2e4b77507",
+                "reference": "4a157cd2b3b339cc2529de578bddc1d2e4b77507",
                 "shasum": ""
             },
             "require": {
@@ -1870,7 +1870,7 @@
                 "issues": "https://github.com/nextcloud-deps/ocp/issues",
                 "source": "https://github.com/nextcloud-deps/ocp/tree/master"
             },
-            "time": "2025-12-11T00:55:32+00:00"
+            "time": "2025-12-19T00:55:34+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -2050,16 +2050,16 @@
         },
         {
             "name": "php-cs-fixer/shim",
-            "version": "v3.92.0",
+            "version": "v3.92.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHP-CS-Fixer/shim.git",
-                "reference": "79e39b0d57adfd84c402d7b171b925d1e638597f"
+                "reference": "85907503d29473dfbb2f5950c84f5c00cb1b7297"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHP-CS-Fixer/shim/zipball/79e39b0d57adfd84c402d7b171b925d1e638597f",
-                "reference": "79e39b0d57adfd84c402d7b171b925d1e638597f",
+                "url": "https://api.github.com/repos/PHP-CS-Fixer/shim/zipball/85907503d29473dfbb2f5950c84f5c00cb1b7297",
+                "reference": "85907503d29473dfbb2f5950c84f5c00cb1b7297",
                 "shasum": ""
             },
             "require": {
@@ -2096,9 +2096,9 @@
             "description": "A tool to automatically fix PHP code style",
             "support": {
                 "issues": "https://github.com/PHP-CS-Fixer/shim/issues",
-                "source": "https://github.com/PHP-CS-Fixer/shim/tree/v3.92.0"
+                "source": "https://github.com/PHP-CS-Fixer/shim/tree/v3.92.3"
             },
-            "time": "2025-12-12T10:29:50+00:00"
+            "time": "2025-12-18T10:45:25+00:00"
         },
         {
             "name": "phpdocumentor/reflection-common",
@@ -4197,16 +4197,16 @@
         },
         {
             "name": "spatie/array-to-xml",
-            "version": "3.4.3",
+            "version": "3.4.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/array-to-xml.git",
-                "reference": "7b9202dccfe18d4e3a13303156d6bbcc1c61dabf"
+                "reference": "88b2f3852a922dd73177a68938f8eb2ec70c7224"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/array-to-xml/zipball/7b9202dccfe18d4e3a13303156d6bbcc1c61dabf",
-                "reference": "7b9202dccfe18d4e3a13303156d6bbcc1c61dabf",
+                "url": "https://api.github.com/repos/spatie/array-to-xml/zipball/88b2f3852a922dd73177a68938f8eb2ec70c7224",
+                "reference": "88b2f3852a922dd73177a68938f8eb2ec70c7224",
                 "shasum": ""
             },
             "require": {
@@ -4249,7 +4249,7 @@
                 "xml"
             ],
             "support": {
-                "source": "https://github.com/spatie/array-to-xml/tree/3.4.3"
+                "source": "https://github.com/spatie/array-to-xml/tree/3.4.4"
             },
             "funding": [
                 {
@@ -4261,7 +4261,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-11-27T09:08:26+00:00"
+            "time": "2025-12-15T09:00:41+00:00"
         },
         {
             "name": "staabm/side-effects-detector",
