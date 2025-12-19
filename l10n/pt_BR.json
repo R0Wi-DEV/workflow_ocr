@@ -41,10 +41,14 @@
     "Send a notification when OCR processing completes successfully." : "Enviar uma notificação quando o processamento OCR for concluído com sucesso.",
     "Send success notification" : "Enviar notificação de sucesso",
     "Other settings" : "Outras configurações",
+    "Try to remove colored backgrounds before OCR. Compatible only with ocrmypdf versions prior to 13 and incompatible with redo OCR mode." : "Tente remover fundos coloridos antes do OCR. Compatível apenas com versões do ocrmypdf anteriores à 13 e incompatível com o modo refazer OCR.",
     "Remove background" : "Remover plano de fundo",
+    "Keep the original file as a version labeled Before OC and exclude it from automatic expiration." : "Mantenha o arquivo original como uma versão rotulada como Antes do OC e exclua-o da expiração automática.",
     "Keep original file version" : "Manter a versão original do arquivo",
+    "Restore the original modification date on the new file version for consistent sorting." : "Restaure a data de modificação original na nova versão do arquivo para uma ordenação consistente.",
     "Keep original file modification date" : "Manter a data original de modificação do arquivo",
     "Create sidecar text file" : "Criar arquivo de texto sidecar",
+    "Pass additional ocrmypdf arguments here. They are forwarded to the CLI exactly as entered." : "Passe argumentos ocrmypdf adicionais aqui. Eles são encaminhados para a CLI exatamente como foram inseridos.",
     "Custom ocrMyPdf CLI arguments" : "Argumentos personalizados da ILC do ocrMyPdf"
 },"pluralForm" :"nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;"
 }
