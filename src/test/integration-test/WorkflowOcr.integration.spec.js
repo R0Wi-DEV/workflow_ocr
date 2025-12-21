@@ -1,16 +1,16 @@
 import { mount } from '@vue/test-utils'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { nextTick } from 'vue'
-import WorkflowOcr from '../components/WorkflowOcr.vue'
-import { tesseractLanguageMapping } from '../constants.js'
+import WorkflowOcr from '../../components/WorkflowOcr.vue'
+import { tesseractLanguageMapping } from '../../constants.js'
 
 // Use real Nextcloud Vue components
 import { NcCheckboxRadioSwitch, NcSelect, NcSelectTags, NcTextField } from '@nextcloud/vue'
-import SettingsItem from '../components/SettingsItem.vue'
-import HelpTextWrapper from '../components/HelpTextWrapper.vue'
+import SettingsItem from '../../components/SettingsItem.vue'
+import HelpTextWrapper from '../../components/HelpTextWrapper.vue'
 
 // Mock the backend info service used in the component's beforeMount
-vi.mock('../service/ocrBackendInfoService.js', () => ({
+vi.mock('../../service/ocrBackendInfoService.js', () => ({
   // Use tesseract lang codes
   getInstalledLanguages: vi.fn(() => Promise.resolve(['eng', 'deu'])),
 }))
