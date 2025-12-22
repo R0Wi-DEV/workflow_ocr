@@ -49,6 +49,7 @@ OC.L10N.register(
     "Keep original file version" : "Manter a versão original do arquivo",
     "Restore the original modification date on the new file version for consistent sorting." : "Restaure a data de modificação original na nova versão do arquivo para uma ordenação consistente.",
     "Keep original file modification date" : "Manter a data original de modificação do arquivo",
+    "Create a .txt sidecar file next to the OCR processed file containing the extracted text." : "Crie um arquivo .txt sidecar ao lado do arquivo processado por OCR contendo o texto extraído.",
     "Create sidecar text file" : "Criar arquivo de texto sidecar",
     "Pass additional ocrmypdf arguments here. They are forwarded to the CLI exactly as entered." : "Passe argumentos ocrmypdf adicionais aqui. Eles são encaminhados para a CLI exatamente como foram inseridos.",
     "Custom ocrMyPdf CLI arguments" : "Argumentos personalizados da ILC do ocrMyPdf"
