@@ -13,14 +13,14 @@
 	"private": true,
 	"scripts": {
 		"dev-install": "NODE_ENV=development npm install",
-		"build": "rspack build --env production",
-		"dev": "rspack build --env development",
-		"watch": "rspack build --env development --watch",
+		"build": "rsbuild build",
+		"dev": "NODE_ENV=development rsbuild build",
+		"watch": "rsbuild dev",
 		"test:unit": "vitest run --coverage",
 		"test:integration": "vitest run src/test/integration-test",
 		"test:debug": "vitest --watch",
-		"lint": "eslint \"src/**/*.{js,vue}\" && stylelint \"src/**\/*.{css,scss,vue}\"",
-		"lint:fix": "eslint \"src/**/*.{js,vue}\" --fix && stylelint \"src/**\/*.{css,scss,vue}\" --fix"
+		"lint": "eslint \"src/**/*.{js,vue}\" && stylelint \"src/**/*.{css,scss,vue}\"",
+		"lint:fix": "eslint \"src/**/*.{js,vue}\" --fix && stylelint \"src/**/*.{css,scss,vue}\" --fix"
 	},
 	"dependencies": {
 		"@nextcloud/axios": "^2.5.2",
@@ -32,32 +32,30 @@
 		"vue-material-design-icons": "^5.3.1"
 	},
 	"browserslist": [
-		"extends @nextcloud/browserslist-config"
+		"last 2 major versions"
 	],
 	"engines": {
 		"node": "^24.0.0",
 		"npm": "^11.6.0"
 	},
 	"devDependencies": {
-		"eslint": "^9.39.1",
 		"@nextcloud/babel-config": "^1.3.0",
 		"@nextcloud/browserslist-config": "^3.1.2",
 		"@nextcloud/eslint-config": "^9.0.0-rc.6",
 		"@nextcloud/stylelint-config": "^3.1.1",
-		"@rspack/cli": "^1.6.5",
-		"@rspack/core": "^1.6.4",
-		"@rspack/plugin-node-polyfill": "^0.5.8",
-		"@vue/test-utils": "^2.4.6",
+		"@rsbuild/core": "^1.6.15",
+		"@rsbuild/plugin-node-polyfill": "^1.4.2",
+		"@rsbuild/plugin-sass": "^1.4.0",
+		"@rsbuild/plugin-vue": "^1.2.2",
 		"@vitejs/plugin-vue": "^6.0.3",
-		"vite": "^7.2.7",
-		"vitest": "^4.0.15",
 		"@vitest/coverage-v8": "^4.0.15",
-		"css-loader": "^7.1.2",
+		"@vue/test-utils": "^2.4.6",
+		"browserslist": "^4.28.1",
+		"eslint": "^9.39.1",
 		"jsdom": "^25.0.1",
 		"regenerator-runtime": "^0.14.1",
 		"sass": "^1.94.2",
-		"sass-loader": "^16.0.6",
-		"style-loader": "^4.0.0",
-		"vue-loader": "^17.4.2"
+		"vite": "^7.2.7",
+		"vitest": "^4.0.15"
 	}
 }
