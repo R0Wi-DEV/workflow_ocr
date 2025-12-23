@@ -33,7 +33,7 @@
     "Force OCR" : "Forçar OCR",
     "Skip file completely" : "Pular arquivo completamente",
     "Notifications" : "Notificações",
-    "The asynchronous OCR process will send Nextcloud notifications. Use these settings to control them." : "O processo OCR assíncrono enviará notificações do Nextcloud. Use essas configurações para controlá-las.",
+    "The asynchronous OCR process will send Nextcloud notifications. Use these settings to control them." : "O processo OCR assíncrono enviará notificações do Nextcloud. Use estas configurações para controlá-las.",
     "Skip notifications for ocrmypdf error code 2 (for example digitally signed PDFs)" : "Ignorar notificações para o código de erro 2 do ocrmypdf (por exemplo, PDFs assinados digitalmente)",
     "Skip for invalid PDFs" : "Ignorar para PDFs inválidos",
     "Skip notifications for ocrmypdf error code 8 (for example password protected PDFs)" : "Ignorar notificações para o código de erro 8 do ocrmypdf (por exemplo, PDFs protegidos por senha)",
