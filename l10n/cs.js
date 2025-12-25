@@ -34,6 +34,7 @@ OC.L10N.register(
     "Notifications" : "Upozornění",
     "Send success notification" : "Odeslat upozornění na úspěch",
     "Other settings" : "Ostatní nastavení",
+    "Try to remove colored backgrounds before OCR. Compatible only with ocrmypdf versions prior to 13 and incompatible with redo OCR mode." : "Před optickým rozpoznáváním znaků se pokusit odebrat barevná pozadí. Kompatibilní pouze s verzemi ocrmypdf před 13 a nekompabitilní s redo OCR režimem.",
     "Remove background" : "Odebrat obrázek na pozadí",
     "Keep original file version" : "Ponechat původní verzi souboru",
     "Keep original file modification date" : "Ponechat datum změny jako u původního souboru",
