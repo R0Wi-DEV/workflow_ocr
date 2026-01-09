@@ -1,7 +1,10 @@
 OC.L10N.register(
     "workflow_ocr",
     {
+    "Failed to save settings: {error}" : "Nepavyko įrašyti nustatymų: {error}",
     "Skip text" : "Praleisti tekstą",
+    "Skip file completely" : "Visiškai praleisti failą",
+    "Notifications" : "Pranešimai",
     "Other settings" : "Kiti nustatymai",
     "Remove background" : "Šalinti foną"
 },
