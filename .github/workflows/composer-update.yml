@@ -3,14 +3,17 @@ name: Composer update
 on:
   workflow_dispatch:
   schedule:
-     - cron: '0 0 * * 5'  # Runs every Friday at midnight
+     # Runs once a day at 02:00 AM. Note that OCP package
+     # is pushed once a day at around 00:00 AM, see
+     # https://github.com/nextcloud-deps/ocp/blob/master/.github/workflows/cron.yml
+     - cron: '0 2 * * *'
 
 jobs:
   build:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.head_ref }}
           token: ${{ secrets.WORKFLOW_OCR_COMPOSER_DEPS_AUTO_UPDATE }} # To be able to trigger workflows in case of git push
