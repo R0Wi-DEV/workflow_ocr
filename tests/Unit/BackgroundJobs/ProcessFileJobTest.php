@@ -23,15 +23,10 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\Tests\Unit\BackgroundJobs;
 
-use OC\BackgroundJob\JobList;
 use OCA\WorkflowOcr\BackgroundJobs\ProcessFileJob;
 use OCA\WorkflowOcr\Service\IOcrService;
 use OCP\AppFramework\Utility\ITimeFactory;
-use OCP\DB\QueryBuilder\IExpressionBuilder;
-use OCP\DB\QueryBuilder\IQueryBuilder;
-use OCP\IConfig;
-use OCP\IDBConnection;
-use OCP\Snowflake\IGenerator;
+use OCP\BackgroundJob\IJobList;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -43,10 +38,7 @@ class ProcessFileJobTest extends TestCase {
 	/** @var IOcrService|MockObject */
 	private $ocrService;
 
-	/** @var IGenerator|MockObject */
-	private $generator;
-
-	/** @var JobList */
+	/** @var IJobList|MockObject */
 	private $jobList;
 
 	/** @var ProcessFileJob */
@@ -71,40 +63,7 @@ class ProcessFileJobTest extends TestCase {
 		);
 		$this->processFileJob->setId('111');
 
-		/** @var IConfig */
-		$configMock = $this->createMock(IConfig::class);
-		/** @var ITimeFactory */
-		$timeFactoryMock = $this->createMock(ITimeFactory::class);
-		/** @var MockObject|IDbConnection */
-		$connectionMock = $this->createMock(IDBConnection::class);
-		/** @var MockObject|IQueryBuilder */
-		$queryBuilderMock = $this->createMock(IQueryBuilder::class);
-		$expressionBuilderMock = $this->createMock(IExpressionBuilder::class);
-		$this->generator = $this->createMock(IGenerator::class);
-
-		$queryBuilderMock->method('delete')
-			->withAnyParameters()
-			->willReturn($queryBuilderMock);
-		$queryBuilderMock->method('set')
-			->withAnyParameters()
-			->willReturn($queryBuilderMock);
-		$queryBuilderMock->method('update')
-			->withAnyParameters()
-			->willReturn($queryBuilderMock);
-		$queryBuilderMock->method('expr')
-			->withAnyParameters()
-			->willReturn($expressionBuilderMock);
-		$connectionMock->method('getQueryBuilder')
-			->withAnyParameters()
-			->willReturn($queryBuilderMock);
-
-		$this->jobList = new JobList(
-			$connectionMock,
-			$configMock,
-			$timeFactoryMock,
-			$this->logger,
-			$this->generator
-		);
+		$this->jobList = $this->createMock(IJobList::class);
 
 		$this->processFileJob->setArgument($this->argument);
 	}
