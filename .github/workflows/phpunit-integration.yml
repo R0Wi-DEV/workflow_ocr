@@ -33,7 +33,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-versions: ['8.3']
+        php-versions: ['8.4']
         databases: ['mysql']
         server-versions: ['master']
         backend: ['remote', 'local'] # Do not change these names, they're used in the integration tests
