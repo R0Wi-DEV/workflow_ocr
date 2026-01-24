@@ -17,9 +17,9 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        php-versions: ['8.3']
+        php-versions: ['8.4']
         databases: ['sqlite']
-        server-versions: ['master']
+        server-versions: ['stable33']
 
     name: php${{ matrix.php-versions }}-${{ matrix.databases }}
 
@@ -74,9 +74,9 @@ jobs:
       # do not stop on another job's failure
       fail-fast: false
       matrix:
-        php-versions: ['8.3', '8.4']
+        php-versions: ['8.4', '8.5']
         databases: ['mysql']
-        server-versions: ['master']
+        server-versions: ['stable33']
 
     name: php${{ matrix.php-versions }}-${{ matrix.databases }}
 
@@ -140,9 +140,9 @@ jobs:
       # do not stop on another job's failure
       fail-fast: false
       matrix:
-        php-versions: ['8.3']
+        php-versions: ['8.4']
         databases: ['pgsql']
-        server-versions: ['master']
+        server-versions: ['stable33']
 
     name: php${{ matrix.php-versions }}-${{ matrix.databases }}
 

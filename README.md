@@ -283,7 +283,7 @@ port `9003`. Depending on your system a possible configuration could
 look like this:
 
 ```ini
-; /etc/php/8.3/cli/php.ini
+; /etc/php/8.4/cli/php.ini
 ; ...
 [Xdebug]
 zend_extension=/usr/lib/php/20190902/xdebug.so
@@ -294,7 +294,7 @@ xdebug.remote_autostart=1
 ```
 
 ```ini
-; /etc/php/8.3/apache2/php.ini
+; /etc/php/8.4/apache2/php.ini
 ; ...
 [Xdebug]
 zend_extension=/usr/lib/php/20190902/xdebug.so

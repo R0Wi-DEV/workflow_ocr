@@ -46,7 +46,7 @@ Current target: Nextcloud 33 (check `appinfo/info.xml` for updates)
 
 ### Technology Stack
 
-- **Backend**: PHP 8.1-8.4
+- **Backend**: PHP 8.2-8.5
 - **Frontend**: Vue 3, Node 24, npm 11.6
 - **Build Tools**: rspack, vitest, eslint, stylelint
 - **PHP Tools**: composer, phpunit, psalm, php-cs-fixer
