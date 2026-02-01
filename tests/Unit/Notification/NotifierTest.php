@@ -26,7 +26,6 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\Tests\Unit\Notification;
 
-use OC\Notification\Notification;
 use OCA\WorkflowOcr\Notification\Notifier;
 use OCP\Files\File;
 use OCP\Files\Folder;
@@ -82,6 +81,57 @@ class NotifierTest extends TestCase {
 		);
 	}
 
+	/**
+	 * Helper method to create a notification mock with method chaining
+	 */
+	private function createNotificationMock(string $user, string $app, string $subject, array $subjectParams, string $objectType, string $objectId) : INotification {
+		$notification = $this->createMock(INotification::class);
+		
+		// Configure getters
+		$notification->method('getApp')->willReturn($app);
+		$notification->method('getSubject')->willReturn($subject);
+		$notification->method('getSubjectParameters')->willReturn($subjectParams);
+		$notification->method('getUser')->willReturn($user);
+		$notification->method('getObjectType')->willReturn($objectType);
+		$notification->method('getObjectId')->willReturn($objectId);
+		
+		// Configure setters to return self for method chaining
+		$notification->method('setIcon')->willReturnSelf();
+		$notification->method('setLink')->willReturnSelf();
+		$notification->method('setParsedSubject')->willReturnSelf();
+		$notification->method('setRichSubject')->willReturnSelf();
+		
+		// Store values for getRichSubject and similar methods
+		$richSubject = '';
+		$richSubjectParams = [];
+		$parsedSubject = '';
+		
+		$notification->method('setRichSubject')->willReturnCallback(function($subject, $params = []) use ($notification, &$richSubject, &$richSubjectParams) {
+			$richSubject = $subject;
+			$richSubjectParams = $params;
+			return $notification;
+		});
+		
+		$notification->method('setParsedSubject')->willReturnCallback(function($subject) use ($notification, &$parsedSubject) {
+			$parsedSubject = $subject;
+			return $notification;
+		});
+		
+		$notification->method('getRichSubject')->willReturnCallback(function() use (&$richSubject) {
+			return $richSubject;
+		});
+		
+		$notification->method('getRichSubjectParameters')->willReturnCallback(function() use (&$richSubjectParams) {
+			return $richSubjectParams;
+		});
+		
+		$notification->method('getParsedSubject')->willReturnCallback(function() use (&$parsedSubject) {
+			return $parsedSubject;
+		});
+		
+		return $notification;
+	}
+
 	public function testGetIdReturnsWorkflowOcrName() {
 		$this->assertEquals('workflow_ocr', $this->notifier->getId());
 	}
@@ -124,23 +174,22 @@ class NotifierTest extends TestCase {
 	}
 
 	public function testPrepareConstructsOcrErrorCorrectlyWithFileId() {
-		/** @var IValidator|MockObject */
-		$validator = $this->createMock(IValidator::class);
 		/** @var IL10N|MockObject */
 		$l10n = $this->createMock(IL10N::class);
-		/** @var IRichTextFormatter|MockObject */
-		$rtFormatter = $this->createMock(IRichTextFormatter::class);
 		$l10n->method('t')->willReturnMap(self::$returnValueMapError);
 		$this->l10nFactory->expects($this->once())
 			->method('get')
 			->with('workflow_ocr')
 			->willReturn($l10n);
 
-		$notification = new Notification($validator, $rtFormatter);
-		$notification->setUser('user');
-		$notification->setApp('workflow_ocr');
-		$notification->setSubject('ocr_error', ['message' => 'mymessage']);
-		$notification->setObject('file', '123');
+		$notification = $this->createNotificationMock(
+			'user',
+			'workflow_ocr',
+			'ocr_error',
+			['message' => 'mymessage'],
+			'file',
+			'123'
+		);
 
 		/** @var File|MockObject */
 		$file = $this->createMock(File::class);
@@ -197,10 +246,6 @@ class NotifierTest extends TestCase {
 	}
 
 	public function testPrepareConstructsOcrErrorCorrectlyWithoutFile() {
-		/** @var IValidator|MockObject */
-		$validator = $this->createMock(IValidator::class);
-		/** @var IRichTextFormatter|MockObject */
-		$rtFormatter = $this->createMock(IRichTextFormatter::class);
 		/** @var IL10N|MockObject */
 		$l10n = $this->createMock(IL10N::class);
 		$l10n->method('t')->willReturnMap(self::$returnValueMapError);
@@ -209,11 +254,14 @@ class NotifierTest extends TestCase {
 			->with('workflow_ocr')
 			->willReturn($l10n);
 
-		$notification = new Notification($validator, $rtFormatter);
-		$notification->setUser('user');
-		$notification->setApp('workflow_ocr');
-		$notification->setSubject('ocr_error', ['message' => 'mymessage']);
-		$notification->setObject('ocr', 'ocr');
+		$notification = $this->createNotificationMock(
+			'user',
+			'workflow_ocr',
+			'ocr_error',
+			['message' => 'mymessage'],
+			'ocr',
+			'ocr'
+		);
 
 		$this->urlGenerator->expects($this->once())
 			->method('imagePath')
@@ -234,10 +282,6 @@ class NotifierTest extends TestCase {
 	}
 
 	public function testSendsFallbackNotificationWithoutFileInfoIfFileNotFoundWasThrown() {
-		/** @var IValidator|MockObject */
-		$validator = $this->createMock(IValidator::class);
-		/** @var IRichTextFormatter|MockObject */
-		$rtFormatter = $this->createMock(IRichTextFormatter::class);
 		/** @var IL10N|MockObject */
 		$l10n = $this->createMock(IL10N::class);
 		$l10n->method('t')->willReturnMap(self::$returnValueMapError);
@@ -246,11 +290,14 @@ class NotifierTest extends TestCase {
 			->with('workflow_ocr')
 			->willReturn($l10n);
 
-		$notification = new Notification($validator, $rtFormatter);
-		$notification->setUser('user');
-		$notification->setApp('workflow_ocr');
-		$notification->setSubject('ocr_error', ['message' => 'mymessage']);
-		$notification->setObject('file', '123');
+		$notification = $this->createNotificationMock(
+			'user',
+			'workflow_ocr',
+			'ocr_error',
+			['message' => 'mymessage'],
+			'file',
+			'123'
+		);
 
 		/** @var Folder|MockObject */
 		$userFolder = $this->createMock(Folder::class);
@@ -284,10 +331,6 @@ class NotifierTest extends TestCase {
 	}
 
 	public function testSendsFallbackNotificationWithoutFileInfoIfReturnedFileArrayWasEmpty() {
-		/** @var IValidator|MockObject */
-		$validator = $this->createMock(IValidator::class);
-		/** @var IRichTextFormatter|MockObject */
-		$rtFormatter = $this->createMock(IRichTextFormatter::class);
 		/** @var IL10N|MockObject */
 		$l10n = $this->createMock(IL10N::class);
 		$l10n->method('t')->willReturnMap(self::$returnValueMapError);
@@ -296,11 +339,14 @@ class NotifierTest extends TestCase {
 			->with('workflow_ocr')
 			->willReturn($l10n);
 
-		$notification = new Notification($validator, $rtFormatter);
-		$notification->setUser('user');
-		$notification->setApp('workflow_ocr');
-		$notification->setSubject('ocr_error', ['message' => 'mymessage']);
-		$notification->setObject('file', '123');
+		$notification = $this->createNotificationMock(
+			'user',
+			'workflow_ocr',
+			'ocr_error',
+			['message' => 'mymessage'],
+			'file',
+			'123'
+		);
 
 		/** @var Folder|MockObject */
 		$userFolder = $this->createMock(Folder::class);
@@ -333,10 +379,6 @@ class NotifierTest extends TestCase {
 	}
 
 	public function testFallbackToParsedSubjectIfMessageIsEmpty() {
-		/** @var IValidator|MockObject */
-		$validator = $this->createMock(IValidator::class);
-		/** @var IRichTextFormatter|MockObject */
-		$rtFormatter = $this->createMock(IRichTextFormatter::class);
 		/** @var IL10N|MockObject */
 		$l10n = $this->createMock(IL10N::class);
 		$l10n->method('t')->willReturnMap(self::$returnValueMapSuccess);
@@ -345,10 +387,14 @@ class NotifierTest extends TestCase {
 			->with('workflow_ocr')
 			->willReturn($l10n);
 
-		$notification = new Notification($validator, $rtFormatter);
-		$notification->setUser('user');
-		$notification->setApp('workflow_ocr');
-		$notification->setSubject('ocr_success', []);
+		$notification = $this->createNotificationMock(
+			'user',
+			'workflow_ocr',
+			'ocr_success',
+			[],
+			'',
+			''
+		);
 
 		$this->urlGenerator->expects($this->once())
 			->method('imagePath')
