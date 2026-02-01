@@ -35,7 +35,7 @@ use OCP\Settings\ISettings;
  */
 class GlobalSettings implements ISettings {
 	public function getForm() : TemplateResponse {
-		return new TemplateResponse(Application::APP_NAME, 'globalSettings', [], 'blank');
+		return new TemplateResponse(Application::APP_NAME, 'globalSettings', []);
 	}
 
 	public function getSection(): string {
