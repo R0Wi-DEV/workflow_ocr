@@ -35,8 +35,6 @@ use OCP\IURLGenerator;
 use OCP\L10N\IFactory;
 use OCP\Notification\AlreadyProcessedException;
 use OCP\Notification\INotification;
-use OCP\RichObjectStrings\IRichTextFormatter;
-use OCP\RichObjectStrings\IValidator;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -86,7 +84,7 @@ class NotifierTest extends TestCase {
 	 */
 	private function createNotificationMock(string $user, string $app, string $subject, array $subjectParams, string $objectType, string $objectId) : INotification {
 		$notification = $this->createMock(INotification::class);
-		
+
 		// Configure getters
 		$notification->method('getApp')->willReturn($app);
 		$notification->method('getSubject')->willReturn($subject);
@@ -94,41 +92,41 @@ class NotifierTest extends TestCase {
 		$notification->method('getUser')->willReturn($user);
 		$notification->method('getObjectType')->willReturn($objectType);
 		$notification->method('getObjectId')->willReturn($objectId);
-		
+
 		// Configure setters to return self for method chaining
 		$notification->method('setIcon')->willReturnSelf();
 		$notification->method('setLink')->willReturnSelf();
 		$notification->method('setParsedSubject')->willReturnSelf();
 		$notification->method('setRichSubject')->willReturnSelf();
-		
+
 		// Store values for getRichSubject and similar methods
 		$richSubject = '';
 		$richSubjectParams = [];
 		$parsedSubject = '';
-		
-		$notification->method('setRichSubject')->willReturnCallback(function($subject, $params = []) use ($notification, &$richSubject, &$richSubjectParams) {
+
+		$notification->method('setRichSubject')->willReturnCallback(function ($subject, $params = []) use ($notification, &$richSubject, &$richSubjectParams) {
 			$richSubject = $subject;
 			$richSubjectParams = $params;
 			return $notification;
 		});
-		
-		$notification->method('setParsedSubject')->willReturnCallback(function($subject) use ($notification, &$parsedSubject) {
+
+		$notification->method('setParsedSubject')->willReturnCallback(function ($subject) use ($notification, &$parsedSubject) {
 			$parsedSubject = $subject;
 			return $notification;
 		});
-		
-		$notification->method('getRichSubject')->willReturnCallback(function() use (&$richSubject) {
+
+		$notification->method('getRichSubject')->willReturnCallback(function () use (&$richSubject) {
 			return $richSubject;
 		});
-		
-		$notification->method('getRichSubjectParameters')->willReturnCallback(function() use (&$richSubjectParams) {
+
+		$notification->method('getRichSubjectParameters')->willReturnCallback(function () use (&$richSubjectParams) {
 			return $richSubjectParams;
 		});
-		
-		$notification->method('getParsedSubject')->willReturnCallback(function() use (&$parsedSubject) {
+
+		$notification->method('getParsedSubject')->willReturnCallback(function () use (&$parsedSubject) {
 			return $parsedSubject;
 		});
-		
+
 		return $notification;
 	}
 
