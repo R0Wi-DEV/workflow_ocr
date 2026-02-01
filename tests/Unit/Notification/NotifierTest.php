@@ -82,13 +82,13 @@ class NotifierTest extends TestCase {
 	/**
 	 * Helper method to create a notification mock with method chaining
 	 */
-	private function createNotificationMock(string $user, string $app, string $subject, array $subjectParams, string $objectType, string $objectId) : INotification {
+	private function createNotificationMock(string $user, string $app, string $subject, array $subjectParameters, string $objectType, string $objectId) : INotification {
 		$notification = $this->createMock(INotification::class);
 
 		// Configure getters
 		$notification->method('getApp')->willReturn($app);
 		$notification->method('getSubject')->willReturn($subject);
-		$notification->method('getSubjectParameters')->willReturn($subjectParams);
+		$notification->method('getSubjectParameters')->willReturn($subjectParameters);
 		$notification->method('getUser')->willReturn($user);
 		$notification->method('getObjectType')->willReturn($objectType);
 		$notification->method('getObjectId')->willReturn($objectId);
@@ -99,10 +99,10 @@ class NotifierTest extends TestCase {
 		$notification->method('setParsedSubject')->willReturnSelf();
 		$notification->method('setRichSubject')->willReturnSelf();
 
-		// Store values for getRichSubject and similar methods
-		$richSubject = '';
-		$richSubjectParams = [];
-		$parsedSubject = '';
+		// Stateful accumulators for set/get methods
+		$richSubject = null;
+		$richSubjectParams = null;
+		$parsedSubject = null;
 
 		$notification->method('setRichSubject')->willReturnCallback(function ($subject, $params = []) use ($notification, &$richSubject, &$richSubjectParams) {
 			$richSubject = $subject;
