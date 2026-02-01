@@ -237,9 +237,34 @@ Set Nextcloud log level to 0 for detailed debugging:
 
 ## Important Notes for AI Assistants
 
+### General Guidelines
+
 1. **Never assume standalone operation** - All development and testing requires a Nextcloud instance
 2. **Check Nextcloud Server code** - Always verify implementations against the target Nextcloud version
 3. **Respect branching strategy** - Ensure changes are compatible with the target Nextcloud version
 4. **Follow existing patterns** - The codebase has established patterns for controllers, services, and processors
 5. **Test within Nextcloud** - Tests cannot run in isolation; they need the Nextcloud environment
 6. **Consider both backends** - Changes may affect both local CLI and external backend processing modes
+
+### Before Committing Changes
+
+> [!WARNING]
+> Before committing any changes, ensure the following:
+
+1. All **unit and integration tests are passing** in the Nextcloud context
+
+* Use `make test` to execute both PHP and JS tests. Make sure they pass without errors.
+
+2. Verify **linting compliance** for both PHP and JavaScript code
+
+* Use `composer run lint` for PHP and `npm run lint` for JavaScript.
+* Fix any issues using `composer run cs:fix` and `npm run lint:fix`.
+
+3. Ensure **PSALM static analysis** shows no errors
+
+* Run `composer run psalm` to check for static analysis issues.
+
+> [!TIP]
+> If you need help with setting up the Nextcloud test environment, refer to the CI/CD workflow files in `.github/workflows/` for guidance on configuring the environment correctly.
+
+**Never bypass these checks before committing changes. Ensuring code quality and compatibility with Nextcloud is critical for the stability of the `workflow_ocr` app.**
