@@ -99,10 +99,10 @@ class NotifierTest extends TestCase {
 		$notification->method('setParsedSubject')->willReturnSelf();
 		$notification->method('setRichSubject')->willReturnSelf();
 
-		// Stateful accumulators for set/get methods
-		$richSubject = null;
-		$richSubjectParams = null;
-		$parsedSubject = null;
+		// Stateful accumulators for set/get methods - initialized to empty strings/arrays
+		$richSubject = '';
+		$richSubjectParams = [];
+		$parsedSubject = '';
 
 		$notification->method('setRichSubject')->willReturnCallback(function ($subject, $params = []) use ($notification, &$richSubject, &$richSubjectParams) {
 			$richSubject = $subject;
