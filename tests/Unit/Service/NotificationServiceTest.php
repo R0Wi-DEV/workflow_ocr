@@ -26,9 +26,9 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\Tests\Unit\Service;
 
-use OC\Notification\Notification;
 use OCA\WorkflowOcr\Service\NotificationService;
 use OCP\Notification\IManager;
+use OCP\Notification\INotification;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -36,7 +36,7 @@ class NotificationServiceTest extends TestCase {
 	/** @var IManager|MockObject */
 	private $notificationManager;
 
-	/** @var Notification|MockObject */
+	/** @var INotification|MockObject */
 	private $notification;
 
 	/** @var NotificationService */
@@ -44,7 +44,7 @@ class NotificationServiceTest extends TestCase {
 
 	public function setUp() : void {
 		$this->notificationManager = $this->createMock(IManager::class);
-		$this->notification = $this->createMock(Notification::class);
+		$this->notification = $this->createMock(INotification::class);
 		$this->service = new NotificationService($this->notificationManager);
 		parent::setUp();
 	}

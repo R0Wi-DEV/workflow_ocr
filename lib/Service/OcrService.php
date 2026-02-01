@@ -26,7 +26,6 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowOcr\Service;
 
-use OC\User\NoUserException;
 use OCA\Files_Versions\Versions\IMetadataVersion;
 use OCA\Files_Versions\Versions\IMetadataVersionBackend;
 use OCA\Files_Versions\Versions\IVersionManager;
@@ -234,7 +233,7 @@ class OcrService implements IOcrService {
 		/** @var IUser */
 		$user = $this->userManager->get($uid);
 		if (!$user) {
-			throw new NoUserException("User with uid '$uid' was not found");
+			throw new \RuntimeException("User with uid '$uid' was not found");
 		}
 
 		$this->logger->debug('Initializing user environment for user {uid}', ['uid' => $uid]);

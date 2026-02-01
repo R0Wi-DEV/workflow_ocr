@@ -25,7 +25,6 @@ namespace OCA\WorkflowOcr\Tests\Unit\Service;
 
 use Exception;
 use InvalidArgumentException;
-use OC\User\NoUserException;
 use OCA\Files_Versions\Versions\IMetadataVersion;
 use OCA\Files_Versions\Versions\IMetadataVersionBackend;
 use OCA\Files_Versions\Versions\IVersion;
@@ -449,7 +448,7 @@ class OcrServiceTest extends TestCase {
 		$this->ocrService->runOcrProcess(42, 'usr', $settings);
 	}
 
-	public function testThrowsNoUserException_OnNonExistingUser() {
+	public function testThrowsRuntimeException_OnNonExistingUser() {
 		$settings = new WorkflowSettings();
 
 		// Unfortunately method definitions can't yet be overwritten in
@@ -478,7 +477,7 @@ class OcrServiceTest extends TestCase {
 		$thrown = false;
 		try {
 			$this->ocrService->runOcrProcess(42, 'nonexistinguser', $settings);
-		} catch (NoUserException $e) {
+		} catch (\RuntimeException $e) {
 			$this->assertTrue(str_contains($e->getMessage(), 'nonexistinguser'));
 			$thrown = true;
 		}
