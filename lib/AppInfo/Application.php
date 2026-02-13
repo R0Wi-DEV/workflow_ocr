@@ -102,6 +102,7 @@ class Application extends App implements IBootstrap {
 		$context->registerService(ICommand::class, function () {
 			return new CommandWrapper();
 		}, false);
+		/** @psalm-suppress InvalidArgument */
 		$context->registerService(ISidecarFileAccessor::class, function (ContainerInterface $c) {
 			return new SidecarFileAccessor($c->get(ITempManager::class), $c->get(LoggerInterface::class));
 		}, false);
