@@ -1829,12 +1829,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/nextcloud-deps/ocp.git",
-                "reference": "0572403dc10745a8e682608c7b0b69714765aa06"
+                "reference": "c3db5d19b356eca3c95f405649dcad282222a306"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nextcloud-deps/ocp/zipball/0572403dc10745a8e682608c7b0b69714765aa06",
-                "reference": "0572403dc10745a8e682608c7b0b69714765aa06",
+                "url": "https://api.github.com/repos/nextcloud-deps/ocp/zipball/c3db5d19b356eca3c95f405649dcad282222a306",
+                "reference": "c3db5d19b356eca3c95f405649dcad282222a306",
                 "shasum": ""
             },
             "require": {
@@ -1870,7 +1870,7 @@
                 "issues": "https://github.com/nextcloud-deps/ocp/issues",
                 "source": "https://github.com/nextcloud-deps/ocp/tree/master"
             },
-            "time": "2026-02-18T01:12:27+00:00"
+            "time": "2026-02-18T08:26:21+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -2050,16 +2050,16 @@
         },
         {
             "name": "php-cs-fixer/shim",
-            "version": "v3.94.0",
+            "version": "v3.94.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHP-CS-Fixer/shim.git",
-                "reference": "bf90113c2d4f349a639df42045d36e78ffc25c9a"
+                "reference": "886842d646b54f475bd91cd812d1698e3e3bc57b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHP-CS-Fixer/shim/zipball/bf90113c2d4f349a639df42045d36e78ffc25c9a",
-                "reference": "bf90113c2d4f349a639df42045d36e78ffc25c9a",
+                "url": "https://api.github.com/repos/PHP-CS-Fixer/shim/zipball/886842d646b54f475bd91cd812d1698e3e3bc57b",
+                "reference": "886842d646b54f475bd91cd812d1698e3e3bc57b",
                 "shasum": ""
             },
             "require": {
@@ -2096,9 +2096,9 @@
             "description": "A tool to automatically fix PHP code style",
             "support": {
                 "issues": "https://github.com/PHP-CS-Fixer/shim/issues",
-                "source": "https://github.com/PHP-CS-Fixer/shim/tree/v3.94.0"
+                "source": "https://github.com/PHP-CS-Fixer/shim/tree/v3.94.1"
             },
-            "time": "2026-02-11T16:45:46+00:00"
+            "time": "2026-02-18T12:25:03+00:00"
         },
         {
             "name": "phpdocumentor/reflection-common",
@@ -2733,16 +2733,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "11.5.53",
+            "version": "11.5.55",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "a997a653a82845f1240d73ee73a8a4e97e4b0607"
+                "reference": "adc7262fccc12de2b30f12a8aa0b33775d814f00"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/a997a653a82845f1240d73ee73a8a4e97e4b0607",
-                "reference": "a997a653a82845f1240d73ee73a8a4e97e4b0607",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/adc7262fccc12de2b30f12a8aa0b33775d814f00",
+                "reference": "adc7262fccc12de2b30f12a8aa0b33775d814f00",
                 "shasum": ""
             },
             "require": {
@@ -2815,7 +2815,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/11.5.53"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/11.5.55"
             },
             "funding": [
                 {
@@ -2839,7 +2839,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-02-10T12:28:25+00:00"
+            "time": "2026-02-18T12:37:06+00:00"
         },
         {
             "name": "psr/clock",
@@ -5243,16 +5243,16 @@
         },
         {
             "name": "webmozart/assert",
-            "version": "2.1.4",
+            "version": "2.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webmozarts/assert.git",
-                "reference": "b39f1870fc7c3e9e4a26106df5053354b9260a33"
+                "reference": "79155f94852fa27e2f73b459f6503f5e87e2c188"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webmozarts/assert/zipball/b39f1870fc7c3e9e4a26106df5053354b9260a33",
-                "reference": "b39f1870fc7c3e9e4a26106df5053354b9260a33",
+                "url": "https://api.github.com/repos/webmozarts/assert/zipball/79155f94852fa27e2f73b459f6503f5e87e2c188",
+                "reference": "79155f94852fa27e2f73b459f6503f5e87e2c188",
                 "shasum": ""
             },
             "require": {
@@ -5299,9 +5299,9 @@
             ],
             "support": {
                 "issues": "https://github.com/webmozarts/assert/issues",
-                "source": "https://github.com/webmozarts/assert/tree/2.1.4"
+                "source": "https://github.com/webmozarts/assert/tree/2.1.5"
             },
-            "time": "2026-02-17T12:17:51+00:00"
+            "time": "2026-02-18T14:09:36+00:00"
         }
     ],
     "aliases": [],
