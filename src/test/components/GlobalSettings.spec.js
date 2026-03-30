@@ -49,7 +49,7 @@ describe('Init tests', () => {
 
 describe('Interaction tests', () => {
 	test('Should update settings when processorCount is changed', async () => {
-		const initialMockSettings = { processorCount: '2' }
+		const initialMockSettings = { processorCount: 2 }
 		getGlobalSettings.mockResolvedValueOnce(initialMockSettings)
 
 		const afterSaveMockSettings = { processorCount: 42 }
@@ -71,7 +71,7 @@ describe('Interaction tests', () => {
 	})
 
 	test('Should show error when save fails', async () => {
-		const initialMockSettings = { processorCount: '2' }
+		const initialMockSettings = { processorCount: 2 }
 		getGlobalSettings.mockResolvedValueOnce(initialMockSettings)
 
 		setGlobalSettings.mockRejectedValueOnce(new Error('save-failed'))

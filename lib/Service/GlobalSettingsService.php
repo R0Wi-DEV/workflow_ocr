@@ -53,8 +53,15 @@ class GlobalSettingsService implements IGlobalSettingsService {
 
 		foreach ($this->getProperties($settings) as $prop) {
 			$key = $prop->getName();
-			$configValue = $this->config->getValueString(Application::APP_NAME, $key);
-			$settings->$key = $configValue;
+			$type = $prop->getType();
+			if ($type instanceof \ReflectionNamedType && $type->getName() === 'int') {
+				$intValue = $this->config->getValueInt(Application::APP_NAME, $key, 0);
+				// 0 is used as the "not configured" sentinel: none of the integer settings
+				// have a meaningful zero value, so 0 → null (not set).
+				$settings->$key = $intValue > 0 ? $intValue : null;
+			} else {
+				$settings->$key = $this->config->getValueString(Application::APP_NAME, $key);
+			}
 		}
 
 		return $settings;
@@ -69,7 +76,12 @@ class GlobalSettingsService implements IGlobalSettingsService {
 		foreach ($this->getProperties($settings) as $prop) {
 			$key = $prop->getName();
 			$value = $settings->$key;
-			$this->config->setValueString(Application::APP_NAME, $key, (string)($value ?? ''));
+			$type = $prop->getType();
+			if ($type instanceof \ReflectionNamedType && $type->getName() === 'int') {
+				$this->config->setValueInt(Application::APP_NAME, $key, (int)($value ?? 0));
+			} else {
+				$this->config->setValueString(Application::APP_NAME, $key, (string)($value ?? ''));
+			}
 		}
 	}
 

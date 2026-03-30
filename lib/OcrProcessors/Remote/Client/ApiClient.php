@@ -111,11 +111,8 @@ class ApiClient implements IApiClient {
 	 */
 	private function getTimeout(object $settings): int {
 		$timeout = self::DEFAULT_TIMEOUT;
-		if (isset($settings->timeout) && $settings->timeout !== null && $settings->timeout !== '') {
-			$timeoutInt = (int)$settings->timeout;
-			if ($timeoutInt > 0) {
-				$timeout = $timeoutInt;
-			}
+		if ($settings->timeout !== null && $settings->timeout > 0) {
+			$timeout = $settings->timeout;
 		}
 		return $timeout;
 	}
