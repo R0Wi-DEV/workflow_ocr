@@ -46,6 +46,11 @@
       <code><![CDATA[Version2702Date20230908170345]]></code>
     </UnusedClass>
   </file>
+    <file src="lib/Migration/Version1341Date20260330202530.php">
+    <UnusedClass>
+      <code><![CDATA[Version1341Date20260330202530]]></code>
+    </UnusedClass>
+  </file>
   <file src="lib/Notification/Notifier.php">
     <MissingDependency>
       <code><![CDATA[$this->rootFolder]]></code>
