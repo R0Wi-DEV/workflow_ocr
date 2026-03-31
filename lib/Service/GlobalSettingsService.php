@@ -77,8 +77,12 @@ class GlobalSettingsService implements IGlobalSettingsService {
 			$key = $prop->getName();
 			$value = $settings->$key;
 			$type = $prop->getType();
-			if ($type instanceof \ReflectionNamedType && $type->getName() === 'int') {
-				$this->config->setValueInt(Application::APP_NAME, $key, (int)($value ?? 0));
+			$isNullable = $type !== null && $type->allowsNull();
+
+			if ($isNullable && $value === null) {
+				$this->config->deleteKey(Application::APP_NAME, $key);
+			} elseif ($type instanceof \ReflectionNamedType && $type->getName() === 'int') {
+				$this->config->setValueInt(Application::APP_NAME, $key, (int)$value);
 			} else {
 				$this->config->setValueString(Application::APP_NAME, $key, (string)($value ?? ''));
 			}

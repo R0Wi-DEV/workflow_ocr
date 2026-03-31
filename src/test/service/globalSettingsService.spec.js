@@ -19,7 +19,7 @@ test('getGlobalSettings returns correct data from server', async () => {
 })
 
 test('setGlobalSettings sends correct data to server', async () => {
-	const request = { data: { processorCount: 42 } }
+	const request = { processorCount: 42 }
 	const mockedResponse = { data: { processorCount: 42 } }
 
 	axios.put.mockResolvedValueOnce(mockedResponse)

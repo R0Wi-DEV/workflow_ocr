@@ -62,11 +62,32 @@ describe('Interaction tests', () => {
 		processorCount.element.value = '42'
 		await processorCount.trigger('input')
 
-		// v-model on type="number" input converts to number
+		// Inline @input handler converts to Number and falls back to null
 		expect(wrapper.vm.settings.processorCount).toBe(42)
 		expect(setGlobalSettings).toHaveBeenCalledTimes(1)
 		expect(setGlobalSettings).toHaveBeenCalledWith(expect.objectContaining({
 			processorCount: 42,
+		}))
+	})
+
+	test('Should convert empty input to null', async () => {
+		const initialMockSettings = { processorCount: 2 }
+		getGlobalSettings.mockResolvedValueOnce(initialMockSettings)
+
+		const afterSaveMockSettings = { processorCount: null }
+		setGlobalSettings.mockResolvedValueOnce(afterSaveMockSettings)
+
+		const wrapper = mount(GlobalSettings, mountOptions)
+		await new Promise(process.nextTick)
+
+		const processorCount = wrapper.find('input[name="processorCount"]')
+		processorCount.element.value = ''
+		await processorCount.trigger('input')
+
+		expect(wrapper.vm.settings.processorCount).toBeNull()
+		expect(setGlobalSettings).toHaveBeenCalledTimes(1)
+		expect(setGlobalSettings).toHaveBeenCalledWith(expect.objectContaining({
+			processorCount: null,
 		}))
 	})
 

@@ -96,17 +96,20 @@ class GlobalSettingsServiceTest extends TestCase {
 		$this->globalSettingsService->setGlobalSettings($settings);
 	}
 
-	public function testSetSettings_StoresZeroForNullValues() {
+	public function testSetSettings_DeletesKeyForNullValues() {
 		$settings = new GlobalSettings();
 		$settings->processorCount = null;
 		$settings->timeout = null;
 
-		$this->config->expects($this->any())
-			->method('setValueInt')
+		$this->config->expects($this->never())
+			->method('setValueInt');
+
+		$this->config->expects($this->exactly(2))
+			->method('deleteKey')
 			->willReturnCallback(
-				function (string $appName, string $key, int $value) {
-					$this->assertEquals(0, $value);
-					return true;
+				function (string $appName, string $key) {
+					$this->assertEquals(Application::APP_NAME, $appName);
+					$this->assertContains($key, ['processorCount', 'timeout']);
 				}
 			);
 

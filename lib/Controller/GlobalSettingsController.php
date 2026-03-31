@@ -59,10 +59,8 @@ class GlobalSettingsController extends ControllerBase {
 	public function setGlobalSettings(array $globalSettings) : JSONResponse {
 		return $this->tryExecute(function () use ($globalSettings) {
 			$globalSettingsObject = new GlobalSettings();
-			$processorCountRaw = $globalSettings['processorCount'] ?? null;
-			$globalSettingsObject->processorCount = is_numeric($processorCountRaw) ? (int)$processorCountRaw : null;
-			$timeoutRaw = $globalSettings['timeout'] ?? null;
-			$globalSettingsObject->timeout = is_numeric($timeoutRaw) ? (int)$timeoutRaw : null;
+			$globalSettingsObject->processorCount = isset($globalSettings['processorCount']) ? (int)$globalSettings['processorCount'] : null;
+			$globalSettingsObject->timeout = isset($globalSettings['timeout']) ? (int)$globalSettings['timeout'] : null;
 
 			$this->globalSettingsService->setGlobalSettings($globalSettingsObject);
 			return $this->globalSettingsService->getGlobalSettings();

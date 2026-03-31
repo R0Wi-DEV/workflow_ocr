@@ -38,7 +38,7 @@ use OCP\Migration\SimpleMigrationStep;
  * a key that was previously stored via setValueString(), so we must delete the
  * old rows and re-insert them with the right type.
  */
-class Version1341Date20260330202530 extends SimpleMigrationStep {
+class Version1034Date20260331194630 extends SimpleMigrationStep {
 	/** Integer keys in GlobalSettings that must be migrated. */
 	private const INT_KEYS = ['processorCount', 'timeout'];
 
