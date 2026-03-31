@@ -36,21 +36,6 @@
       <code><![CDATA[__construct]]></code>
     </PossiblyUnusedMethod>
   </file>
-  <file src="lib/Migration/Version2404Date20220903071748.php">
-    <UnusedClass>
-      <code><![CDATA[Version2404Date20220903071748]]></code>
-    </UnusedClass>
-  </file>
-  <file src="lib/Migration/Version2702Date20230908170345.php">
-    <UnusedClass>
-      <code><![CDATA[Version2702Date20230908170345]]></code>
-    </UnusedClass>
-  </file>
-    <file src="lib/Migration/Version1341Date20260330202530.php">
-    <UnusedClass>
-      <code><![CDATA[Version1341Date20260330202530]]></code>
-    </UnusedClass>
-  </file>
   <file src="lib/Notification/Notifier.php">
     <MissingDependency>
       <code><![CDATA[$this->rootFolder]]></code>
