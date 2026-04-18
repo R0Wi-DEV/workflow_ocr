@@ -30,12 +30,13 @@ use OCA\WorkflowOcr\OcrProcessors\Remote\Client\Model\OcrResult;
 use OCA\WorkflowOcr\Tests\Integration\TestUtils\BackendTestBase;
 use OCA\WorkflowOcr\Tests\Integration\TestUtils\IntegrationTestApiClient;
 use PHPUnit\Framework\Attributes\Depends;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Full test case for registering new OCR Workflow, uploading file and
  * processing it via OCR Backend Service.
- * @group DB
  */
+#[Group('DB')]
 class OcrBackendServiceTest extends BackendTestBase {
 	private IntegrationTestApiClient $apiClient;
 

@@ -30,11 +30,10 @@ use OCA\WorkflowOcr\Operation;
 use OCP\AppFramework\App;
 use OCP\IDBConnection;
 use OCP\Migration\IOutput;
+use PHPUnit\Framework\Attributes\Group;
 use Test\TestCase;
 
-/**
- * @group DB
- */
+#[Group('DB')]
 class Version2404Date20220903071748Test extends TestCase {
 	/** @var ContainerInterface */
 	private $container;

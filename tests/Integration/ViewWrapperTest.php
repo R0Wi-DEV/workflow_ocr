@@ -26,12 +26,11 @@ namespace OCA\WorkflowOcr\Tests\Integration;
 use OC\Files\View;
 use OCA\WorkflowOcr\Wrapper\ViewWrapper;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 use Test\TestCase;
 use Test\Traits\UserTrait;
 
-/**
- * @group DB
- */
+#[Group('DB')]
 class ViewWrapperTest extends TestCase {
 	use UserTrait;
 

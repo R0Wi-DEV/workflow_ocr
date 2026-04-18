@@ -38,13 +38,12 @@ use OCP\IUserSession;
 use OCP\Notification\IManager;
 use OCP\Notification\INotification;
 use OCP\SystemTag\ISystemTagObjectMapper;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 use Test\TestCase;
 
-/**
- * @group DB
- */
+#[Group('DB')]
 class NotificationTest extends TestCase {
 	/** @var LoggerInterface|MockObject */
 	private $logger;

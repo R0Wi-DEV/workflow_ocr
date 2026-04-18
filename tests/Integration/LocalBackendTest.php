@@ -30,12 +30,13 @@ use OCA\WorkflowOcr\Tests\Integration\TestUtils\BackendTestBase;
 use OCA\WorkflowOcr\Tests\Integration\TestUtils\IntegrationTestApiClient;
 use OCP\EventDispatcher\IEventDispatcher;
 use PHPUnit\Framework\Attributes\Depends;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Full test case for registering new OCR Workflow, uploading file and
  * processing it via local OCR (ocrmypdf CLI) backend.
- * @group DB
  */
+#[Group('DB')]
 class LocalBackendTest extends BackendTestBase {
 	private IntegrationTestApiClient $apiClient;
 	private IEventDispatcher $dispatcher;

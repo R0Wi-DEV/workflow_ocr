@@ -24,12 +24,11 @@ declare(strict_types=1);
 namespace OCA\WorkflowOcr\Tests\Integration;
 
 use OCA\WorkflowOcr\Wrapper\Filesystem;
+use PHPUnit\Framework\Attributes\Group;
 use Test\TestCase;
 use Test\Traits\UserTrait;
 
-/**
- * @group DB
- */
+#[Group('DB')]
 class FileSystemTest extends TestCase {
 	use UserTrait;
 
