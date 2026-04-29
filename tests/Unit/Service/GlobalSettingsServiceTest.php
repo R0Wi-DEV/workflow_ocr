@@ -58,6 +58,29 @@ class GlobalSettingsServiceTest extends TestCase {
 		$this->assertEquals(30, $settings->timeout);
 	}
 
+	public function testSetSettings_ConvertsIntegerValuesToString() {
+		$settings = new GlobalSettings();
+		$settings->processorCount = 4;
+		$settings->timeout = 60;
+
+		$this->config->expects($this->any())
+			->method('setValueString')
+			->willReturnCallback(
+				function (string $appName, string $key, string $value) {
+					if ($key === 'processorCount') {
+						$this->assertEquals('4', $value);
+					} elseif ($key === 'timeout') {
+						$this->assertEquals('60', $value);
+					} else {
+						$this->fail("Unexpected key: $key");
+					}
+					return true;
+				}
+			);
+
+		$this->globalSettingsService->setGlobalSettings($settings);
+	}
+
 	public function testSetSettings_CallsConfigSetAppValue() {
 		$settings = new GlobalSettings();
 		$settings->processorCount = '2';
