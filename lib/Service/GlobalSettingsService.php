@@ -69,7 +69,7 @@ class GlobalSettingsService implements IGlobalSettingsService {
 		foreach ($this->getProperties($settings) as $prop) {
 			$key = $prop->getName();
 			$value = $settings->$key;
-			$this->config->setValueString(Application::APP_NAME, $key, $value);
+			$this->config->setValueString(Application::APP_NAME, $key, (string)($value ?? ''));
 		}
 	}
 
