@@ -150,7 +150,6 @@ class OperationTest extends TestCase {
 		$operation->onEvent($eventName, $event, $this->ruleMatcher);
 	}
 
-
 	#[DataProvider('dataProvider_InvalidFilePaths')]
 	public function testDoesNothingOnInvalidFilePath(string $filePath) {
 		$this->jobList->expects($this->never())
@@ -240,7 +239,6 @@ class OperationTest extends TestCase {
 
 		$operation->getDisplayName();
 	}
-
 
 	public function testCallsLang_OnGetDescription() {
 		$this->l->expects($this->once())
