@@ -45,10 +45,10 @@ class GlobalSettingsServiceTest extends TestCase {
 
 	public function testGetSettings_ReturnsCorrectSettings() {
 		$this->config->expects($this->any())
-			->method('getValueString')
+			->method('getValueInt')
 			->willReturnMap([
-				[Application::APP_NAME, 'processorCount', '2'],
-				[Application::APP_NAME, 'timeout', '30'],
+				[Application::APP_NAME, 'processorCount', 0, 2],
+				[Application::APP_NAME, 'timeout', 0, 30],
 			]);
 
 		$settings = $this->globalSettingsService->getGlobalSettings();
@@ -58,15 +58,30 @@ class GlobalSettingsServiceTest extends TestCase {
 		$this->assertEquals(30, $settings->timeout);
 	}
 
-	public function testSetSettings_CallsConfigSetAppValue() {
+	public function testGetSettings_ReturnsNullForUnsetValues() {
+		// getValueInt returns 0 for keys that have never been stored.
+		// 0 is not a valid value for processorCount or timeout, so it is
+		// treated as "not configured" and mapped to null.
+		$this->config->expects($this->any())
+			->method('getValueInt')
+			->willReturn(0);
+
+		$settings = $this->globalSettingsService->getGlobalSettings();
+
+		$this->assertInstanceOf(GlobalSettings::class, $settings);
+		$this->assertNull($settings->processorCount);
+		$this->assertNull($settings->timeout);
+	}
+
+	public function testSetSettings_CallsConfigSetValueInt() {
 		$settings = new GlobalSettings();
-		$settings->processorCount = '2';
-		$settings->timeout = '30';
+		$settings->processorCount = 2;
+		$settings->timeout = 30;
 
 		$this->config->expects($this->any())
-			->method('setValueString')
+			->method('setValueInt')
 			->willReturnCallback(
-				function (string $appName, string $key, string $value) use ($settings) {
+				function (string $appName, string $key, int $value) use ($settings) {
 					if ($key === 'processorCount') {
 						$this->assertEquals($settings->processorCount, $value);
 					} elseif ($key === 'timeout') {
@@ -75,6 +90,26 @@ class GlobalSettingsServiceTest extends TestCase {
 						$this->fail("Unexpected key: $key");
 					}
 					return true;
+				}
+			);
+
+		$this->globalSettingsService->setGlobalSettings($settings);
+	}
+
+	public function testSetSettings_DeletesKeyForNullValues() {
+		$settings = new GlobalSettings();
+		$settings->processorCount = null;
+		$settings->timeout = null;
+
+		$this->config->expects($this->never())
+			->method('setValueInt');
+
+		$this->config->expects($this->exactly(2))
+			->method('deleteKey')
+			->willReturnCallback(
+				function (string $appName, string $key) {
+					$this->assertEquals(Application::APP_NAME, $appName);
+					$this->assertContains($key, ['processorCount', 'timeout']);
 				}
 			);
 

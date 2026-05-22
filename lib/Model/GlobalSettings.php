@@ -27,8 +27,6 @@ declare(strict_types=1);
 namespace OCA\WorkflowOcr\Model;
 
 class GlobalSettings {
-	/** @var string? */
-	public $processorCount;
-	/** @var string? */
-	public $timeout;
+	public ?int $processorCount = null;
+	public ?int $timeout = null;
 }
