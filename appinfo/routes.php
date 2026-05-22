@@ -24,7 +24,6 @@ declare(strict_types=1);
  *
  */
 
-
 return [
 	'routes' => [
 		['name' => 'GlobalSettings#getGlobalSettings', 'url' => '/globalSettings', 'verb' => 'GET'],

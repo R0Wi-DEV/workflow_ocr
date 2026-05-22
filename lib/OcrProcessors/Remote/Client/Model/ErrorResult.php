@@ -223,7 +223,6 @@ class ErrorResult implements ModelInterface, ArrayAccess, \JsonSerializable {
 		return self::$openAPIModelName;
 	}
 
-
 	/**
 	 * Associative array for storing property values
 	 *
@@ -282,7 +281,6 @@ class ErrorResult implements ModelInterface, ArrayAccess, \JsonSerializable {
 	public function valid() {
 		return count($this->listInvalidProperties()) === 0;
 	}
-
 
 	/**
 	 * Gets message

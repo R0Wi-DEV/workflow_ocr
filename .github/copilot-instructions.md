@@ -40,9 +40,9 @@ The app supports two OCR processing modes:
 
 Always check `appinfo/info.xml` for the Nextcloud target version:
 - If the version exists (e.g., NC 32), check against that stable branch in the Nextcloud Server repo
-- If the version doesn't exist yet (e.g., NC 33 not released), check against the `master` branch of the Nextcloud Server repo
+- If the version doesn't exist yet (e.g., NC 34 not released), check against the `master` branch of the Nextcloud Server repo
 
-Current target: Nextcloud 33 (check `appinfo/info.xml` for updates)
+Current target: Nextcloud 34 (check `appinfo/info.xml` for updates)
 
 ### Technology Stack
 

@@ -35,7 +35,7 @@ jobs:
       matrix:
         php-versions: ['8.4']
         databases: ['mysql']
-        server-versions: ['master']
+        server-versions: ['stable34']
         backend: ['remote', 'local'] # Do not change these names, they're used in the integration tests
 
     name: php-integrationtests-${{ matrix.backend }}-${{ matrix.php-versions }}-${{ matrix.databases }}

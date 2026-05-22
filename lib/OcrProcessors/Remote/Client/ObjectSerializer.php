@@ -189,20 +189,16 @@ class ObjectSerializer {
 			case 'int':
 			case 'integer':
 				return $value !== 0;
-
 			case 'number':
 			case 'float':
 				return $value !== 0 && $value !== 0.0;
-
 				# For boolean values, '' is considered empty
 			case 'bool':
 			case 'boolean':
 				return !in_array($value, [false, 0], true);
-
 				# For string values, '' is considered empty.
 			case 'string':
 				return $value === '';
-
 				# For all the other types, any value at this point can be considered empty.
 			default:
 				return true;
@@ -385,14 +381,11 @@ class ObjectSerializer {
 			case 'pipeDelimited':
 			case 'pipes':
 				return implode('|', $collection);
-
 			case 'tsv':
 				return implode("\t", $collection);
-
 			case 'spaceDelimited':
 			case 'ssv':
 				return implode(' ', $collection);
-
 			case 'simple':
 			case 'csv':
 				// Deliberate fall through. CSV is default format.
@@ -504,7 +497,6 @@ class ObjectSerializer {
 			settype($data, $class);
 			return $data;
 		}
-
 
 		if (method_exists($class, 'getAllowableEnumValues')) {
 			if (!in_array($data, $class::getAllowableEnumValues(), true)) {

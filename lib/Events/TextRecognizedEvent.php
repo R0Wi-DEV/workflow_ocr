@@ -38,7 +38,6 @@ class TextRecognizedEvent extends Event {
 	/** @var File */
 	private $file;
 
-
 	/**
 	 * TextRecognizedEvent constructor.
 	 */
