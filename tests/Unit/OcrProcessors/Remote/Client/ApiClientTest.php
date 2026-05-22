@@ -126,7 +126,7 @@ class ApiClientTest extends TestCase {
 
 	public function testProcessOcrUsesConfiguredTimeout(): void {
 		$settings = new GlobalSettings();
-		$settings->timeout = '120';
+		$settings->timeout = 120;
 
 		$globalSettingsService = $this->createMock(IGlobalSettingsService::class);
 		$globalSettingsService->method('getGlobalSettings')->willReturn($settings);
@@ -213,19 +213,19 @@ class ApiClientTest extends TestCase {
 		$method->setAccessible(true);
 
 		$settings = new GlobalSettings();
-		$settings->timeout = '';
+		$settings->timeout = null;
 		$this->assertEquals(60, $method->invoke($realClient, $settings));
 
-		$settings->timeout = '120';
+		$settings->timeout = 120;
 		$this->assertEquals(120, $method->invoke($realClient, $settings));
 
-		$settings->timeout = '0';
+		$settings->timeout = 0;
 		$this->assertEquals(60, $method->invoke($realClient, $settings));
 
-		$settings->timeout = '-10';
+		$settings->timeout = -10;
 		$this->assertEquals(60, $method->invoke($realClient, $settings));
 
-		$settings->timeout = '3600';
+		$settings->timeout = 3600;
 		$this->assertEquals(3600, $method->invoke($realClient, $settings));
 	}
 }
