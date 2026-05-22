@@ -34,10 +34,10 @@
 				</div>
 				<div class="div-table-col">
 					<input
-						v-model="settings.processorCount"
+						:value="settings.processorCount"
 						name="processorCount"
 						type="number"
-						@input="save">
+						@input="settings.processorCount = Number($event.target.value) || null; save()">
 				</div>
 			</div>
 			<div class="div-table-row">
@@ -50,11 +50,11 @@
 				</div>
 				<div class="div-table-col">
 					<input
-						v-model="settings.timeout"
+						:value="settings.timeout"
 						name="timeout"
 						type="number"
 						min="1"
-						@input="save">
+						@input="settings.timeout = Number($event.target.value) || null; save()">
 				</div>
 			</div>
 		</NcSettingsSection>

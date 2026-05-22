@@ -68,7 +68,7 @@ class CommandLineUtils implements ICommandLineUtils {
 		}
 
 		// Number of CPU's to be used
-		$processorCount = intval($globalSettings->processorCount);
+		$processorCount = $globalSettings->processorCount ?? 0;
 		if ($processorCount > 0) {
 			$args[] = '--jobs ' . $processorCount;
 		}

@@ -120,4 +120,19 @@ class GlobalSettingsControllerTest extends TestCase {
 
 		$this->controller->setGlobalSettings($settings);
 	}
+
+	public function testSetSettingsPassesNullValues() {
+		$settings = [
+			'processorCount' => null,
+			'timeout' => null,
+		];
+
+		$this->globalSettingsService->expects($this->once())
+			->method('setGlobalSettings')
+			->with($this->callback(function (GlobalSettings $settings) {
+				return $settings->processorCount === null && $settings->timeout === null;
+			}));
+
+		$this->controller->setGlobalSettings($settings);
+	}
 }
