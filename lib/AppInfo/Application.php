@@ -24,7 +24,6 @@ declare(strict_types=1);
  *
  */
 
-
 namespace OCA\WorkflowOcr\AppInfo;
 
 use OCA\WorkflowOcr\Helper\IProcessingFileAccessor;

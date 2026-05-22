@@ -18,10 +18,10 @@ jobs:
           ref: ${{ github.head_ref }}
           token: ${{ secrets.WORKFLOW_OCR_COMPOSER_DEPS_AUTO_UPDATE }} # To be able to trigger workflows in case of git push
 
-      - name: Set up php 8.4
+      - name: Set up php 8.5
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.4
+          php-version: 8.5
           extensions: mbstring, iconv, fileinfo, intl, sqlite, pdo_sqlite, gd, zip, imagick
           coverage: none
 
