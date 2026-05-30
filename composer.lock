@@ -1838,12 +1838,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/nextcloud-deps/ocp.git",
-                "reference": "e2e862d9e50fd492906ec0778356c7a0f734f7e2"
+                "reference": "4f7027a2ef9737eb3f2c48762cc8f35b95fd611c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nextcloud-deps/ocp/zipball/e2e862d9e50fd492906ec0778356c7a0f734f7e2",
-                "reference": "e2e862d9e50fd492906ec0778356c7a0f734f7e2",
+                "url": "https://api.github.com/repos/nextcloud-deps/ocp/zipball/4f7027a2ef9737eb3f2c48762cc8f35b95fd611c",
+                "reference": "4f7027a2ef9737eb3f2c48762cc8f35b95fd611c",
                 "shasum": ""
             },
             "require": {
@@ -1880,7 +1880,7 @@
                 "issues": "https://github.com/nextcloud-deps/ocp/issues",
                 "source": "https://github.com/nextcloud-deps/ocp/tree/master"
             },
-            "time": "2026-05-29T02:04:57+00:00"
+            "time": "2026-05-30T01:59:42+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -2060,16 +2060,16 @@
         },
         {
             "name": "php-cs-fixer/shim",
-            "version": "v3.95.2",
+            "version": "v3.95.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHP-CS-Fixer/shim.git",
-                "reference": "319bd80c8db64ab5f7b79a19178299045bdb9957"
+                "reference": "681eea341af451ca7cee6abcebc49fcce59507a3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHP-CS-Fixer/shim/zipball/319bd80c8db64ab5f7b79a19178299045bdb9957",
-                "reference": "319bd80c8db64ab5f7b79a19178299045bdb9957",
+                "url": "https://api.github.com/repos/PHP-CS-Fixer/shim/zipball/681eea341af451ca7cee6abcebc49fcce59507a3",
+                "reference": "681eea341af451ca7cee6abcebc49fcce59507a3",
                 "shasum": ""
             },
             "require": {
@@ -2106,9 +2106,9 @@
             "description": "A tool to automatically fix PHP code style",
             "support": {
                 "issues": "https://github.com/PHP-CS-Fixer/shim/issues",
-                "source": "https://github.com/PHP-CS-Fixer/shim/tree/v3.95.2"
+                "source": "https://github.com/PHP-CS-Fixer/shim/tree/v3.95.3"
             },
-            "time": "2026-05-15T09:21:09+00:00"
+            "time": "2026-05-29T20:36:02+00:00"
         },
         {
             "name": "phpdocumentor/reflection-common",
