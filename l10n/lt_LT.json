@@ -12,7 +12,7 @@
     "OCRmyPDF CLI is not working correctly. Error was: %1$s" : "„OCRmyPDF CLI“ neveikia tinkamai. Klaida buvo tokia: %1$s",
     "OCRmyPDF is installed and has version %1$s." : "„OCRmyPDF“ įdiegtas ir %1$s versijos.",
     "Workflow OCR Backend is installed." : "Įdiegta darbo eigos OCR posistemė.",
-    "Workflow OCR Backend is installed but heartbeat failed." : "Darbo eigos OCR posistemė įdiegta, bet nepavyko patikrinti kontrolinio signalo.",
+    "Workflow OCR Backend is installed but heartbeat failed." : "„Workflow OCR“ programinė sąsaja yra įdiegta, tačiau gyvybės signalo gauti nepavyko",
     "Workflow OCR Backend is not reachable. Error was: %1$s" : "Darbo eigos OCR serveris nepasiekiamas. Klaida: %1$s",
     "Server side OCR processing via workflow engine" : "Serverio pusės OCR apdorojimas naudojant darbo eigos variklį",
     "This app makes it possible to process various files via OCR algorithms.\n\tThe processing is done via workflow-engine and can therefore easily be customized.\n\tPlease note that you'll have to install the OcrMyPDF CLI on your Nextcloud server to\n\tprocess PDF files. More installation instructions can be found in the docs https://github.com/R0Wi/workflow_ocr/blob/master/README.md." : "Ši programėlė leidžia apdoroti įvairius failus naudojant OCR algoritmus.\n\tApdorojimas vyksta per darbo eigos variklį, todėl jį galima lengvai pritaikyti pagal poreikius.\n\tAtkreipkite dėmesį, kad norėdami apdoroti PDF failus, turėsite įdiegti „OcrMyPDF CLI“ į savo „Nextcloud“ serverį.\n\tDaugiau diegimo instrukcijų rasite dokumentacijoje https://github.com/R0Wi/workflow_ocr/blob/master/README.md.",
