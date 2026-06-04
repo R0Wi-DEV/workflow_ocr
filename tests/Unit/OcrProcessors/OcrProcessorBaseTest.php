@@ -8,7 +8,6 @@ use OCA\WorkflowOcr\Helper\ISidecarFileAccessor;
 use OCA\WorkflowOcr\Model\GlobalSettings;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCA\WorkflowOcr\OcrProcessors\ICommandLineUtils;
-
 use OCA\WorkflowOcr\OcrProcessors\Local\OcrMyPdfBasedProcessor;
 use OCA\WorkflowOcr\OcrProcessors\OcrProcessorBase;
 use OCA\WorkflowOcr\OcrProcessors\OcrProcessorResult;
