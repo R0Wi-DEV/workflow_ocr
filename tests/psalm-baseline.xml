@@ -37,20 +37,9 @@
     </PossiblyUnusedMethod>
   </file>
   <file src="lib/Notification/Notifier.php">
-    <MissingDependency>
-      <code><![CDATA[$this->rootFolder]]></code>
-      <code><![CDATA[IRootFolder]]></code>
-      <code><![CDATA[IRootFolder]]></code>
-    </MissingDependency>
     <PossiblyUnusedMethod>
       <code><![CDATA[__construct]]></code>
     </PossiblyUnusedMethod>
-    <PossiblyUnusedParam>
-      <code><![CDATA[$factory]]></code>
-      <code><![CDATA[$logger]]></code>
-      <code><![CDATA[$rootFolder]]></code>
-      <code><![CDATA[$urlGenerator]]></code>
-    </PossiblyUnusedParam>
   </file>
   <file src="lib/OcrProcessors/CommandLineUtils.php">
     <PossiblyUnusedMethod>
@@ -201,10 +190,6 @@
     </PossiblyUnusedMethod>
   </file>
   <file src="lib/Operation.php">
-    <MissingDependency>
-      <code><![CDATA[$this->rootFolder]]></code>
-      <code><![CDATA[private]]></code>
-    </MissingDependency>
     <NullReference>
       <code><![CDATA[$argsArray]]></code>
     </NullReference>
@@ -244,11 +229,6 @@
     </PossiblyUnusedMethod>
   </file>
   <file src="lib/Service/OcrService.php">
-    <MissingDependency>
-      <code><![CDATA[$this->rootFolder]]></code>
-      <code><![CDATA[IRootFolder]]></code>
-      <code><![CDATA[IRootFolder]]></code>
-    </MissingDependency>
     <PossiblyUnusedMethod>
       <code><![CDATA[__construct]]></code>
     </PossiblyUnusedMethod>
