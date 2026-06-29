@@ -1,4 +1,8 @@
 { "translations": {
+    "Workflow OCR success for file {file}" : "Sucesso do Fluxo de trabalho OCR para o arquivo {file}",
+    "OCRmyPDF CLI is not working correctly. Error was: %1$s" : "A ILC do OCRmyPDF não está funcionando corretamente. O erro foi: %1$s",
+    "Server side OCR processing via workflow engine" : "Processamento OCR no lado do servidor por meio do motor de fluxo de trabalho",
+    "Failed to save settings: {error}" : "Falha ao salvar as configurações: {error}",
     "Assign tags after OCR" : "Atribuir etiquetas após o OCR",
     "These tags will be assigned to the file after OCR processing has finished" : "Estas etiquetas serão atribuídas ao ficheiro após a conclusão do processamento de OCR",
     "Remove tags after OCR" : "Remover as etiquetas após o OCR",
