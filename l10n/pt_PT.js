@@ -1,13 +1,26 @@
 OC.L10N.register(
     "workflow_ocr",
     {
+    "Workflow OCR error for file {file}" : "Erro de Fluxo de trabalho OCR para o arquivo {file}",
     "Workflow OCR success for file {file}" : "Sucesso do Fluxo de trabalho OCR para o arquivo {file}",
+    "OCR file" : "Arquivo OCR",
+    "OCRmyPDF CLI is not installed." : "ILC OCRmyPDF não está instalado.",
     "OCRmyPDF CLI is not working correctly. Error was: %1$s" : "A ILC do OCRmyPDF não está funcionando corretamente. O erro foi: %1$s",
+    "Workflow OCR Backend is not reachable. Error was: %1$s" : "Back-end de Fluxo de Trabalho OCR não está accessível. O erro foi: %1$s",
     "Server side OCR processing via workflow engine" : "Processamento OCR no lado do servidor por meio do motor de fluxo de trabalho",
     "Failed to save settings: {error}" : "Falha ao salvar as configurações: {error}",
+    "Failed to load installed OCR languages: {error}" : "Falha ao carregar os idiomas OCR instalados: {error}",
     "Assign tags after OCR" : "Atribuir etiquetas após o OCR",
     "These tags will be assigned to the file after OCR processing has finished" : "Estas etiquetas serão atribuídas ao ficheiro após a conclusão do processamento de OCR",
     "Remove tags after OCR" : "Remover as etiquetas após o OCR",
-    "These tags will be removed from the file after OCR processing has finished" : "Estas etiquetas serão removidas do ficheiro após a conclusão do processamento de OCR"
+    "These tags will be removed from the file after OCR processing has finished" : "Estas etiquetas serão removidas do ficheiro após a conclusão do processamento de OCR",
+    "OCR mode" : "Modo OCR",
+    "Redo OCR" : "Refazer OCR",
+    "Notifications" : "Notificações",
+    "The asynchronous OCR process will send Nextcloud notifications. Use these settings to control them." : "O processo OCR assíncrono enviará notificações do Nextcloud. Use estas configurações para controlá-las.",
+    "Other settings" : "Outras configurações",
+    "Try to remove colored backgrounds before OCR. Compatible only with ocrmypdf versions prior to 13 and incompatible with redo OCR mode." : "Tente remover fundos coloridos antes do OCR. Compatível apenas com versões do ocrmypdf anteriores à 13 e incompatível com o modo refazer OCR.",
+    "Keep original file version" : "Manter a versão original do arquivo",
+    "Create sidecar text file" : "Criar arquivo de texto sidecar"
 },
 "nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;");
