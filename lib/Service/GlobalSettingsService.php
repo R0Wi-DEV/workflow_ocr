@@ -54,13 +54,16 @@ class GlobalSettingsService implements IGlobalSettingsService {
 		foreach ($this->getProperties($settings) as $prop) {
 			$key = $prop->getName();
 			$type = $prop->getType();
+			$isNullable = $type !== null && $type->allowsNull();
 			if ($type instanceof \ReflectionNamedType && $type->getName() === 'int') {
 				$intValue = $this->config->getValueInt(Application::APP_NAME, $key, 0);
 				// 0 is used as the "not configured" sentinel: none of the integer settings
 				// have a meaningful zero value, so 0 → null (not set).
 				$settings->$key = $intValue > 0 ? $intValue : null;
 			} else {
-				$settings->$key = $this->config->getValueString(Application::APP_NAME, $key);
+				$stringValue = $this->config->getValueString(Application::APP_NAME, $key);
+				// The empty string is used as the "not configured" sentinel for string settings.
+				$settings->$key = $stringValue === '' && $isNullable ? null : $stringValue;
 			}
 		}
 
