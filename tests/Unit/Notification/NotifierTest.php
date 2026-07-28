@@ -156,9 +156,9 @@ class NotifierTest extends TestCase {
 		/** @var Folder|MockObject */
 		$userFolder = $this->createMock(Folder::class);
 		$userFolder->expects($this->once())
-			->method('getById')
-			->with('123')
-			->willReturn(['file' => $file]);
+			->method('getFirstNodeById')
+			->with(123)
+			->willReturn($file);
 		$userFolder->expects($this->once())
 			->method('getRelativePath')
 			->with('admin/files/file.txt')
@@ -256,8 +256,8 @@ class NotifierTest extends TestCase {
 		$userFolder = $this->createMock(Folder::class);
 		$ex = new \OCP\Files\NotFoundException('nope ... sorry');
 		$userFolder->expects($this->once())
-			->method('getById')
-			->with('123')
+			->method('getFirstNodeById')
+			->with(123)
 			->willThrowException($ex); // This is what we want to test ...
 		$userFolder->expects($this->never())
 			->method('getRelativePath');
@@ -283,7 +283,10 @@ class NotifierTest extends TestCase {
 		$this->assertEquals('<translated> Workflow OCR error', $notification->getParsedSubject());
 	}
 
-	public function testSendsFallbackNotificationWithoutFileInfoIfReturnedFileArrayWasEmpty() {
+	/**
+	 * @see https://github.com/R0Wi-DEV/workflow_ocr/issues/382
+	 */
+	public function testThrowsAlreadyProcessedExceptionIfFileCannotBeFoundAnymore() {
 		/** @var IValidator|MockObject */
 		$validator = $this->createMock(IValidator::class);
 		/** @var IRichTextFormatter|MockObject */
@@ -305,31 +308,30 @@ class NotifierTest extends TestCase {
 		/** @var Folder|MockObject */
 		$userFolder = $this->createMock(Folder::class);
 		$userFolder->expects($this->once())
-			->method('getById')
-			->with('123')
-			->willReturn([]); // This is what we want to test ...
+			->method('getFirstNodeById')
+			->with(123)
+			->willReturn(null); // This is what we want to test ...
 		$userFolder->expects($this->never())
 			->method('getRelativePath');
 		$this->rootFolder->expects($this->once())
 			->method('getUserFolder')
 			->with('user')
 			->willReturn($userFolder);
-		$this->urlGenerator->expects($this->once())
-			->method('imagePath')
-			->with('workflow_ocr', 'app-dark.svg')
-			->willReturn('apps/workflow_ocr/app-dark.svg');
-		$this->urlGenerator->expects($this->once())
-			->method('getAbsoluteURL')
-			->with('apps/workflow_ocr/app-dark.svg')
-			->willReturn('http://localhost/index.php/apps/workflow_ocr/app-dark.svg');
+		// The notification is dropped, so it's never rendered
+		$this->urlGenerator->expects($this->never())
+			->method('imagePath');
+		$this->urlGenerator->expects($this->never())
+			->method('linkToRouteAbsolute');
+		// A missing file is expected (e.g. user deleted it), so no warning should be logged
+		$this->logger->expects($this->never())
+			->method('warning');
 		$this->logger->expects($this->once())
-			->method('warning')
-			->with('Could not find file with id {fileId} for user {uid}', ['fileId' => '123', 'uid' => 'user']);
+			->method('debug')
+			->with('Could not find file with id {fileId} for user {uid}, discarding obsolete notification', ['fileId' => 123, 'uid' => 'user']);
 
-		$notification = $this->notifier->prepare($notification, 'en');
+		$this->expectException(AlreadyProcessedException::class);
 
-		$this->assertEmpty($notification->getRichSubject());
-		$this->assertEquals('<translated> Workflow OCR error', $notification->getParsedSubject());
+		$this->notifier->prepare($notification, 'en');
 	}
 
 	public function testFallbackToParsedSubjectIfMessageIsEmpty() {

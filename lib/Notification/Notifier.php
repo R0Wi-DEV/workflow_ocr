@@ -103,18 +103,20 @@ class Notifier implements INotifier {
 		}
 
 		// Only add file info if we have some ...
-		$richParams = false;
+		$richParams = null;
 		if ($notification->getObjectType() === 'file'
 			&& ($fileId = $notification->getObjectId())
 			&& ($uid = $notification->getUser())) {
+			// Note:: This might throw an AlreadyProcessedException if the file doesn't exist anymore.
+			// It has to be thrown before any call to $notification->set... otherwise the notification
+			// won't be removed from the database.
 			$richParams = $this->tryGetRichParamForFile($uid, intval($fileId));
-			if ($richParams !== false) {
-				$notification->setRichSubject($richSubject, $richParams);
-			}
 		}
 
-		// Fallback to generic error message without file link
-		if ($richParams === false) {
+		if ($richParams !== null) {
+			$notification->setRichSubject($richSubject, $richParams);
+		} else {
+			// Fallback to generic error message without file link
 			$notification->setParsedSubject($parsedSubject);
 		}
 
@@ -129,21 +131,38 @@ class Notifier implements INotifier {
 		return $notification;
 	}
 
-	private function tryGetRichParamForFile(string $uid, int $fileId) : array|bool {
+	/**
+	 * Tries to build the rich notification parameters pointing to the file the
+	 * notification was created for.
+	 *
+	 * @return array|null The rich parameters or `null` if they could not be determined
+	 *                    because of an unexpected error.
+	 * @throws AlreadyProcessedException If the file cannot be found for the given user
+	 *                                   anymore. In that case the notification is obsolete
+	 *                                   and gets removed from the database instead of being
+	 *                                   re-rendered on every notification poll (see #382).
+	 */
+	private function tryGetRichParamForFile(string $uid, int $fileId) : ?array {
 		try {
 			$userFolder = $this->rootFolder->getUserFolder($uid);
-			/** @var File[] */
-			$files = $userFolder->getById($fileId);
-			/** @var File $file */
-			$file = array_shift($files);
-			if ($file === null) {
-				$this->logger->warning('Could not find file with id {fileId} for user {uid}', ['fileId' => $fileId, 'uid' => $uid]);
-				return false;
-			}
-			$relativePath = $userFolder->getRelativePath($file->getPath());
+			/** @var File|null $file */
+			$file = $userFolder->getFirstNodeById($fileId);
+			$relativePath = $file !== null ? $userFolder->getRelativePath($file->getPath()) : null;
 		} catch (\Throwable $th) {
 			$this->logger->error($th->getMessage(), ['exception' => $th]);
-			return false;
+			return null;
+		}
+
+		if ($file === null) {
+			// Nothing unusual: the user might have deleted the file (or moved it to the
+			// trashbin) after the OCR process has finished. Since we cannot render a link
+			// to the file anymore, the notification is dropped. This also prevents the
+			// message from being logged over and over again, because the notifications app
+			// re-renders every stored notification on each poll.
+			$this->logger->debug('Could not find file with id {fileId} for user {uid}, discarding obsolete notification', ['fileId' => $fileId, 'uid' => $uid]);
+			// Note:: AlreadyProcessedException has to be thrown before any call to $notification->set...
+			// otherwise notification won't be removed from the database
+			throw new AlreadyProcessedException();
 		}
 
 		return [
