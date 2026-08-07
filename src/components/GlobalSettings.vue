@@ -57,6 +57,22 @@
 						@input="settings.timeout = Number($event.target.value) || null; save()">
 				</div>
 			</div>
+			<div class="div-table-row">
+				<div class="div-table-col div-table-col-left">
+					<span class="leftcol">{{ translate('OCR user:') }}</span>
+					<br>
+					<em>{{ translate('User account which is used to run the OCR processing. If not set, the owner of the processed file is used.') }}</em>
+					<br>
+					<em><strong>{{ translate('Note:') }}</strong> {{ translate('This user needs write access to all files which should be OCR processed.') }}</em>
+				</div>
+				<div class="div-table-col">
+					<input
+						:value="settings.processingUserId"
+						name="processingUserId"
+						type="text"
+						@change="settings.processingUserId = $event.target.value.trim() || null; save()">
+				</div>
+			</div>
 		</NcSettingsSection>
 	</div>
 </template>

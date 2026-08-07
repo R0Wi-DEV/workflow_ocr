@@ -91,6 +91,52 @@ describe('Interaction tests', () => {
 		}))
 	})
 
+	test('Should update settings when processingUserId is changed', async () => {
+		const initialMockSettings = { processingUserId: null }
+		getGlobalSettings.mockResolvedValueOnce(initialMockSettings)
+
+		const afterSaveMockSettings = { processingUserId: 'ocruser' }
+		setGlobalSettings.mockResolvedValueOnce(afterSaveMockSettings)
+
+		const wrapper = mount(GlobalSettings, mountOptions)
+		await new Promise(process.nextTick)
+
+		const processingUserId = wrapper.find('input[name="processingUserId"]')
+		expect(processingUserId.element.value).toBe('')
+
+		processingUserId.element.value = '  ocruser  '
+		await processingUserId.trigger('change')
+
+		expect(wrapper.vm.settings.processingUserId).toBe('ocruser')
+		expect(setGlobalSettings).toHaveBeenCalledTimes(1)
+		expect(setGlobalSettings).toHaveBeenCalledWith(expect.objectContaining({
+			processingUserId: 'ocruser',
+		}))
+	})
+
+	test('Should convert empty processingUserId to null', async () => {
+		const initialMockSettings = { processingUserId: 'ocruser' }
+		getGlobalSettings.mockResolvedValueOnce(initialMockSettings)
+
+		const afterSaveMockSettings = { processingUserId: null }
+		setGlobalSettings.mockResolvedValueOnce(afterSaveMockSettings)
+
+		const wrapper = mount(GlobalSettings, mountOptions)
+		await new Promise(process.nextTick)
+
+		const processingUserId = wrapper.find('input[name="processingUserId"]')
+		expect(processingUserId.element.value).toBe('ocruser')
+
+		processingUserId.element.value = '   '
+		await processingUserId.trigger('change')
+
+		expect(wrapper.vm.settings.processingUserId).toBeNull()
+		expect(setGlobalSettings).toHaveBeenCalledTimes(1)
+		expect(setGlobalSettings).toHaveBeenCalledWith(expect.objectContaining({
+			processingUserId: null,
+		}))
+	})
+
 	test('Should show error when save fails', async () => {
 		const initialMockSettings = { processorCount: 2 }
 		getGlobalSettings.mockResolvedValueOnce(initialMockSettings)

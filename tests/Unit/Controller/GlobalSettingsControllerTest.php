@@ -29,6 +29,7 @@ use OCA\WorkflowOcr\Model\GlobalSettings;
 use OCA\WorkflowOcr\Service\IGlobalSettingsService;
 use OCP\AppFramework\Http\JSONResponse;
 use OCP\IRequest;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use Test\TestCase;
 
@@ -79,12 +80,53 @@ class GlobalSettingsControllerTest extends TestCase {
 		$settings = [
 			'processorCount' => 42,
 			'timeout' => 120,
+			'processingUserId' => 'ocruser',
 		];
 
 		$this->globalSettingsService->expects($this->once())
 			->method('setGlobalSettings')
 			->with($this->callback(function (GlobalSettings $settings) {
-				return $settings->processorCount === 42 && $settings->timeout === 120;
+				return $settings->processorCount === 42
+					&& $settings->timeout === 120
+					&& $settings->processingUserId === 'ocruser';
+			}));
+
+		$this->controller->setGlobalSettings($settings);
+	}
+
+	#[DataProvider('dataProvider_EmptyProcessingUserIds')]
+	public function testSetSettingsMapsEmptyProcessingUserIdToNull($processingUserId) {
+		$settings = [
+			'processorCount' => 42,
+			'processingUserId' => $processingUserId,
+		];
+
+		$this->globalSettingsService->expects($this->once())
+			->method('setGlobalSettings')
+			->with($this->callback(function (GlobalSettings $settings) {
+				return $settings->processingUserId === null;
+			}));
+
+		$this->controller->setGlobalSettings($settings);
+	}
+
+	public static function dataProvider_EmptyProcessingUserIds() {
+		return [
+			[null],
+			[''],
+			['   '],
+		];
+	}
+
+	public function testSetSettingsTrimsProcessingUserId() {
+		$settings = [
+			'processingUserId' => '  ocruser  ',
+		];
+
+		$this->globalSettingsService->expects($this->once())
+			->method('setGlobalSettings')
+			->with($this->callback(function (GlobalSettings $settings) {
+				return $settings->processingUserId === 'ocruser';
 			}));
 
 		$this->controller->setGlobalSettings($settings);

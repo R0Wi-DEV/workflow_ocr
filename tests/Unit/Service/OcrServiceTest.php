@@ -485,6 +485,123 @@ class OcrServiceTest extends TestCase {
 		$this->assertTrue($thrown);
 	}
 
+	public function testRunsOcrProcessWithConfiguredProcessingUser() {
+		// #385: If an admin configured a dedicated OCR user, the whole processing
+		// (and therefore the resulting file version) has to run with this user
+		// instead of impersonating the file owner.
+		$settings = new WorkflowSettings('{"keepOriginalFileVersion": true, "sendSuccessNotification": true}');
+		$globalSettings = new GlobalSettings();
+		$globalSettings->processingUserId = 'ocruser';
+
+		$this->globalSettingsService->expects($this->once())
+			->method('getGlobalSettings')
+			->willReturn($globalSettings);
+
+		/** @var IUser|MockObject */
+		$ocrUser = $this->createMock(IUser::class);
+		/** @var IUserManager|MockObject */
+		$userManager = $this->createMock(IUserManager::class);
+		$userManager->method('userExists')
+			->with('ocruser')
+			->willReturn(true);
+		$userManager->method('get')
+			->willReturnMap([
+				['ocruser', $ocrUser],
+				['usr', $this->user],
+			]);
+
+		$this->userSession->expects($this->exactly(2))
+			->method('setUser')
+			->willReturnCallback(function ($user) use ($ocrUser) {
+				// First call sets the OCR user, the last one resets the session
+				$this->assertTrue($user === $ocrUser || $user === null);
+			});
+
+		$this->filesystem->expects($this->once())
+			->method('init')
+			->with('ocruser', '/ocruser/files');
+
+		// The file versions have to be read as the configured OCR user
+		$this->versionManager->expects($this->once())
+			->method('getVersionsForFile')
+			->with($ocrUser, $this->rootFolderGetFirstNodeById42ReturnValue)
+			->willReturn([]);
+
+		// The file owner still has to be the receiver of the notification
+		$this->notificationService->expects($this->once())
+			->method('createSuccessNotification')
+			->with('usr', 42);
+
+		$this->ocrProcessor->expects($this->once())
+			->method('ocrFile')
+			->willReturn(new OcrProcessorResult(true, 'someOcrProcessedFile', 'some recognized text'));
+
+		$ocrService = new OcrService(
+			$this->ocrProcessorFactory,
+			$this->globalSettingsService,
+			$this->versionManager,
+			$this->systemTagObjectMapper,
+			$userManager,
+			$this->filesystem,
+			$this->userSession,
+			$this->rootFolder,
+			$this->eventService,
+			$this->viewFactory,
+			$this->processingFileAccessor,
+			$this->notificationService,
+			$this->logger);
+
+		$ocrService->runOcrProcess(42, 'usr', $settings);
+	}
+
+	public function testFallsBackToFileOwnerIfConfiguredProcessingUserDoesNotExist() {
+		$settings = new WorkflowSettings();
+		$globalSettings = new GlobalSettings();
+		$globalSettings->processingUserId = 'nonexistinguser';
+
+		$this->globalSettingsService->expects($this->once())
+			->method('getGlobalSettings')
+			->willReturn($globalSettings);
+
+		/** @var IUserManager|MockObject */
+		$userManager = $this->createMock(IUserManager::class);
+		$userManager->method('userExists')
+			->with('nonexistinguser')
+			->willReturn(false);
+		$userManager->method('get')
+			->with('usr')
+			->willReturn($this->user);
+
+		$this->filesystem->expects($this->once())
+			->method('init')
+			->with('usr', '/usr/files');
+
+		$this->logger->expects($this->once())
+			->method('warning')
+			->with($this->stringContains('does not exist'), ['configuredUid' => 'nonexistinguser', 'uid' => 'usr']);
+
+		$this->ocrProcessor->expects($this->once())
+			->method('ocrFile')
+			->willReturn(new OcrProcessorResult(true, 'someOcrProcessedFile', 'some recognized text'));
+
+		$ocrService = new OcrService(
+			$this->ocrProcessorFactory,
+			$this->globalSettingsService,
+			$this->versionManager,
+			$this->systemTagObjectMapper,
+			$userManager,
+			$this->filesystem,
+			$this->userSession,
+			$this->rootFolder,
+			$this->eventService,
+			$this->viewFactory,
+			$this->processingFileAccessor,
+			$this->notificationService,
+			$this->logger);
+
+		$ocrService->runOcrProcess(42, 'usr', $settings);
+	}
+
 	public function testCallsProcessingFileAccessor() {
 		$settings = new WorkflowSettings();
 		$mimeType = 'application/pdf';
