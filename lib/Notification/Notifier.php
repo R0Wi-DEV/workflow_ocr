@@ -27,8 +27,8 @@ declare(strict_types=1);
 namespace OCA\WorkflowOcr\Notification;
 
 use OCA\WorkflowOcr\AppInfo\Application;
-use OCP\Files\File;
 use OCP\Files\IRootFolder;
+use OCP\Files\Node;
 use OCP\IURLGenerator;
 use OCP\L10N\IFactory;
 use OCP\Notification\AlreadyProcessedException;
@@ -145,7 +145,7 @@ class Notifier implements INotifier {
 	private function tryGetRichParamForFile(string $uid, int $fileId) : ?array {
 		try {
 			$userFolder = $this->rootFolder->getUserFolder($uid);
-			/** @var File|null $file */
+			/** @var Node|null $file */
 			$file = $userFolder->getFirstNodeById($fileId);
 			$relativePath = $file !== null ? $userFolder->getRelativePath($file->getPath()) : null;
 		} catch (\Throwable $th) {
@@ -160,8 +160,9 @@ class Notifier implements INotifier {
 			// message from being logged over and over again, because the notifications app
 			// re-renders every stored notification on each poll.
 			$this->logger->debug('Could not find file with id {fileId} for user {uid}, discarding obsolete notification', ['fileId' => $fileId, 'uid' => $uid]);
-			// Note:: AlreadyProcessedException has to be thrown before any call to $notification->set...
-			// otherwise notification won't be removed from the database
+			// Note:: The caller (prepare()) must not call $notification->set... before invoking this
+			// method, otherwise the notification won't be removed from the database once this
+			// exception is thrown.
 			throw new AlreadyProcessedException();
 		}
 
