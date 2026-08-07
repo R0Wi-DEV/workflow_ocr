@@ -28,7 +28,6 @@ namespace OCA\WorkflowOcr\Notification;
 
 use OCA\WorkflowOcr\AppInfo\Application;
 use OCP\Files\IRootFolder;
-use OCP\Files\Node;
 use OCP\IURLGenerator;
 use OCP\L10N\IFactory;
 use OCP\Notification\AlreadyProcessedException;
@@ -145,7 +144,6 @@ class Notifier implements INotifier {
 	private function tryGetRichParamForFile(string $uid, int $fileId) : ?array {
 		try {
 			$userFolder = $this->rootFolder->getUserFolder($uid);
-			/** @var Node|null $file */
 			$file = $userFolder->getFirstNodeById($fileId);
 			$relativePath = $file !== null ? $userFolder->getRelativePath($file->getPath()) : null;
 		} catch (\Throwable $th) {
