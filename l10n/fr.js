@@ -45,6 +45,7 @@ OC.L10N.register(
     "Other settings" : "Autres paramètres",
     "Try to remove colored backgrounds before OCR. Compatible only with ocrmypdf versions prior to 13 and incompatible with redo OCR mode." : "Essayer de retirer les arrière-plans colorés avant l'OCR. Uniquement compatible avec les versions de ocrmypdf antérieures à 13 et incompatible avec le mode Refaire l'OCR.",
     "Remove background" : "Retirer l'arrière-plan",
+    "Keep the original file as a version labeled Before OC and exclude it from automatic expiration." : "Conserver le fichier original en tant que version étiquetée Before OCR et l'exclure de l'expiration automatique.",
     "Keep original file version" : "Conserver la version originale du fichier",
     "Restore the original modification date on the new file version for consistent sorting." : "Rétablir la date de modification originale sur la version du nouveau fichier pour la cohérence des tris.",
     "Keep original file modification date" : "Conserver la date de modification du fichier d'origine",
