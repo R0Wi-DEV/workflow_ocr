@@ -35,8 +35,22 @@ ADMIN_PASSWORD="${NEXTCLOUD_ADMIN_PASSWORD:-admin}"
 git config --global --add safe.directory "$NC_DIR"
 git config --global --add safe.directory "$APP_DIR"
 
+# Docker auto-creates the parent directory of a nested bind mount (here:
+# apps/, the parent of the apps/workflow_ocr bind mount) before the
+# container starts, and does so as root - regardless of who owns the rest
+# of the volume. That silently blocks the (non-root) devcontainer user from
+# creating sibling app directories during the clone below, so reclaim it
+# every start.
+sudo mkdir -p "$NC_DIR/apps"
+sudo chown "${APACHE_RUN_USER:-devcontainer}:${APACHE_RUN_GROUP:-devcontainer}" "$NC_DIR" "$NC_DIR/apps"
+
 is_cloned() {
-    [ -f "$NC_DIR/version.php" ]
+    # apps/files is one of Nextcloud's own core apps and only ends up on
+    # disk if the rsync in clone_nextcloud() fully succeeded, so use it (in
+    # addition to version.php) as a canary for "cloning actually finished".
+    # This also makes an incomplete clone (e.g. from the apps/ permission
+    # issue above, on an older run) self-heal on the next start.
+    [ -f "$NC_DIR/version.php" ] && [ -f "$NC_DIR/apps/files/appinfo/info.xml" ]
 }
 
 is_installed() {

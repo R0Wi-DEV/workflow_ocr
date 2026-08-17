@@ -72,9 +72,12 @@ RUN (getent passwd 1000 && userdel -r $(getent passwd 1000 | cut -d: -f1)) || tr
     sed -ri "s/^export APACHE_RUN_USER=.*$/export APACHE_RUN_USER=${APACHE_RUN_USER}/" "/etc/apache2/envvars" && \
     sed -ri "s/^export APACHE_RUN_GROUP=.*$/export APACHE_RUN_GROUP=${APACHE_RUN_GROUP}/" "/etc/apache2/envvars"
 
-# Pre-create the (later volume-mounted) Nextcloud directory with the right
-# ownership, so setup.sh can clone/install without needing root.
-RUN mkdir -p /var/www/nextcloud && chown -R ${APACHE_RUN_USER}:${APACHE_RUN_GROUP} /var/www/nextcloud
+# Pre-create the (later volume-mounted) Nextcloud directory - including
+# apps/, which is also the parent of the apps/workflow_ocr bind mount - with
+# the right ownership, so setup.sh can clone/install without needing root.
+# Docker copies this tree into the named volume on its first use, which
+# keeps it from auto-creating apps/ as root when the bind mount is set up.
+RUN mkdir -p /var/www/nextcloud/apps && chown -R ${APACHE_RUN_USER}:${APACHE_RUN_GROUP} /var/www/nextcloud
 
 USER devcontainer
 
