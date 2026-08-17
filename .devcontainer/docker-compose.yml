@@ -1,0 +1,49 @@
+# Docker Compose setup for the workflow_ocr devcontainer.
+#
+# Only two services are used:
+#   - "nextcloud": Apache + PHP, running a Nextcloud core checkout which is
+#     cloned on first start (see setup.sh). This app's repository is bind
+#     mounted into its "apps" folder.
+#   - "db": Postgres database used by the Nextcloud installation.
+#
+# No custom "networks:" section and no "network_mode" is used on purpose, so
+# both services are attached to the default bridge network Compose creates
+# for this project and can reach each other by service name (e.g. "db").
+services:
+  nextcloud:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      # Persists the cloned/installed Nextcloud core across container
+      # rebuilds.
+      - nextcloud:/var/www/nextcloud
+      # The app itself (this repository) is what is actually being
+      # developed, so it's bind mounted straight into the apps folder.
+      - ..:/var/www/nextcloud/apps/workflow_ocr:cached
+    command: /var/www/nextcloud/apps/workflow_ocr/.devcontainer/entrypoint.sh
+    ports:
+      - "80:80"
+    depends_on:
+      - db
+    environment:
+      NEXTCLOUD_DB_HOST: db
+      NEXTCLOUD_DB_NAME: nextcloud
+      NEXTCLOUD_DB_USER: nextcloud
+      NEXTCLOUD_DB_PASSWORD: nextcloud
+
+  db:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_DB: nextcloud
+      POSTGRES_USER: nextcloud
+      POSTGRES_PASSWORD: nextcloud
+    volumes:
+      - db:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  nextcloud:
+  db:
