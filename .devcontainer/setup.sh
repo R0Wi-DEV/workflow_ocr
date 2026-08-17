@@ -44,12 +44,11 @@ git config --global --add safe.directory "$APP_DIR"
 sudo mkdir -p "$NC_DIR/apps"
 sudo chown "${APACHE_RUN_USER:-devcontainer}:${APACHE_RUN_GROUP:-devcontainer}" "$NC_DIR" "$NC_DIR/apps"
 
+if [ -n "$CLAUDE_CONFIG_DIR" ]; then
+    sudo chown -R "$(id -u):$(id -g)" "$CLAUDE_CONFIG_DIR"
+fi
+
 is_cloned() {
-    # apps/files is one of Nextcloud's own core apps and only ends up on
-    # disk if the rsync in clone_nextcloud() fully succeeded, so use it (in
-    # addition to version.php) as a canary for "cloning actually finished".
-    # This also makes an incomplete clone (e.g. from the apps/ permission
-    # issue above, on an older run) self-heal on the next start.
     [ -f "$NC_DIR/version.php" ] && [ -f "$NC_DIR/apps/files/appinfo/info.xml" ]
 }
 
@@ -124,6 +123,11 @@ install_nextcloud() {
         --database-pass="$DB_PASSWORD" \
         --admin-user="$ADMIN_USER" \
         --admin-pass="$ADMIN_PASSWORD"
+
+    echo "==> Installing app dependencies for $APP_NAME"
+    pushd "$APP_DIR" > /dev/null
+    composer install --no-dev
+    popd > /dev/null
 
     echo "==> Enabling $APP_NAME"
     php "$NC_DIR/occ" app:enable "$APP_NAME"

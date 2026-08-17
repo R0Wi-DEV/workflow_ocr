@@ -11,15 +11,22 @@
 		"vscode": {
 			"extensions": [
 				"felixfbecker.php-debug",
-				"felixfbecker.php-intellisense",
+				"bmewburn.vscode-intelephense-client",
 				"ms-azuretools.vscode-docker",
 				"xdebug.php-debug",
-				"donjayamanne.githistory"
+				"donjayamanne.githistory",
+				"anthropic.claude-code"
 			],
 			"settings": {
 				"php.suggest.basic": false
 			}
 		}
 	},
-	"remoteUser": "devcontainer"
+	"remoteUser": "devcontainer",
+	"mounts": [
+		"source=claude-code-config-wf-ocr,target=/home/devcontainer/.claude,type=volume"
+	],
+	"containerEnv": {
+		"CLAUDE_CONFIG_DIR": "/home/devcontainer/.claude"
+	}
 }
