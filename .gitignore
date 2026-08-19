@@ -12,3 +12,4 @@ js
 coverage
 .php-cs-fixer.cache 
 .vscode/settings.json
+.playwright-mcp

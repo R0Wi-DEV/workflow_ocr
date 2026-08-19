@@ -1,0 +1,32 @@
+{
+	"name": "WorkflowOcr",
+	"dockerComposeFile": "docker-compose.yml",
+	"service": "nextcloud",
+	"workspaceFolder": "/var/www/nextcloud/apps/workflow_ocr",
+	"postStartCommand": ".devcontainer/setup.sh",
+	"forwardPorts": [
+		80
+	],
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"felixfbecker.php-debug",
+				"bmewburn.vscode-intelephense-client",
+				"ms-azuretools.vscode-docker",
+				"xdebug.php-debug",
+				"donjayamanne.githistory",
+				"anthropic.claude-code"
+			],
+			"settings": {
+				"php.suggest.basic": false
+			}
+		}
+	},
+	"remoteUser": "devcontainer",
+	"mounts": [
+		"source=claude-code-config-wf-ocr,target=/home/devcontainer/.claude,type=volume"
+	],
+	"containerEnv": {
+		"CLAUDE_CONFIG_DIR": "/home/devcontainer/.claude"
+	}
+}
