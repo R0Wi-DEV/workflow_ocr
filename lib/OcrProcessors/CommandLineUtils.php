@@ -29,6 +29,15 @@ use OCA\WorkflowOcr\Service\IOcrBackendInfoService;
 use Psr\Log\LoggerInterface;
 
 class CommandLineUtils implements ICommandLineUtils {
+	/**
+	 * Allow-list for tesseract/ocrmypdf language codes (e.g. 'eng', 'chi_sim', 'script/Latin').
+	 * The language values are concatenated into the ocrmypdf command line, which is executed
+	 * as a shell string, so anything not matching this pattern must never reach it. This is
+	 * enforced again here (in addition to WorkflowSettings validation) as defense in depth,
+	 * e.g. for workflows that were stored before this validation was introduced.
+	 */
+	private const LANGUAGE_CODE_REGEX = '/^[A-Za-z][A-Za-z0-9_\/]{0,31}$/';
+
 	private static $ocrModeToCmdParameterMapping = [
 		WorkflowSettings::OCR_MODE_SKIP_TEXT => '--skip-text',
 		WorkflowSettings::OCR_MODE_REDO_OCR => '--redo-ocr',
@@ -52,8 +61,9 @@ class CommandLineUtils implements ICommandLineUtils {
 		$args[] = self::$ocrModeToCmdParameterMapping[$settings->getOcrMode()];
 
 		// Language settings
-		if ($settings->getLanguages()) {
-			$langStr = implode('+', $settings->getLanguages());
+		$languages = $this->filterValidLanguages($settings->getLanguages());
+		if ($languages) {
+			$langStr = implode('+', $languages);
 			$args[] = "--language $langStr";
 		}
 
@@ -91,5 +101,23 @@ class CommandLineUtils implements ICommandLineUtils {
 		$customCliArgs = str_replace('&&', '', $customCliArgs);
 		$customCliArgs = str_replace(';', '', $customCliArgs);
 		return $customCliArgs;
+	}
+
+	/**
+	 * Filters out any language value that does not match the allow-listed language
+	 * code pattern. This value is concatenated into a shell command, so entries that
+	 * don't look like a valid tesseract language code must never be passed through.
+	 *
+	 * @param array $languages
+	 * @return array
+	 */
+	private function filterValidLanguages(array $languages): array {
+		return array_values(array_filter($languages, function ($language) {
+			if (!is_string($language) || preg_match(self::LANGUAGE_CODE_REGEX, $language) !== 1) {
+				$this->logger->warning('Ignoring invalid OCR language value: ' . var_export($language, true));
+				return false;
+			}
+			return true;
+		}));
 	}
 }
