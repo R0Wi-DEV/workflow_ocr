@@ -22,11 +22,6 @@
 			"OCA\\WorkflowOcr\\": "lib/"
 		}
 	},
-	"autoload-dev": {
-		"psr-4": {
-			"OCP\\": "vendor/nextcloud/ocp/OCP"
-		}
-	},
     "scripts": {
         "lint": "find . -name \\*.php -not -path './vendor/*' -not -path './node_modules/*' -exec php -l \"{}\" \\;",
         "cs:check": "php-cs-fixer fix --dry-run --diff",
