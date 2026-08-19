@@ -34,6 +34,13 @@ class WorkflowSettings {
 	public const OCR_MODE_FORCE_OCR = 2;
 	public const OCR_MODE_SKIP_FILE = 3;
 
+	/**
+	 * Allow-list for tesseract/ocrmypdf language codes (e.g. 'eng', 'chi_sim', 'script/Latin').
+	 * Used to reject anything that could be (ab)used as a shell metacharacter once the
+	 * languages are concatenated into the ocrmypdf command line.
+	 */
+	private const LANGUAGE_CODE_REGEX = '/^[A-Za-z][A-Za-z0-9_\/]{0,31}$/';
+
 	/** @var array */
 	private $languages = [];
 
@@ -187,7 +194,7 @@ class WorkflowSettings {
 		if ($data === null) {
 			throw new InvalidArgumentException('Invalid JSON: "' . $json . '"');
 		}
-		$this->setProperty($this->languages, $data, 'languages', fn ($value) => is_array($value));
+		$this->setProperty($this->languages, $data, 'languages', fn ($value) => self::isValidLanguagesArray($value));
 		$this->setProperty($this->removeBackground, $data, 'removeBackground', fn ($value) => is_bool($value));
 		$this->setProperty($this->ocrMode, $data, 'ocrMode', fn ($value) => is_int($value));
 		$this->setProperty($this->tagsToRemoveAfterOcr, $data, 'tagsToRemoveAfterOcr', fn ($value) => is_array($value));
@@ -205,5 +212,26 @@ class WorkflowSettings {
 		if (array_key_exists($key, $jsonData) && ($dataCheck === null || $dataCheck($jsonData[$key]))) {
 			$property = $jsonData[$key];
 		}
+	}
+
+	/**
+	 * Validates that $value is an array of strings, each matching the allow-listed
+	 * language code pattern. This is a security relevant check: the language values
+	 * end up being concatenated into a shell command (see CommandLineUtils), so any
+	 * value not matching the allow-list must be rejected here.
+	 *
+	 * @param mixed $value
+	 * @return bool
+	 */
+	private static function isValidLanguagesArray($value): bool {
+		if (!is_array($value)) {
+			return false;
+		}
+		foreach ($value as $language) {
+			if (!is_string($language) || preg_match(self::LANGUAGE_CODE_REGEX, $language) !== 1) {
+				return false;
+			}
+		}
+		return true;
 	}
 }
