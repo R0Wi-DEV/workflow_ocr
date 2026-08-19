@@ -81,10 +81,24 @@ RUN mkdir -p /var/www/nextcloud/apps && chown -R ${APACHE_RUN_USER}:${APACHE_RUN
 
 RUN mkdir -p /home/${APACHE_RUN_USER}/.claude && chown -R ${APACHE_RUN_USER}:${APACHE_RUN_GROUP} /home/${APACHE_RUN_USER}/.claude
 
+# Playwright browser directory, created as root because $APACHE_RUN_USER may
+# not write to /. Owned by that user so `playwright install` below can fill it.
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+RUN mkdir -p ${PLAYWRIGHT_BROWSERS_PATH} && \
+    chown ${APACHE_RUN_USER}:${APACHE_RUN_GROUP} ${PLAYWRIGHT_BROWSERS_PATH}
+
 USER devcontainer
 
 # NVM / NodeJS (matches this app's package.json engines)
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
 RUN bash --login -i -c 'source /home/devcontainer/.bashrc && nvm install 24'
+
+# Chrome + libs for the Playwright MCP server (`npx @playwright/mcp@latest`,
+# see .mcp.json) so it works out of the box instead of needing an on-demand
+# `npx playwright install chrome` (which pulls a pile of apt packages and
+# doesn't persist across container rebuilds). Installed to a world-readable
+# path since it runs as $APACHE_RUN_USER, not root.
+RUN bash --login -i -c 'source /home/devcontainer/.bashrc && npx --yes playwright install --with-deps chrome' \
+    && sudo chmod -R a+rX ${PLAYWRIGHT_BROWSERS_PATH}
 
 WORKDIR /var/www/nextcloud
