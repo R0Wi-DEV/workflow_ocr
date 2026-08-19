@@ -2060,16 +2060,16 @@
         },
         {
             "name": "php-cs-fixer/shim",
-            "version": "v3.95.19",
+            "version": "v3.95.20",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHP-CS-Fixer/shim.git",
-                "reference": "bd697e5e3bb17b83d4690a7238f2c7b5a131bb12"
+                "reference": "85ccbf0b084d0dae3dbeb2dca8e5bd4ced13c265"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHP-CS-Fixer/shim/zipball/bd697e5e3bb17b83d4690a7238f2c7b5a131bb12",
-                "reference": "bd697e5e3bb17b83d4690a7238f2c7b5a131bb12",
+                "url": "https://api.github.com/repos/PHP-CS-Fixer/shim/zipball/85ccbf0b084d0dae3dbeb2dca8e5bd4ced13c265",
+                "reference": "85ccbf0b084d0dae3dbeb2dca8e5bd4ced13c265",
                 "shasum": ""
             },
             "require": {
@@ -2106,9 +2106,9 @@
             "description": "A tool to automatically fix PHP code style",
             "support": {
                 "issues": "https://github.com/PHP-CS-Fixer/shim/issues",
-                "source": "https://github.com/PHP-CS-Fixer/shim/tree/v3.95.19"
+                "source": "https://github.com/PHP-CS-Fixer/shim/tree/v3.95.20"
             },
-            "time": "2026-08-17T16:24:34+00:00"
+            "time": "2026-08-19T16:28:36+00:00"
         },
         {
             "name": "phpdocumentor/reflection-common",

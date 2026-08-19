@@ -93,7 +93,33 @@ class WorkflowSettingsTest extends TestCase {
 				'{"removeBackground":true,"languages":["eng","deu","spa","fra","ita"],"keepOriginalFileVersion":false}',
 				true,
 				['eng', 'deu', 'spa', 'fra', 'ita']
+			],
+			[
+				'{"languages":["chi_sim","script/Latin"]}',
+				false,
+				['chi_sim', 'script/Latin']
 			]
+		];
+	}
+
+	#[DataProvider('dataProvider_testMaliciousLanguagesAreRejected')]
+	public function testLanguagesContainingShellMetacharactersAreRejected(string $json) {
+		// The whole 'languages' value must be rejected (falls back to the default empty
+		// array) as soon as a single entry doesn't look like a valid language code, since
+		// these values end up being concatenated into a shell command.
+		$workflowSettings = new WorkflowSettings($json);
+		$this->assertEquals([], $workflowSettings->getLanguages());
+	}
+
+	public static function dataProvider_testMaliciousLanguagesAreRejected() {
+		return [
+			['{"languages":["eng","x ; id > /tmp/pwned ; echo z"]}'],
+			['{"languages":["eng","x && id"]}'],
+			['{"languages":["eng","x | id"]}'],
+			['{"languages":["eng","$(id)"]}'],
+			['{"languages":["eng","`id`"]}'],
+			['{"languages":["eng "]}'],
+			['{"languages":[123]}'],
 		];
 	}
 }
