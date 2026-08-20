@@ -380,6 +380,35 @@ class PdfOcrProcessorTest extends TestCase {
 		$processor->ocrFile($this->fileBefore, $workflowSettings, $this->defaultGlobalSettings);
 	}
 
+	/**
+	 * Regression test for the OS command injection via 'customCliArgs': the resulting
+	 * command string must never contain unquoted shell metacharacters.
+	 */
+	public function testMaliciousCustomCliArgsAreQuotedInCommand() {
+		$this->command->expects($this->once())
+			->method('setCommand')
+			->with('ocrmypdf -q --skip-text --sidecar /tmp/sidecar.txt --output-type pdf \'$(touch\' \'/tmp/pwned)\' - - || exit $? ; cat');
+		$this->command->expects($this->once())
+			->method('execute')
+			->willReturn(true);
+		$this->command->expects($this->once())
+			->method('getOutput')
+			->willReturn('someOcrContent');
+		$this->command->expects($this->once())
+			->method('getExitCode')
+			->willReturn(0);
+		$this->sidecarFileAccessor->expects($this->once())
+			->method('getSidecarFileContent')
+			->willReturn('someOcrContent');
+		$this->sidecarFileAccessor->expects($this->once())
+			->method('getOrCreateSidecarFile')
+			->willReturn('/tmp/sidecar.txt');
+
+		$workflowSettings = new WorkflowSettings('{"customCliArgs": "--output-type pdf $(touch /tmp/pwned)"}');
+		$processor = new PdfOcrProcessor($this->command, $this->logger, $this->sidecarFileAccessor, $this->commandLineUtils, $this->phpNative);
+		$processor->ocrFile($this->fileBefore, $workflowSettings, $this->defaultGlobalSettings);
+	}
+
 	public function testReturnsExitCode6IfErrorCodeIsEquals6() {
 		$this->command->expects($this->once())
 			->method('setCommand')

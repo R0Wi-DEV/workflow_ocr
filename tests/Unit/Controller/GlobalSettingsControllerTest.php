@@ -30,6 +30,7 @@ use OCA\WorkflowOcr\Service\IGlobalSettingsService;
 use OCP\AppFramework\Http\JSONResponse;
 use OCP\IRequest;
 use PHPUnit\Framework\MockObject\MockObject;
+use Psr\Log\LoggerInterface;
 use Test\TestCase;
 
 class GlobalSettingsControllerTest extends TestCase {
@@ -39,6 +40,9 @@ class GlobalSettingsControllerTest extends TestCase {
 	/** @var IRequest|MockObject */
 	private $request;
 
+	/** @var LoggerInterface|MockObject */
+	private $logger;
+
 	/** @var GlobalSettingsController */
 	private $controller;
 
@@ -46,7 +50,8 @@ class GlobalSettingsControllerTest extends TestCase {
 		parent::setUp();
 		$this->globalSettingsService = $this->createMock(IGlobalSettingsService::class);
 		$this->request = $this->createMock(IRequest::class);
-		$this->controller = new GlobalSettingsController(Application::APP_NAME, $this->request, $this->globalSettingsService);
+		$this->logger = $this->createMock(LoggerInterface::class);
+		$this->controller = new GlobalSettingsController(Application::APP_NAME, $this->request, $this->globalSettingsService, $this->logger);
 	}
 
 	public function testGetSettings() {
@@ -66,13 +71,16 @@ class GlobalSettingsControllerTest extends TestCase {
 		$this->globalSettingsService->expects($this->once())
 			->method('getGlobalSettings')
 			->willThrowException(new \Exception('test'));
+		$this->logger->expects($this->once())
+			->method('error');
 
 		/** @var JSONResponse */
 		$result = $this->controller->getGlobalSettings();
 
 		$this->assertInstanceOf(JSONResponse::class, $result);
 		$this->assertEquals(500, $result->getStatus());
-		$this->assertEquals(['error' => 'test'], $result->getData());
+		// The internal exception message must not be leaked to the client
+		$this->assertEquals(['error' => 'Internal server error'], $result->getData());
 	}
 
 	public function testSetSettingsCallsService() {
@@ -98,13 +106,16 @@ class GlobalSettingsControllerTest extends TestCase {
 		$this->globalSettingsService->expects($this->once())
 			->method('setGlobalSettings')
 			->willThrowException(new \Exception('test'));
+		$this->logger->expects($this->once())
+			->method('error');
 
 		/** @var JSONResponse */
 		$result = $this->controller->setGlobalSettings($settings);
 
 		$this->assertInstanceOf(JSONResponse::class, $result);
 		$this->assertEquals(500, $result->getStatus());
-		$this->assertEquals(['error' => 'test'], $result->getData());
+		// The internal exception message must not be leaked to the client
+		$this->assertEquals(['error' => 'Internal server error'], $result->getData());
 	}
 
 	public function testSetSettingsWithoutTimeout() {

@@ -27,8 +27,10 @@ declare(strict_types=1);
 namespace OCA\WorkflowOcr\Controller;
 
 use OCA\WorkflowOcr\Service\IOcrBackendInfoService;
+use OCP\AppFramework\Http\Attribute\NoAdminRequired;
 use OCP\AppFramework\Http\JSONResponse;
 use OCP\IRequest;
+use Psr\Log\LoggerInterface;
 
 /**
  * This is the backend API controller which provides informations about the OCR backend system.
@@ -37,15 +39,15 @@ class OcrBackendInfoController extends ControllerBase {
 	/** @var IOcrBackendInfoService */
 	private $ocrBackendInfoService;
 
-	public function __construct($appName, IRequest $request, IOcrBackendInfoService $ocrBackendInfoService) {
-		parent::__construct($appName, $request);
+	public function __construct($appName, IRequest $request, IOcrBackendInfoService $ocrBackendInfoService, LoggerInterface $logger) {
+		parent::__construct($appName, $request, $logger);
 		$this->ocrBackendInfoService = $ocrBackendInfoService;
 	}
 
 	/**
-	 * @NoAdminRequired
 	 * @return JSONResponse
 	 */
+	#[NoAdminRequired]
 	public function getInstalledLanguages() : JSONResponse {
 		return $this->tryExecute(function () {
 			return $this->ocrBackendInfoService->getInstalledLanguages();
