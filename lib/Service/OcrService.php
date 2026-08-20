@@ -392,7 +392,7 @@ class OcrService implements IOcrService {
 	 */
 	private function determineNewFilePath(Node $file, string $originalFileExtension): string {
 		$filePath = $file->getPath();
-		if ($originalFileExtension !== self::PDF_FILE_EXTENSION) {
+		if (strtolower($originalFileExtension) !== self::PDF_FILE_EXTENSION) {
 			// If the extension changed, will create a new file with the new extension
 			return "$filePath." . self::PDF_FILE_EXTENSION;
 		}
