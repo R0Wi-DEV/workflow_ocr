@@ -41,6 +41,11 @@ class WorkflowSettings {
 	 */
 	private const LANGUAGE_CODE_REGEX = '/^[A-Za-z][A-Za-z0-9_\/]{0,31}$/';
 
+	/**
+	 * Maximum accepted length of the custom ocrmypdf CLI arguments.
+	 */
+	private const CUSTOM_CLI_ARGS_MAX_LENGTH = 4096;
+
 	/** @var array */
 	private $languages = [];
 
@@ -169,18 +174,15 @@ class WorkflowSettings {
 	}
 
 	/**
-	 * Checks if a new WorkflowSettings object can be constructed from the given JSON string
+	 * Validates the given JSON string and throws if it cannot be used to construct
+	 * a new WorkflowSettings object.
 	 * @param string $json The serialized JSON string used in frontend as input for the Vue component
-	 * @return bool True if the JSON string is valid, false otherwise
+	 * @throws InvalidArgumentException If the JSON string is invalid
+	 * @return void
 	 */
-	public static function canConstruct(string $json): bool {
+	public static function validate(string $json): void {
 		$settings = new WorkflowSettings();
-		try {
-			$settings->setJson($json);
-		} catch (InvalidArgumentException $e) {
-			return false;
-		}
-		return true;
+		$settings->setJson($json);
 	}
 
 	/**
@@ -191,27 +193,44 @@ class WorkflowSettings {
 			return;
 		}
 		$data = json_decode($json, true);
-		if ($data === null) {
+		if (!is_array($data)) {
 			throw new InvalidArgumentException('Invalid JSON: "' . $json . '"');
 		}
 		$this->setProperty($this->languages, $data, 'languages', fn ($value) => self::isValidLanguagesArray($value));
 		$this->setProperty($this->removeBackground, $data, 'removeBackground', fn ($value) => is_bool($value));
-		$this->setProperty($this->ocrMode, $data, 'ocrMode', fn ($value) => is_int($value));
+		$this->setProperty($this->ocrMode, $data, 'ocrMode', fn ($value) => self::isValidOcrMode($value));
 		$this->setProperty($this->tagsToRemoveAfterOcr, $data, 'tagsToRemoveAfterOcr', fn ($value) => is_array($value));
 		$this->setProperty($this->tagsToAddAfterOcr, $data, 'tagsToAddAfterOcr', fn ($value) => is_array($value));
 		$this->setProperty($this->keepOriginalFileVersion, $data, 'keepOriginalFileVersion', fn ($value) => is_bool($value));
 		$this->setProperty($this->keepOriginalFileDate, $data, 'keepOriginalFileDate', fn ($value) => is_bool($value));
 		$this->setProperty($this->sendSuccessNotification, $data, 'sendSuccessNotification', fn ($value) => is_bool($value));
-		$this->setProperty($this->customCliArgs, $data, 'customCliArgs', fn ($value) => is_string($value));
+		$this->setProperty($this->customCliArgs, $data, 'customCliArgs', fn ($value) => self::isValidCustomCliArgs($value));
 		$this->setProperty($this->createSidecarFile, $data, 'createSidecarFile', fn ($value) => is_bool($value));
 		$this->setProperty($this->skipNotificationsOnInvalidPdf, $data, 'skipNotificationsOnInvalidPdf', fn ($value) => is_bool($value));
 		$this->setProperty($this->skipNotificationsOnEncryptedPdf, $data, 'skipNotificationsOnEncryptedPdf', fn ($value) => is_bool($value));
 	}
 
+	/**
+	 * Applies the value stored under $key to $property. Keys which are not part of the
+	 * given JSON data keep their default value. A key which is present but doesn't pass
+	 * its check is rejected with an exception instead of being silently dropped, so that
+	 * the user gets a proper error message when saving the workflow and a malformed
+	 * (or manipulated) setting never ends up being used with default values.
+	 *
+	 * @throws InvalidArgumentException If the value stored under $key is invalid
+	 */
 	private function setProperty(array|bool|int|string & $property, array $jsonData, string $key, ?callable $dataCheck = null): void {
-		if (array_key_exists($key, $jsonData) && ($dataCheck === null || $dataCheck($jsonData[$key]))) {
-			$property = $jsonData[$key];
+		if (!array_key_exists($key, $jsonData)) {
+			return;
 		}
+
+		$value = $jsonData[$key];
+
+		if ($dataCheck !== null && !$dataCheck($value)) {
+			throw new InvalidArgumentException('Invalid value for setting \'' . $key . '\'');
+		}
+
+		$property = $value;
 	}
 
 	/**
@@ -233,5 +252,36 @@ class WorkflowSettings {
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * Validates that $value is one of the known OCR modes. An unknown mode would result
+	 * in an undefined commandline parameter mapping (see CommandLineUtils).
+	 *
+	 * @param mixed $value
+	 * @return bool
+	 */
+	private static function isValidOcrMode($value): bool {
+		return is_int($value) && in_array($value, [
+			self::OCR_MODE_SKIP_TEXT,
+			self::OCR_MODE_REDO_OCR,
+			self::OCR_MODE_FORCE_OCR,
+			self::OCR_MODE_SKIP_FILE,
+		], true);
+	}
+
+	/**
+	 * Validates the custom ocrmypdf CLI arguments. The value is passed to the ocrmypdf
+	 * commandline (see CommandLineUtils, where every argument is quoted if needed), so
+	 * we only make sure here that it's a reasonably sized, single line string without
+	 * any control characters.
+	 *
+	 * @param mixed $value
+	 * @return bool
+	 */
+	private static function isValidCustomCliArgs($value): bool {
+		return is_string($value)
+			&& strlen($value) <= self::CUSTOM_CLI_ARGS_MAX_LENGTH
+			&& preg_match('/[\x00-\x1F\x7F]/', $value) !== 1;
 	}
 }
