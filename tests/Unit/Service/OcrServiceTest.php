@@ -922,6 +922,7 @@ class OcrServiceTest extends TestCase {
 	public static function dataProvider_OriginalAndNewFilesnames() {
 		return [
 			['somefile.pdf', 'somefile.pdf'],
+			['somefile.PDF', 'somefile.PDF'],
 			['somefile.jpg', 'somefile.jpg.pdf']
 		];
 	}
