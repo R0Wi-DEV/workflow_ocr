@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ad79e4b6bd018d1551fd40a4f3b6fadc",
+    "content-hash": "bc8c2735c6772e5c9ebf3fbff809dcaf",
     "packages": [
         {
             "name": "mikehaertl/php-shellcommand",
@@ -1831,16 +1831,16 @@
         },
         {
             "name": "nextcloud/ocp",
-            "version": "dev-master",
+            "version": "dev-stable35",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nextcloud-deps/ocp.git",
-                "reference": "ddc90a88f4ec0166a1c0384cf6d0370e3dc53898"
+                "reference": "75e04c37b52633c6601b63af3a33a71e0f48967e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nextcloud-deps/ocp/zipball/ddc90a88f4ec0166a1c0384cf6d0370e3dc53898",
-                "reference": "ddc90a88f4ec0166a1c0384cf6d0370e3dc53898",
+                "url": "https://api.github.com/repos/nextcloud-deps/ocp/zipball/75e04c37b52633c6601b63af3a33a71e0f48967e",
+                "reference": "75e04c37b52633c6601b63af3a33a71e0f48967e",
                 "shasum": ""
             },
             "require": {
@@ -1855,7 +1855,6 @@
                 "symfony/polyfill-php85": "^1.41",
                 "symfony/polyfill-php86": "^1.41"
             },
-            "default-branch": true,
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -1881,7 +1880,7 @@
                 "issues": "https://github.com/nextcloud-deps/ocp/issues",
                 "source": "https://github.com/nextcloud-deps/ocp/tree/master"
             },
-            "time": "2026-08-26T00:37:28+00:00"
+            "time": "2026-08-24T17:09:03+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -5545,5 +5544,5 @@
     "platform-overrides": {
         "php": "8.4"
     },
-    "plugin-api-version": "2.9.0"
+    "plugin-api-version": "2.6.0"
 }
