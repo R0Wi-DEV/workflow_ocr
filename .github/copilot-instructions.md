@@ -1,5 +1,10 @@
 # Copilot Instructions for workflow_ocr
 
+> [!NOTE]
+> `CLAUDE.md` in the repository root is the primary, most detailed AI instruction file for
+> this project, alongside the task skills in `.claude/skills/` and the subagents in
+> `.claude/agents/`. Keep this file in sync with it.
+
 ## Repository Overview
 
 This repository contains the `workflow_ocr` Nextcloud app, which enables flexible OCR (Optical Character Recognition) processing through Nextcloud's workflow engine. The app processes PDF files and images using [OCRmyPDF](https://github.com/ocrmypdf/OCRmyPDF) to add searchable text layers.
@@ -42,13 +47,13 @@ Always check `appinfo/info.xml` for the Nextcloud target version:
 - If the version exists (e.g., NC 32), check against that stable branch in the Nextcloud Server repo
 - If the version doesn't exist yet (e.g., NC 33 not released), check against the `master` branch of the Nextcloud Server repo
 
-Current target: Nextcloud 33 (check `appinfo/info.xml` for updates)
+Current target: Nextcloud 36 (check `appinfo/info.xml` for updates)
 
 ### Technology Stack
 
 - **Backend**: PHP 8.2-8.5
 - **Frontend**: Vue 3, Node 24, npm 11.6
-- **Build Tools**: rspack, vitest, eslint, stylelint
+- **Build Tools**: rsbuild, vitest, eslint, stylelint
 - **PHP Tools**: composer, phpunit, psalm, php-cs-fixer
 - **External Dependencies**: OCRmyPDF CLI, tesseract-ocr
 
@@ -57,7 +62,7 @@ Current target: Nextcloud 33 (check `appinfo/info.xml` for updates)
 - `make`
 - `node` and `npm` (versions specified in package.json)
 - `composer`
-- PHP 8.1+ environment
+- PHP 8.2+ environment
 - Web server (Apache recommended)
 - XDebug (for debugging)
 
