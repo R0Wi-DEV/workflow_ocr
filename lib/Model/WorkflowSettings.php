@@ -84,9 +84,20 @@ class WorkflowSettings {
 
 	/**
 	 * @param string $json The serialized JSON string used in frontend as input for the Vue component
+	 * @param bool $strict Whether an invalid value for a known key should throw (true, the
+	 *                     default) or be ignored in favor of the property's default value
+	 *                     (false). Use non-strict mode when deserializing settings that were
+	 *                     already stored/validated in the past (e.g. when loading a workflow's
+	 *                     settings for OCR processing), so that stricter validation added in a
+	 *                     later release doesn't break already existing, previously valid
+	 *                     workflows.
+	 * @param ?callable $onInvalidValue Optional callback, invoked as `($key, $value)` for every
+	 *                                  key which fails validation and is ignored in non-strict
+	 *                                  mode. Never invoked in strict mode (an exception is
+	 *                                  thrown instead). Callers can use this to log a warning.
 	 */
-	public function __construct(?string $json = null) {
-		$this->setJson($json);
+	public function __construct(?string $json = null, bool $strict = true, ?callable $onInvalidValue = null) {
+		$this->setJson($json, $strict, $onInvalidValue);
 	}
 
 	/**
@@ -182,13 +193,13 @@ class WorkflowSettings {
 	 */
 	public static function validate(string $json): void {
 		$settings = new WorkflowSettings();
-		$settings->setJson($json);
+		$settings->setJson($json, true);
 	}
 
 	/**
 	 * @return void
 	 */
-	private function setJson(?string $json = null) {
+	private function setJson(?string $json = null, bool $strict = true, ?callable $onInvalidValue = null) {
 		if (!$json) {
 			return;
 		}
@@ -196,30 +207,37 @@ class WorkflowSettings {
 		if (!is_array($data)) {
 			throw new InvalidArgumentException('Invalid JSON: "' . $json . '"');
 		}
-		$this->setProperty($this->languages, $data, 'languages', fn ($value) => self::isValidLanguagesArray($value));
-		$this->setProperty($this->removeBackground, $data, 'removeBackground', fn ($value) => is_bool($value));
-		$this->setProperty($this->ocrMode, $data, 'ocrMode', fn ($value) => self::isValidOcrMode($value));
-		$this->setProperty($this->tagsToRemoveAfterOcr, $data, 'tagsToRemoveAfterOcr', fn ($value) => is_array($value));
-		$this->setProperty($this->tagsToAddAfterOcr, $data, 'tagsToAddAfterOcr', fn ($value) => is_array($value));
-		$this->setProperty($this->keepOriginalFileVersion, $data, 'keepOriginalFileVersion', fn ($value) => is_bool($value));
-		$this->setProperty($this->keepOriginalFileDate, $data, 'keepOriginalFileDate', fn ($value) => is_bool($value));
-		$this->setProperty($this->sendSuccessNotification, $data, 'sendSuccessNotification', fn ($value) => is_bool($value));
-		$this->setProperty($this->customCliArgs, $data, 'customCliArgs', fn ($value) => self::isValidCustomCliArgs($value));
-		$this->setProperty($this->createSidecarFile, $data, 'createSidecarFile', fn ($value) => is_bool($value));
-		$this->setProperty($this->skipNotificationsOnInvalidPdf, $data, 'skipNotificationsOnInvalidPdf', fn ($value) => is_bool($value));
-		$this->setProperty($this->skipNotificationsOnEncryptedPdf, $data, 'skipNotificationsOnEncryptedPdf', fn ($value) => is_bool($value));
+		$this->setProperty($this->languages, $data, 'languages', fn ($value) => self::isValidLanguagesArray($value), $strict, $onInvalidValue);
+		$this->setProperty($this->removeBackground, $data, 'removeBackground', fn ($value) => is_bool($value), $strict, $onInvalidValue);
+		$this->setProperty($this->ocrMode, $data, 'ocrMode', fn ($value) => self::isValidOcrMode($value), $strict, $onInvalidValue);
+		$this->setProperty($this->tagsToRemoveAfterOcr, $data, 'tagsToRemoveAfterOcr', fn ($value) => is_array($value), $strict, $onInvalidValue);
+		$this->setProperty($this->tagsToAddAfterOcr, $data, 'tagsToAddAfterOcr', fn ($value) => is_array($value), $strict, $onInvalidValue);
+		$this->setProperty($this->keepOriginalFileVersion, $data, 'keepOriginalFileVersion', fn ($value) => is_bool($value), $strict, $onInvalidValue);
+		$this->setProperty($this->keepOriginalFileDate, $data, 'keepOriginalFileDate', fn ($value) => is_bool($value), $strict, $onInvalidValue);
+		$this->setProperty($this->sendSuccessNotification, $data, 'sendSuccessNotification', fn ($value) => is_bool($value), $strict, $onInvalidValue);
+		$this->setProperty($this->customCliArgs, $data, 'customCliArgs', fn ($value) => self::isValidCustomCliArgs($value), $strict, $onInvalidValue);
+		$this->setProperty($this->createSidecarFile, $data, 'createSidecarFile', fn ($value) => is_bool($value), $strict, $onInvalidValue);
+		$this->setProperty($this->skipNotificationsOnInvalidPdf, $data, 'skipNotificationsOnInvalidPdf', fn ($value) => is_bool($value), $strict, $onInvalidValue);
+		$this->setProperty($this->skipNotificationsOnEncryptedPdf, $data, 'skipNotificationsOnEncryptedPdf', fn ($value) => is_bool($value), $strict, $onInvalidValue);
 	}
 
 	/**
 	 * Applies the value stored under $key to $property. Keys which are not part of the
-	 * given JSON data keep their default value. A key which is present but doesn't pass
-	 * its check is rejected with an exception instead of being silently dropped, so that
-	 * the user gets a proper error message when saving the workflow and a malformed
-	 * (or manipulated) setting never ends up being used with default values.
+	 * given JSON data keep their default value.
 	 *
-	 * @throws InvalidArgumentException If the value stored under $key is invalid
+	 * In strict mode (the default), a key which is present but doesn't pass its check is
+	 * rejected with an exception instead of being silently dropped, so that the user gets a
+	 * proper error message when saving the workflow and a malformed (or manipulated) setting
+	 * never ends up being used with default values.
+	 *
+	 * In non-strict mode, an invalid value is ignored (the property keeps its safe default)
+	 * and, if given, $onInvalidValue is invoked instead of throwing. This is used when
+	 * deserializing settings which were already stored/validated in the past, so that
+	 * validation rules added later don't break already existing workflows.
+	 *
+	 * @throws InvalidArgumentException If the value stored under $key is invalid and $strict is true
 	 */
-	private function setProperty(array|bool|int|string & $property, array $jsonData, string $key, ?callable $dataCheck = null): void {
+	private function setProperty(array|bool|int|string & $property, array $jsonData, string $key, ?callable $dataCheck, bool $strict = true, ?callable $onInvalidValue = null): void {
 		if (!array_key_exists($key, $jsonData)) {
 			return;
 		}
@@ -227,6 +245,12 @@ class WorkflowSettings {
 		$value = $jsonData[$key];
 
 		if ($dataCheck !== null && !$dataCheck($value)) {
+			if (!$strict) {
+				if ($onInvalidValue !== null) {
+					$onInvalidValue($key, $value);
+				}
+				return;
+			}
 			throw new InvalidArgumentException('Invalid value for setting \'' . $key . '\'');
 		}
 

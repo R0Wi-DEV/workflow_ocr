@@ -174,4 +174,60 @@ class WorkflowSettingsTest extends TestCase {
 			['{"languages":[123]}'],
 		];
 	}
+
+	/**
+	 * Non-strict mode is used to deserialize already stored settings (e.g. when loading a
+	 * workflow's settings for OCR processing). A value which fails validation must not abort
+	 * construction there: the property should silently fall back to its default instead.
+	 */
+	public function testNonStrictModeFallsBackToDefaultOnInvalidCustomCliArgs() {
+		$workflowSettings = new WorkflowSettings('{"customCliArgs": 42}', false);
+		$this->assertEquals('', $workflowSettings->getCustomCliArgs());
+	}
+
+	public function testNonStrictModeFallsBackToDefaultOnInvalidOcrMode() {
+		$workflowSettings = new WorkflowSettings('{"ocrMode": 42}', false);
+		$this->assertEquals(WorkflowSettings::OCR_MODE_SKIP_TEXT, $workflowSettings->getOcrMode());
+	}
+
+	public function testNonStrictModeFallsBackToDefaultOnMaliciousLanguages() {
+		$workflowSettings = new WorkflowSettings('{"languages":["eng","$(id)"]}', false);
+		$this->assertEquals([], $workflowSettings->getLanguages());
+	}
+
+	public function testNonStrictModeStillAppliesValidValues() {
+		$workflowSettings = new WorkflowSettings('{"customCliArgs": "--dpi 300", "ocrMode": ' . WorkflowSettings::OCR_MODE_FORCE_OCR . '}', false);
+		$this->assertEquals('--dpi 300', $workflowSettings->getCustomCliArgs());
+		$this->assertEquals(WorkflowSettings::OCR_MODE_FORCE_OCR, $workflowSettings->getOcrMode());
+	}
+
+	public function testNonStrictModeInvokesCallbackForEveryInvalidValue() {
+		$seen = [];
+		new WorkflowSettings(
+			'{"customCliArgs": 42, "ocrMode": 42}',
+			false,
+			function (string $key, $value) use (&$seen) {
+				$seen[$key] = $value;
+			}
+		);
+		$this->assertEquals(['customCliArgs' => 42, 'ocrMode' => 42], $seen);
+	}
+
+	public function testNonStrictModeDoesNotInvokeCallbackForValidValues() {
+		$called = false;
+		new WorkflowSettings(
+			'{"customCliArgs": "--dpi 300"}',
+			false,
+			function () use (&$called) {
+				$called = true;
+			}
+		);
+		$this->assertFalse($called);
+	}
+
+	public function testNonStrictModeStillThrowsOnNonObjectJson() {
+		$this->expectException(InvalidArgumentException::class);
+		$this->expectExceptionMessage('Invalid JSON: "false"');
+		new WorkflowSettings('false', false);
+	}
 }

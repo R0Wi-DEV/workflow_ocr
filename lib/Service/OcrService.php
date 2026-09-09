@@ -216,9 +216,19 @@ class OcrService implements IOcrService {
 			: throw new \InvalidArgumentException("Argument key '$key' not found in " . self::class . ' method \'tryParseArguments\'.');
 
 		$jsonSettings = $getArgument('settings');
-		$settings = new WorkflowSettings($jsonSettings);
 		$uid = $getArgument('uid');
 		$fileId = intval($getArgument('fileId'));
+
+		// Deserialize in non-strict mode: these settings were already stored (and validated
+		// against the rules in place at the time they were saved), so a value which fails a
+		// validation rule added since then must not abort the whole OCR job. Instead, fall
+		// back to the property's safe default and log a warning.
+		$settings = new WorkflowSettings($jsonSettings, false, function (string $key, $value) use ($fileId, $uid) {
+			$this->logger->warning(
+				'Ignoring invalid value for workflow OCR setting \'{key}\' of file with id {fileId} (owner {uid}); falling back to default.',
+				['key' => $key, 'fileId' => $fileId, 'uid' => $uid]
+			);
+		});
 
 		return [
 			$fileId,

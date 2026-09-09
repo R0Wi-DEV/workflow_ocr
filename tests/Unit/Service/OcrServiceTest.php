@@ -735,6 +735,43 @@ class OcrServiceTest extends TestCase {
 		$this->ocrService->runOcrProcessWithJobArgument($argument);
 	}
 
+	public function testRunOcrProcessWithJobArgumentDoesNotAbortOnLegacyInvalidStoredSettings() {
+		// Settings which were stored before customCliArgs validation existed (or before a
+		// value was made invalid by a later release) must not abort a job that already
+		// worked in the past. The invalid field should be ignored (falling back to its
+		// default) instead of failing the whole OCR run.
+		$argument = [
+			'fileId' => 42,
+			'uid' => 'admin',
+			'settings' => '{"customCliArgs": 42}',
+		];
+
+		$mime = 'application/pdf';
+		$content = 'someFileContent';
+		$this->fileInput->method('getMimeType')->willReturn($mime);
+		$this->fileInput->method('getContent')->willReturn($content);
+
+		$this->globalSettingsService->method('getGlobalSettings')
+			->willReturn(new GlobalSettings());
+
+		$this->ocrProcessor->expects($this->once())
+			->method('ocrFile')
+			->with($this->fileInput, $this->callback(function (WorkflowSettings $settings) {
+				return $settings->getCustomCliArgs() === '';
+			}), $this->anything())
+			->willReturn(new OcrProcessorResult(true, $content, 'some recognized text'));
+
+		$this->logger->expects($this->once())
+			->method('warning')
+			->with($this->stringContains('customCliArgs'), $this->anything());
+		$this->logger->expects($this->never())
+			->method('error');
+		$this->notificationService->expects($this->never())
+			->method('createErrorNotification');
+
+		$this->ocrService->runOcrProcessWithJobArgument($argument);
+	}
+
 	public function testRunOcrProcessWithJobArgumentLogsErrorAndSendsNotificationOnNotFound() {
 		// This will never be thrown in real live, it's just to test the error handling
 		$this->rootFolder->method('getFirstNodeById')
