@@ -50,27 +50,36 @@ class GlobalSettingsServiceTest extends TestCase {
 				[Application::APP_NAME, 'processorCount', 0, 2],
 				[Application::APP_NAME, 'timeout', 0, 30],
 			]);
+		$this->config->expects($this->any())
+			->method('getValueString')
+			->willReturn('ocruser');
 
 		$settings = $this->globalSettingsService->getGlobalSettings();
 
 		$this->assertInstanceOf(GlobalSettings::class, $settings);
 		$this->assertEquals(2, $settings->processorCount);
 		$this->assertEquals(30, $settings->timeout);
+		$this->assertEquals('ocruser', $settings->processingUserId);
 	}
 
 	public function testGetSettings_ReturnsNullForUnsetValues() {
 		// getValueInt returns 0 for keys that have never been stored.
 		// 0 is not a valid value for processorCount or timeout, so it is
-		// treated as "not configured" and mapped to null.
+		// treated as "not configured" and mapped to null. The same applies
+		// to the empty string for string based settings.
 		$this->config->expects($this->any())
 			->method('getValueInt')
 			->willReturn(0);
+		$this->config->expects($this->any())
+			->method('getValueString')
+			->willReturn('');
 
 		$settings = $this->globalSettingsService->getGlobalSettings();
 
 		$this->assertInstanceOf(GlobalSettings::class, $settings);
 		$this->assertNull($settings->processorCount);
 		$this->assertNull($settings->timeout);
+		$this->assertNull($settings->processingUserId);
 	}
 
 	public function testSetSettings_CallsConfigSetValueInt() {
@@ -96,20 +105,41 @@ class GlobalSettingsServiceTest extends TestCase {
 		$this->globalSettingsService->setGlobalSettings($settings);
 	}
 
+	public function testSetSettings_CallsConfigSetValueString() {
+		$settings = new GlobalSettings();
+		$settings->processingUserId = 'ocruser';
+
+		$this->config->expects($this->once())
+			->method('setValueString')
+			->willReturnCallback(
+				function (string $appName, string $key, string $value) {
+					$this->assertEquals(Application::APP_NAME, $appName);
+					$this->assertEquals('processingUserId', $key);
+					$this->assertEquals('ocruser', $value);
+					return true;
+				}
+			);
+
+		$this->globalSettingsService->setGlobalSettings($settings);
+	}
+
 	public function testSetSettings_DeletesKeyForNullValues() {
 		$settings = new GlobalSettings();
 		$settings->processorCount = null;
 		$settings->timeout = null;
+		$settings->processingUserId = null;
 
 		$this->config->expects($this->never())
 			->method('setValueInt');
+		$this->config->expects($this->never())
+			->method('setValueString');
 
-		$this->config->expects($this->exactly(2))
+		$this->config->expects($this->exactly(3))
 			->method('deleteKey')
 			->willReturnCallback(
 				function (string $appName, string $key) {
 					$this->assertEquals(Application::APP_NAME, $appName);
-					$this->assertContains($key, ['processorCount', 'timeout']);
+					$this->assertContains($key, ['processorCount', 'timeout', 'processingUserId']);
 				}
 			);
 

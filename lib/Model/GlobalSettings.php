@@ -29,4 +29,10 @@ namespace OCA\WorkflowOcr\Model;
 class GlobalSettings {
 	public ?int $processorCount = null;
 	public ?int $timeout = null;
+	/**
+	 * Optional uid of a dedicated user which is used to run the OCR
+	 * processing instead of impersonating the file owner. If this is
+	 * null, the file owner is used (default behaviour).
+	 */
+	public ?string $processingUserId = null;
 }
