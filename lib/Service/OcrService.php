@@ -32,6 +32,7 @@ use OCA\Files_Versions\Versions\IMetadataVersionBackend;
 use OCA\Files_Versions\Versions\IVersionManager;
 use OCA\WorkflowOcr\Exception\OcrNotPossibleException;
 use OCA\WorkflowOcr\Helper\IProcessingFileAccessor;
+use OCA\WorkflowOcr\Model\GlobalSettings;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
 use OCA\WorkflowOcr\OcrProcessors\IOcrProcessorFactory;
 use OCA\WorkflowOcr\OcrProcessors\OcrProcessorResult;
@@ -136,7 +137,10 @@ class OcrService implements IOcrService {
 	/** @inheritdoc */
 	public function runOcrProcess(int $fileId, string $uid, WorkflowSettings $settings) : void { // TODO :: make private
 		try {
-			$this->initUserEnvironment($uid);
+			$globalSettings = $this->globalSettingsService->getGlobalSettings();
+			$processingUid = $this->determineProcessingUid($uid, $globalSettings);
+
+			$this->initUserEnvironment($processingUid);
 
 			$file = $this->getNode($fileId);
 
@@ -155,7 +159,6 @@ class OcrService implements IOcrService {
 			}
 
 			$ocrProcessor = $this->ocrProcessorFactory->create($file->getMimeType());
-			$globalSettings = $this->globalSettingsService->getGlobalSettings();
 
 			$result = $ocrProcessor->ocrFile($file, $settings, $globalSettings);
 
@@ -197,7 +200,7 @@ class OcrService implements IOcrService {
 				return;
 			}
 
-			$this->doPostProcessing($file, $uid, $settings, $result, $fileMtime);
+			$this->doPostProcessing($file, $processingUid, $uid, $settings, $result, $fileMtime);
 		} finally {
 			$this->shutdownUserEnvironment();
 		}
@@ -228,7 +231,33 @@ class OcrService implements IOcrService {
 	}
 
 	/**
-	 * * @param string $uid 	The owners userId of the file to be processed
+	 * Determines which user the OCR process should be run with. By default this is
+	 * the owner of the file to be processed. If an admin configured a dedicated
+	 * processing user globally, this user is used instead (#385).
+	 *
+	 * @param string $uid The owners userId of the file to be processed
+	 * @param GlobalSettings $globalSettings The globally configured settings
+	 * @return string The userId to run the OCR process with
+	 */
+	private function determineProcessingUid(string $uid, GlobalSettings $globalSettings) : string {
+		$configuredUid = trim($globalSettings->processingUserId ?? '');
+
+		if ($configuredUid === '' || $configuredUid === $uid) {
+			return $uid;
+		}
+
+		if (!$this->userManager->userExists($configuredUid)) {
+			$this->logger->warning('Configured OCR processing user \'{configuredUid}\' does not exist. Falling back to file owner \'{uid}\'.', ['configuredUid' => $configuredUid, 'uid' => $uid]);
+			return $uid;
+		}
+
+		$this->logger->debug('Running OCR process as configured processing user {configuredUid} instead of file owner {uid}', ['configuredUid' => $configuredUid, 'uid' => $uid]);
+
+		return $configuredUid;
+	}
+
+	/**
+	 * * @param string $uid 	The userId to run the OCR process with
 	 */
 	private function initUserEnvironment(string $uid) : void {
 		/** @var IUser */
@@ -315,7 +344,7 @@ class OcrService implements IOcrService {
 
 	/**
 	 * @param File $file The file to set the label for
-	 * @param string $uid The userId of the file owner
+	 * @param string $uid The userId of the user running the OCR process
 	 * @param string $label The label to set
 	 */
 	private function setFileVersionsLabel(File $file, string $uid, string $label): void {
@@ -352,7 +381,12 @@ class OcrService implements IOcrService {
 		}
 	}
 
-	private function doPostProcessing(Node $file, string $uid, WorkflowSettings $settings, OcrProcessorResult $result, ?int $fileMtime = null): void {
+	/**
+	 * @param Node $file The OCR processed file
+	 * @param string $processingUid The userId the OCR process is running with
+	 * @param string $ownerUid The userId of the file owner (receiver of notifications)
+	 */
+	private function doPostProcessing(Node $file, string $processingUid, string $ownerUid, WorkflowSettings $settings, OcrProcessorResult $result, ?int $fileMtime = null): void {
 		$this->processTagsAfterSuccessfulOcr($file, $settings);
 
 		$fileId = $file->getId();
@@ -363,7 +397,7 @@ class OcrService implements IOcrService {
 		if ($result->getRecognizedText() !== '') {
 			if ($settings->getKeepOriginalFileVersion() && $file->isUpdateable()) {
 				// Add label to original file to prevent its expiry
-				$this->setFileVersionsLabel($file, $uid, self::FILE_VERSION_LABEL_VALUE);
+				$this->setFileVersionsLabel($file, $processingUid, self::FILE_VERSION_LABEL_VALUE);
 			}
 
 			$newFilePath = $this->determineNewFilePath($file, $originalFileExtension);
@@ -378,7 +412,7 @@ class OcrService implements IOcrService {
 		$this->eventService->textRecognized($result, $file);
 
 		if ($settings->getSendSuccessNotification()) {
-			$this->notificationService->createSuccessNotification($uid, $fileId);
+			$this->notificationService->createSuccessNotification($ownerUid, $fileId);
 		}
 	}
 

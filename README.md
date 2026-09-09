@@ -189,6 +189,7 @@ Name | Description
 -----|------------
 Processor cores | Defines the number of processor cores to use for OCR processing. When the input is a PDF file, this corresponds to the [`ocrmypdf` CPU limit](https://ocrmypdf.readthedocs.io/en/latest/pdfsecurity.html?highlight=%22-j%22#limiting-cpu-usage). This setting can be especially useful if you have a small backend system which has only limited power.
 Request timeout | Defines a global timeout (in seconds) when using the `workflow_ocr_backend` app. Use this to limit how long the app will wait for OCR responses. Default value is 60 seconds. |
+OCR user | Defines a dedicated user account which is used to run the OCR processing. If this setting is left empty (default), the app impersonates the owner of the processed file, which means that the resulting file version and the file activity are attributed to that user. By configuring a dedicated user you can make automated OCR operations distinguishable from manual user edits in the audit trail. Please note that the configured user needs write access to all files which should be OCR processed (for example via group shares) - otherwise the processing will fail. If the configured user does not exist, the app logs a warning and falls back to the file owner. Notifications are always sent to the owner of the processed file. |
 
 ### Testing your configuration
 

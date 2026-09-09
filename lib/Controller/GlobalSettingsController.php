@@ -61,6 +61,8 @@ class GlobalSettingsController extends ControllerBase {
 			$globalSettingsObject = new GlobalSettings();
 			$globalSettingsObject->processorCount = isset($globalSettings['processorCount']) ? (int)$globalSettings['processorCount'] : null;
 			$globalSettingsObject->timeout = isset($globalSettings['timeout']) ? (int)$globalSettings['timeout'] : null;
+			$processingUserId = isset($globalSettings['processingUserId']) ? trim((string)$globalSettings['processingUserId']) : '';
+			$globalSettingsObject->processingUserId = $processingUserId !== '' ? $processingUserId : null;
 
 			$this->globalSettingsService->setGlobalSettings($globalSettingsObject);
 			return $this->globalSettingsService->getGlobalSettings();
