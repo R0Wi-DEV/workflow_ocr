@@ -371,20 +371,23 @@ your needs.
 To execute the implemented PHPUnit tests you can use one of the following commands:
 
 ```bash
-# Only run unittests
-make unittest
+# Only run PHP unittests
+make php-unittest
 
-# Only run integrationtests
-make integrationtest
+# Only run PHP integrationtests
+make php-integrationtest
 
-# Run all tests
+# Run all PHP tests
+make php-test
+
+# Run all tests (PHP + JS)
 make test
 
 # Run all tests and create HTML coverage report
 make html-coverage
 
-# Run all tests and create XML coverage report
-make coverage
+# Run all tests and create merged PHP + JS coverage
+make coverage-all
 ```
 > :warning: Make sure you activated the app before you run any tests (`php occ app:enable workflow_ocr`). Otherwise the initialization will fail.
 
