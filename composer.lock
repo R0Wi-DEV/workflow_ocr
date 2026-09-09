@@ -1835,12 +1835,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/nextcloud-deps/ocp.git",
-                "reference": "a89b2397daebe5733ec96d9e70a4a2e974a06bfa"
+                "reference": "451fb5529de3553aef7b89538d648796424e71fa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nextcloud-deps/ocp/zipball/a89b2397daebe5733ec96d9e70a4a2e974a06bfa",
-                "reference": "a89b2397daebe5733ec96d9e70a4a2e974a06bfa",
+                "url": "https://api.github.com/repos/nextcloud-deps/ocp/zipball/451fb5529de3553aef7b89538d648796424e71fa",
+                "reference": "451fb5529de3553aef7b89538d648796424e71fa",
                 "shasum": ""
             },
             "require": {
@@ -1881,7 +1881,7 @@
                 "issues": "https://github.com/nextcloud-deps/ocp/issues",
                 "source": "https://github.com/nextcloud-deps/ocp/tree/master"
             },
-            "time": "2026-09-04T01:52:33+00:00"
+            "time": "2026-09-09T02:01:28+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -2060,16 +2060,16 @@
         },
         {
             "name": "php-cs-fixer/shim",
-            "version": "v3.95.24",
+            "version": "v3.95.25",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHP-CS-Fixer/shim.git",
-                "reference": "fb929e8551bae0239936297f6402b513e98552e2"
+                "reference": "7bc6ed86d41533dbfa5604fb4dd4d6a656b87254"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHP-CS-Fixer/shim/zipball/fb929e8551bae0239936297f6402b513e98552e2",
-                "reference": "fb929e8551bae0239936297f6402b513e98552e2",
+                "url": "https://api.github.com/repos/PHP-CS-Fixer/shim/zipball/7bc6ed86d41533dbfa5604fb4dd4d6a656b87254",
+                "reference": "7bc6ed86d41533dbfa5604fb4dd4d6a656b87254",
                 "shasum": ""
             },
             "require": {
@@ -2106,7 +2106,7 @@
             "description": "A tool to automatically fix PHP code style",
             "support": {
                 "issues": "https://github.com/PHP-CS-Fixer/shim/issues",
-                "source": "https://github.com/PHP-CS-Fixer/shim/tree/v3.95.24"
+                "source": "https://github.com/PHP-CS-Fixer/shim/tree/v3.95.25"
             },
             "funding": [
                 {
@@ -2114,7 +2114,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-08-31T15:31:46+00:00"
+            "time": "2026-09-08T11:12:09+00:00"
         },
         {
             "name": "phpdocumentor/reflection-common",
@@ -2747,16 +2747,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "12.5.34",
+            "version": "12.5.35",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "6cbff63d670de92cb1cb3d2ff9f40327e9da9c7f"
+                "reference": "345ac22e42cb14cdc7aa8428655d8bb8c82a4aab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/6cbff63d670de92cb1cb3d2ff9f40327e9da9c7f",
-                "reference": "6cbff63d670de92cb1cb3d2ff9f40327e9da9c7f",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/345ac22e42cb14cdc7aa8428655d8bb8c82a4aab",
+                "reference": "345ac22e42cb14cdc7aa8428655d8bb8c82a4aab",
                 "shasum": ""
             },
             "require": {
@@ -2825,7 +2825,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/12.5.34"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/12.5.35"
             },
             "funding": [
                 {
@@ -2833,7 +2833,7 @@
                     "type": "other"
                 }
             ],
-            "time": "2026-08-27T08:38:28+00:00"
+            "time": "2026-09-09T04:48:50+00:00"
         },
         {
             "name": "psr/clock",
