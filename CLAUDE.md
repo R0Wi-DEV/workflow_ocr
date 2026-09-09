@@ -171,6 +171,7 @@ clean. Never add to the psalm baseline to silence a new error you introduced.
 
 - `.mcp.json` provides a headless Playwright MCP server for driving the Nextcloud UI.
 - `.claude/skills/` — task procedures (`/add-ocr-processor`, `/add-workflow-setting`,
-  `/preflight`, `/sync-backend-contract`, `/nextcloud-dev-env`).
+  `/preflight`, `/sync-backend-contract`, `/nextcloud-dev-env`,
+  `/bump-nextcloud-version`).
 - `.claude/agents/` — subagents for review, pipeline tracing, test authoring, and
   checking Nextcloud upstream APIs.
