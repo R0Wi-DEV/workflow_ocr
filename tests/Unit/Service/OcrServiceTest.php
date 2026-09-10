@@ -760,7 +760,9 @@ class OcrServiceTest extends TestCase {
 
 		$this->logger->expects($this->once())
 			->method('warning')
-			->with($this->stringContains('customCliArgs'), $this->anything());
+			->with($this->anything(), $this->callback(function (array $context) {
+				return ($context['key'] ?? null) === 'customCliArgs';
+			}));
 		$this->logger->expects($this->never())
 			->method('error');
 		$this->notificationService->expects($this->never())
