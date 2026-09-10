@@ -30,6 +30,7 @@ use OCA\WorkflowOcr\Model\GlobalSettings;
 use OCA\WorkflowOcr\Service\IGlobalSettingsService;
 use OCP\AppFramework\Http\JSONResponse;
 use OCP\IRequest;
+use Psr\Log\LoggerInterface;
 
 /**
  * This is the backend API controller for the Admin.vue component.
@@ -38,8 +39,8 @@ class GlobalSettingsController extends ControllerBase {
 	/** @var IGlobalSettingsService */
 	private $globalSettingsService;
 
-	public function __construct($appName, IRequest $request, IGlobalSettingsService $globalSettingsService) {
-		parent::__construct($appName, $request);
+	public function __construct($appName, IRequest $request, IGlobalSettingsService $globalSettingsService, LoggerInterface $logger) {
+		parent::__construct($appName, $request, $logger);
 		$this->globalSettingsService = $globalSettingsService;
 	}
 

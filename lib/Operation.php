@@ -62,8 +62,10 @@ class Operation implements ISpecificOperation {
 	 * @since 9.1
 	 */
 	public function validateOperation(string $name, array $checks, string $operation): void {
-		if (!WorkflowSettings::canConstruct($operation)) {
-			throw new \UnexpectedValueException($this->l->t('Workflow settings JSON value cannot be parsed'));
+		try {
+			WorkflowSettings::validate($operation);
+		} catch (\InvalidArgumentException $e) {
+			throw new \UnexpectedValueException($this->l->t('Workflow settings JSON value cannot be parsed: %1$s', [$e->getMessage()]));
 		}
 	}
 

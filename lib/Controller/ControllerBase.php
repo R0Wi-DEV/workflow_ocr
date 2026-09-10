@@ -28,14 +28,30 @@ namespace OCA\WorkflowOcr\Controller;
 
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\JSONResponse;
+use OCP\IRequest;
+use Psr\Log\LoggerInterface;
 
 abstract class ControllerBase extends Controller {
+	public function __construct(
+		string $appName,
+		IRequest $request,
+		private LoggerInterface $logger,
+	) {
+		parent::__construct($appName, $request);
+	}
+
+	/**
+	 * Executes the given function and wraps the result into a JSONResponse. Errors are
+	 * logged server side only; the response contains a generic message to not leak any
+	 * internal details (paths, configuration, ...) to the client.
+	 */
 	protected function tryExecute(callable $function) : JSONResponse {
 		try {
 			$result = $function();
 			return new JSONResponse($result);
 		} catch (\Throwable $e) {
-			return new JSONResponse(['error' => $e->getMessage()], 500);
+			$this->logger->error($e->getMessage(), ['exception' => $e]);
+			return new JSONResponse(['error' => 'Internal server error'], 500);
 		}
 	}
 }

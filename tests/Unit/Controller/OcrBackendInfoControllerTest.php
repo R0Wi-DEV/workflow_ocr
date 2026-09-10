@@ -30,6 +30,7 @@ use OCP\IRequest;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 
 class OcrBackendInfoControllerTest extends TestCase {
 	/** @var IOcrBackendInfoService|MockObject */
@@ -38,13 +39,17 @@ class OcrBackendInfoControllerTest extends TestCase {
 	/** @var IRequest|MockObject */
 	private $request;
 
+	/** @var LoggerInterface|MockObject */
+	private $logger;
+
 	/** @var OcrBackendInfoController */
 	private $controller;
 
 	protected function setUp() : void {
 		$this->ocrBackendInfoService = $this->createMock(IOcrBackendInfoService::class);
 		$this->request = $this->createMock(IRequest::class);
-		$this->controller = new OcrBackendInfoController(Application::APP_NAME, $this->request, $this->ocrBackendInfoService);
+		$this->logger = $this->createMock(LoggerInterface::class);
+		$this->controller = new OcrBackendInfoController(Application::APP_NAME, $this->request, $this->ocrBackendInfoService, $this->logger);
 		parent::setUp();
 	}
 
@@ -55,6 +60,19 @@ class OcrBackendInfoControllerTest extends TestCase {
 			->willReturn($simulatedServiceResponse);
 		$response = $this->controller->getInstalledLanguages();
 		$this->assertEquals($expectedResultJson, $response->render());
+	}
+
+	public function testGetInstalledLanguagesDoesNotLeakInternalErrorMessage() : void {
+		$this->ocrBackendInfoService->expects($this->once())
+			->method('getInstalledLanguages')
+			->willThrowException(new \Exception('tesseract not found in /usr/local/bin'));
+		$this->logger->expects($this->once())
+			->method('error');
+
+		$response = $this->controller->getInstalledLanguages();
+
+		$this->assertEquals(500, $response->getStatus());
+		$this->assertEquals(['error' => 'Internal server error'], $response->getData());
 	}
 
 	public static function dataProviderInstalledLangsJson() {

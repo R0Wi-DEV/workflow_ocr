@@ -38,6 +38,13 @@ class CommandLineUtils implements ICommandLineUtils {
 	 */
 	private const LANGUAGE_CODE_REGEX = '/^[A-Za-z][A-Za-z0-9_\/]{0,31}$/';
 
+	/**
+	 * Characters which are safe to pass to the shell without any quoting. Everything which
+	 * doesn't match this pattern gets quoted via escapeshellarg() before it's added to the
+	 * commandline (see escapeArgumentIfNeeded()).
+	 */
+	private const SAFE_ARGUMENT_REGEX = '/^[A-Za-z0-9_\-=+.,:\/%@]+$/';
+
 	private static $ocrModeToCmdParameterMapping = [
 		WorkflowSettings::OCR_MODE_SKIP_TEXT => '--skip-text',
 		WorkflowSettings::OCR_MODE_REDO_OCR => '--redo-ocr',
@@ -85,7 +92,7 @@ class CommandLineUtils implements ICommandLineUtils {
 
 		if ($isLocalExecution && $sidecarFile !== null) {
 			// Save recognized text in tempfile
-			$args[] = '--sidecar ' . $sidecarFile;
+			$args[] = '--sidecar ' . $this->escapeArgumentIfNeeded($sidecarFile);
 		}
 
 		$resultArgs = array_filter(array_merge(
@@ -97,10 +104,59 @@ class CommandLineUtils implements ICommandLineUtils {
 		return implode(' ', $resultArgs);
 	}
 
+	/**
+	 * Splits the user supplied custom CLI arguments into single tokens and makes sure that
+	 * every token which contains anything but harmless characters is properly quoted. The
+	 * resulting string is concatenated into a shell commandline (see OcrMyPdfBasedProcessor)
+	 * and is also sent to the remote backend, so no token must ever be able to escape its
+	 * argument context.
+	 *
+	 * Tokens which consist of harmless characters only are returned as they are so that
+	 * the resulting commandline stays identical to what it was for all valid inputs.
+	 */
 	private function escapeCustomCliArgs(string $customCliArgs): string {
-		$customCliArgs = str_replace('&&', '', $customCliArgs);
-		$customCliArgs = str_replace(';', '', $customCliArgs);
-		return $customCliArgs;
+		$tokens = $this->tokenizeCustomCliArgs($customCliArgs);
+		return implode(' ', array_map(fn ($token) => $this->escapeArgumentIfNeeded($token), $tokens));
+	}
+
+	/**
+	 * Splits a commandline string into single arguments, honoring single- and double quoted
+	 * values (e.g. '--title "My Document"' results in the two tokens '--title' and
+	 * 'My Document'). An unterminated quote is treated as a literal character; the resulting
+	 * token is quoted by escapeArgumentIfNeeded() anyway.
+	 *
+	 * @return string[]
+	 */
+	private function tokenizeCustomCliArgs(string $customCliArgs): array {
+		$matchCount = preg_match_all(
+			'/"([^"]*)"|\'([^\']*)\'|(\S+)/',
+			$customCliArgs,
+			$matches,
+			PREG_SET_ORDER | PREG_UNMATCHED_AS_NULL
+		);
+
+		if (!$matchCount) {
+			return [];
+		}
+
+		$tokens = [];
+		foreach ($matches as $match) {
+			$tokens[] = $match[1] ?? $match[2] ?? $match[3] ?? '';
+		}
+
+		return $tokens;
+	}
+
+	/**
+	 * Returns the given commandline argument unchanged if it only consists of characters
+	 * which have no special meaning for the shell. Everything else is quoted via
+	 * escapeshellarg() so that it's passed to ocrmypdf as a single, literal argument.
+	 */
+	private function escapeArgumentIfNeeded(string $argument): string {
+		if (preg_match(self::SAFE_ARGUMENT_REGEX, $argument) === 1) {
+			return $argument;
+		}
+		return escapeshellarg($argument);
 	}
 
 	/**
