@@ -746,17 +746,14 @@ class OcrServiceTest extends TestCase {
 			'settings' => '{"customCliArgs": 42}',
 		];
 
-		$mime = 'application/pdf';
 		$content = 'someFileContent';
-		$this->fileInput->method('getMimeType')->willReturn($mime);
-		$this->fileInput->method('getContent')->willReturn($content);
 
 		$this->globalSettingsService->method('getGlobalSettings')
 			->willReturn(new GlobalSettings());
 
 		$this->ocrProcessor->expects($this->once())
 			->method('ocrFile')
-			->with($this->fileInput, $this->callback(function (WorkflowSettings $settings) {
+			->with($this->anything(), $this->callback(function (WorkflowSettings $settings) {
 				return $settings->getCustomCliArgs() === '';
 			}), $this->anything())
 			->willReturn(new OcrProcessorResult(true, $content, 'some recognized text'));

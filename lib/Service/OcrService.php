@@ -225,8 +225,8 @@ class OcrService implements IOcrService {
 		// back to the property's safe default and log a warning.
 		$settings = new WorkflowSettings($jsonSettings, false, function (string $key, $value) use ($fileId, $uid) {
 			$this->logger->warning(
-				'Ignoring invalid value for workflow OCR setting \'{key}\' of file with id {fileId} (owner {uid}); falling back to default.',
-				['key' => $key, 'fileId' => $fileId, 'uid' => $uid]
+				'Ignoring invalid value {value} for workflow OCR setting \'{key}\' of file with id {fileId} (owner {uid}); falling back to default.',
+				['key' => $key, 'value' => json_encode($value), 'fileId' => $fileId, 'uid' => $uid]
 			);
 		});
 
