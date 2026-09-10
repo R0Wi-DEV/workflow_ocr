@@ -25,9 +25,14 @@ namespace OCA\WorkflowOcr\Tests\Unit\AppInfo;
 
 use OCA\WorkflowOcr\AppInfo\Application;
 use OCP\AppFramework\Bootstrap\IBootContext;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
+// Constructs a real OCP\AppFramework\App (via Application), which needs \OC::$server
+// and Nextcloud's internal DI container — requires a full Nextcloud checkout. Excluded
+// from the standalone suite (see phpunit.standalone.xml).
+#[Group('nextcloud-full')]
 class ApplicationTest extends TestCase {
 	public function testBootDoesNothingOnBootContext() {
 		/** @var IBootContext|MockObject */

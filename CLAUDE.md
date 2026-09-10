@@ -7,11 +7,30 @@ ExApp). Both repos are versioned in lock-step and share a REST contract — see
 
 ## Critical constraints
 
-- **The app cannot run or be tested standalone.** PHP unit *and* integration tests boot
-  Nextcloud via `tests/bootstrap.php` and need a Nextcloud checkout with this app
-  installed under `apps/workflow_ocr` and enabled (`php occ app:enable workflow_ocr`).
-  Use the devcontainer (`.devcontainer/`) or mirror `.github/workflows/phpunit*.yml`.
-  JS tests (`vitest`) are the only suite that runs without Nextcloud.
+- **Most of `tests/Unit/` runs standalone.** `make php-unittest-standalone`
+  (bootstrap `tests/bootstrap.standalone.php`, config `phpunit.standalone.xml`) needs
+  only `composer install` — no Nextcloud checkout — because it resolves `OCP\*`/`NCU\*`
+  via the `nextcloud/ocp` composer dependency instead of a real NC core, with a handful
+  of small polyfills in `tests/Unit/TestUtils/` for legacy/other-app classes
+  `nextcloud/ocp` doesn't ship (`OC\User\NoUserException`, `OC\Notification\Notification`,
+  `OCA\Files_Versions\Versions\*`, `OCA\AppAPI\PublicFunctions`). Seven files that touch a
+  real, non-trivial Nextcloud implementation (not just an interface) are excluded via
+  `#[Group('nextcloud-full')]` and still run only under `phpunit.xml`:
+  `AppInfo/ApplicationTest.php`, `OcrProcessors/OcrProcessorFactoryTest.php`,
+  `composer/AutoloadTest.php` (all construct a real `OCP\AppFramework\App`, needing
+  `\OC::$server` and Nextcloud's internal DI container), `Wrapper/ViewFactoryTest.php`
+  (real `OC\Files\View`), `BackgroundJobs/ProcessFileJobTest.php` and
+  `Listener/RegisterFlowOperationsListenerTest.php` (call real OCP methods that
+  internally use `OCP\Server::get()`/`\OC::$server`), and `Notification/NotifierTest.php`
+  (real `OC\Notification\Notification`, whose validation logic is too much to safely
+  polyfill). In CI, only the coverage workflow (`.github/workflows/sonarqube.yml`) still
+  runs the full, NC-bootstrapped unit suite; `phpunit.yml`'s other jobs use the
+  standalone suite instead.
+- **`tests/Integration/` and the full `tests/Unit/` suite (`phpunit.xml`) still need a
+  full Nextcloud checkout.** Both boot Nextcloud via `tests/bootstrap.php` and need a
+  Nextcloud checkout with this app installed under `apps/workflow_ocr` and enabled
+  (`php occ app:enable workflow_ocr`). Use the devcontainer (`.devcontainer/`) or mirror
+  `.github/workflows/phpunit*.yml`. JS tests (`vitest`) also run without Nextcloud.
 - **Every change must be considered against both backend modes** (local CLI and remote
   ExApp). A change to settings, CLI arguments, or processors usually touches both paths.
 - **Target Nextcloud version comes from `appinfo/info.xml`** (`<nextcloud min/max>`),
@@ -25,7 +44,9 @@ ExApp). Both repos are versioned in lock-step and share a REST contract — see
 
 PHP 8.2–8.5 (composer platform pin 8.4, psalm `phpVersion` 8.2) · Vue 3 · Node ^24 /
 npm ^11.6 · rsbuild + vitest · phpunit 12 · psalm 6.4 · php-cs-fixer via
-`nextcloud/coding-standard` · `nextcloud/ocp` for OCP stubs.
+`nextcloud/coding-standard` · `nextcloud/ocp` for OCP stubs and (as of the standalone
+unit suite) real `OCP\*`/`NCU\*` symbols at test-run time — an unpinned `dev-master`
+dependency, see "Critical constraints".
 
 Namespace `OCA\WorkflowOcr\`, PSR-4 from `lib/`. Frontend sources in `src/`, built into
 `js/` by rsbuild (`make npm-build`).
@@ -124,6 +145,7 @@ Run from the repo root. The Makefile is authoritative — there is no `make unit
 ```bash
 make build                 # composer (no-dev) + npm install + rsbuild build
 make php-unittest          # phpunit -c phpunit.xml        (tests/Unit)
+make php-unittest-standalone # phpunit -c phpunit.standalone.xml (tests/Unit, no NC checkout)
 make php-integrationtest   # phpunit -c phpunit.integration.xml (tests/Integration)
 make php-test              # both PHP suites
 make js-test               # vitest unit + integration
@@ -152,6 +174,14 @@ clean. Never add to the psalm baseline to silence a new error you introduced.
   matrix value names are load-bearing, do not rename them.
 - Test PDFs/images live in `tests/Integration/testdata/`.
 - JS tests are `src/test/**/*.spec.js` with `@nextcloud/*` mocks in `src/test/__mocks__/`.
+- `tests/Unit/TestUtils/` holds standalone-suite-only scaffolding (an `invokePrivate`
+  replacement trait, plus polyfills for classes `nextcloud/ocp` doesn't ship) needed
+  only because `phpunit.standalone.xml` doesn't have a full Nextcloud core to draw on.
+  Mirrors the `tests/Integration/TestUtils/` convention. `nextcloud/ocp` itself ships no
+  composer `autoload` section, so `composer.json`'s `autoload-dev` adds a `classmap` over
+  `vendor/nextcloud/ocp/{OCP,NCU}/` to make its classes loadable at all, plus a PSR-4
+  mapping for `tests/Unit/` (so test-only support classes like
+  `tests/Unit/Service/IMetadataVersionWithBackend.php` autoload without a manual require).
 
 ## Conventions
 

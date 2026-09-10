@@ -31,8 +31,8 @@ use OCP\AppFramework\Http\JSONResponse;
 use OCP\IRequest;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
-use Test\TestCase;
 
 class GlobalSettingsControllerTest extends TestCase {
 	/** @var IGlobalSettingsService|MockObject */

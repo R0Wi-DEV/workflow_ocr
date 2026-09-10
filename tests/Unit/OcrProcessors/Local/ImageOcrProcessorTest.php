@@ -31,8 +31,8 @@ use OCA\WorkflowOcr\OcrProcessors\Local\ImageOcrProcessor;
 use OCA\WorkflowOcr\Wrapper\ICommand;
 use OCP\Files\File;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
-use Test\TestCase;
 
 class ImageOcrProcessorTest extends TestCase {
 	/** @var \OCA\WorkflowOcr\Wrapper\IPhpNativeFunctions|MockObject */
