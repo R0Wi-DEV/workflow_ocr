@@ -6,7 +6,6 @@ OC.L10N.register(
     "Workflow OCR error for file {file}" : "檔案 {file} 的工作流程 OCR 錯誤",
     "Workflow OCR success" : "OCR 工作流程成功",
     "Workflow OCR success for file {file}" : "檔案 {file} 的 OCR 工作流程成功",
-    "Workflow settings JSON value cannot be parsed" : "無法分析工作流程設置 JSON 值",
     "OCR file" : "OCR 檔案",
     "OCR processing via workflow" : "通過工作流程進行 OCR 處理",
     "Is OCRmyPDF installed" : "OCRmyPDF 是否已安裝",
@@ -52,6 +51,7 @@ OC.L10N.register(
     "Create a .txt sidecar file next to the OCR processed file containing the extracted text." : "在 OCR 處理過的檔案旁建立一個 .txt 副檔名檔案，該檔案應包含已擷取的文字內容。",
     "Create sidecar text file" : "建立附屬文字檔",
     "Pass additional ocrmypdf arguments here. They are forwarded to the CLI exactly as entered." : "在此處傳遞額外的 ocrmypdf 引數。這些引數將完全按照輸入的內容轉發至命令列介面。",
-    "Custom ocrMyPdf CLI arguments" : "自訂 ocrMyPdf CLI 參數"
+    "Custom ocrMyPdf CLI arguments" : "自訂 ocrMyPdf CLI 參數",
+    "Workflow settings JSON value cannot be parsed" : "無法分析工作流程設置 JSON 值"
 },
 "nplurals=1; plural=0;");
