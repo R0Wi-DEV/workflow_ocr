@@ -29,8 +29,8 @@ namespace OCA\WorkflowOcr\Tests\Unit\Notification;
 use OC\Notification\Notification;
 use OCA\WorkflowOcr\Notification\Notifier;
 use OCP\Files\File;
-use OCP\Files\Folder;
 use OCP\Files\IRootFolder;
+use OCP\Files\IUserFolder;
 use OCP\IL10N;
 use OCP\IURLGenerator;
 use OCP\L10N\IFactory;
@@ -153,8 +153,8 @@ class NotifierTest extends TestCase {
 		$file->expects($this->once())
 			->method('getId')
 			->willReturn('123');
-		/** @var Folder|MockObject */
-		$userFolder = $this->createMock(Folder::class);
+		/** @var IUserFolder|MockObject */
+		$userFolder = $this->createMock(IUserFolder::class);
 		$userFolder->expects($this->once())
 			->method('getFirstNodeById')
 			->with(123)
@@ -252,8 +252,8 @@ class NotifierTest extends TestCase {
 		$notification->setSubject('ocr_error', ['message' => 'mymessage']);
 		$notification->setObject('file', '123');
 
-		/** @var Folder|MockObject */
-		$userFolder = $this->createMock(Folder::class);
+		/** @var IUserFolder|MockObject */
+		$userFolder = $this->createMock(IUserFolder::class);
 		$ex = new \OCP\Files\NotFoundException('nope ... sorry');
 		$userFolder->expects($this->once())
 			->method('getFirstNodeById')
@@ -305,8 +305,8 @@ class NotifierTest extends TestCase {
 		$notification->setSubject('ocr_error', ['message' => 'mymessage']);
 		$notification->setObject('file', '123');
 
-		/** @var Folder|MockObject */
-		$userFolder = $this->createMock(Folder::class);
+		/** @var IUserFolder|MockObject */
+		$userFolder = $this->createMock(IUserFolder::class);
 		$userFolder->expects($this->once())
 			->method('getFirstNodeById')
 			->with(123)
