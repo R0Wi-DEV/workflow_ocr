@@ -6,7 +6,6 @@ OC.L10N.register(
     "Workflow OCR error for file {file}" : "OCR ish jarayonida xatolik  {file} faylida",
     "Workflow OCR success" : "OCR ish jarayoni mufaffaqiyatli",
     "Workflow OCR success for file {file}" : "OCR ish jarayoni mufaffaqiyatli {file} faylida",
-    "Workflow settings JSON value cannot be parsed" : "Ish jarayoni sozlamalarida JSON qiymatini tahlil qilib bo‘lmaydi",
     "OCR file" : "OCR fayllar",
     "OCR processing via workflow" : "Ish jarayoni orqali OCR qayta ishlash",
     "Is OCRmyPDF installed" : "OCRmyPDF o'rnatilgan",
@@ -37,6 +36,7 @@ OC.L10N.register(
     "Remove background" : "Fonni olib tashlash",
     "Keep original file version" : "Asl fayl versiyasini saqlang",
     "Keep original file modification date" : "Asl faylni o'zgartirish sanasini saqlang",
-    "Custom ocrMyPdf CLI arguments" : "Maxsus ocrMyPdf CLI argumentlari"
+    "Custom ocrMyPdf CLI arguments" : "Maxsus ocrMyPdf CLI argumentlari",
+    "Workflow settings JSON value cannot be parsed" : "Ish jarayoni sozlamalarida JSON qiymatini tahlil qilib bo‘lmaydi"
 },
 "nplurals=1; plural=0;");

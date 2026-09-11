@@ -6,7 +6,6 @@ OC.L10N.register(
     "Workflow OCR error for file {file}" : "Workflow OCR грешка за фајл {file}",
     "Workflow OCR success" : "Workflow OCR је успео",
     "Workflow OCR success for file {file}" : "Workflow OCR је успешно извршен за фајл {file}",
-    "Workflow settings JSON value cannot be parsed" : "Не може да се парсира JSON вредност Workflow подешавања",
     "OCR file" : "OCR фајл",
     "OCR processing via workflow" : "OCR обрада помоћу workflow",
     "Is OCRmyPDF installed" : "Да ли је инсталиран OCRmyPDF",
@@ -37,6 +36,7 @@ OC.L10N.register(
     "Remove background" : "Уклони позадину",
     "Keep original file version" : "Задржи оригиналну верзију фајла",
     "Keep original file modification date" : "Задржи оригинални датум измене фајла",
-    "Custom ocrMyPdf CLI arguments" : "Произвољни ocrMyPdf CLI аргументи"
+    "Custom ocrMyPdf CLI arguments" : "Произвољни ocrMyPdf CLI аргументи",
+    "Workflow settings JSON value cannot be parsed" : "Не може да се парсира JSON вредност Workflow подешавања"
 },
 "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);");

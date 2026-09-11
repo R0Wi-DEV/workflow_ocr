@@ -6,7 +6,6 @@ OC.L10N.register(
     "Workflow OCR error for file {file}" : "Workflow OCR - fout met bestand {file}",
     "Workflow OCR success" : "Workflow OCR - succes",
     "Workflow OCR success for file {file}" : "Workflow OCR - succes met bestand {file}",
-    "Workflow settings JSON value cannot be parsed" : "Workflow-instellingen JSON-waarde kan niet worden verwerkt",
     "OCR file" : "OCR-bestand",
     "OCR processing via workflow" : "OCR-verwerking via Workflow",
     "Is OCRmyPDF installed" : "Is OCRmyPDF geïnstalleerd",
@@ -37,6 +36,7 @@ OC.L10N.register(
     "Remove background" : "Achtergrond verwijderen",
     "Keep original file version" : "Oorspronkelijke bestandsversie behouden",
     "Keep original file modification date" : "Oorspronkelijke datum van bestandswijziging behouden",
-    "Custom ocrMyPdf CLI arguments" : "Aangepaste argumenten voor ocrMyPdf CLI"
+    "Custom ocrMyPdf CLI arguments" : "Aangepaste argumenten voor ocrMyPdf CLI",
+    "Workflow settings JSON value cannot be parsed" : "Workflow-instellingen JSON-waarde kan niet worden verwerkt"
 },
 "nplurals=2; plural=(n != 1);");
