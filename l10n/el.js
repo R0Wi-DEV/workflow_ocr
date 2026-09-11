@@ -6,7 +6,6 @@ OC.L10N.register(
     "Workflow OCR error for file {file}" : "Σφάλμα ροής εργασίας OCR για το αρχείο {file}",
     "Workflow OCR success" : "Επιτυχία ροής εργασίας OCR",
     "Workflow OCR success for file {file}" : "Επιτυχία ροής εργασίας OCR για το αρχείο {file}",
-    "Workflow settings JSON value cannot be parsed" : "Η τιμή JSON των ρυθμίσεων ροής εργασίας δεν μπορεί να αναλυθεί",
     "OCR file" : "Αρχείο OCR",
     "OCR processing via workflow" : "Επεξεργασία OCR μέσω ροής εργασίας",
     "Is OCRmyPDF installed" : "Εάν είναι εγκατεστημένο το OCRmyPDF",
@@ -52,6 +51,7 @@ OC.L10N.register(
     "Create a .txt sidecar file next to the OCR processed file containing the extracted text." : "Δημιουργία ενός συνοδευτικού αρχείου (sidecar) .txt δίπλα στο επεξεργασμένο αρχείο OCR, το οποίο θα περιέχει το εξαχθέν κείμενο.",
     "Create sidecar text file" : "Δημιουργία συνοδευτικού αρχείου κειμένου",
     "Pass additional ocrmypdf arguments here. They are forwarded to the CLI exactly as entered." : "Εισαγάγετε επιπλέον ορίσματα για το ocrmypdf εδώ. Προωθούνται στο CLI ακριβώς όπως έχουν πληκτρολογηθεί.",
-    "Custom ocrMyPdf CLI arguments" : "Προσαρμοσμένα ορίσματα CLI για το ocrMyPdf"
+    "Custom ocrMyPdf CLI arguments" : "Προσαρμοσμένα ορίσματα CLI για το ocrMyPdf",
+    "Workflow settings JSON value cannot be parsed" : "Η τιμή JSON των ρυθμίσεων ροής εργασίας δεν μπορεί να αναλυθεί"
 },
 "nplurals=2; plural=(n != 1);");

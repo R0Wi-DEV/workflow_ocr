@@ -6,7 +6,6 @@ OC.L10N.register(
     "Workflow OCR error for file {file}" : "Error del flujo de trabajo OCR para el archivo {file}",
     "Workflow OCR success" : "Flujo de trabajo OCR exitoso",
     "Workflow OCR success for file {file}" : "Flujo de trabajo OCR exitoso para el archivo {file}",
-    "Workflow settings JSON value cannot be parsed" : "El valor JSON de configuración del flujo de trabajo no puede ser analizado",
     "OCR file" : "Archivo OCR",
     "OCR processing via workflow" : "Procesamiento de OCR vía flujo de trabajo",
     "Is OCRmyPDF installed" : "Está OCRmyPDF instalado",
@@ -37,6 +36,7 @@ OC.L10N.register(
     "Remove background" : "Eliminar fondo",
     "Keep original file version" : "Mantener la versión original del archivo",
     "Keep original file modification date" : "Mantener la fecha de modificación original del archivo",
-    "Custom ocrMyPdf CLI arguments" : "Argumentos personalizados para el CLI de ocrMyPDF"
+    "Custom ocrMyPdf CLI arguments" : "Argumentos personalizados para el CLI de ocrMyPDF",
+    "Workflow settings JSON value cannot be parsed" : "El valor JSON de configuración del flujo de trabajo no puede ser analizado"
 },
 "nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;");

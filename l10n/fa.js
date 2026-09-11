@@ -6,7 +6,6 @@ OC.L10N.register(
     "Workflow OCR error for file {file}" : "خطای گردش کار OCR برای فایل {file}",
     "Workflow OCR success" : "موفقیت گردش کار OCR",
     "Workflow OCR success for file {file}" : "موفقیت گردش کار OCR برای فایل {file}",
-    "Workflow settings JSON value cannot be parsed" : "مقدار JSON تنظیمات گردش کار قابل تجزیه نیست",
     "OCR file" : "فایل OCR",
     "OCR processing via workflow" : "پردازش OCR از طریق گردش کار",
     "Is OCRmyPDF installed" : "آیا OCRmyPDF نصب شده است",
@@ -52,6 +51,7 @@ OC.L10N.register(
     "Create a .txt sidecar file next to the OCR processed file containing the extracted text." : "یک فایل جانبی .txt در کنار فایل پردازش شده OCR حاوی متن استخراج شده ایجاد کنید.",
     "Create sidecar text file" : "ایجاد فایل متنی جانبی",
     "Pass additional ocrmypdf arguments here. They are forwarded to the CLI exactly as entered." : "آرگومان‌های اضافی ocrmypdf را اینجا وارد کنید. این آرگومان‌ها دقیقاً همان‌طور که وارد شده‌اند به خط فرمان ارسال می‌شوند.",
-    "Custom ocrMyPdf CLI arguments" : "آرگومان‌های سفارشی خط فرمان ocrMyPdf"
+    "Custom ocrMyPdf CLI arguments" : "آرگومان‌های سفارشی خط فرمان ocrMyPdf",
+    "Workflow settings JSON value cannot be parsed" : "مقدار JSON تنظیمات گردش کار قابل تجزیه نیست"
 },
 "nplurals=2; plural=(n > 1);");

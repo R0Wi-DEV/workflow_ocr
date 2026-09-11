@@ -4,7 +4,6 @@
     "Workflow OCR error for file {file}" : "Ошибка Workflow OCR для файла {file}",
     "Workflow OCR success" : "Workflow OCR выполнен",
     "Workflow OCR success for file {file}" : "Workflow OCR выполнен для файла {file}",
-    "Workflow settings JSON value cannot be parsed" : "Workflow настройки JSON значение не может быть разобрано",
     "OCR file" : "Файл OCR",
     "OCR processing via workflow" : "OCR обработка через Workflow",
     "Is OCRmyPDF installed" : "OCRmyPDF установлен",
@@ -35,6 +34,7 @@
     "Remove background" : "Удалить фон",
     "Keep original file version" : "Оставить исходную версию файла",
     "Keep original file modification date" : "Оставить исходную дату модификации файла",
-    "Custom ocrMyPdf CLI arguments" : "Пользовательские аргументы OCRmyPDF CLI"
+    "Custom ocrMyPdf CLI arguments" : "Пользовательские аргументы OCRmyPDF CLI",
+    "Workflow settings JSON value cannot be parsed" : "Workflow настройки JSON значение не может быть разобрано"
 },"pluralForm" :"nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);"
 }

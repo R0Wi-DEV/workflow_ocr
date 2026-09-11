@@ -4,7 +4,6 @@
     "Workflow OCR error for file {file}" : "OCR-fel i arbetsflöde för filen {file}",
     "Workflow OCR success" : "OCR i arbetsflöde slutfördes",
     "Workflow OCR success for file {file}" : "OCR i arbetsflöde slutfördes för filen {file}",
-    "Workflow settings JSON value cannot be parsed" : "JSON-värdet för arbetsflödesinställningarna kunde inte tolkas",
     "OCR file" : "OCR-behandla fil",
     "OCR processing via workflow" : "OCR-behandling via arbetsflöde",
     "Is OCRmyPDF installed" : "Är OCRmyPDF installerat",
@@ -50,6 +49,7 @@
     "Create a .txt sidecar file next to the OCR processed file containing the extracted text." : "Skapa en tillhörande TXT-fil bredvid den OCR-behandlade filen med den extraherade texten.",
     "Create sidecar text file" : "Skapa tillhörande textfil",
     "Pass additional ocrmypdf arguments here. They are forwarded to the CLI exactly as entered." : "Ange ytterligare argument för ocrmypdf här. De vidarebefordras till kommandoradsverktyget exakt som de anges.",
-    "Custom ocrMyPdf CLI arguments" : "Anpassade kommandoradsargument för ocrMyPdf"
+    "Custom ocrMyPdf CLI arguments" : "Anpassade kommandoradsargument för ocrMyPdf",
+    "Workflow settings JSON value cannot be parsed" : "JSON-värdet för arbetsflödesinställningarna kunde inte tolkas"
 },"pluralForm" :"nplurals=2; plural=(n != 1);"
 }
