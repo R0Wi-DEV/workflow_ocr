@@ -6,7 +6,6 @@ OC.L10N.register(
     "Workflow OCR error for file {file}" : "Workflow-OCR Fehler für die Datei {file}",
     "Workflow OCR success" : "Erfolgreicher Arbeitsablauf der Texterkennung",
     "Workflow OCR success for file {file}" : "Erfolgreicher Arbeitsablauf der Texterkennung für Datei {file}",
-    "Workflow settings JSON value cannot be parsed" : "JSON-Wert der Workflow-Einstellungen kann nicht geparst werden",
     "OCR file" : "OCR-Datei",
     "OCR processing via workflow" : "OCR-Verarbeitung über Workflow",
     "Is OCRmyPDF installed" : "Ist OCRmyPDF installiert",
@@ -52,6 +51,7 @@ OC.L10N.register(
     "Create a .txt sidecar file next to the OCR processed file containing the extracted text." : "Eine .txt als Filialdatei neben der OCR-verarbeiteten Datei erstellen, die den extrahierten Text enthält.",
     "Create sidecar text file" : "Filialdatei erstellen",
     "Pass additional ocrmypdf arguments here. They are forwarded to the CLI exactly as entered." : "Zusätzliche ocrmypdf-Argumente hier übergeben. Sie werden genau wie eingegeben an die Befehlszeilenschnittstelle (CLI) weitergeleitet.",
-    "Custom ocrMyPdf CLI arguments" : "Benutzerdefinierte ocrMyPdf-Argumente der Befehlszeilenschnittstelle"
+    "Custom ocrMyPdf CLI arguments" : "Benutzerdefinierte ocrMyPdf-Argumente der Befehlszeilenschnittstelle",
+    "Workflow settings JSON value cannot be parsed" : "JSON-Wert der Workflow-Einstellungen kann nicht geparst werden"
 },
 "nplurals=2; plural=(n != 1);");

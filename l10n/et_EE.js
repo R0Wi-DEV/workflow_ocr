@@ -6,7 +6,6 @@ OC.L10N.register(
     "Workflow OCR error for file {file}" : "{file} faili töövoo optilise tekstituvastuse viga.",
     "Workflow OCR success" : "Töövoo optiline tekstituvastus õnnestus.",
     "Workflow OCR success for file {file}" : "{file} faili töövoo optiline tekstituvastus õnnestus.",
-    "Workflow settings JSON value cannot be parsed" : "Töövoo seadistuste JSON-väärtuse parsimine ei õnnestu",
     "OCR file" : "Tekstituvastuse fail",
     "OCR processing via workflow" : "Tekstituvastus töövoo rakenduse abil",
     "Is OCRmyPDF installed" : "Kas OCRmyPDF on paigaldatud",
@@ -52,6 +51,7 @@ OC.L10N.register(
     "Create a .txt sidecar file next to the OCR processed file containing the extracted text." : "Loo tekstituvastuse abil töödeldud faili kõrvale .txt vormingus kaasnev andmefail, kus salvestub tuvastatud tekst.",
     "Create sidecar text file" : "Loo kaasnev andmefail",
     "Pass additional ocrmypdf arguments here. They are forwarded to the CLI exactly as entered." : "Siia võid lisada ocrmypdf teegi täiendavad argumendid. Need edastatakse käsureale täpselt sellisena, nagu nad on sisestatud.",
-    "Custom ocrMyPdf CLI arguments" : "OCRmyPDF CLI argumendid"
+    "Custom ocrMyPdf CLI arguments" : "OCRmyPDF CLI argumendid",
+    "Workflow settings JSON value cannot be parsed" : "Töövoo seadistuste JSON-väärtuse parsimine ei õnnestu"
 },
 "nplurals=2; plural=(n != 1);");
