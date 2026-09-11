@@ -6,7 +6,6 @@ OC.L10N.register(
     "Workflow OCR error for file {file}" : "Chyby Workflow OCR pre súbor {file}",
     "Workflow OCR success" : "Workflow OCR bolo úspešné",
     "Workflow OCR success for file {file}" : "Workflow OCR pre súbor {file} bolo úspešné",
-    "Workflow settings JSON value cannot be parsed" : "Hodnota nastaveni v JSON pre Workflow sa nedala rozparsovať",
     "OCR file" : "Súbor OCR",
     "OCR processing via workflow" : "Spracovanie OCR pomocou workflow",
     "Is OCRmyPDF installed" : "Je nainštalovaný OCRmyPDF",
@@ -52,6 +51,7 @@ OC.L10N.register(
     "Create a .txt sidecar file next to the OCR processed file containing the extracted text." : "Vytvoriť vedľa súboru spracovaného OCR sprievodný súbor .txt s extrahovaným textom.",
     "Create sidecar text file" : "Vytvoriť sprievodný textový súbor",
     "Pass additional ocrmypdf arguments here. They are forwarded to the CLI exactly as entered." : "Sem zadajte ďalšie argumenty ocrmypdf. Do CLI sa odošlú presne tak, ako boli zadané.",
-    "Custom ocrMyPdf CLI arguments" : "Uživateľské parametre pre ocrMyPdf CLI"
+    "Custom ocrMyPdf CLI arguments" : "Uživateľské parametre pre ocrMyPdf CLI",
+    "Workflow settings JSON value cannot be parsed" : "Hodnota nastaveni v JSON pre Workflow sa nedala rozparsovať"
 },
 "nplurals=4; plural=(n % 1 == 0 && n == 1 ? 0 : n % 1 == 0 && n >= 2 && n <= 4 ? 1 : n % 1 != 0 ? 2: 3);");

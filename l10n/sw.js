@@ -6,7 +6,6 @@ OC.L10N.register(
     "Workflow OCR error for file {file}" : "Hitilafu ya OCR ya mtiririko wa kazi kwa faili {file}",
     "Workflow OCR success" : "Mafanikio ya OCR ya Mtiririko wa Kazi",
     "Workflow OCR success for file {file}" : "Mafanikio ya OCR ya mtiririko wa kazi kwa faili {file}",
-    "Workflow settings JSON value cannot be parsed" : "Thamani ya JSON ya mipangilio ya mtiririko wa kazi haiwezi kusomwa",
     "OCR file" : "Faili ya OCR",
     "OCR processing via workflow" : "Uchakataji wa OCR kupitia mtiririko wa kazi",
     "Is OCRmyPDF installed" : "Je, OCRmyPDF imewekwa",
@@ -37,6 +36,7 @@ OC.L10N.register(
     "Remove background" : "Ondoa mandharinyuma",
     "Keep original file version" : "Hifadhi toleo asili la faili ",
     "Keep original file modification date" : "Weka tarehe asili ya kurekebisha faili",
-    "Custom ocrMyPdf CLI arguments" : "Hoja maalum za ocrMyPdf CLI"
+    "Custom ocrMyPdf CLI arguments" : "Hoja maalum za ocrMyPdf CLI",
+    "Workflow settings JSON value cannot be parsed" : "Thamani ya JSON ya mipangilio ya mtiririko wa kazi haiwezi kusomwa"
 },
 "nplurals=2; plural=(n != 1);");

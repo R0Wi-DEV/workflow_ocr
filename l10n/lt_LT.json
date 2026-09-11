@@ -4,7 +4,6 @@
     "Workflow OCR error for file {file}" : "Darbo eigos OCR klaida {file} filui",
     "Workflow OCR success" : "Sėkminga OCR darbo eiga",
     "Workflow OCR success for file {file}" : "Sėkminga OCR darbo eiga {file} failui",
-    "Workflow settings JSON value cannot be parsed" : "Darbo eigos nustatymų JSON reikšmės negalima išanalizuoti",
     "OCR file" : "OCR failas",
     "OCR processing via workflow" : "OCR apdorojimas per darbo eigą",
     "Is OCRmyPDF installed" : "Ar įdiegtas OCRmyPDF?",
@@ -50,6 +49,7 @@
     "Create a .txt sidecar file next to the OCR processed file containing the extracted text." : "Sukurti lydimąjį .txt failą su ištrauktu tekstu šalia apdoroto failo.",
     "Create sidecar text file" : "Sukurti lydimąjį .txt failą",
     "Pass additional ocrmypdf arguments here. They are forwarded to the CLI exactly as entered." : "Čia pateikite papildomus „ocrmypdf“ argumentus. Jie persiunčiami į CLI tiksliai tokie, kokie įvesti.",
-    "Custom ocrMyPdf CLI arguments" : "Pasirinktiniai ocrMyPdf CLI argumentai"
+    "Custom ocrMyPdf CLI arguments" : "Pasirinktiniai ocrMyPdf CLI argumentai",
+    "Workflow settings JSON value cannot be parsed" : "Darbo eigos nustatymų JSON reikšmės negalima išanalizuoti"
 },"pluralForm" :"nplurals=4; plural=(n % 10 == 1 && (n % 100 > 19 || n % 100 < 11) ? 0 : (n % 10 >= 2 && n % 10 <=9) && (n % 100 > 19 || n % 100 < 11) ? 1 : n % 1 != 0 ? 2: 3);"
 }

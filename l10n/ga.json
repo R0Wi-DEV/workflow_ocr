@@ -4,7 +4,6 @@
     "Workflow OCR error for file {file}" : "Earráid OCR sreabhadh oibre don chomhad {file}",
     "Workflow OCR success" : "Sreabhadh oibre rath OCR",
     "Workflow OCR success for file {file}" : "D'éirigh le sreabhadh oibre OCR do chomhad {file}",
-    "Workflow settings JSON value cannot be parsed" : "Ní féidir luach JSON socruithe sreafa oibre a pharsáil",
     "OCR file" : "Comhad OCR",
     "OCR processing via workflow" : "Próiseáil OCR trí shreabhadh oibre",
     "Is OCRmyPDF installed" : "An bhfuil OCRmyPDF suiteáilte",
@@ -50,6 +49,7 @@
     "Create a .txt sidecar file next to the OCR processed file containing the extracted text." : "Cruthaigh comhad taobhlíne .txt in aice leis an gcomhad próiseáilte OCR ina bhfuil an téacs eastósctha.",
     "Create sidecar text file" : "Cruthaigh comhad téacs taobhcharr",
     "Pass additional ocrmypdf arguments here. They are forwarded to the CLI exactly as entered." : "Cuir argóintí ocrmypdf breise anseo. Seoltar ar aghaidh chuig an CLI iad díreach mar a iontráladh iad.",
-    "Custom ocrMyPdf CLI arguments" : "Argóintí CLI saincheaptha ocrMyPdf"
+    "Custom ocrMyPdf CLI arguments" : "Argóintí CLI saincheaptha ocrMyPdf",
+    "Workflow settings JSON value cannot be parsed" : "Ní féidir luach JSON socruithe sreafa oibre a pharsáil"
 },"pluralForm" :"nplurals=5; plural=(n==1 ? 0 : n==2 ? 1 : n<7 ? 2 : n<11 ? 3 : 4);"
 }

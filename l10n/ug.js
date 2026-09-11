@@ -6,7 +6,6 @@ OC.L10N.register(
     "Workflow OCR error for file {file}" : "ھۆججەت {file} نىڭ خىزمەت ئېقىمى OCR خاتالىقى",
     "Workflow OCR success" : "خىزمەت ئېقىمى OCR مۇۋاپىقىيەتلىك",
     "Workflow OCR success for file {file}" : "ھۆججەت {file} نىڭ خىزمەت ئېقىمى OCR مۇۋاپىقىيەتلىك بولدى",
-    "Workflow settings JSON value cannot be parsed" : "خىزمەت ئېقىمى تەڭشەكلىرى JSON قىممىتىنى تەھلىل قىلىشقا بولمايدۇ",
     "OCR file" : "OCR ھۆججىتى",
     "OCR processing via workflow" : "خىزمەت ئېقىمى ئارقىلىق OCR بىر تەرەپ قىلىش",
     "Is OCRmyPDF installed" : "OCRmyPDF قاچىلاندىمۇ",
@@ -52,6 +51,7 @@ OC.L10N.register(
     "Create a .txt sidecar file next to the OCR processed file containing the extracted text." : "OCR بىر-تەرەپ قىلغان ھۆججەتنىڭ يېنىغا چىقىرىپ ئېلىنغان تېكىستنى ئۆز-ئىچىگە ئالغان .txt ھۆججىتىنى قۇر",
     "Create sidecar text file" : "sidecar تېكىست ھۆججىتى قۇر",
     "Pass additional ocrmypdf arguments here. They are forwarded to the CLI exactly as entered." : "قوشۇمچە ocrmypdf ئارگۇمېنتلىرىنى بۇ يەرگە يوللاڭ. ئۇلار كىرگۈزۈلگەن شەكىلدە CLI غا يوللىنىدۇ.",
-    "Custom ocrMyPdf CLI arguments" : "خاس ocrMyPdf CLI پارامىتېرلىرى"
+    "Custom ocrMyPdf CLI arguments" : "خاس ocrMyPdf CLI پارامىتېرلىرى",
+    "Workflow settings JSON value cannot be parsed" : "خىزمەت ئېقىمى تەڭشەكلىرى JSON قىممىتىنى تەھلىل قىلىشقا بولمايدۇ"
 },
 "nplurals=2; plural=(n != 1);");

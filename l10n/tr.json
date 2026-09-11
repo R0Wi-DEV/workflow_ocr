@@ -4,7 +4,6 @@
     "Workflow OCR error for file {file}" : "{file} dosyasında iş akışı karakter tanıma sorunu",
     "Workflow OCR success" : "İş akışı karakter tanıması tamamlandı",
     "Workflow OCR success for file {file}" : "{file} dosyasında iş akışı karakter tanıması tamamlandı",
-    "Workflow settings JSON value cannot be parsed" : "İş akışı ayarları JSON değeri işlenemedi",
     "OCR file" : "Karakter tanıma dosyası",
     "OCR processing via workflow" : "İş akışı ile karakter tanıma işlemi",
     "Is OCRmyPDF installed" : "OCRmyPDF kurulmuş mu",
@@ -50,6 +49,7 @@
     "Create a .txt sidecar file next to the OCR processed file containing the extracted text." : "Tanınan yazının bulunduğu karakter tanıması yapılmış dosyanın yanında bir .txt sidecar dosyası oluşturur.",
     "Create sidecar text file" : "Sidecar yazı dosyası oluşturulsun",
     "Pass additional ocrmypdf arguments here. They are forwarded to the CLI exactly as entered." : "Ek ocrmypdf argümanlarını buradan aktarın. Tam olarak yazıldığı gibi komut satırına iletilirler.",
-    "Custom ocrMyPdf CLI arguments" : "Özel ocrMyPdf komut satırı parametreleri"
+    "Custom ocrMyPdf CLI arguments" : "Özel ocrMyPdf komut satırı parametreleri",
+    "Workflow settings JSON value cannot be parsed" : "İş akışı ayarları JSON değeri işlenemedi"
 },"pluralForm" :"nplurals=2; plural=(n > 1);"
 }
