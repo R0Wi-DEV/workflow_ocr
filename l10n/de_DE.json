@@ -4,6 +4,7 @@
     "Workflow OCR error for file {file}" : "Workflow-OCR Fehler für die Datei {file}",
     "Workflow OCR success" : "Erfolgreicher Arbeitsablauf der Texterkennung",
     "Workflow OCR success for file {file}" : "Erfolgreicher Arbeitsablauf der Texterkennung für Datei {file}",
+    "Workflow settings JSON value cannot be parsed: %1$s" : "JSON-Wert der Workflow-Einstellungen kann nicht geparst werden: %1$s",
     "OCR file" : "OCR-Datei",
     "OCR processing via workflow" : "OCR-Verarbeitung über Workflow",
     "Is OCRmyPDF installed" : "Ist OCRmyPDF installiert",

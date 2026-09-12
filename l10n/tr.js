@@ -6,6 +6,7 @@ OC.L10N.register(
     "Workflow OCR error for file {file}" : "{file} dosyasında iş akışı karakter tanıma sorunu",
     "Workflow OCR success" : "İş akışı karakter tanıması tamamlandı",
     "Workflow OCR success for file {file}" : "{file} dosyasında iş akışı karakter tanıması tamamlandı",
+    "Workflow settings JSON value cannot be parsed: %1$s" : "İş akışı ayarları JSON değeri işlenemedi: %1$s",
     "OCR file" : "Karakter tanıma dosyası",
     "OCR processing via workflow" : "İş akışı ile karakter tanıma işlemi",
     "Is OCRmyPDF installed" : "OCRmyPDF kurulmuş mu",
