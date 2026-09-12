@@ -25,8 +25,13 @@ namespace OCA\WorkflowOcr\Tests\Unit\Wrapper;
 
 use OCA\WorkflowOcr\Wrapper\IView;
 use OCA\WorkflowOcr\Wrapper\ViewFactory;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 
+// Instantiates the real Nextcloud\OC\Files\View internally (via ViewWrapper), which
+// needs a full Nextcloud filesystem/storage stack. Excluded from the standalone suite
+// (see phpunit.standalone.xml).
+#[Group('nextcloud-full')]
 class ViewFactoryTest extends TestCase {
 	public function testFactoryReturnsIView() {
 		$viewFactory = new ViewFactory();

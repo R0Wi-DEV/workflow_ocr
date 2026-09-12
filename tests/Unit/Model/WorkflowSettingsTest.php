@@ -26,7 +26,7 @@ namespace OCA\WorkflowOcr\Tests\Unit\Model;
 use InvalidArgumentException;
 use OCA\WorkflowOcr\Model\WorkflowSettings;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Test\TestCase;
+use PHPUnit\Framework\TestCase;
 
 class WorkflowSettingsTest extends TestCase {
 	#[DataProvider('dataProvider_testConstruction')]

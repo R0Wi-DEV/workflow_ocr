@@ -65,7 +65,40 @@ jobs:
           php -S localhost:8080 &
       - name: PHPUnit
         working-directory: apps/${{ env.APP_NAME }}
-        run: make php-test
+        run: make php-integrationtest
+
+  # Runs tests/Unit without a Nextcloud checkout (see phpunit.standalone.xml). The
+  # sqlite/mysql/pgsql jobs above only run the integration suite now, since the unit
+  # suite is fully mocked and produces identical results regardless of DB backend. The
+  # full, NC-bootstrapped unit suite (phpunit.xml, including the files excluded here via
+  # the nextcloud-full group) still runs once, in the PHPUnit-Coverage workflow.
+  standalone:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-versions: ['8.4', '8.5']
+
+    name: standalone-php${{ matrix.php-versions }}
+
+    steps:
+      - name: Checkout app
+        uses: actions/checkout@v5
+
+      - name: Set up php ${{ matrix.php-versions }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          tools: phpunit
+          extensions: mbstring, iconv, fileinfo, intl, gd, zip, imagick
+          coverage: none
+
+      - name: Install dependencies
+        run: composer i
+
+      - name: PHPUnit (standalone)
+        run: make php-unittest-standalone
 
   mysql:
     runs-on: ubuntu-22.04
@@ -131,7 +164,7 @@ jobs:
           php -S localhost:8080 &
       - name: PHPUnit
         working-directory: apps/${{ env.APP_NAME }}
-        run: make php-test
+        run: make php-integrationtest
 
   pgsql:
     runs-on: ubuntu-22.04
@@ -199,4 +232,4 @@ jobs:
           php -S localhost:8080 &
       - name: PHPUnit
         working-directory: apps/${{ env.APP_NAME }}
-        run: make php-test
+        run: make php-integrationtest
