@@ -6,6 +6,7 @@ OC.L10N.register(
     "Workflow OCR error for file {file}" : "檔案 {file} 的工作流程 OCR 錯誤",
     "Workflow OCR success" : "OCR 工作流程成功",
     "Workflow OCR success for file {file}" : "檔案 {file} 的 OCR 工作流程成功",
+    "Workflow settings JSON value cannot be parsed: %1$s" : "無法分析工作流程設置 JSON 值：%1$s",
     "OCR file" : "OCR 檔案",
     "OCR processing via workflow" : "通過工作流程進行 OCR 處理",
     "Is OCRmyPDF installed" : "OCRmyPDF 是否已安裝",

@@ -6,6 +6,7 @@ OC.L10N.register(
     "Workflow OCR error for file {file}" : "Workflow OCR error for file {file}",
     "Workflow OCR success" : "Workflow OCR success",
     "Workflow OCR success for file {file}" : "Workflow OCR success for file {file}",
+    "Workflow settings JSON value cannot be parsed: %1$s" : "Workflow settings JSON value cannot be parsed: %1$s",
     "OCR file" : "OCR file",
     "OCR processing via workflow" : "OCR processing via workflow",
     "Is OCRmyPDF installed" : "Is OCRmyPDF installed",
