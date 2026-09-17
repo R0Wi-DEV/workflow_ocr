@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/12.0/phpunit.xsd"
+         bootstrap="tests/bootstrap.standalone.php"
+         colors="true"
+         displayDetailsOnTestsThatTriggerDeprecations="true"
+         displayDetailsOnTestsThatTriggerErrors="true"
+         displayDetailsOnTestsThatTriggerNotices="true"
+         displayDetailsOnTestsThatTriggerWarnings="true"
+         displayDetailsOnPhpunitDeprecations="true">
+  <testsuites>
+    <testsuite name="unit-standalone">
+      <directory>./tests/Unit</directory>
+      <!-- Still extends Nextcloud's Test\TestCase, which doesn't exist here, so PHPUnit
+           would fatal just loading the file, before the group filtering below even
+           applies. Excluded by group too, for consistency with the other
+           nextcloud-full files. -->
+      <exclude>./tests/Unit/OcrProcessors/OcrProcessorFactoryTest.php</exclude>
+    </testsuite>
+  </testsuites>
+  <groups>
+    <exclude>
+      <group>nextcloud-full</group>
+    </exclude>
+  </groups>
+  <source>
+    <include>
+      <directory suffix=".php">./</directory>
+    </include>
+    <exclude>
+      <directory suffix=".php">./appinfo</directory>
+      <directory suffix=".php">./l10n</directory>
+      <directory suffix=".php">./templates</directory>
+      <directory suffix=".php">./tests</directory>
+      <directory suffix=".php">./vendor</directory>
+      <directory suffix=".php">./node_modules</directory>
+      <directory suffix=".php">./lib/Migration</directory>
+      <directory suffix=".php">./lib/OcrProcessors/Remote/Client/Model</directory>
+      <file>./lib/OcrProcessors/Remote/Client/Configuration.php</file>
+      <file>./lib/OcrProcessors/Remote/Client/ObjectSerializer.php</file>
+      <file>./.php-cs-fixer.dist.php</file>
+    </exclude>
+  </source>
+</phpunit>

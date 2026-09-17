@@ -27,10 +27,15 @@ use OCA\WorkflowOcr\BackgroundJobs\ProcessFileJob;
 use OCA\WorkflowOcr\Service\IOcrService;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\IJobList;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
+// Calling the real inherited start() (via QueuedJob/Job) internally calls
+// OCP\Server::get(), which needs \OC::$server -- requires a full Nextcloud checkout.
+// Excluded from the standalone suite (see phpunit.standalone.xml).
+#[Group('nextcloud-full')]
 class ProcessFileJobTest extends TestCase {
 	/** @var LoggerInterface|MockObject */
 	private $logger;

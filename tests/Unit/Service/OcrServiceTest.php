@@ -43,6 +43,7 @@ use OCA\WorkflowOcr\Service\IEventService;
 use OCA\WorkflowOcr\Service\IGlobalSettingsService;
 use OCA\WorkflowOcr\Service\INotificationService;
 use OCA\WorkflowOcr\Service\OcrService;
+use OCA\WorkflowOcr\Tests\Unit\TestUtils\InvokesPrivateMethods;
 use OCA\WorkflowOcr\Wrapper\IFilesystem;
 use OCA\WorkflowOcr\Wrapper\IView;
 use OCA\WorkflowOcr\Wrapper\IViewFactory;
@@ -57,10 +58,12 @@ use OCP\IUserSession;
 use OCP\SystemTag\ISystemTagObjectMapper;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
-use Test\TestCase;
 
 class OcrServiceTest extends TestCase {
+	use InvokesPrivateMethods;
+
 	/** @var IOcrProcessorFactory|MockObject */
 	private $ocrProcessorFactory;
 	/** @var IOcrProcessor|MockObject */
