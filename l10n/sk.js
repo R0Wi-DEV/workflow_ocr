@@ -6,6 +6,7 @@ OC.L10N.register(
     "Workflow OCR error for file {file}" : "Chyby Workflow OCR pre súbor {file}",
     "Workflow OCR success" : "Workflow OCR bolo úspešné",
     "Workflow OCR success for file {file}" : "Workflow OCR pre súbor {file} bolo úspešné",
+    "Workflow settings JSON value cannot be parsed: %1$s" : "Hodnotu JSON v nastaveniach pracovného postupu sa nepodarilo analyzovať: %1$s",
     "OCR file" : "Súbor OCR",
     "OCR processing via workflow" : "Spracovanie OCR pomocou workflow",
     "Is OCRmyPDF installed" : "Je nainštalovaný OCRmyPDF",
