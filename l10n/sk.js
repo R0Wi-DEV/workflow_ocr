@@ -35,7 +35,7 @@ OC.L10N.register(
     "Force OCR" : "Vynútiť OCR",
     "Skip file completely" : "Preskočiť súbor úplne",
     "Notifications" : "Upozornenia",
-    "The asynchronous OCR process will send Nextcloud notifications. Use these settings to control them." : "Asynchrónny proces OCR bude odosielať upozornenia Nextcloud. Tieto nastavenia použite na ich ovládanie.",
+    "The asynchronous OCR process will send Nextcloud notifications. Use these settings to control them." : "Asynchrónny proces OCR bude odosielať upozornenia Nextcloudu. Tieto nastavenia použite na ich ovládanie.",
     "Skip notifications for ocrmypdf error code 2 (for example digitally signed PDFs)" : "Vynechať upozornenia pri kóde chyby 2 nástroja ocrmypdf (napríklad pri digitálne podpísaných PDF)",
     "Skip for invalid PDFs" : "Vynechať neplatné PDF",
     "Skip notifications for ocrmypdf error code 8 (for example password protected PDFs)" : "Vynechať upozornenia pri kóde chyby 8 nástroja ocrmypdf (napríklad pri PDF chránených heslom)",
