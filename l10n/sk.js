@@ -53,6 +53,6 @@ OC.L10N.register(
     "Create sidecar text file" : "Vytvoriť sprievodný textový súbor",
     "Pass additional ocrmypdf arguments here. They are forwarded to the CLI exactly as entered." : "Sem zadajte ďalšie argumenty ocrmypdf. Do CLI sa odošlú presne tak, ako boli zadané.",
     "Custom ocrMyPdf CLI arguments" : "Vlastné parametre pre CLI ocrMyPdf",
-    "Workflow settings JSON value cannot be parsed" : "Hodnota nastaveni v JSON pre Workflow sa nedala rozparsovať"
+    "Workflow settings JSON value cannot be parsed" : "Hodnota nastavení v JSON pre Workflow sa nedala rozparsovať"
 },
 "nplurals=4; plural=(n % 1 == 0 && n == 1 ? 0 : n % 1 == 0 && n >= 2 && n <= 4 ? 1 : n % 1 != 0 ? 2: 3);");
