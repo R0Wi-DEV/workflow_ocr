@@ -38,10 +38,16 @@ use OCP\Notification\AlreadyProcessedException;
 use OCP\Notification\INotification;
 use OCP\RichObjectStrings\IRichTextFormatter;
 use OCP\RichObjectStrings\IValidator;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
+// Instantiates the real Nextcloud\OC\Notification\Notification for its actual fluent
+// setter/getter/validation behavior (not just as a mock target), which is too much
+// internal logic to safely reproduce in a polyfill. Excluded from the standalone suite
+// (see phpunit.standalone.xml).
+#[Group('nextcloud-full')]
 class NotifierTest extends TestCase {
 	/** @var IFactory|MockObject */
 	private $l10nFactory;

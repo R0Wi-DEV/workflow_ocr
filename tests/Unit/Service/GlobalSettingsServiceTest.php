@@ -28,7 +28,7 @@ use OCA\WorkflowOcr\Model\GlobalSettings;
 use OCA\WorkflowOcr\Service\GlobalSettingsService;
 use OCP\IAppConfig;
 use PHPUnit\Framework\MockObject\MockObject;
-use Test\TestCase;
+use PHPUnit\Framework\TestCase;
 
 class GlobalSettingsServiceTest extends TestCase {
 	/** @var IAppConfig|MockObject */

@@ -34,10 +34,15 @@ use OCP\WorkflowEngine\Events\RegisterEntitiesEvent;
 use OCP\WorkflowEngine\Events\RegisterOperationsEvent;
 use OCP\WorkflowEngine\IManager;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 
+// Real OCP\Util::addScript() internally calls OCP\Server::get(), which needs
+// \OC::$server -- requires a full Nextcloud checkout. Excluded from the standalone
+// suite (see phpunit.standalone.xml).
+#[Group('nextcloud-full')]
 class RegisterFlowOperationsListenerTest extends TestCase {
 	/** @var ContainerInterface|MockObject */
 	private $container;
