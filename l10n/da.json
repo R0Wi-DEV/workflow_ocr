@@ -39,7 +39,7 @@
     "Skip notifications for ocrmypdf error code 8 (for example password protected PDFs)" : "Spring notifikationer over for ocrmypdf-fejlkode 8 (f.eks. adgangskodebeskyttede PDF'er)",
     "Skip for encrypted PDFs" : "Spring over for krypterede PDF'er",
     "Send a notification when OCR processing completes successfully." : "Send en notifikation, når OCR-behandlingen er gennemført.",
-    "Send success notification" : "Send succesmeddelelse",
+    "Send success notification" : "Send notifikation ved succes",
     "Other settings" : "Andre indstillinger",
     "Try to remove colored backgrounds before OCR. Compatible only with ocrmypdf versions prior to 13 and incompatible with redo OCR mode." : "Forsøg at fjerne farvede baggrunde før OCR. Virker kun med ocrmypdf-versioner før 13 og ikke sammen med tilstanden redo OCR.",
     "Remove background" : "Fjern baggrund",
