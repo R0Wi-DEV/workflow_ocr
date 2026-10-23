@@ -170,6 +170,63 @@ class OcrProcessorBaseTest extends TestCase {
 		$this->assertEquals($originalBytes, $processed);
 	}
 
+	public function testNoAlphaPngFeedsOriginalBytesIntoOcrCommand(): void {
+		// Regression test for the bug this PR fixes: unlike
+		// testRemoveAlphaChannelFromImage_NoAlpha_ReturnsOriginalResource above, this
+		// exercises the *real* OcrMyPdfBasedProcessor::doOcrProcessing() (not
+		// TestOcrProcessor, whose override happens to rewind() the resource itself and
+		// therefore can't catch a missing rewind() in production code).
+		$logger = $this->createMock(LoggerInterface::class);
+		$phpNative = $this->createMock(IPhpNativeFunctions::class);
+		$phpNative->method('fopen')->willReturnCallback(fn ($file, $mode) => fopen($file, $mode));
+		$phpNative->method('streamGetContents')->willReturnCallback(fn ($h) => stream_get_contents($h));
+
+		$sidecar = $this->createMock(ISidecarFileAccessor::class);
+		$sidecar->method('getOrCreateSidecarFile')->willReturn('/tmp/sidecar.txt');
+		$sidecar->method('getSidecarFileContent')->willReturn('');
+
+		$cmdUtils = $this->createMock(ICommandLineUtils::class);
+		$cmdUtils->method('getCommandlineArgs')->willReturn('--skip-text');
+
+		$capturedStdIn = null;
+		$command = $this->createMock(ICommand::class);
+		$command->method('setCommand')->willReturn($command);
+		$command->method('setStdIn')->willReturnCallback(function ($stdIn) use ($command, &$capturedStdIn) {
+			$capturedStdIn = $stdIn;
+			return $command;
+		});
+		$command->method('execute')->willReturn(true);
+		$command->method('getOutput')->willReturn('');
+		$command->method('getError')->willReturn('');
+		$command->method('getStdErr')->willReturn('');
+		$command->method('getExitCode')->willReturn(0);
+
+		$processor = new TestableOcrMyPdfBasedProcessor($command, $logger, $sidecar, $cmdUtils, $phpNative);
+
+		$originalStream = $this->createPngStream(false);
+
+		$file = $this->createMock(File::class);
+		$file->method('getMimeType')->willReturn('image/png');
+		$file->method('fopen')->with('rb')->willReturn($originalStream);
+		$file->method('getName')->willReturn('test_no_alpha.png');
+
+		rewind($originalStream);
+		$originalBytes = stream_get_contents($originalStream);
+		rewind($originalStream);
+
+		$settings = $this->createMock(WorkflowSettings::class);
+		$globalSettings = $this->createMock(GlobalSettings::class);
+
+		$processor->ocrFile($file, $settings, $globalSettings);
+
+		$this->assertSame(
+			$originalBytes,
+			$capturedStdIn,
+			'Expected the full original PNG bytes to be piped into ocrmypdf, not an empty/truncated '
+			. 'stream left over from the Imagick alpha-channel probe'
+		);
+	}
+
 	public function testThrowsRuntimeExceptionIfOpeningTempFails(): void {
 		$logger = $this->createMock(LoggerInterface::class);
 		$phpNative = $this->createMock(IPhpNativeFunctions::class);

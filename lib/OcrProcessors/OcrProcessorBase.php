@@ -86,6 +86,10 @@ abstract class OcrProcessorBase implements IOcrProcessor {
 
 			if (!$alphaChannel) {
 				$this->logger->debug('PNG does not have alpha channel, no need to remove it');
+				// Imagick::readImageFile() consumed the stream up to EOF; rewind it so the
+				// caller (which reads this resource via streamGetContents()) doesn't get an
+				// empty string, which ocrmypdf then fails on as an unidentifiable image.
+				rewind($imageResource);
 				return $imageResource;
 			}
 
