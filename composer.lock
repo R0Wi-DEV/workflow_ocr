@@ -724,16 +724,16 @@
         },
         {
             "name": "amphp/socket",
-            "version": "v2.4.1",
+            "version": "v2.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/amphp/socket.git",
-                "reference": "b347be5aff6b2cc025208bb4d896607eb470c018"
+                "reference": "6e881835c73b75a0a4251a7f58441bc90b9f6c8a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amphp/socket/zipball/b347be5aff6b2cc025208bb4d896607eb470c018",
-                "reference": "b347be5aff6b2cc025208bb4d896607eb470c018",
+                "url": "https://api.github.com/repos/amphp/socket/zipball/6e881835c73b75a0a4251a7f58441bc90b9f6c8a",
+                "reference": "6e881835c73b75a0a4251a7f58441bc90b9f6c8a",
                 "shasum": ""
             },
             "require": {
@@ -796,7 +796,7 @@
             ],
             "support": {
                 "issues": "https://github.com/amphp/socket/issues",
-                "source": "https://github.com/amphp/socket/tree/v2.4.1"
+                "source": "https://github.com/amphp/socket/tree/v2.4.2"
             },
             "funding": [
                 {
@@ -804,8 +804,8 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-08-22T18:13:20+00:00",
-            "published-time": "2026-08-22T20:37:31+00:00"
+            "time": "2026-11-11T03:42:20+00:00",
+            "published-time": "2026-11-11T03:46:33+00:00"
         },
         {
             "name": "amphp/sync",
@@ -1865,12 +1865,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/nextcloud-deps/ocp.git",
-                "reference": "5e0d5b61715e68e4a8e0d581b1a324bc59ba73a8"
+                "reference": "2ce4364057951ec18643f2f55530433b3e285974"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nextcloud-deps/ocp/zipball/5e0d5b61715e68e4a8e0d581b1a324bc59ba73a8",
-                "reference": "5e0d5b61715e68e4a8e0d581b1a324bc59ba73a8",
+                "url": "https://api.github.com/repos/nextcloud-deps/ocp/zipball/2ce4364057951ec18643f2f55530433b3e285974",
+                "reference": "2ce4364057951ec18643f2f55530433b3e285974",
                 "shasum": ""
             },
             "require": {
@@ -1911,8 +1911,8 @@
                 "issues": "https://github.com/nextcloud-deps/ocp/issues",
                 "source": "https://github.com/nextcloud-deps/ocp/tree/master"
             },
-            "time": "2026-11-10T05:05:25+00:00",
-            "published-time": "2026-11-10T05:05:30+00:00"
+            "time": "2026-11-11T03:39:45+00:00",
+            "published-time": "2026-11-11T03:39:51+00:00"
         },
         {
             "name": "nikic/php-parser",
