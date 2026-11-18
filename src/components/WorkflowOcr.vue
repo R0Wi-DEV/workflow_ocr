@@ -137,7 +137,7 @@
 				</HelpTextWrapper>
 				<HelpTextWrapper
 					class="nccb-info-wrapper"
-					:help-text="t('workflow_ocr', 'Keep the original file as a version labeled Before OC and exclude it from automatic expiration.')">
+					:help-text="t('workflow_ocr', 'Keep the original file as a version labeled Before OCR and exclude it from automatic expiration.')">
 					<NcCheckboxRadioSwitch
 						ref="keepOriginalFileVersion"
 						v-model="model.keepOriginalFileVersion"
