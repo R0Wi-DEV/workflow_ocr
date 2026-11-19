@@ -45,7 +45,6 @@ OC.L10N.register(
     "Other settings" : "Alte setări",
     "Try to remove colored backgrounds before OCR. Compatible only with ocrmypdf versions prior to 13 and incompatible with redo OCR mode." : "Încearcă să elimini fundalurile colorate înainte de OCR. Compatibil doar cu versiunile ocrmypdf anterioare versiunii 13 și incompatibil cu modul „Refă OCR”.",
     "Remove background" : "Elimină fundalul",
-    "Keep the original file as a version labeled Before OC and exclude it from automatic expiration." : "Păstrează fișierul original ca versiune etichetată „Before OC” și exclude-o de la expirarea automată.",
     "Keep original file version" : "Păstrează versiunea originală a fișierului",
     "Restore the original modification date on the new file version for consistent sorting." : "Restabilește data originală a modificării pe noua versiune a fișierului, pentru o sortare consecventă.",
     "Keep original file modification date" : "Păstrează data originală a modificării fișierului",
@@ -53,6 +52,7 @@ OC.L10N.register(
     "Create sidecar text file" : "Creează un fișier text însoțitor",
     "Pass additional ocrmypdf arguments here. They are forwarded to the CLI exactly as entered." : "Introdu aici argumente suplimentare pentru ocrmypdf. Ele sunt transmise către CLI exact cum le introduci.",
     "Custom ocrMyPdf CLI arguments" : "Argumente CLI personalizate pentru ocrMyPdf",
-    "Workflow settings JSON value cannot be parsed" : "Valoarea JSON a setărilor fluxului nu poate fi interpretată"
+    "Workflow settings JSON value cannot be parsed" : "Valoarea JSON a setărilor fluxului nu poate fi interpretată",
+    "Keep the original file as a version labeled Before OC and exclude it from automatic expiration." : "Păstrează fișierul original ca versiune etichetată „Before OC” și exclude-o de la expirarea automată."
 },
 "nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?2:1));");

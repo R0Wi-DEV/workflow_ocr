@@ -42,7 +42,6 @@
     "Other settings" : "Egyéb beállítások",
     "Try to remove colored backgrounds before OCR. Compatible only with ocrmypdf versions prior to 13 and incompatible with redo OCR mode." : "Az OCR előtt próbálja meg eltávolítani a színes háttereket. Csak a 13-as előtti ocrmypdf-verziókkal kompatibilis, és az OCR újbóli elvégzésével nem.",
     "Remove background" : "Háttér eltávolítása",
-    "Keep the original file as a version labeled Before OC and exclude it from automatic expiration." : "Az eredeti fájl megtartása „OCR előtti” címkéjű verzióként, és kivételként hozzáadás, hogy ne évüljön el automatikusan.",
     "Keep original file version" : "Eredeti fájlverzió megtartása",
     "Restore the original modification date on the new file version for consistent sorting." : "Az eredeti módosítási dátum helyreállítása az új fájlverzión, hogy a rendezés konzisztens maradjon.",
     "Keep original file modification date" : "Eredeti fájlmódosítási dátum megtartása",
@@ -50,6 +49,7 @@
     "Create sidecar text file" : "Segédszövegfájl létrehozása",
     "Pass additional ocrmypdf arguments here. They are forwarded to the CLI exactly as entered." : "További ocrmypdf argumentumok átadása itt. A megadott módon lesz továbbítva a CLI felé.",
     "Custom ocrMyPdf CLI arguments" : "Egyéni ocrMyPdf CLI argumentumok",
-    "Workflow settings JSON value cannot be parsed" : "A munkafolyamat-beállítások JSON-értéke nem dolgozható fel"
+    "Workflow settings JSON value cannot be parsed" : "A munkafolyamat-beállítások JSON-értéke nem dolgozható fel",
+    "Keep the original file as a version labeled Before OC and exclude it from automatic expiration." : "Az eredeti fájl megtartása „OCR előtti” címkéjű verzióként, és kivételként hozzáadás, hogy ne évüljön el automatikusan."
 },"pluralForm" :"nplurals=2; plural=(n != 1);"
 }
