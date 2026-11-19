@@ -43,7 +43,6 @@
     "Other settings" : "Прочие параметры",
     "Try to remove colored backgrounds before OCR. Compatible only with ocrmypdf versions prior to 13 and incompatible with redo OCR mode." : "Попытаться удалить цветные фоны перед OCR. Совместимо только с ocrmypdf версий до 13 и несовместимо с режимом повторного OCR.",
     "Remove background" : "Удалить фон",
-    "Keep the original file as a version labeled Before OC and exclude it from automatic expiration." : "Сохранить исходный файл как версию с меткой Before OC и не удалять её автоматически по истечении срока хранения.",
     "Keep original file version" : "Оставить исходную версию файла",
     "Restore the original modification date on the new file version for consistent sorting." : "Восстановить исходную дату изменения у новой версии файла для единообразной сортировки.",
     "Keep original file modification date" : "Оставить исходную дату изменения файла",
@@ -51,6 +50,7 @@
     "Create sidecar text file" : "Создать сопутствующий текстовый файл",
     "Pass additional ocrmypdf arguments here. They are forwarded to the CLI exactly as entered." : "Здесь можно указать дополнительные аргументы ocrmypdf. Они передаются в CLI в точности как введены.",
     "Custom ocrMyPdf CLI arguments" : "Пользовательские аргументы OCRmyPDF CLI",
-    "Workflow settings JSON value cannot be parsed" : "Не удалось разобрать значение JSON в параметрах Workflow"
+    "Workflow settings JSON value cannot be parsed" : "Не удалось разобрать значение JSON в параметрах Workflow",
+    "Keep the original file as a version labeled Before OC and exclude it from automatic expiration." : "Сохранить исходный файл как версию с меткой Before OC и не удалять её автоматически по истечении срока хранения."
 },"pluralForm" :"nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);"
 }

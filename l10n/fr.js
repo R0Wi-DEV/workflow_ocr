@@ -45,7 +45,6 @@ OC.L10N.register(
     "Other settings" : "Autres paramètres",
     "Try to remove colored backgrounds before OCR. Compatible only with ocrmypdf versions prior to 13 and incompatible with redo OCR mode." : "Essayer de retirer les arrière-plans colorés avant l'OCR. Uniquement compatible avec les versions de ocrmypdf antérieures à 13 et incompatible avec le mode Refaire l'OCR.",
     "Remove background" : "Retirer l'arrière-plan",
-    "Keep the original file as a version labeled Before OC and exclude it from automatic expiration." : "Conserver le fichier original en tant que version étiquetée Before OCR et l'exclure de l'expiration automatique.",
     "Keep original file version" : "Conserver la version originale du fichier",
     "Restore the original modification date on the new file version for consistent sorting." : "Rétablir la date de modification originale sur la version du nouveau fichier pour la cohérence des tris.",
     "Keep original file modification date" : "Conserver la date de modification du fichier d'origine",
@@ -53,6 +52,7 @@ OC.L10N.register(
     "Create sidecar text file" : "Créer un fichier texte annexe",
     "Pass additional ocrmypdf arguments here. They are forwarded to the CLI exactly as entered." : "Passer ici des arguments supplémentaires à ocrmypdf. Ils sont transmis à la CLI tels qu'ils sont entrés.",
     "Custom ocrMyPdf CLI arguments" : "Arguments ligne de commande ocrMyPdf personnalisés",
-    "Workflow settings JSON value cannot be parsed" : "Impossible d'analyser la valeur JSON des paramètres de flux de travail"
+    "Workflow settings JSON value cannot be parsed" : "Impossible d'analyser la valeur JSON des paramètres de flux de travail",
+    "Keep the original file as a version labeled Before OC and exclude it from automatic expiration." : "Conserver le fichier original en tant que version étiquetée Before OCR et l'exclure de l'expiration automatique."
 },
 "nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;");
