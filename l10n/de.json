@@ -43,7 +43,6 @@
     "Other settings" : "Andere Einstellungen",
     "Try to remove colored backgrounds before OCR. Compatible only with ocrmypdf versions prior to 13 and incompatible with redo OCR mode." : "Es wird versucht, farbige Hintergründe vor der Texterkennung (OCR) zu entfernen. Kompatibel nur mit ocrmypdf-Versionen vor 13 und inkompatibel mit dem Redo-OCR-Modus.",
     "Remove background" : "Hintergrund entfernen",
-    "Keep the original file as a version labeled Before OC and exclude it from automatic expiration." : "Die Originaldatei als Version mit der Bezeichnung “Vor Texterkennung (OC)“ beibehalten und vom automatischen Ablauf ausschließen.",
     "Keep original file version" : "Ursprüngliche Dateiversion beibehalten",
     "Restore the original modification date on the new file version for consistent sorting." : "Das ursprüngliche Änderungsdatum der neuen Dateiversion für eine konsistente Sortierung wiederherstellen.",
     "Keep original file modification date" : "Ursprüngliches Dateiänderungsdatum beibehalten",
@@ -51,6 +50,7 @@
     "Create sidecar text file" : "Filialdatei erstellen",
     "Pass additional ocrmypdf arguments here. They are forwarded to the CLI exactly as entered." : "Zusätzliche ocrmypdf-Argumente hier übergeben. Sie werden genau wie eingegeben an die Befehlszeilenschnittstelle (CLI) weitergeleitet.",
     "Custom ocrMyPdf CLI arguments" : "Benutzerdefinierte ocrMyPdf-Argumente der Befehlszeilenschnittstelle",
-    "Workflow settings JSON value cannot be parsed" : "JSON-Wert der Workflow-Einstellungen kann nicht geparst werden"
+    "Workflow settings JSON value cannot be parsed" : "JSON-Wert der Workflow-Einstellungen kann nicht geparst werden",
+    "Keep the original file as a version labeled Before OC and exclude it from automatic expiration." : "Die Originaldatei als Version mit der Bezeichnung “Vor Texterkennung (OC)“ beibehalten und vom automatischen Ablauf ausschließen."
 },"pluralForm" :"nplurals=2; plural=(n != 1);"
 }

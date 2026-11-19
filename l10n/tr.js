@@ -45,7 +45,6 @@ OC.L10N.register(
     "Other settings" : "Diğer ayarlar",
     "Try to remove colored backgrounds before OCR. Compatible only with ocrmypdf versions prior to 13 and incompatible with redo OCR mode." : "Karakter tanıma işleminden önce renkli arka planları kaldırmaya çalışın. Yalnızca ocrmypdf 13 öncesindeki sürümlerle uyumludur ve yeniden karakter tanıma işlemi kipiyle uyumlu değildir.",
     "Remove background" : "Arka plan kaldırılsın",
-    "Keep the original file as a version labeled Before OC and exclude it from automatic expiration." : "Özgün dosya sürümünü Before OC etiketiyle kaydedin ve otomatik geçerlilik sonu süresine katmayın.",
     "Keep original file version" : "Özgün dosya sürümü korunsun",
     "Restore the original modification date on the new file version for consistent sorting." : "Tutarlı sıralama için yeni dosya sürümündeki özgün değişiklik tarihini geri yükler.",
     "Keep original file modification date" : "Özgün dosya değiştirilme tarihi korunsun",
@@ -53,6 +52,7 @@ OC.L10N.register(
     "Create sidecar text file" : "Sidecar yazı dosyası oluşturulsun",
     "Pass additional ocrmypdf arguments here. They are forwarded to the CLI exactly as entered." : "Ek ocrmypdf argümanlarını buradan aktarın. Tam olarak yazıldığı gibi komut satırına iletilirler.",
     "Custom ocrMyPdf CLI arguments" : "Özel ocrMyPdf komut satırı parametreleri",
-    "Workflow settings JSON value cannot be parsed" : "İş akışı ayarları JSON değeri işlenemedi"
+    "Workflow settings JSON value cannot be parsed" : "İş akışı ayarları JSON değeri işlenemedi",
+    "Keep the original file as a version labeled Before OC and exclude it from automatic expiration." : "Özgün dosya sürümünü Before OC etiketiyle kaydedin ve otomatik geçerlilik sonu süresine katmayın."
 },
 "nplurals=2; plural=(n > 1);");

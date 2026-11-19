@@ -44,7 +44,6 @@ OC.L10N.register(
     "Other settings" : "Pengaturan lainnya",
     "Try to remove colored backgrounds before OCR. Compatible only with ocrmypdf versions prior to 13 and incompatible with redo OCR mode." : "Coba hapus latar belakang berwarna sebelum OCR. Hanya kompatibel dengan ocrmypdf versi sebelum 13 dan tidak kompatibel dengan mode ulangi OCR.",
     "Remove background" : "Hapus latar belakang",
-    "Keep the original file as a version labeled Before OC and exclude it from automatic expiration." : "Simpan file asli sebagai versi berlabel Sebelum OCR dan kecualikan dari kedaluwarsa otomatis.",
     "Keep original file version" : "Simpan versi file asli",
     "Restore the original modification date on the new file version for consistent sorting." : "Pulihkan tanggal modifikasi asli pada versi file baru agar pengurutan tetap konsisten.",
     "Keep original file modification date" : "Pertahankan tanggal modifikasi file asli",
@@ -52,6 +51,7 @@ OC.L10N.register(
     "Create sidecar text file" : "Buat file teks pendamping",
     "Pass additional ocrmypdf arguments here. They are forwarded to the CLI exactly as entered." : "Masukkan argumen ocrmypdf tambahan di sini. Argumen akan diteruskan ke CLI persis seperti yang dimasukkan.",
     "Custom ocrMyPdf CLI arguments" : "Argumen CLI ocrmypdf kustom",
-    "Workflow settings JSON value cannot be parsed" : "Nilai JSON pengaturan workflow tidak dapat diurai"
+    "Workflow settings JSON value cannot be parsed" : "Nilai JSON pengaturan workflow tidak dapat diurai",
+    "Keep the original file as a version labeled Before OC and exclude it from automatic expiration." : "Simpan file asli sebagai versi berlabel Sebelum OCR dan kecualikan dari kedaluwarsa otomatis."
 },
 "nplurals=1; plural=0;");

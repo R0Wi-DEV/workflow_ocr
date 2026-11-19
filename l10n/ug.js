@@ -44,7 +44,6 @@ OC.L10N.register(
     "Other settings" : "باشقا تەڭشەكلەر",
     "Try to remove colored backgrounds before OCR. Compatible only with ocrmypdf versions prior to 13 and incompatible with redo OCR mode." : "OCR دىن بۇرۇن رەڭلىك ئارقا كۆرۈنۈشلەرنى ئۆچۈرۈۋېتىشكە تىرىشىڭ. پەقەت 13-نەشرىدىن بۇرۇنقى ocrmypdf نۇسخىلىرى بىلەنلا ماس كېلىدۇ ۋە OCR نى قايتا ئىشلەش ھالىتى بىلەن ماس كەلمەيدۇ.",
     "Remove background" : "ئارقا كۆرۈنۈشنى ئۆچۈر",
-    "Keep the original file as a version labeled Before OC and exclude it from automatic expiration." : "ئەسلىدىكى ھۆججەتنى OC بەلگىسى قۇيۇلغان نۇسخىسى سۈپىتىدە ساقلاپ قال ھەمدە ئۇنى ئاپتۇماتىك ۋاقتى ئۆتۈشتىن مۇستەسنا قىل.",
     "Keep original file version" : "ئەسلىدىكى ھۆججەت نۇسخىسىنى ساقلاپ قال",
     "Restore the original modification date on the new file version for consistent sorting." : "يېڭى ھۆججەتلەرنى ئىزچىل تۈرگە ئايرىش ئۈچۈن ھۆججەتنىڭ ئەسلىدىكى ئۆزگەرتىش چېسلاسىنى ئەسلىگە قايتۇر",
     "Keep original file modification date" : "ئەسلىدىكى ھۆججەتنىڭ ئۆزگەرتىش چېسلاسىنى ساقلا",
@@ -52,6 +51,7 @@ OC.L10N.register(
     "Create sidecar text file" : "sidecar تېكىست ھۆججىتى قۇر",
     "Pass additional ocrmypdf arguments here. They are forwarded to the CLI exactly as entered." : "قوشۇمچە ocrmypdf ئارگۇمېنتلىرىنى بۇ يەرگە يوللاڭ. ئۇلار كىرگۈزۈلگەن شەكىلدە CLI غا يوللىنىدۇ.",
     "Custom ocrMyPdf CLI arguments" : "خاس ocrMyPdf CLI پارامىتېرلىرى",
-    "Workflow settings JSON value cannot be parsed" : "خىزمەت ئېقىمى تەڭشەكلىرى JSON قىممىتىنى تەھلىل قىلىشقا بولمايدۇ"
+    "Workflow settings JSON value cannot be parsed" : "خىزمەت ئېقىمى تەڭشەكلىرى JSON قىممىتىنى تەھلىل قىلىشقا بولمايدۇ",
+    "Keep the original file as a version labeled Before OC and exclude it from automatic expiration." : "ئەسلىدىكى ھۆججەتنى OC بەلگىسى قۇيۇلغان نۇسخىسى سۈپىتىدە ساقلاپ قال ھەمدە ئۇنى ئاپتۇماتىك ۋاقتى ئۆتۈشتىن مۇستەسنا قىل."
 },
 "nplurals=2; plural=(n != 1);");

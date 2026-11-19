@@ -42,7 +42,6 @@
     "Other settings" : "Kiti nustatymai",
     "Try to remove colored backgrounds before OCR. Compatible only with ocrmypdf versions prior to 13 and incompatible with redo OCR mode." : "Prieš atliekant OCR, pabandykite pašalinti spalvotą foną. Suderinama tik su „ocrmypdf“ versijomis iki 13 ir nesuderinama su pakartotinio OCR režimu.",
     "Remove background" : "Šalinti foną",
-    "Keep the original file as a version labeled Before OC and exclude it from automatic expiration." : "Išsaugokite originalų failą kaip versiją, pažymėtą „Prieš OC“, ir neįtraukite jo į automatinį galiojimo pabaigos datą.",
     "Keep original file version" : "Išsaugoti originalią failo versiją",
     "Restore the original modification date on the new file version for consistent sorting." : "Atkurkite originalią modifikavimo datą naujoje failo versijoje, kad rūšiavimas būtų nuoseklus.",
     "Keep original file modification date" : "Išsaugoti originalią failo modifikavimo datą",
@@ -50,6 +49,7 @@
     "Create sidecar text file" : "Sukurti lydimąjį .txt failą",
     "Pass additional ocrmypdf arguments here. They are forwarded to the CLI exactly as entered." : "Čia pateikite papildomus „ocrmypdf“ argumentus. Jie persiunčiami į CLI tiksliai tokie, kokie įvesti.",
     "Custom ocrMyPdf CLI arguments" : "Pasirinktiniai ocrMyPdf CLI argumentai",
-    "Workflow settings JSON value cannot be parsed" : "Darbo eigos nustatymų JSON reikšmės negalima išanalizuoti"
+    "Workflow settings JSON value cannot be parsed" : "Darbo eigos nustatymų JSON reikšmės negalima išanalizuoti",
+    "Keep the original file as a version labeled Before OC and exclude it from automatic expiration." : "Išsaugokite originalų failą kaip versiją, pažymėtą „Prieš OC“, ir neįtraukite jo į automatinį galiojimo pabaigos datą."
 },"pluralForm" :"nplurals=4; plural=(n % 10 == 1 && (n % 100 > 19 || n % 100 < 11) ? 0 : (n % 10 >= 2 && n % 10 <=9) && (n % 100 > 19 || n % 100 < 11) ? 1 : n % 1 != 0 ? 2: 3);"
 }
