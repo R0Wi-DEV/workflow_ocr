@@ -43,7 +43,6 @@
     "Other settings" : "其他設定",
     "Try to remove colored backgrounds before OCR. Compatible only with ocrmypdf versions prior to 13 and incompatible with redo OCR mode." : "請在執行 OCR 前，務必移除彩色背景。此功能僅與 13 版本之前的 ocrmypdf 兼容，並且與重做 OCR 模式不兼容。",
     "Remove background" : "移除背景",
-    "Keep the original file as a version labeled Before OC and exclude it from automatic expiration." : "保留原始檔案作為標記為「OC 前」的版本，並將其排除於自動過期機制之外。",
     "Keep original file version" : "保留原始檔案版本",
     "Restore the original modification date on the new file version for consistent sorting." : "還原新檔案版本的原始修改日期，以確保排序一致性。",
     "Keep original file modification date" : "保留原先的檔案的修改日期",
@@ -51,6 +50,7 @@
     "Create sidecar text file" : "建立附屬文字檔",
     "Pass additional ocrmypdf arguments here. They are forwarded to the CLI exactly as entered." : "在此處傳遞額外的 ocrmypdf 引數。這些引數將完全按照輸入的內容轉發至命令列介面。",
     "Custom ocrMyPdf CLI arguments" : "自訂 ocrMyPdf CLI 參數",
-    "Workflow settings JSON value cannot be parsed" : "無法分析工作流程設置 JSON 值"
+    "Workflow settings JSON value cannot be parsed" : "無法分析工作流程設置 JSON 值",
+    "Keep the original file as a version labeled Before OC and exclude it from automatic expiration." : "保留原始檔案作為標記為「OC 前」的版本，並將其排除於自動過期機制之外。"
 },"pluralForm" :"nplurals=1; plural=0;"
 }

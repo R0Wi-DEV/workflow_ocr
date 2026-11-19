@@ -44,7 +44,6 @@ OC.L10N.register(
     "Other settings" : "سایر تنظیمات",
     "Try to remove colored backgrounds before OCR. Compatible only with ocrmypdf versions prior to 13 and incompatible with redo OCR mode." : "سعی کنید پس‌زمینه‌های رنگی را قبل از OCR حذف کنید. فقط با نسخه‌های ocrmypdf قبل از 13 سازگار است و با حالت OCR مجدد ناسازگار است.",
     "Remove background" : "حذف پس‌زمینه",
-    "Keep the original file as a version labeled Before OC and exclude it from automatic expiration." : "فایل اصلی را به عنوان نسخه‌ای با برچسب «قبل از OC» نگه دارید و آن را از انقضای خودکار مستثنی کنید.",
     "Keep original file version" : "نگه داشتن نسخه فایل اصلی",
     "Restore the original modification date on the new file version for consistent sorting." : "تاریخ اصلاح اصلی را در نسخه جدید فایل برای مرتب‌سازی ثابت بازیابی کنید.",
     "Keep original file modification date" : "نگه داشتن تاریخ اصلاح فایل اصلی",
@@ -52,6 +51,7 @@ OC.L10N.register(
     "Create sidecar text file" : "ایجاد فایل متنی جانبی",
     "Pass additional ocrmypdf arguments here. They are forwarded to the CLI exactly as entered." : "آرگومان‌های اضافی ocrmypdf را اینجا وارد کنید. این آرگومان‌ها دقیقاً همان‌طور که وارد شده‌اند به خط فرمان ارسال می‌شوند.",
     "Custom ocrMyPdf CLI arguments" : "آرگومان‌های سفارشی خط فرمان ocrMyPdf",
-    "Workflow settings JSON value cannot be parsed" : "مقدار JSON تنظیمات گردش کار قابل تجزیه نیست"
+    "Workflow settings JSON value cannot be parsed" : "مقدار JSON تنظیمات گردش کار قابل تجزیه نیست",
+    "Keep the original file as a version labeled Before OC and exclude it from automatic expiration." : "فایل اصلی را به عنوان نسخه‌ای با برچسب «قبل از OC» نگه دارید و آن را از انقضای خودکار مستثنی کنید."
 },
 "nplurals=2; plural=(n > 1);");

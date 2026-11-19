@@ -45,7 +45,6 @@ OC.L10N.register(
     "Other settings" : "Muud seadistused",
     "Try to remove colored backgrounds before OCR. Compatible only with ocrmypdf versions prior to 13 and incompatible with redo OCR mode." : "Enne tekstituvastust proovi eemaldada värvilised taustad. Ühildub vaid ocrmypdf teegi versioonidega 13 ja varasematega ning pole ühilduv tekstituvastuse kordusrežiimiga.",
     "Remove background" : "Eemalda taust",
-    "Keep the original file as a version labeled Before OC and exclude it from automatic expiration." : "Säilita algne fail sellisena, et ta on märgitud tekstituvastuse eelseks ja välista ta aegumisreeglitest.",
     "Keep original file version" : "Säilita algne fail",
     "Restore the original modification date on the new file version for consistent sorting." : "Järjepideva sortimise nimel märgi uue faili viimase muutmise kuupäevaks algse faili kuupäev.",
     "Keep original file modification date" : "Säilita algne faili muutmise kuupäev",
@@ -53,6 +52,7 @@ OC.L10N.register(
     "Create sidecar text file" : "Loo kaasnev andmefail",
     "Pass additional ocrmypdf arguments here. They are forwarded to the CLI exactly as entered." : "Siia võid lisada ocrmypdf teegi täiendavad argumendid. Need edastatakse käsureale täpselt sellisena, nagu nad on sisestatud.",
     "Custom ocrMyPdf CLI arguments" : "OCRmyPDF CLI argumendid",
-    "Workflow settings JSON value cannot be parsed" : "Töövoo seadistuste JSON-väärtuse parsimine ei õnnestu"
+    "Workflow settings JSON value cannot be parsed" : "Töövoo seadistuste JSON-väärtuse parsimine ei õnnestu",
+    "Keep the original file as a version labeled Before OC and exclude it from automatic expiration." : "Säilita algne fail sellisena, et ta on märgitud tekstituvastuse eelseks ja välista ta aegumisreeglitest."
 },
 "nplurals=2; plural=(n != 1);");

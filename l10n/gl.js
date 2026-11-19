@@ -44,7 +44,7 @@ OC.L10N.register(
     "Other settings" : "Outros axustes",
     "Try to remove colored backgrounds before OCR. Compatible only with ocrmypdf versions prior to 13 and incompatible with redo OCR mode." : "Tente eliminar fondos de cor antes de facer o OCR. Compatíbel só con versións ocrmypdf anteriores á 13 e incompatíbel co modo refacer de OCR.",
     "Remove background" : "Retirar o fondo",
-    "Keep the original file as a version labeled Before OC and exclude it from automatic expiration." : "Conserve o ficheiro orixinal como unha versión etiquetada como «Antes do OCR» e exclúao da caducidade automática.",
+    "Keep the original file as a version labeled Before OCR and exclude it from automatic expiration." : "Manteña o ficheiro orixinal como unha versión etiquetada como «Antes do OCR» e exclúao da caducidade automática.",
     "Keep original file version" : "Conservar a versión orixinal do ficheiro",
     "Restore the original modification date on the new file version for consistent sorting." : "Restaure a data orixinal de modificación na nova versión do ficheiro para unha ordenación consistente.",
     "Keep original file modification date" : "Manter a data de modificación do ficheiro orixinal",
@@ -52,6 +52,7 @@ OC.L10N.register(
     "Create sidecar text file" : "Crear ficheiro de texto sidecar",
     "Pass additional ocrmypdf arguments here. They are forwarded to the CLI exactly as entered." : "Pase aquí os argumentos adicionais de ocrmypdf. Enviáranse á CLI exactamente tal e como se introduzan.",
     "Custom ocrMyPdf CLI arguments" : "Argumentos personalizados da CLI de ocrMyPdf",
-    "Workflow settings JSON value cannot be parsed" : "Non é posíbel analizar o valor JSON da configuración do fluxo de traballo"
+    "Workflow settings JSON value cannot be parsed" : "Non é posíbel analizar o valor JSON da configuración do fluxo de traballo",
+    "Keep the original file as a version labeled Before OC and exclude it from automatic expiration." : "Conserve o ficheiro orixinal como unha versión etiquetada como «Antes do OCR» e exclúao da caducidade automática."
 },
 "nplurals=2; plural=(n != 1);");
