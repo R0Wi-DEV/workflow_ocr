@@ -45,6 +45,7 @@ OC.L10N.register(
     "Other settings" : "Other settings",
     "Try to remove colored backgrounds before OCR. Compatible only with ocrmypdf versions prior to 13 and incompatible with redo OCR mode." : "Make sure to remove coloured backgrounds before performing OCR. This feature is only compatible with ocrmypdf versions prior to 13 and is not compatible with the redo OCR mode.",
     "Remove background" : "Remove background",
+    "Keep the original file as a version labeled Before OCR and exclude it from automatic expiration." : "Keep the original file as a version labeled Before OCR and exclude it from automatic expiration.",
     "Keep original file version" : "Keep original file version",
     "Restore the original modification date on the new file version for consistent sorting." : "Restore the original modification date on the new file version for consistent sorting.",
     "Keep original file modification date" : "Keep original file's modification date",
