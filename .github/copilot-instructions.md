@@ -35,11 +35,20 @@ The app supports two OCR processing modes:
 
 ### Critical Context
 
-**IMPORTANT**: This app cannot run standalone. For development, you MUST:
+**IMPORTANT**: This app cannot *run* standalone, and most of its tests still need a real
+Nextcloud instance. For development, you MUST:
 
 1. Set up a full [Nextcloud Server](https://github.com/nextcloud/server) instance
 2. Install this app into the Nextcloud installation
-3. Tests must run within a working Nextcloud environment (see CI/CD workflows for examples)
+3. `tests/Integration/` and the full `tests/Unit/` suite (`phpunit.xml`) must run within a
+   working Nextcloud environment (see CI/CD workflows for examples)
+
+**Exception**: most of `tests/Unit/` (all but seven files that touch a real, non-trivial
+Nextcloud implementation rather than just an interface) can run standalone — clone,
+`composer install`, then `make php-unittest-standalone` — with no Nextcloud checkout,
+using the `nextcloud/ocp` composer package for `OCP\*`/`NCU\*` symbols. See CLAUDE.md's
+"Critical constraints" for
+the excluded files and the `dev-master` dependency risk.
 
 ### Target Version Compatibility
 
@@ -244,11 +253,16 @@ Set Nextcloud log level to 0 for detailed debugging:
 
 ### General Guidelines
 
-1. **Never assume standalone operation** - All development and testing requires a Nextcloud instance
+1. **Never assume standalone operation for the app itself or for `tests/Integration/`** -
+   Running the app and its integration tests requires a Nextcloud instance. Most of
+   `tests/Unit/` is the one exception and runs standalone via
+   `make php-unittest-standalone` (see CLAUDE.md)
 2. **Check Nextcloud Server code** - Always verify implementations against the target Nextcloud version
 3. **Respect branching strategy** - Ensure changes are compatible with the target Nextcloud version
 4. **Follow existing patterns** - The codebase has established patterns for controllers, services, and processors
-5. **Test within Nextcloud** - Tests cannot run in isolation; they need the Nextcloud environment
+5. **Integration tests need Nextcloud** - `tests/Integration/` and the full `tests/Unit/`
+   suite need the Nextcloud environment; most of `tests/Unit/` runs standalone via
+   `make php-unittest-standalone`
 6. **Consider both backends** - Changes may affect both local CLI and external backend processing modes
 
 ### Before Committing Changes

@@ -26,8 +26,13 @@ namespace OCA\WorkflowOcr\Tests\Unit\composer;
 use OCA\WorkflowOcr\AppInfo\Application;
 use OCP\App\IAppManager;
 use OCP\AppFramework\App;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 
+// Constructs a real OCP\AppFramework\App and resolves services from its DI container,
+// which needs \OC::$server and Nextcloud's internal DI container — requires a full
+// Nextcloud checkout. Excluded from the standalone suite (see phpunit.standalone.xml).
+#[Group('nextcloud-full')]
 class AutoloadTest extends TestCase {
 	public function testAutoloaderFileCanBeLoaded() {
 		$app = new App(Application::APP_NAME);

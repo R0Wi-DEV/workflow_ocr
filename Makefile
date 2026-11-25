@@ -192,6 +192,10 @@ php-test: composer
 php-unittest: composer
 	$(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.xml
 
+.PHONY: php-unittest-standalone
+php-unittest-standalone: composer
+	$(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.standalone.xml
+
 .PHONY: php-integrationtest
 php-integrationtest: composer
 	$(CURDIR)/vendor/phpunit/phpunit/phpunit -c phpunit.integration.xml

@@ -31,10 +31,16 @@ use OCA\WorkflowOcr\OcrProcessors\OcrProcessorFactory;
 use OCA\WorkflowOcr\OcrProcessors\Remote\WorkflowOcrRemoteProcessor;
 use OCA\WorkflowOcr\Service\IOcrBackendInfoService;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Container\ContainerInterface;
 use Test\TestCase;
 
+// Constructs a real OCP\AppFramework\App (via Application) and resolves services from
+// its DI container, which needs \OC::$server and Nextcloud's internal DI container —
+// requires a full Nextcloud checkout. Excluded from the standalone suite (see
+// phpunit.standalone.xml).
+#[Group('nextcloud-full')]
 class OcrProcessorFactoryTest extends TestCase {
 	/** @var ContainerInterface */
 	private $appContainer;

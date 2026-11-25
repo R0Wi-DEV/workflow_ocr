@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace OCA\WorkflowOcr\Tests\Unit\Settings;
 
 use OCA\WorkflowOcr\Settings\GlobalSettings;
-use Test\TestCase;
+use PHPUnit\Framework\TestCase;
 
 class GlobalSettingsTest extends TestCase {
 	/** @var GlobalSettings */
