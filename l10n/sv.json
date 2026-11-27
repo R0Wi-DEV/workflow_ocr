@@ -43,6 +43,7 @@
     "Other settings" : "Övriga inställningar",
     "Try to remove colored backgrounds before OCR. Compatible only with ocrmypdf versions prior to 13 and incompatible with redo OCR mode." : "Försök ta bort färgade bakgrunder före OCR. Endast kompatibelt med ocrmypdf-versioner före 13 och inte kompatibelt med läget Gör om OCR.",
     "Remove background" : "Ta bort bakgrunden",
+    "Keep the original file as a version labeled Before OCR and exclude it from automatic expiration." : "Behåll originalfilen som en version med etiketten Före OCR och undanta den från automatisk utgång.",
     "Keep original file version" : "Behåll originalfilens version",
     "Restore the original modification date on the new file version for consistent sorting." : "Återställ det ursprungliga ändringsdatumet för den nya filversionen så att sorteringen blir konsekvent.",
     "Keep original file modification date" : "Behåll originalfilens ändringsdatum",
