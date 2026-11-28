@@ -1861,12 +1861,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/nextcloud-deps/ocp.git",
-                "reference": "c87faef086ff0e1cd5a35328bdb4a1d488898799"
+                "reference": "c54906e685d02f980927f818fe2b373ffa206001"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nextcloud-deps/ocp/zipball/c87faef086ff0e1cd5a35328bdb4a1d488898799",
-                "reference": "c87faef086ff0e1cd5a35328bdb4a1d488898799",
+                "url": "https://api.github.com/repos/nextcloud-deps/ocp/zipball/c54906e685d02f980927f818fe2b373ffa206001",
+                "reference": "c54906e685d02f980927f818fe2b373ffa206001",
                 "shasum": ""
             },
             "require": {
@@ -1907,8 +1907,8 @@
                 "issues": "https://github.com/nextcloud-deps/ocp/issues",
                 "source": "https://github.com/nextcloud-deps/ocp/tree/master"
             },
-            "time": "2026-11-26T14:40:20+00:00",
-            "published-time": "2026-11-26T14:42:21+00:00"
+            "time": "2026-11-28T05:25:31+00:00",
+            "published-time": "2026-11-28T05:25:36+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -4576,16 +4576,16 @@
         },
         {
             "name": "symfony/filesystem",
-            "version": "v7.4.24",
+            "version": "v7.4.25",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/filesystem.git",
-                "reference": "37a6b215cf82c881409e2ffaec61757964abd1f7"
+                "reference": "c6adf2262feb9e08ba64632d2703987c24555e0d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/filesystem/zipball/37a6b215cf82c881409e2ffaec61757964abd1f7",
-                "reference": "37a6b215cf82c881409e2ffaec61757964abd1f7",
+                "url": "https://api.github.com/repos/symfony/filesystem/zipball/c6adf2262feb9e08ba64632d2703987c24555e0d",
+                "reference": "c6adf2262feb9e08ba64632d2703987c24555e0d",
                 "shasum": ""
             },
             "require": {
@@ -4622,7 +4622,7 @@
             "description": "Provides basic utilities for the filesystem",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/filesystem/tree/v7.4.24"
+                "source": "https://github.com/symfony/filesystem/tree/v7.4.25"
             },
             "funding": [
                 {
@@ -4642,8 +4642,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-11-24T15:20:15+00:00",
-            "published-time": "2026-11-25T09:23:31+00:00"
+            "time": "2026-11-27T10:49:08+00:00",
+            "published-time": "2026-11-27T14:43:03+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
